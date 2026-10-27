@@ -1,0 +1,302 @@
+{
+  "app" : "iTerm2",
+  "app_version" : "3.7.3",
+  "attributes" : [
+    "AXFocused",
+    "AXFrame",
+    "AXChildrenInNavigationOrder",
+    "AXSelectedText",
+    "AXInsertionPointLineNumber",
+    "AXDocument",
+    "AXPosition",
+    "AXNumberOfCharacters",
+    "AXSelectedTextRange",
+    "AXHelp",
+    "AXChildren",
+    "AXRole",
+    "AXParent",
+    "AXTopLevelUIElement",
+    "AXDescription",
+    "AXSelectedTextRanges",
+    "AXVisibleCharacterRange",
+    "AXValue",
+    "AXSize",
+    "AXRoleDescription",
+    "AXWindow"
+  ],
+  "bundle" : "com.googlecode.iterm2",
+  "cell_size_pt" : {
+    "h" : 19,
+    "w" : 0.33750000000000002
+  },
+  "cell_size_source" : "ax-fit (weaker: not independent of the API)",
+  "correct" : 3,
+  "correct_percent_of_corpus" : 15.800000000000001,
+  "focused_role" : "AXTextArea",
+  "focused_subrole" : null,
+  "has_bounds_for_range" : true,
+  "has_selected_text_range" : true,
+  "judged" : 19,
+  "macos" : "Version 27.0.1 (Build 26A434)",
+  "note" : "iTerm2, single pane, 1 monitor",
+  "parameterized_attributes" : [
+    "AXRangeForLine",
+    "AXLineForIndex",
+    "AXAttributedStringForRange",
+    "AXStringForRange",
+    "AXBoundsForRange",
+    "AXRangeForPosition",
+    "AXRangeForIndex",
+    "AXReplaceRangeWithText"
+  ],
+  "positions" : 20,
+  "positions_without_rect" : 0,
+  "samples" : [
+    {
+      "col" : 1,
+      "rect" : {
+        "h" : 38,
+        "w" : 9,
+        "x" : 5,
+        "y" : 49
+      },
+      "row" : 1,
+      "text_index" : 1145
+    },
+    {
+      "col" : 5,
+      "rect" : {
+        "h" : 19,
+        "w" : 0,
+        "x" : 41,
+        "y" : 68
+      },
+      "row" : 1,
+      "text_index" : 1149
+    },
+    {
+      "col" : 20,
+      "rect" : {
+        "h" : 19,
+        "w" : 0,
+        "x" : 176,
+        "y" : 68
+      },
+      "row" : 1,
+      "text_index" : 1164
+    },
+    {
+      "col" : 83,
+      "rect" : {
+        "h" : 19,
+        "w" : 0,
+        "x" : 257,
+        "y" : 106
+      },
+      "row" : 1,
+      "text_index" : 1229
+    },
+    {
+      "col" : 161,
+      "rect" : {
+        "h" : 19,
+        "w" : 0,
+        "x" : 59,
+        "y" : 144
+      },
+      "row" : 1,
+      "text_index" : 1307
+    },
+    {
+      "col" : 1,
+      "rect" : {
+        "h" : 38,
+        "w" : 432,
+        "x" : 5,
+        "y" : 68
+      },
+      "row" : 2,
+      "text_index" : 1195
+    },
+    {
+      "col" : 5,
+      "rect" : {
+        "h" : 19,
+        "w" : 0,
+        "x" : 41,
+        "y" : 87
+      },
+      "row" : 2,
+      "text_index" : 1199
+    },
+    {
+      "col" : 20,
+      "rect" : {
+        "h" : 19,
+        "w" : 0,
+        "x" : 122,
+        "y" : 106
+      },
+      "row" : 2,
+      "text_index" : 1214
+    },
+    {
+      "col" : 83,
+      "rect" : {
+        "h" : 19,
+        "w" : 0,
+        "x" : 689,
+        "y" : 106
+      },
+      "row" : 2,
+      "text_index" : 1277
+    },
+    {
+      "col" : 161,
+      "rect" : {
+        "h" : 19,
+        "w" : 0,
+        "x" : 41,
+        "y" : 163
+      },
+      "row" : 2,
+      "text_index" : 1355
+    },
+    {
+      "col" : 1,
+      "rect" : {
+        "h" : 38,
+        "w" : 378,
+        "x" : 5,
+        "y" : 467
+      },
+      "row" : 23,
+      "text_index" : 2186
+    },
+    {
+      "col" : 5,
+      "rect" : {
+        "h" : 19,
+        "w" : 0,
+        "x" : 41,
+        "y" : 486
+      },
+      "row" : 23,
+      "text_index" : 2190
+    },
+    {
+      "col" : 20,
+      "rect" : {
+        "h" : 19,
+        "w" : 0,
+        "x" : 176,
+        "y" : 486
+      },
+      "row" : 23,
+      "text_index" : 2205
+    },
+    {
+      "col" : 83,
+      "rect" : {
+        "h" : 19,
+        "w" : 0,
+        "x" : 113,
+        "y" : 543
+      },
+      "row" : 23,
+      "text_index" : 2268
+    },
+    {
+      "col" : 161,
+      "rect" : {
+        "h" : 19,
+        "w" : 0,
+        "x" : 293,
+        "y" : 562
+      },
+      "row" : 23,
+      "text_index" : 2346
+    },
+    {
+      "col" : 1,
+      "rect" : {
+        "h" : 38,
+        "w" : 9,
+        "x" : 5,
+        "y" : 866
+      },
+      "row" : 44,
+      "text_index" : 3382
+    },
+    {
+      "col" : 5,
+      "rect" : {
+        "h" : 19,
+        "w" : 0,
+        "x" : 41,
+        "y" : 885
+      },
+      "row" : 44,
+      "text_index" : 3386
+    },
+    {
+      "col" : 20,
+      "rect" : {
+        "h" : 19,
+        "w" : 0,
+        "x" : 176,
+        "y" : 885
+      },
+      "row" : 44,
+      "text_index" : 3401
+    },
+    {
+      "col" : 83,
+      "rect" : {
+        "h" : 19,
+        "w" : 0,
+        "x" : 311,
+        "y" : 904
+      },
+      "row" : 44,
+      "text_index" : 3466
+    },
+    {
+      "col" : 161,
+      "rect" : {
+        "h" : 19,
+        "w" : 0,
+        "x" : 1013,
+        "y" : 904
+      },
+      "row" : 44,
+      "text_index" : 3544
+    }
+  ],
+  "scale_assumed" : 1,
+  "screens" : [
+    {
+      "frame" : {
+        "h" : 982,
+        "w" : 1512,
+        "x" : 0,
+        "y" : 0
+      },
+      "scale" : 2
+    }
+  ],
+  "terminal_cell_px" : null,
+  "terminal_grid" : {
+    "cols" : 166,
+    "reported_by_terminal" : true,
+    "rows" : 46
+  },
+  "tool" : "anchor-probe",
+  "verdict" : "FAIL for this configuration (15.8% < 98%)",
+  "window_frame" : {
+    "h" : 914,
+    "w" : 1512,
+    "x" : 0,
+    "y" : 33
+  }
+}

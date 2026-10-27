@@ -1,0 +1,743 @@
+{
+  "app" : "Terminal",
+  "app_version" : "2.15",
+  "attributes" : [
+    "AXSelectedTextRange",
+    "AXNumberOfCharacters",
+    "AXFrame",
+    "AXDescription",
+    "AXParent",
+    "AXChildren",
+    "AXFocused",
+    "AXSize",
+    "AXRole",
+    "AXTopLevelUIElement",
+    "AXInsertionPointLineNumber",
+    "AXSelectedTextRanges",
+    "AXHelp",
+    "AXChildrenInNavigationOrder",
+    "AXPosition",
+    "AXWindow",
+    "AXRoleDescription",
+    "AXValue",
+    "AXVisibleCharacterRange",
+    "AXSelectedText"
+  ],
+  "ax_cell_estimate_pt" : {
+    "h" : 15,
+    "w" : 7
+  },
+  "box_matches_pitch" : true,
+  "bundle" : "com.apple.Terminal",
+  "cell_size_pt" : {
+    "h" : 15,
+    "w" : 7
+  },
+  "cell_size_source" : "ax-fit (weaker: not independent of the API)",
+  "end_of_text" : {
+    "correct_strict" : 18,
+    "correct_with_tall_rect_rule" : 18,
+    "judged" : 18
+  },
+  "end_of_text_percent_strict" : 100,
+  "end_of_text_percent_with_tall_rect_rule" : 100,
+  "focused_frame" : {
+    "h" : 467.10546875,
+    "w" : 860,
+    "x" : 40,
+    "y" : 84.89453125
+  },
+  "focused_role" : "AXTextArea",
+  "focused_subrole" : null,
+  "grid_insets_in_window_pt" : {
+    "bottom" : 10,
+    "left" : 10,
+    "right" : 10,
+    "top" : 39
+  },
+  "grid_origin_inside_text_area" : true,
+  "grid_origin_pt" : {
+    "x" : 50,
+    "y" : 92
+  },
+  "has_bounds_for_range" : true,
+  "has_selected_text_range" : true,
+  "in_text" : {
+    "correct_strict" : 30,
+    "correct_with_tall_rect_rule" : 30,
+    "judged" : 30
+  },
+  "in_text_percent_strict" : 100,
+  "in_text_percent_with_tall_rect_rule" : 100,
+  "macos" : "Version 27.0.1 (Build 26A434)",
+  "note" : "Terminal.app, single pane, main screen",
+  "parameterized_attributes" : [
+    "AXStringForRange",
+    "AXBoundsForRange",
+    "AXLineForIndex",
+    "AXReplaceRangeWithText",
+    "AXRangeForPosition",
+    "AXRangeForIndex",
+    "AXRangeForLine"
+  ],
+  "positions_without_rect" : 0,
+  "samples" : [
+    {
+      "bounds_call" : "length1",
+      "col" : 1,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 50,
+        "y" : 92
+      },
+      "row" : 1,
+      "text_index" : 536
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 5,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 78,
+        "y" : 92
+      },
+      "row" : 1,
+      "text_index" : 540
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 20,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 183,
+        "y" : 92
+      },
+      "row" : 1,
+      "text_index" : 555
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 60,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 463,
+        "y" : 92
+      },
+      "row" : 1,
+      "text_index" : 595
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 115,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 848,
+        "y" : 92
+      },
+      "row" : 1,
+      "text_index" : 650
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 1,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 50,
+        "y" : 107
+      },
+      "row" : 2,
+      "text_index" : 656
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 5,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 78,
+        "y" : 107
+      },
+      "row" : 2,
+      "text_index" : 660
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 20,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 183,
+        "y" : 107
+      },
+      "row" : 2,
+      "text_index" : 675
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 60,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 463,
+        "y" : 107
+      },
+      "row" : 2,
+      "text_index" : 715
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 115,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 848,
+        "y" : 107
+      },
+      "row" : 2,
+      "text_index" : 770
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 1,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 50,
+        "y" : 302
+      },
+      "row" : 15,
+      "text_index" : 788
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 5,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 78,
+        "y" : 302
+      },
+      "row" : 15,
+      "text_index" : 792
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 20,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 183,
+        "y" : 302
+      },
+      "row" : 15,
+      "text_index" : 807
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 60,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 463,
+        "y" : 302
+      },
+      "row" : 15,
+      "text_index" : 847
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 115,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 848,
+        "y" : 302
+      },
+      "row" : 15,
+      "text_index" : 902
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 1,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 50,
+        "y" : 497
+      },
+      "row" : 28,
+      "text_index" : 920
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 5,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 78,
+        "y" : 497
+      },
+      "row" : 28,
+      "text_index" : 924
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 20,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 183,
+        "y" : 497
+      },
+      "row" : 28,
+      "text_index" : 939
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 60,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 463,
+        "y" : 497
+      },
+      "row" : 28,
+      "text_index" : 979
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 115,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 848,
+        "y" : 497
+      },
+      "row" : 28,
+      "text_index" : 1034
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 1,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 50,
+        "y" : 512
+      },
+      "row" : 29,
+      "text_index" : 1040
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 5,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 78,
+        "y" : 512
+      },
+      "row" : 29,
+      "text_index" : 1044
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 20,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 183,
+        "y" : 512
+      },
+      "row" : 29,
+      "text_index" : 1059
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 60,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 463,
+        "y" : 512
+      },
+      "row" : 29,
+      "text_index" : 1099
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 115,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 848,
+        "y" : 512
+      },
+      "row" : 29,
+      "text_index" : 1154
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 1,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 50,
+        "y" : 527
+      },
+      "row" : 30,
+      "text_index" : 1160
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 5,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 78,
+        "y" : 527
+      },
+      "row" : 30,
+      "text_index" : 1164
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 20,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 183,
+        "y" : 527
+      },
+      "row" : 30,
+      "text_index" : 1179
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 60,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 463,
+        "y" : 527
+      },
+      "row" : 30,
+      "text_index" : 1219
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 115,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 848,
+        "y" : 527
+      },
+      "row" : 30,
+      "text_index" : 1274
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 4,
+      "kind" : "end-of-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 819,
+        "x" : 71,
+        "y" : 92
+      },
+      "row" : 1,
+      "text_index" : 539
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 21,
+      "kind" : "end-of-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 700,
+        "x" : 190,
+        "y" : 92
+      },
+      "row" : 1,
+      "text_index" : 556
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 61,
+      "kind" : "end-of-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 420,
+        "x" : 470,
+        "y" : 92
+      },
+      "row" : 1,
+      "text_index" : 596
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 4,
+      "kind" : "end-of-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 819,
+        "x" : 71,
+        "y" : 107
+      },
+      "row" : 2,
+      "text_index" : 600
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 21,
+      "kind" : "end-of-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 700,
+        "x" : 190,
+        "y" : 107
+      },
+      "row" : 2,
+      "text_index" : 617
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 61,
+      "kind" : "end-of-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 420,
+        "x" : 470,
+        "y" : 107
+      },
+      "row" : 2,
+      "text_index" : 657
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 4,
+      "kind" : "end-of-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 819,
+        "x" : 71,
+        "y" : 302
+      },
+      "row" : 15,
+      "text_index" : 673
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 21,
+      "kind" : "end-of-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 700,
+        "x" : 190,
+        "y" : 302
+      },
+      "row" : 15,
+      "text_index" : 690
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 61,
+      "kind" : "end-of-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 420,
+        "x" : 470,
+        "y" : 302
+      },
+      "row" : 15,
+      "text_index" : 730
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 4,
+      "kind" : "end-of-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 819,
+        "x" : 71,
+        "y" : 497
+      },
+      "row" : 28,
+      "text_index" : 746
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 21,
+      "kind" : "end-of-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 700,
+        "x" : 190,
+        "y" : 497
+      },
+      "row" : 28,
+      "text_index" : 763
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 61,
+      "kind" : "end-of-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 420,
+        "x" : 470,
+        "y" : 497
+      },
+      "row" : 28,
+      "text_index" : 803
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 4,
+      "kind" : "end-of-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 819,
+        "x" : 71,
+        "y" : 512
+      },
+      "row" : 29,
+      "text_index" : 807
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 21,
+      "kind" : "end-of-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 700,
+        "x" : 190,
+        "y" : 512
+      },
+      "row" : 29,
+      "text_index" : 824
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 61,
+      "kind" : "end-of-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 420,
+        "x" : 470,
+        "y" : 512
+      },
+      "row" : 29,
+      "text_index" : 864
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 4,
+      "kind" : "end-of-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 819,
+        "x" : 71,
+        "y" : 527
+      },
+      "row" : 30,
+      "text_index" : 868
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 21,
+      "kind" : "end-of-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 700,
+        "x" : 190,
+        "y" : 527
+      },
+      "row" : 30,
+      "text_index" : 885
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 61,
+      "kind" : "end-of-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 420,
+        "x" : 470,
+        "y" : 527
+      },
+      "row" : 30,
+      "text_index" : 925
+    }
+  ],
+  "scale_assumed" : 1,
+  "screen_count" : 1,
+  "screens" : [
+    {
+      "frame" : {
+        "h" : 982,
+        "w" : 1512,
+        "x" : 0,
+        "y" : 0
+      },
+      "scale" : 2
+    }
+  ],
+  "single_char_box_pt" : {
+    "h" : 15,
+    "w" : 7
+  },
+  "tall_rects" : 0,
+  "terminal_cell_iterm_report" : null,
+  "terminal_cell_px_16t" : null,
+  "terminal_grid" : {
+    "cols" : 120,
+    "reported_by_terminal" : true,
+    "rows" : 30
+  },
+  "tool" : "anchor-probe",
+  "verdict" : "PASS (corroborated): the terminal did not report its cell size, but the single-character box equals the position pitch (see grid_insets_in_window_pt); weaker than a terminal-reported size",
+  "window_frame" : {
+    "h" : 499,
+    "w" : 860,
+    "x" : 40,
+    "y" : 53
+  }
+}

@@ -1,0 +1,12 @@
+<!-- @dsCard group="Suggestions" height=260 -->
+<style>body{margin:0;padding:16px;background:var(--surface-base);color:var(--text-primary);font-family:var(--font-mono)}.stage{display:grid;gap:16px}.lab{margin:0 0 8px;color:var(--text-muted);font-size:12px}.pane{background:var(--surface-base);padding:16px;border:1px solid var(--border-subtle)}</style>
+<div class="stage" id="root"></div>
+<script>
+var T = window.TerminalCompanion, h = window.React.createElement;
+function pane(theme, label, child, w) { return h("div", { "data-theme": theme }, h("p", { className: "lab" }, theme + (label ? " · " + label : "")), h("div", { className: "pane", style: w ? { width: w, boxSizing: "content-box" } : null }, child)); }
+window.ReactDOM.createRoot(document.getElementById("root")).render(h(window.React.Fragment, null,
+ ["dark","light"].map(function(t){ return pane(t, "", h("div", { style: { maxWidth: 480 } },
+  h(T.SuggestionRow,{label:"checkout",description:"Switch branches or restore paths",kind:"subcommand",matches:[[0,2]],selected:true}),
+  h(T.SuggestionRow,{label:"--force-with-lease",description:"Safer force push",kind:"option",matches:[[2,7],[8,13]]}),
+  h(T.SuggestionRow,{label:"src/",kind:"path"}))); })));
+</script>

@@ -1,0 +1,245 @@
+{
+  "name": "Terminal Companion — Fig-inspired Rebuild Docs",
+  "version": "0.2-draft",
+  "created": "2026-10-27",
+  "updated": "2026-10-27",
+  "language": "vi (README) / en (docs)",
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "9cb70c846ed4fa59cfd5879f0c03d68dc43866c1bc1f783ee4c433e83a8b9651",
+      "size_bytes": 7550
+    },
+    {
+      "path": "design-system/README.md",
+      "sha256": "c5b6d0cf9191ad15abd8350d58a8d32b7e39011ba4591018ff03a7c2a01e5a32",
+      "size_bytes": 3607
+    },
+    {
+      "path": "design-system/components/Cover/preview.html",
+      "sha256": "4fdde9e0784daf9dbd867b289d183cef71f3902000889b2caa670c60151cf036",
+      "size_bytes": 1642
+    },
+    {
+      "path": "design-system/components/InlineFallback/README.md",
+      "sha256": "b76120d8755ca00271c342729db754467243e2cac76a10ac7ff2b5f20d481918",
+      "size_bytes": 823
+    },
+    {
+      "path": "design-system/components/InlineFallback/preview.html",
+      "sha256": "4c80ff7e843d3e562cca9235d8ea90ae7bc47b76269cbc94fe9d8544e728e70e",
+      "size_bytes": 1216
+    },
+    {
+      "path": "design-system/components/Keycap/README.md",
+      "sha256": "9a7b8ba593c24670d4033d5f8e30d2f67a0b98cd9ba9ae2ef3ee54c7bbaee218",
+      "size_bytes": 280
+    },
+    {
+      "path": "design-system/components/Keycap/preview.html",
+      "sha256": "0fcb1183b5a814d76d2db9d8652616b4dfc7971941c84bc4c9cec2bbfd3c6bc1",
+      "size_bytes": 905
+    },
+    {
+      "path": "design-system/components/PermissionNotice/README.md",
+      "sha256": "7c22ba6f1a1ca5f46c1b468345776ba389a9a45c3d3ec2782441b3b8b7c8a7bf",
+      "size_bytes": 453
+    },
+    {
+      "path": "design-system/components/PermissionNotice/preview.html",
+      "sha256": "edd287845620c991f82a8487aa8ab289529ba93f7ac4e197ee8cefb26007d022",
+      "size_bytes": 1245
+    },
+    {
+      "path": "design-system/components/SuggestionPopup/README.md",
+      "sha256": "22f3148af99d378b7e8cc43b8f13d20588143fc32ba20302b06d146ad5bae2e3",
+      "size_bytes": 1904
+    },
+    {
+      "path": "design-system/components/SuggestionPopup/preview.html",
+      "sha256": "e12a9663966e8b96b01fbbf09fef18b4f7d2548a660b73370feb31957d2e9568",
+      "size_bytes": 2680
+    },
+    {
+      "path": "design-system/components/SuggestionRow/README.md",
+      "sha256": "691a3925e49681c8bd51be85b5978e0c51265122727741a939898eea0ac05c03",
+      "size_bytes": 750
+    },
+    {
+      "path": "design-system/components/SuggestionRow/preview.html",
+      "sha256": "ff26539dca0da7281cac5a76ccf0fa781b06d5932f14c540f4dfe887c668ec80",
+      "size_bytes": 1228
+    },
+    {
+      "path": "design-system/components/bundle.css",
+      "sha256": "b4a8816170e5444a5d87bf62a7b632e2711986ecb7efcd6fabe8231141df704c",
+      "size_bytes": 2513
+    },
+    {
+      "path": "design-system/components/bundle.js",
+      "sha256": "efe86cf75e5bd20023a1043a519456f7a9bbc2b032cb3686675c9055dab94f7e",
+      "size_bytes": 4538
+    },
+    {
+      "path": "design-system/components/index.d.ts",
+      "sha256": "954455fb6165ea6bf4cee66ce764e2ec77cd62e1dac282acbc94a4dd7d84ec09",
+      "size_bytes": 1149
+    },
+    {
+      "path": "design-system/theme-resolution.md",
+      "sha256": "dc59c8ad66c441453d0f9dff803234c72cad40fb8d91763b29319ee5405cb8b9",
+      "size_bytes": 1893
+    },
+    {
+      "path": "design-system/tokens.css",
+      "sha256": "182fdb9e4b257c437b4d6a3ec6ae5be9c90a5036e8e7e712b85369d0754c89b7",
+      "size_bytes": 1544
+    },
+    {
+      "path": "design-system/tokens.json",
+      "sha256": "69d67581f8d592a12f18e03e608f4ab7e55157aa51a1a30ca990fab1552db8b0",
+      "size_bytes": 5883
+    },
+    {
+      "path": "design-system/tools/gen_tokens_css.py",
+      "sha256": "c7c063878a1b738fff1b17987c1a7a2968c3e4f5eab4cb28e077d41616c84ec8",
+      "size_bytes": 1093
+    },
+    {
+      "path": "docs/00-vision.md",
+      "sha256": "1809b50ed155b11da161dfa9569dfdf9f4b9b3b02cc5086bebdef6ed41e8d8a8",
+      "size_bytes": 3794
+    },
+    {
+      "path": "docs/01-prd.md",
+      "sha256": "d7cffac10112e97a16fab5f1addef6988bdf46210d79c0dd6f35ed8ab4aaef0c",
+      "size_bytes": 5716
+    },
+    {
+      "path": "docs/02-users-and-flows.md",
+      "sha256": "378647d6dc581c635fdeaf3889dee71b5d7ec3a1f0af3183a3e405e77b0521cf",
+      "size_bytes": 3824
+    },
+    {
+      "path": "docs/03-requirements.md",
+      "sha256": "4aa8c14b124ac29595946aef432f11005bffb8cf9dbbc1415a4c58be0adbe0fa",
+      "size_bytes": 6888
+    },
+    {
+      "path": "docs/04-architecture.md",
+      "sha256": "d4ffb19261bc0fa131a7d99e49756553f03d828f8c2413af358aa5a71c6a56c0",
+      "size_bytes": 5431
+    },
+    {
+      "path": "docs/05-terminal-integration.md",
+      "sha256": "821afbdf90e3c008fda2a70b1ab1e1f6ce764343a0d968e1b0ac92284b3e41ff",
+      "size_bytes": 6431
+    },
+    {
+      "path": "docs/06-completion-engine.md",
+      "sha256": "5f113c105cb2a6bb0966fe25358613376d46a22ae348ae5d1b292b0eb82e262b",
+      "size_bytes": 7877
+    },
+    {
+      "path": "docs/07-ux-design-system.md",
+      "sha256": "0e3501213e7b468524956692f1e3d23b2e70e281c1ca3375db228a18d046a345",
+      "size_bytes": 11461
+    },
+    {
+      "path": "docs/08-security-privacy.md",
+      "sha256": "d4d38628c2d52e9e560c2ee0ad3490596725ad3a18e282e0eb57ad6c759adabe",
+      "size_bytes": 4511
+    },
+    {
+      "path": "docs/09-qa-test-plan.md",
+      "sha256": "d00d8f370262a6ad9c041de9d0581cb5d04339a2d5c854ff577c2bff4dc6a9eb",
+      "size_bytes": 6653
+    },
+    {
+      "path": "docs/10-devops-release.md",
+      "sha256": "4d361989bbf4dc3a377613e2eaff9769ace4c36797c0ae68b99598cf9871a172",
+      "size_bytes": 4975
+    },
+    {
+      "path": "docs/11-roadmap.md",
+      "sha256": "99850b02ba70e1c3b4af490d6b5a5e28f893b41279babf52b7860570423ed258",
+      "size_bytes": 3198
+    },
+    {
+      "path": "docs/12-adr.md",
+      "sha256": "ae200c44df3f5e68345cf8efa3f3371a9193b5af455b6003d155523d1bfbed9f",
+      "size_bytes": 5563
+    },
+    {
+      "path": "docs/13-risks-open-questions.md",
+      "sha256": "101e46105a3b36c7c3d447f1aa0673355d002dfc02cd52b36d35328f9717af0e",
+      "size_bytes": 5255
+    },
+    {
+      "path": "docs/14-backlog.md",
+      "sha256": "0d87b5ae0b418f3fc34e57bdaec719962fdf94ad89e90449413e1d0a90cf6dd7",
+      "size_bytes": 4070
+    },
+    {
+      "path": "docs/15-sources.md",
+      "sha256": "068c77181078494dd5bde4506e5e444e3d569535ebfe0094de22cd3cd7b51cf9",
+      "size_bytes": 3780
+    },
+    {
+      "path": "docs/16-implementation-guide.md",
+      "sha256": "f97084b179a39ff96b0e77daa4fec1eebdd4b63cfba605f346125ef63e2122d8",
+      "size_bytes": 8107
+    },
+    {
+      "path": "docs/17-design-system-handoff.md",
+      "sha256": "c1b10b2aff69739f6bf1f7217ffa374b89cdfda05abbe3711a3d44c169643c07",
+      "size_bytes": 5517
+    },
+    {
+      "path": "examples/completion-response.json",
+      "sha256": "bc7245a1f40f29a0a34ef77946a90a4f46ac2d9bdc1bf699343dd8c934c6f8b2",
+      "size_bytes": 1102
+    },
+    {
+      "path": "examples/config.json",
+      "sha256": "6f412bd879e0a1d95979daea6eadf07a6e84b877e539225bd2c0b405939c9d1e",
+      "size_bytes": 263
+    },
+    {
+      "path": "examples/git.completion.json",
+      "sha256": "69f9a94a386f0156ad9c47951b423aa373f41f57794d6d9e4826cbeb3a1a6cfd",
+      "size_bytes": 1317
+    },
+    {
+      "path": "prototype/terminal-companion-prototype.en.html",
+      "sha256": "ec268de4708cf34f7dca74ef10506ed90df1776eb5dde4f15a619b226fb0a634",
+      "size_bytes": 39280
+    },
+    {
+      "path": "prototype/terminal-companion-prototype.vi.html",
+      "sha256": "7bc825a0ffb2b54d6a31baec841dec53bc747ae80cbcf26b1c0d452057b94949",
+      "size_bytes": 40028
+    },
+    {
+      "path": "schemas/completion.schema.json",
+      "sha256": "fcd47d379d98c52c522831b7e1180dc63c5c8cf7a642bc11332f8c93ac18d700",
+      "size_bytes": 2928
+    },
+    {
+      "path": "schemas/config.schema.json",
+      "sha256": "776dd00a7b3687c8594bd82a977caed78ffb2d71ea5b0ffcac8d32508a7289d3",
+      "size_bytes": 1893
+    },
+    {
+      "path": "schemas/ipc.schema.json",
+      "sha256": "f84bdb9893e48133d6d6aa02413d8c5e83eef6153d1ac13fcf6d8fbdd8324675",
+      "size_bytes": 3926
+    },
+    {
+      "path": "terminal-companion-design-system.zip",
+      "sha256": "095d68cc87050cef292028eb948b551f7c09fd57cb77cd7732df572c13bd48c4",
+      "size_bytes": 21196
+    }
+  ],
+  "note": "Docs, schemas, design system and interactive prototypes only. No functional executable app included. MANIFEST.json itself is not listed."
+}

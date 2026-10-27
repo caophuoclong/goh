@@ -1,0 +1,43 @@
+/* Terminal Companion — generated from tokens.json */
+:root, [data-theme="dark"] {
+  --surface-base: #0d1210;
+  --surface-selected: #1d3027;
+  --border-subtle: #26362e;
+  --text-primary: #c9e8d2;
+  --text-muted: #8fa99a;
+  --accent: #6fe3a0;
+  --text-match: var(--accent);
+  --focus-ring: var(--accent);
+  --accent-soft: #2f6b4a;
+  --popup-shadow: 0 4px 16px rgba(0,0,0,0.45);
+}
+[data-theme="light"] {
+  --surface-base: #f6f1e4;
+  --surface-selected: #e3dcc4;
+  --border-subtle: #d6cfb6;
+  --text-primary: #2a2a22;
+  --text-muted: #5a594a;
+  --accent: #1f6b3c;
+  --text-match: var(--accent);
+  --focus-ring: var(--accent);
+  --accent-soft: #a9d3b6;
+  --popup-shadow: 0 4px 16px rgba(42,42,34,0.18);
+}
+:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --radius-key: 3px;
+  --radius-row: 4px;
+  --radius-popup: 6px;
+  --popup-width-min: 320px;
+  --popup-width-max: 520px;
+  --row-height: 28px;
+  --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "DejaVu Sans Mono", monospace;
+}
+.row-label { font-family: var(--font-mono); font-size: 13px; line-height: 20px; font-weight: 500; }
+.row-label-selected { font-family: var(--font-mono); font-size: 13px; line-height: 20px; font-weight: 600; }
+.row-description { font-family: var(--font-mono); font-size: 13px; line-height: 20px; font-weight: 400; }
+.footer { font-family: var(--font-mono); font-size: 12px; line-height: 16px; font-weight: 400; }
+.display { font-family: var(--font-mono); font-size: 72px; line-height: 0.95; font-weight: 700; }

@@ -1,0 +1,493 @@
+//! `goh-popup`: draws the suggestion popup in a small borderless window.
+//!
+//! Presentational only (docs/07): it reads newline-delimited JSON frames on stdin and draws what
+//! it is told, at the anchor it is given. It never takes keyboard focus and never inserts text.
+//! Whether an overlay may be drawn at all is decided by the caller with `goh_popup::display`.
+//!
+//!   {"type":"show","state":{...},"anchor":"auto","mode":"auto","theme":{...},"max_rows":8}
+//!   {"type":"hide"}   {"type":"quit"}
+//!
+//! `"anchor":"auto"` asks the Accessibility API for the caret (verified apps only; see goh-anchor);
+//! the display-mode gate then decides overlay or inline, and a decision line is printed on stdout.
+//! `"anchor":{"x":..,"y":..,"line_height":..}` is a position vouched for by the caller (tests, demos).
+//! Without a verified anchor nothing is drawn.
+//!
+//! Flags: `--resolve` prints the decision for the focused terminal and exits (no window);
+//! `--screenshot out.png` saves the first drawn frame and exits.
+
+use std::collections::HashMap;
+use std::io::BufRead;
+use std::path::PathBuf;
+use std::sync::mpsc::{channel, Receiver, Sender};
+use std::sync::Arc;
+use std::time::{Duration, Instant};
+
+use eframe::egui::{self, Align2, Color32, FontId, Pos2, Rect, Stroke, StrokeKind, vec2};
+use goh_anchor::{Caret, Outcome, Rect as Screen};
+use goh_popup::display::{self, Anchor as AnchorState, Capabilities, Display, Mode as DisplayMode};
+use goh_popup::model::{self, View, CELL_WIDTH, FOOTER_HEIGHT, PAD, ROW_HEIGHT};
+use goh_popup::placement::{self, Placement};
+use goh_popup::watch::{plan_tick, TickAction};
+use goh_theme::{Mode, Rgb, Terminal};
+use serde::Deserialize;
+
+const RADIUS_POPUP: u8 = 6;
+const RADIUS_ROW: u8 = 4;
+const FONT: f32 = 13.0;
+/// How often an open menu is re-checked against the terminal's state.
+const TICK: Duration = Duration::from_millis(300);
+
+// Frames are short-lived and sent one at a time, so the size difference does not matter.
+#[allow(clippy::large_enum_variant)]
+#[derive(Deserialize)]
+#[serde(tag = "type", rename_all = "snake_case")]
+enum Frame {
+    Show(Request),
+    Hide,
+    Quit,
+}
+
+/// Everything a `show` frame says; kept so the popup can re-check it while the menu is open.
+#[derive(Deserialize, Clone)]
+struct Request {
+    state: model::State,
+    anchor: Option<AnchorSpec>,
+    #[serde(default)]
+    mode: DisplayMode,
+    #[serde(default)]
+    theme: HashMap<String, String>,
+    #[serde(default = "default_rows")]
+    max_rows: usize,
+    /// Only used with a manual anchor that has no `screen`.
+    #[serde(default = "default_width")]
+    available_width: f32,
+    /// The terminal's cell height in points, when the sender knows it (iTerm2 needs it).
+    #[serde(default)]
+    cell_height: Option<f64>,
+    /// Allow asking the terminal for its cell height on the tty. Off by default: when a shell's
+    /// line editor is reading the terminal, the reply would be taken as typing.
+    #[serde(default)]
+    tty_query: bool,
+}
+
+#[derive(Deserialize, Clone)]
+#[serde(untagged)]
+enum AnchorSpec {
+    Manual(ManualAnchor),
+    Keyword(String),
+}
+
+#[derive(Deserialize, Clone, Copy)]
+struct ManualAnchor {
+    x: f64,
+    y: f64,
+    #[serde(default)]
+    line_height: f64,
+    screen: Option<[f64; 4]>,
+}
+
+fn default_rows() -> usize {
+    8
+}
+fn default_width() -> f32 {
+    800.0
+}
+
+struct Colors {
+    base: Color32,
+    selected: Color32,
+    border: Color32,
+    primary: Color32,
+    muted: Color32,
+    accent: Color32,
+    matched: Color32,
+}
+
+impl Colors {
+    /// Frame tokens win; anything missing comes from the design system's dark theme.
+    fn from(theme: &HashMap<String, String>) -> Colors {
+        let fallback = goh_theme::resolve(Mode::Dark, &Terminal::default()).tokens;
+        let pick = |name: &str, default: Rgb| {
+            let c = theme.get(name).and_then(|h| Rgb::from_hex(h)).unwrap_or(default);
+            Color32::from_rgb(c.0[0], c.0[1], c.0[2])
+        };
+        Colors {
+            base: pick("surface-base", fallback.surface_base),
+            selected: pick("surface-selected", fallback.surface_selected),
+            border: pick("border-subtle", fallback.border_subtle),
+            primary: pick("text-primary", fallback.text_primary),
+            muted: pick("text-muted", fallback.text_muted),
+            accent: pick("accent", fallback.accent),
+            matched: pick("text-match", fallback.text_match),
+        }
+    }
+}
+
+struct Shown {
+    view: View,
+    colors: Colors,
+}
+
+struct App {
+    frames: Receiver<Frame>,
+    shown: Option<Shown>,
+    /// The menu currently open (until `hide`), re-checked every TICK.
+    last: Option<Request>,
+    visible: bool,
+    at: Option<Placement>,
+    last_tick: Instant,
+    drawn: u32,
+    screenshot: Option<PathBuf>,
+    shot_rx: Receiver<Arc<egui::ColorImage>>,
+    shot_tx: Sender<Arc<egui::ColorImage>>,
+    shot_requested: bool,
+}
+
+impl App {
+    fn apply(&mut self, ctx: &egui::Context, frame: Frame) {
+        match frame {
+            Frame::Quit => ctx.send_viewport_cmd(egui::ViewportCommand::Close),
+            Frame::Hide => {
+                self.last = None;
+                self.hide_window(ctx);
+            }
+            Frame::Show(req) => {
+                match resolve_request(&req) {
+                    Err(reason) => {
+                        emit(serde_json::json!({"type": "decision", "display": "inline", "reason": reason}));
+                        self.hide_window(ctx);
+                    }
+                    Ok((view, at, why)) => {
+                        emit(serde_json::json!({"type": "decision", "display": "overlay", "reason": why,
+                            "x": at.x, "y": at.y, "above": at.above}));
+                        self.show_window(ctx, view, at, &req.theme);
+                    }
+                }
+                self.last = Some(req);
+                self.last_tick = Instant::now();
+            }
+        }
+    }
+
+    fn show_window(&mut self, ctx: &egui::Context, view: View, at: Placement, theme: &HashMap<String, String>) {
+        ctx.send_viewport_cmd(egui::ViewportCommand::InnerSize(vec2(view.width, view.height)));
+        ctx.send_viewport_cmd(egui::ViewportCommand::OuterPosition(Pos2::new(at.x as f32, at.y as f32)));
+        ctx.send_viewport_cmd(egui::ViewportCommand::Visible(true));
+        self.shown = Some(Shown { view, colors: Colors::from(theme) });
+        self.drawn = 0;
+        self.visible = true;
+        self.at = Some(at);
+    }
+
+    fn hide_window(&mut self, ctx: &egui::Context) {
+        self.shown = None;
+        self.visible = false;
+        self.at = None;
+        ctx.send_viewport_cmd(egui::ViewportCommand::Visible(false));
+    }
+
+    /// Re-check while a menu is open: hide if the terminal is no longer usable (minimised, hidden,
+    /// another app focused), follow it if its window moved, come back if it returns. Silent: only
+    /// explicit `show` frames produce a decision line.
+    fn tick(&mut self, ctx: &egui::Context) {
+        let Some(req) = self.last.clone() else { return };
+        let result = resolve_request(&req);
+        let now = result.as_ref().ok().map(|(_, at, _)| *at);
+        match (plan_tick(self.visible, self.at, now), result) {
+            (TickAction::Hide, _) => self.hide_window(ctx),
+            (TickAction::Show, Ok((view, at, _))) => self.show_window(ctx, view, at, &req.theme),
+            (TickAction::Move, Ok((_, at, _))) => {
+                ctx.send_viewport_cmd(egui::ViewportCommand::OuterPosition(Pos2::new(at.x as f32, at.y as f32)));
+                self.at = Some(at);
+            }
+            _ => {}
+        }
+    }
+}
+
+fn emit(v: serde_json::Value) {
+    use std::io::Write;
+    let mut out = std::io::stdout().lock();
+    let _ = writeln!(out, "{v}");
+    let _ = out.flush();
+}
+
+fn resolve_request(r: &Request) -> Result<(View, Placement, &'static str), String> {
+    let opts = goh_anchor::Options { cell_height: r.cell_height, allow_tty_query: r.tty_query };
+    resolve_show(&r.state, r.anchor.clone(), r.mode, r.max_rows, r.available_width, &opts)
+}
+
+/// Everything that decides whether, and where, the overlay is drawn. `Err` is the reason for inline.
+fn resolve_show(
+    state: &model::State,
+    anchor: Option<AnchorSpec>,
+    mode: DisplayMode,
+    max_rows: usize,
+    manual_width: f32,
+    opts: &goh_anchor::Options,
+) -> Result<(View, placement::Placement, &'static str), String> {
+    // Manual positions are vouched for by the caller; "auto" must come from a verified source.
+    let (caret, screen, verified, width): (Caret, Screen, bool, f64) = match anchor {
+        Some(AnchorSpec::Manual(m)) => {
+            let screen = m.screen.map(|[x, y, w, h]| Screen { x, y, w, h }).unwrap_or(Screen { x: -1e6, y: -1e6, w: 2e6, h: 2e6 });
+            let width = if m.screen.is_some() { placement::available_width(screen) } else { manual_width as f64 };
+            (Caret { x: m.x, y: m.y, height: m.line_height }, screen, true, width)
+        }
+        Some(AnchorSpec::Keyword(k)) if k == "auto" => match goh_anchor::locate_with(opts).0 {
+            Outcome::Verified(a) => (a.caret, a.display, true, placement::available_width(a.display)),
+            Outcome::Unverified(reason) => return Err(resolve_reason(mode, reason.to_string())),
+        },
+        // `file:PATH`, for tests and demos: "x y line_height" in the file is a caller-vouched position
+        // (like a manual anchor) that is re-read on every check; a missing or empty file means the
+        // terminal is not usable (as if it were minimised).
+        Some(AnchorSpec::Keyword(k)) if k.starts_with("file:") => {
+            let text = std::fs::read_to_string(&k["file:".len()..]).map_err(|_| "anchor file not readable".to_string())?;
+            let v: Vec<f64> = text.split_whitespace().filter_map(|t| t.parse().ok()).collect();
+            let [x, y, h] = v[..] else { return Err("anchor file has no position".into()) };
+            (Caret { x, y, height: h }, Screen { x: -1e6, y: -1e6, w: 2e6, h: 2e6 }, true, manual_width as f64)
+        }
+        _ => return Err("no caret anchor was supplied".into()),
+    };
+    let caps = Capabilities {
+        anchor: if verified { AnchorState::Verified } else { AnchorState::Unverified },
+        // The no-focus-steal check passed on macOS (docs/18); nowhere else.
+        focus_safe: cfg!(target_os = "macos"),
+        available_width: width as f32,
+    };
+    let decision = display::resolve(mode, &caps);
+    if decision.display != Display::Overlay {
+        return Err(decision.reason.to_string());
+    }
+    let view = model::view(state, max_rows, width as f32).ok_or_else(|| "nothing to show".to_string())?;
+    let at = placement::place(caret, (view.width as f64, view.height as f64), screen);
+    Ok((view, at, decision.reason))
+}
+
+fn resolve_reason(mode: DisplayMode, reason: String) -> String {
+    if mode == DisplayMode::Overlay { format!("overlay requested but the caret position is not verified: {reason}") } else { reason }
+}
+
+/// `--resolve`: what would happen for the focused terminal right now? No window.
+fn resolve_only() -> i32 {
+    let (outcome, trace) = goh_anchor::locate_traced();
+    let (decision, detail, code) = match outcome {
+        Outcome::Verified(a) => {
+            let caps = Capabilities {
+                anchor: AnchorState::Verified,
+                focus_safe: cfg!(target_os = "macos"),
+                available_width: placement::available_width(a.display) as f32,
+            };
+            let d = display::resolve(DisplayMode::Auto, &caps);
+            let code = if d.display == Display::Overlay { 0 } else { 1 };
+            (d.reason.to_string(), serde_json::json!({
+                "app": a.app.name(),
+                "caret": {"x": a.caret.x, "y": a.caret.y, "height": a.caret.height},
+                "display": {"x": a.display.x, "y": a.display.y, "w": a.display.w, "h": a.display.h},
+            }), code)
+        }
+        Outcome::Unverified(r) => (r.to_string(), serde_json::Value::Null, 1),
+    };
+    let display = if code == 0 { "overlay" } else { "inline" };
+    println!("{}", serde_json::json!({"display": display, "reason": decision, "anchor": detail, "trace": trace}));
+    code
+}
+
+/// Split `label` into (text, is_match) runs along the highlight ranges.
+fn runs<'a>(label: &'a str, matches: &[[usize; 2]]) -> Vec<(&'a str, bool)> {
+    let mut out = Vec::new();
+    let mut at = 0;
+    for &[s, e] in matches {
+        if s > at {
+            out.push((&label[at..s], false));
+        }
+        out.push((&label[s..e], true));
+        at = e;
+    }
+    if at < label.len() {
+        out.push((&label[at..], false));
+    }
+    out
+}
+
+fn draw(ui: &mut egui::Ui, v: &View, c: &Colors) {
+    let full = ui.max_rect();
+    let font = FontId::monospace(FONT);
+    let small = FontId::monospace(12.0);
+    let painter = ui.painter().clone();
+    painter.rect(full, RADIUS_POPUP, c.base, Stroke::new(1.0, c.border), StrokeKind::Inside);
+
+    let list_id = ui.scope_id().with(&v.listbox_id);
+    ui.ctx().accesskit_node_builder(list_id, |n| n.set_role(egui::Role::ListBox));
+
+    for (i, row) in v.rows.iter().enumerate() {
+        let top = full.top() + i as f32 * ROW_HEIGHT;
+        let r = Rect::from_min_size(Pos2::new(full.left() + 4.0, top + 2.0), vec2(full.width() - 8.0, ROW_HEIGHT - 4.0));
+        if row.selected {
+            painter.rect_filled(r, RADIUS_ROW, c.selected);
+        }
+        let mid = r.center().y;
+        let mut x = full.left() + PAD; // the model's width assumes PAD on both sides
+        painter.text(Pos2::new(x, mid), Align2::LEFT_CENTER, if row.selected { "❯" } else { " " }, font.clone(), c.accent);
+        x += 2.0 * CELL_WIDTH;
+
+        for (text, is_match) in runs(&row.label, &row.matches) {
+            let (color, underline) = if is_match { (c.matched, Stroke::new(1.0, c.matched)) } else { (c.primary, Stroke::NONE) };
+            let galley = painter.layout_no_wrap(text.to_string(), font.clone(), color);
+            let w = galley.size().x;
+            painter.galley_with_override_text_color(Pos2::new(x, mid - galley.size().y / 2.0), galley, color);
+            if underline != Stroke::NONE {
+                painter.hline(x..=x + w, mid + 8.0, underline);
+            }
+            x += w;
+        }
+        if let Some(d) = &row.description {
+            painter.text(Pos2::new(x + 2.0 * CELL_WIDTH, mid), Align2::LEFT_CENTER, d, font.clone(), c.muted);
+        }
+
+        let id = ui.scope_id().with(&row.dom_id);
+        let selected = row.selected;
+        let name = row.accessible_name.clone();
+        ui.ctx().accesskit_node_builder(id, |n| {
+            n.set_role(egui::Role::ListBoxOption);
+            n.set_label(name);
+            n.set_selected(selected);
+        });
+    }
+
+    // Footer: context on the left, position and key hints on the right.
+    let fy = full.top() + v.rows.len() as f32 * ROW_HEIGHT;
+    painter.hline(full.left() + 1.0..=full.right() - 1.0, fy, Stroke::new(1.0, c.border));
+    let mid = fy + FOOTER_HEIGHT / 2.0;
+    painter.text(Pos2::new(full.left() + PAD + 4.0, mid), Align2::LEFT_CENTER, &v.context, small.clone(), c.muted);
+    let right = match &v.position {
+        Some(p) => format!("{p}   ↑↓  Tab  Esc"),
+        None => "↑↓  Tab  Esc".to_string(),
+    };
+    painter.text(Pos2::new(full.right() - PAD - 4.0, mid), Align2::RIGHT_CENTER, right, small, c.muted);
+}
+
+impl eframe::App for App {
+    fn clear_color(&self, _visuals: &egui::Visuals) -> [f32; 4] {
+        [0.0, 0.0, 0.0, 0.0]
+    }
+
+    /// Runs even while the window is hidden, so a `show` frame can bring it back.
+    fn logic(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
+        // Frames can queue up while typing is fast; only the newest one matters (each `show` costs an
+        // Accessibility read), so apply just the last, unless a quit is waiting.
+        let mut newest: Option<Frame> = None;
+        while let Ok(f) = self.frames.try_recv() {
+            if matches!(f, Frame::Quit) {
+                newest = Some(f);
+                break;
+            }
+            newest = Some(f);
+        }
+        if let Some(f) = newest {
+            self.apply(ctx, f);
+        }
+        if self.last.is_some() {
+            if self.last_tick.elapsed() >= TICK {
+                self.last_tick = Instant::now();
+                self.tick(ctx);
+            }
+            ctx.request_repaint_after(TICK);
+        }
+    }
+
+    fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
+        let ctx = ui.ctx().clone();
+        if let Some(s) = &self.shown {
+            egui::CentralPanel::default().frame(egui::Frame::NONE).show(ui, |ui| draw(ui, &s.view, &s.colors));
+            self.drawn += 1;
+            if self.screenshot.is_some() && self.drawn == 6 && !self.shot_requested {
+                self.shot_requested = true;
+                let tx = self.shot_tx.clone();
+                ctx.request_screenshot(move |img| {
+                    let _ = tx.send(img);
+                });
+            }
+            if self.drawn < 8 {
+                ctx.request_repaint();
+            }
+        }
+        if let (Ok(img), Some(path)) = (self.shot_rx.try_recv(), &self.screenshot) {
+            if let Err(e) = save_png(path, &img) {
+                eprintln!("goh-popup: screenshot failed: {e}");
+            }
+            ctx.send_viewport_cmd(egui::ViewportCommand::Close);
+        }
+        if self.shot_requested {
+            ctx.request_repaint();
+        }
+    }
+}
+
+fn save_png(path: &PathBuf, img: &egui::ColorImage) -> Result<(), Box<dyn std::error::Error>> {
+    let file = std::io::BufWriter::new(std::fs::File::create(path)?);
+    let mut enc = png::Encoder::new(file, img.width() as u32, img.height() as u32);
+    enc.set_color(png::ColorType::Rgba);
+    enc.set_depth(png::BitDepth::Eight);
+    let bytes: Vec<u8> = img.pixels.iter().flat_map(|p| p.to_srgba_unmultiplied()).collect();
+    enc.write_header()?.write_image_data(&bytes)?;
+    Ok(())
+}
+
+fn main() -> eframe::Result {
+    if std::env::args().any(|a| a == "--resolve") {
+        std::process::exit(resolve_only());
+    }
+    let screenshot = std::env::args().skip_while(|a| a != "--screenshot").nth(1).map(PathBuf::from);
+
+    // A popup must never become the active app or take clicks: the terminal keeps focus.
+    let viewport = egui::ViewportBuilder::default()
+        .with_decorations(false)
+        .with_transparent(true)
+        .with_always_on_top()
+        .with_taskbar(false)
+        .with_active(false)
+        .with_visible(false)
+        .with_mouse_passthrough(true)
+        .with_resizable(false)
+        .with_inner_size([WIDTH_PLACEHOLDER, 100.0]);
+    let options = eframe::NativeOptions {
+        viewport,
+        #[cfg(target_os = "macos")]
+        event_loop_builder: Some(Box::new(|b| {
+            use winit::platform::macos::{ActivationPolicy, EventLoopBuilderExtMacOS};
+            // winit activates the app (stealing focus) at launch unless told not to.
+            b.with_activation_policy(ActivationPolicy::Accessory).with_activate_ignoring_other_apps(false);
+        })),
+        ..Default::default()
+    };
+
+    eframe::run_native(
+        "goh-popup",
+        options,
+        Box::new(move |cc| {
+            let (tx, frames) = channel();
+            let ctx = cc.egui_ctx.clone();
+            std::thread::spawn(move || {
+                for line in std::io::stdin().lock().lines().map_while(Result::ok) {
+                    match serde_json::from_str::<Frame>(&line) {
+                        Ok(f) => {
+                            let quit = matches!(f, Frame::Quit);
+                            if tx.send(f).is_err() || quit {
+                                break;
+                            }
+                            ctx.request_repaint();
+                        }
+                        Err(e) => eprintln!("goh-popup: ignoring malformed frame: {e}"),
+                    }
+                }
+                // stdin closed: the adapter is gone, so the popup goes too.
+                let _ = tx.send(Frame::Quit);
+                ctx.request_repaint();
+            });
+            let (shot_tx, shot_rx) = channel();
+            Ok(Box::new(App { frames, shown: None, last: None, visible: false, at: None, last_tick: Instant::now(), drawn: 0, screenshot, shot_rx, shot_tx, shot_requested: false }))
+        }),
+    )
+}
+
+const WIDTH_PLACEHOLDER: f32 = model::WIDTH_MIN;

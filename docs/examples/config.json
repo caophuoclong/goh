@@ -1,0 +1,16 @@
+{
+  "configVersion": 1,
+  "display": {
+    "mode": "auto",
+    "maxSuggestions": 8
+  },
+  "theme": {
+    "mode": "auto"
+  },
+  "privacy": {
+    "telemetry": false,
+    "networkSpecs": false,
+    "dynamicGenerators": false,
+    "retainCommandHistory": false
+  }
+}

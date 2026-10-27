@@ -1,0 +1,731 @@
+{
+  "app" : "Terminal",
+  "app_version" : "2.15",
+  "attributes" : [
+    "AXSelectedTextRange",
+    "AXNumberOfCharacters",
+    "AXFrame",
+    "AXDescription",
+    "AXParent",
+    "AXChildren",
+    "AXFocused",
+    "AXSize",
+    "AXRole",
+    "AXTopLevelUIElement",
+    "AXInsertionPointLineNumber",
+    "AXSelectedTextRanges",
+    "AXHelp",
+    "AXChildrenInNavigationOrder",
+    "AXPosition",
+    "AXWindow",
+    "AXRoleDescription",
+    "AXValue",
+    "AXVisibleCharacterRange",
+    "AXSelectedText"
+  ],
+  "ax_cell_estimate_pt" : {
+    "h" : 15,
+    "w" : 7
+  },
+  "bundle" : "com.apple.Terminal",
+  "cell_size_pt" : {
+    "h" : 15,
+    "w" : 7
+  },
+  "cell_size_source" : "ax-fit (weaker: not independent of the API)",
+  "end_of_text" : {
+    "correct_strict" : 18,
+    "correct_with_tall_rect_rule" : 18,
+    "judged" : 18
+  },
+  "end_of_text_percent_strict" : 100,
+  "end_of_text_percent_with_tall_rect_rule" : 100,
+  "focused_frame" : {
+    "h" : 467.10546875,
+    "w" : 860,
+    "x" : 40,
+    "y" : 108.89453125
+  },
+  "focused_role" : "AXTextArea",
+  "focused_subrole" : null,
+  "grid_origin_inside_text_area" : true,
+  "grid_origin_pt" : {
+    "x" : 50,
+    "y" : 341
+  },
+  "has_bounds_for_range" : true,
+  "has_selected_text_range" : true,
+  "in_text" : {
+    "correct_strict" : 30,
+    "correct_with_tall_rect_rule" : 30,
+    "judged" : 30
+  },
+  "in_text_percent_strict" : 100,
+  "in_text_percent_with_tall_rect_rule" : 100,
+  "macos" : "Version 27.0.1 (Build 26A434)",
+  "note" : "Terminal.app, split panes",
+  "parameterized_attributes" : [
+    "AXStringForRange",
+    "AXBoundsForRange",
+    "AXLineForIndex",
+    "AXReplaceRangeWithText",
+    "AXRangeForPosition",
+    "AXRangeForIndex",
+    "AXRangeForLine"
+  ],
+  "positions_without_rect" : 0,
+  "samples" : [
+    {
+      "bounds_call" : "length1",
+      "col" : 1,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 50,
+        "y" : 341
+      },
+      "row" : 1,
+      "text_index" : 582
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 5,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 78,
+        "y" : 341
+      },
+      "row" : 1,
+      "text_index" : 586
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 20,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 183,
+        "y" : 341
+      },
+      "row" : 1,
+      "text_index" : 601
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 60,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 463,
+        "y" : 341
+      },
+      "row" : 1,
+      "text_index" : 641
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 115,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 848,
+        "y" : 341
+      },
+      "row" : 1,
+      "text_index" : 696
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 1,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 50,
+        "y" : 356
+      },
+      "row" : 2,
+      "text_index" : 702
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 5,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 78,
+        "y" : 356
+      },
+      "row" : 2,
+      "text_index" : 706
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 20,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 183,
+        "y" : 356
+      },
+      "row" : 2,
+      "text_index" : 721
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 60,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 463,
+        "y" : 356
+      },
+      "row" : 2,
+      "text_index" : 761
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 115,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 848,
+        "y" : 356
+      },
+      "row" : 2,
+      "text_index" : 816
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 1,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 50,
+        "y" : 431
+      },
+      "row" : 7,
+      "text_index" : 826
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 5,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 78,
+        "y" : 431
+      },
+      "row" : 7,
+      "text_index" : 830
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 20,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 183,
+        "y" : 431
+      },
+      "row" : 7,
+      "text_index" : 845
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 60,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 463,
+        "y" : 431
+      },
+      "row" : 7,
+      "text_index" : 885
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 115,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 848,
+        "y" : 431
+      },
+      "row" : 7,
+      "text_index" : 940
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 1,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 50,
+        "y" : 521
+      },
+      "row" : 13,
+      "text_index" : 951
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 5,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 78,
+        "y" : 521
+      },
+      "row" : 13,
+      "text_index" : 955
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 20,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 183,
+        "y" : 521
+      },
+      "row" : 13,
+      "text_index" : 970
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 60,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 463,
+        "y" : 521
+      },
+      "row" : 13,
+      "text_index" : 1010
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 115,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 848,
+        "y" : 521
+      },
+      "row" : 13,
+      "text_index" : 1065
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 1,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 50,
+        "y" : 536
+      },
+      "row" : 14,
+      "text_index" : 1071
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 5,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 78,
+        "y" : 536
+      },
+      "row" : 14,
+      "text_index" : 1075
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 20,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 183,
+        "y" : 536
+      },
+      "row" : 14,
+      "text_index" : 1090
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 60,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 463,
+        "y" : 536
+      },
+      "row" : 14,
+      "text_index" : 1130
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 115,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 848,
+        "y" : 536
+      },
+      "row" : 14,
+      "text_index" : 1185
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 1,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 50,
+        "y" : 551
+      },
+      "row" : 15,
+      "text_index" : 1191
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 5,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 78,
+        "y" : 551
+      },
+      "row" : 15,
+      "text_index" : 1195
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 20,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 183,
+        "y" : 551
+      },
+      "row" : 15,
+      "text_index" : 1210
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 60,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 463,
+        "y" : 551
+      },
+      "row" : 15,
+      "text_index" : 1250
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 115,
+      "kind" : "in-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 7,
+        "x" : 848,
+        "y" : 551
+      },
+      "row" : 15,
+      "text_index" : 1305
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 4,
+      "kind" : "end-of-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 819,
+        "x" : 71,
+        "y" : 341
+      },
+      "row" : 1,
+      "text_index" : 585
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 21,
+      "kind" : "end-of-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 700,
+        "x" : 190,
+        "y" : 341
+      },
+      "row" : 1,
+      "text_index" : 602
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 61,
+      "kind" : "end-of-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 420,
+        "x" : 470,
+        "y" : 341
+      },
+      "row" : 1,
+      "text_index" : 642
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 4,
+      "kind" : "end-of-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 819,
+        "x" : 71,
+        "y" : 356
+      },
+      "row" : 2,
+      "text_index" : 646
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 21,
+      "kind" : "end-of-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 700,
+        "x" : 190,
+        "y" : 356
+      },
+      "row" : 2,
+      "text_index" : 663
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 61,
+      "kind" : "end-of-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 420,
+        "x" : 470,
+        "y" : 356
+      },
+      "row" : 2,
+      "text_index" : 703
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 4,
+      "kind" : "end-of-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 819,
+        "x" : 71,
+        "y" : 431
+      },
+      "row" : 7,
+      "text_index" : 711
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 21,
+      "kind" : "end-of-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 700,
+        "x" : 190,
+        "y" : 431
+      },
+      "row" : 7,
+      "text_index" : 728
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 61,
+      "kind" : "end-of-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 420,
+        "x" : 470,
+        "y" : 431
+      },
+      "row" : 7,
+      "text_index" : 768
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 4,
+      "kind" : "end-of-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 819,
+        "x" : 71,
+        "y" : 521
+      },
+      "row" : 13,
+      "text_index" : 777
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 21,
+      "kind" : "end-of-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 700,
+        "x" : 190,
+        "y" : 521
+      },
+      "row" : 13,
+      "text_index" : 794
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 61,
+      "kind" : "end-of-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 420,
+        "x" : 470,
+        "y" : 521
+      },
+      "row" : 13,
+      "text_index" : 834
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 4,
+      "kind" : "end-of-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 819,
+        "x" : 71,
+        "y" : 536
+      },
+      "row" : 14,
+      "text_index" : 838
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 21,
+      "kind" : "end-of-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 700,
+        "x" : 190,
+        "y" : 536
+      },
+      "row" : 14,
+      "text_index" : 855
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 61,
+      "kind" : "end-of-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 420,
+        "x" : 470,
+        "y" : 536
+      },
+      "row" : 14,
+      "text_index" : 895
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 4,
+      "kind" : "end-of-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 819,
+        "x" : 71,
+        "y" : 551
+      },
+      "row" : 15,
+      "text_index" : 899
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 21,
+      "kind" : "end-of-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 700,
+        "x" : 190,
+        "y" : 551
+      },
+      "row" : 15,
+      "text_index" : 916
+    },
+    {
+      "bounds_call" : "length1",
+      "col" : 61,
+      "kind" : "end-of-text",
+      "rect" : {
+        "h" : 15,
+        "w" : 420,
+        "x" : 470,
+        "y" : 551
+      },
+      "row" : 15,
+      "text_index" : 956
+    }
+  ],
+  "scale_assumed" : 1,
+  "screens" : [
+    {
+      "frame" : {
+        "h" : 982,
+        "w" : 1512,
+        "x" : 0,
+        "y" : 0
+      },
+      "scale" : 2
+    }
+  ],
+  "tall_rects" : 0,
+  "terminal_cell_iterm_report" : null,
+  "terminal_cell_px_16t" : null,
+  "terminal_grid" : {
+    "cols" : 120,
+    "reported_by_terminal" : true,
+    "rows" : 15
+  },
+  "tool" : "anchor-probe",
+  "verdict" : "INCONCLUSIVE: positions are self-consistent, but the terminal did not report its cell size, so they are not independently checked",
+  "window_frame" : {
+    "h" : 523,
+    "w" : 860,
+    "x" : 40,
+    "y" : 53
+  }
+}

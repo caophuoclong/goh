@@ -1,0 +1,44 @@
+{
+  "v": 1,
+  "type": "results",
+  "session_id": "3f1c9a52-example",
+  "generation": 42,
+  "suggestions": [
+    {
+      "id": "git:checkout",
+      "label": "checkout",
+      "description": "Switch branches or restore paths",
+      "kind": "subcommand",
+      "insert_text": "checkout ",
+      "replace_start_byte": 4,
+      "replace_end_byte": 6,
+      "match_ranges": [[0, 2]],
+      "score": 100,
+      "source": "bundled"
+    },
+    {
+      "id": "git:cherry-pick",
+      "label": "cherry-pick",
+      "description": "Apply changes from a commit",
+      "kind": "subcommand",
+      "insert_text": "cherry-pick ",
+      "replace_start_byte": 4,
+      "replace_end_byte": 6,
+      "match_ranges": [[0, 2]],
+      "score": 100,
+      "source": "bundled"
+    },
+    {
+      "id": "git:clean",
+      "label": "clean",
+      "description": "Remove untracked files from the working tree",
+      "kind": "subcommand",
+      "insert_text": "clean ",
+      "replace_start_byte": 4,
+      "replace_end_byte": 6,
+      "match_ranges": [[0, 1], [3, 4]],
+      "score": 60,
+      "source": "bundled"
+    }
+  ]
+}

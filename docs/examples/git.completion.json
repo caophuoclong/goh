@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "name": "git",
+  "description": "Distributed version control system (minimal illustrative spec)",
+  "options": [
+    { "name": "--version", "description": "Print Git version", "takesValue": false },
+    { "name": "-C", "description": "Run as if Git was started in path", "takesValue": true,
+      "args": [{ "name": "path", "template": "folders" }] }
+  ],
+  "subcommands": [
+    { "name": "checkout", "description": "Switch branches or restore working tree files",
+      "options": [
+        { "name": "-b", "description": "Create and check out a new branch", "takesValue": true,
+          "args": [{ "name": "new-branch" }] }
+      ],
+      "args": [{ "name": "branch", "suggestions": [{ "name": "main" }, { "name": "develop" }] }]
+    },
+    { "name": "cherry-pick", "description": "Apply commits" },
+    { "name": "commit", "description": "Record changes to the repository",
+      "options": [
+        { "name": "-m", "description": "Commit message", "takesValue": true,
+          "args": [{ "name": "message" }] },
+        { "name": "--amend", "description": "Amend the previous commit", "takesValue": false }
+      ]
+    },
+    { "name": "add", "description": "Add file contents to the index",
+      "args": [{ "name": "pathspec", "template": "filepaths", "isVariadic": true }] }
+  ]
+}

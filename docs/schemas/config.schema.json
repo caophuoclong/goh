@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/terminal-companion/config.schema.json",
+  "title": "Terminal Companion User Configuration v1",
+  "description": "Proposed local-only config shape. Placeholder $id; update for published schema.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["configVersion", "display", "theme", "privacy"],
+  "properties": {
+    "configVersion": { "type": "integer", "const": 1 },
+    "display": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "maxSuggestions"],
+      "properties": {
+        "mode": { "enum": ["auto", "overlay", "inline"] },
+        "maxSuggestions": { "type": "integer", "minimum": 4, "maximum": 12 }
+      }
+    },
+    "theme": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode"],
+      "properties": {
+        "mode": { "enum": ["auto", "light", "dark", "custom"] },
+        "foreground": { "$ref": "#/$defs/hexColor" },
+        "background": { "$ref": "#/$defs/hexColor" },
+        "accent": { "$ref": "#/$defs/hexColor" }
+      },
+      "allOf": [
+        { "if": { "properties": { "mode": { "const": "custom" } }, "required": ["mode"] },
+          "then": { "required": ["foreground", "background"] } }
+      ]
+    },
+    "privacy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["telemetry", "networkSpecs", "dynamicGenerators", "retainCommandHistory"],
+      "properties": {
+        "telemetry": { "type": "boolean", "default": false },
+        "networkSpecs": { "type": "boolean", "default": false },
+        "dynamicGenerators": { "type": "boolean", "default": false },
+        "retainCommandHistory": { "type": "boolean", "const": false }
+      }
+    }
+  },
+  "$defs": {
+    "hexColor": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" }
+  }
+}

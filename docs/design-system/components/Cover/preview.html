@@ -1,0 +1,31 @@
+<!-- @dsCard height=288 -->
+<style>
+html,body{margin:0}
+.cv{position:relative;width:960px;height:288px;background:var(--surface-base);overflow:hidden;font-family:var(--font-mono)}
+.cv svg{position:absolute;inset:0}
+.a{fill:var(--accent)}.i{fill:var(--text-primary)}.s{fill:var(--accent-soft)}.m{fill:var(--text-muted)}.r{rx:var(--radius-popup)}
+.tb{position:absolute;left:32px;bottom:32px;width:440px}
+.nm{margin:0;font-size:72px;line-height:.95;font-weight:700;color:var(--text-primary)}
+.tg{margin:12px 0 0;font-size:13px;line-height:20px;color:var(--text-muted)}
+</style>
+<div class="cv">
+<svg width="960" height="288" viewBox="0 0 960 288" aria-hidden="true">
+<!--
+blocks: accent 192x176 slab off the top; text-primary 112x112; accent-soft 80x96 off the top right; text-muted 96x96 off the right edge
+arrangement: staggered slab with satellites, right of x=480; corners radius-popup
+pattern: dot grid, 48 dots at space-4 pitch in text-muted; precise, technical, monospace, grid-based, like terminal cells
+steps used: space-4 pitch; radius-popup
+-->
+<rect class="a r" x="528" y="-8" width="192" height="184"/>
+<rect class="i r" x="736" y="48" width="112" height="112"/>
+<rect class="s r" x="880" y="-8" width="88" height="104"/>
+<rect class="m r" x="864" y="112" width="104" height="96"/>
+<g class="m" id="dots"></g>
+</svg>
+<div class="tb"><h1 class="nm">Terminal<br>Companion</h1><p class="tg">Autocomplete in your terminal's own colors.</p></div>
+</div>
+<script>
+var g=document.getElementById("dots"),n="";
+for(var r=0;r<4;r++)for(var c=0;c<12;c++)n+='<circle cx="'+(536+c*16)+'" cy="'+(200+r*16)+'" r="1.5"/>';
+g.innerHTML=n;
+</script>

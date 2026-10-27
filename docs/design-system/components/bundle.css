@@ -1,0 +1,28 @@
+.tc-popup, .tc-inline, .tc-notice {
+  background: var(--surface-base); color: var(--text-primary);
+  border: 1px solid var(--border-subtle); border-radius: var(--radius-popup);
+  font-family: var(--font-mono); box-sizing: border-box;
+}
+.tc-popup { position: relative; min-width: min(var(--popup-width-min), 100%); max-width: min(var(--popup-width-max), 100%); box-shadow: var(--popup-shadow); overflow: hidden; }
+.tc-list { padding: var(--space-1); }
+.tc-row { display: flex; align-items: center; gap: var(--space-2); min-height: var(--row-height); padding: 0 var(--space-2); border-radius: var(--radius-row); }
+.tc-row-selected { background: var(--surface-selected); }
+.tc-glyph { width: 1ch; flex: none; color: var(--text-muted); text-align: center; }
+.tc-row-selected .tc-glyph { color: var(--accent); }
+.tc-label { flex: 0 1 auto; min-width: 2ch; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tc-match { color: var(--text-match); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+.tc-desc { flex: 1 100 0; min-width: 0; margin-left: var(--space-2); color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tc-footer { display: flex; justify-content: space-between; align-items: center; gap: var(--space-2); padding: var(--space-1) var(--space-3); border-top: 1px solid var(--border-subtle); color: var(--text-muted); }
+.tc-footer-keys, .tc-inline-keys { display: inline-flex; align-items: center; gap: var(--space-1); }
+.tc-keycap { display: inline-block; padding: 0 var(--space-1); border-radius: var(--radius-key); background: var(--surface-selected); border: 1px solid var(--border-subtle); color: var(--text-primary); font-family: var(--font-mono); }
+.tc-inline { display: flex; align-items: center; gap: 0; padding: var(--space-2) var(--space-4); }
+.tc-prompt { color: var(--accent); }
+.tc-ghost { color: var(--text-muted); }
+.tc-inline-keys { margin-left: auto; padding-left: var(--space-4); }
+.tc-notice { padding: var(--space-2) var(--space-4); color: var(--text-muted); }
+.tc-notice strong { color: var(--text-primary); }
+.tc-keycap:focus-visible, .tc-row:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 1px; }
+.tc-count { margin-left: auto; }
+.tc-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.tc-line { white-space: pre; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.tc-recovery { color: var(--text-primary); }

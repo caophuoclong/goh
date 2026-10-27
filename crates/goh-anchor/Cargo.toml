@@ -1,0 +1,10 @@
+[package]
+name = "goh-anchor"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+libc = "0.2"
+
+[dev-dependencies]
+serde_json = "1"

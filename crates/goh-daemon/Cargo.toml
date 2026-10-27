@@ -1,0 +1,16 @@
+[package]
+name = "goh-daemon"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+goh-anchor = { path = "../goh-anchor" }
+goh-core = { path = "../goh-core" }
+goh-theme = { path = "../goh-theme" }
+libc = "0.2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
+
+[dev-dependencies]
+tempfile = "3"

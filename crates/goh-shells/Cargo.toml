@@ -1,0 +1,6 @@
+[package]
+name = "goh-shells"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]

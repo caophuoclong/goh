@@ -1,0 +1,442 @@
+<title>Terminal Companion Prototype</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: a working terminal on the left, the settings it obeys on the right, diagnostics and config.json beneath. */
+:root {
+  --bg: #e9ede7; --panel: #f6f8f4; --ink: #1b211d; --muted: #566159; --line: #d2d9d1; --accent: #1f6b3c; --on-accent: #ffffff; --field: #ffffff;
+  --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "DejaVu Sans Mono", monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0f1411; --panel: #171e19; --ink: #dfe9e1; --muted: #93a499; --line: #2a362e; --accent: #6fe3a0; --on-accent: #0d1210; --field: #0f1411; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #0f1411; --panel: #171e19; --ink: #dfe9e1; --muted: #93a499; --line: #2a362e; --accent: #6fe3a0; --on-accent: #0d1210; --field: #0f1411; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font: 14px/1.5 var(--sans); margin: 0; }
+.page { max-width: 1240px; margin: 0 auto; padding-block: 24px 40px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 20px; }
+h1 { margin: 0; font-size: 22px; line-height: 1.2; font-weight: 600; text-wrap: balance; }
+h2 { margin: 0 0 10px; font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+header p { margin: 4px 0 0; color: var(--muted); max-width: 70ch; }
+.grid { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 20px; align-items: start; }
+.col { display: grid; gap: 20px; min-width: 0; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px; min-width: 0; }
+.try { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.try span { color: var(--muted); margin-right: 4px; }
+button.chip { font: 12px var(--mono); padding: 4px 10px; border-radius: 4px; border: 1px solid var(--line); background: var(--field); color: var(--ink); cursor: pointer; }
+button.chip:hover { border-color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* terminal window */
+.win { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--t-bg); }
+.win-bar { display: flex; justify-content: space-between; gap: 12px; padding: 8px 16px; border-bottom: 1px solid var(--t-line); color: var(--t-muted); font: 12px var(--mono); background: var(--t-bg); }
+.term { position: relative; height: 440px; padding: 16px; font: 13px/20px var(--mono); color: var(--t-fg); background: var(--t-bg); cursor: text; overflow: hidden; }
+.term.focus { box-shadow: inset 0 0 0 2px var(--t-accent); }
+.term .ln { white-space: pre; overflow: hidden; text-overflow: clip; min-height: 20px; }
+.term .out { color: var(--t-muted); }
+.term .pr { color: var(--t-accent); }
+.caret { display: inline-block; width: 0; height: 17px; border-left: 2px solid var(--t-fg); vertical-align: text-bottom; }
+.term .cur { display: flex; align-items: baseline; }
+.term .cur .txt { white-space: pre; min-width: 0; overflow: hidden; }
+#kb { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; border: 0; padding: 0; cursor: text; font-size: 16px; }
+#cw { position: absolute; visibility: hidden; white-space: pre; }
+.hint { padding: 8px 16px; border-top: 1px solid var(--t-line); color: var(--t-muted); font: 12px var(--mono); display: flex; flex-wrap: wrap; gap: 4px 16px; background: var(--t-bg); }
+.hint b { color: var(--t-fg); font-weight: 600; }
+
+/* companion popup: tokens come from the design system, resolved per session on .term */
+.term { --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --radius-key: 3px; --radius-row: 4px; --radius-popup: 6px; --popup-width-min: 320px; --popup-width-max: 520px; --row-height: 28px; --font-mono: var(--mono); }
+.row-label { font: 500 13px/20px var(--font-mono); } .row-label-selected { font: 600 13px/20px var(--font-mono); } .row-description { font: 400 13px/20px var(--font-mono); } .footer { font: 400 12px/16px var(--font-mono); }
+.tc-popup, .tc-notice { background: var(--surface-base); color: var(--text-primary); border: 1px solid var(--border-subtle); border-radius: var(--radius-popup); font-family: var(--font-mono); }
+.tc-popup { position: absolute; z-index: 2; min-width: min(var(--popup-width-min), 100%); max-width: min(var(--popup-width-max), 100%); box-shadow: var(--popup-shadow); overflow: hidden; white-space: normal; }
+.tc-list { padding: var(--space-1); }
+.tc-row { display: flex; align-items: center; gap: var(--space-2); min-height: var(--row-height); padding: 0 var(--space-2); border-radius: var(--radius-row); cursor: pointer; }
+.tc-row-selected { background: var(--surface-selected); }
+.tc-glyph { width: 1ch; flex: none; color: var(--text-muted); text-align: center; }
+.tc-row-selected .tc-glyph { color: var(--accent-c); }
+.tc-label { flex: 0 1 auto; min-width: 2ch; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tc-match { color: var(--text-match); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+.tc-desc { flex: 1 100 0; min-width: 0; margin-left: var(--space-2); color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tc-footer { display: flex; align-items: center; gap: var(--space-2); padding: var(--space-1) var(--space-3); border-top: 1px solid var(--border-subtle); color: var(--text-muted); }
+.tc-footer-ctx { margin-right: auto; }
+.tc-keys { display: inline-flex; align-items: center; gap: var(--space-1); }
+.tc-keycap { display: inline-block; padding: 0 var(--space-1); border-radius: var(--radius-key); background: var(--surface-selected); border: 1px solid var(--border-subtle); color: var(--text-primary); font: 400 12px/16px var(--font-mono); }
+.tc-ghost { color: var(--text-muted); }
+.tc-inline-keys { margin-left: auto; padding-left: var(--space-4); display: inline-flex; gap: var(--space-2); align-items: center; flex: none; }
+.tc-notice { margin-top: 8px; padding: var(--space-2) var(--space-4); color: var(--text-muted); white-space: normal; }
+.tc-notice strong { color: var(--text-primary); font-weight: 600; } .tc-recovery { color: var(--text-primary); }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* controls */
+fieldset { border: 0; margin: 0 0 16px; padding: 0; min-width: 0; }
+legend, .lab { font-weight: 500; padding: 0; margin-bottom: 6px; display: block; }
+.sub { color: var(--muted); font-size: 12px; margin: 2px 0 8px; }
+.seg { display: flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; background: var(--field); }
+.seg label { flex: 1; position: relative; text-align: center; }
+.seg input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.seg span { display: block; padding: 6px 4px; font-size: 13px; cursor: pointer; }
+.seg label + label span { border-left: 1px solid var(--line); }
+.seg input:checked + span { background: var(--accent); color: var(--on-accent); font-weight: 500; }
+.seg input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: -4px; }
+.swatches { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+.sw { position: relative; border: 1px solid var(--line); border-radius: 6px; padding: 8px; display: grid; gap: 2px; font-size: 12px; background: var(--field); }
+.sw input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.sw:has(input:checked) { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.sw:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
+.sw i { display: block; font: normal 13px/1 var(--mono); padding: 8px; border-radius: 4px; }
+select, input[type=color] { font: inherit; background: var(--field); color: var(--ink); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; }
+input[type=color] { padding: 2px; height: 32px; }
+input[type=range] { width: 100%; accent-color: var(--accent); }
+.range { display: flex; gap: 12px; align-items: center; } .range output { font-family: var(--mono); min-width: 2ch; text-align: right; }
+.custom { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; }
+.custom label { font-size: 12px; color: var(--muted); display: grid; gap: 2px; }
+.sw-row { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 8px; }
+.sw-row input { margin-top: 3px; accent-color: var(--accent); }
+.sw-row small { display: block; color: var(--muted); }
+
+/* diagnostics and config */
+dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; }
+dt { color: var(--muted); } dd { margin: 0; min-width: 0; font-family: var(--mono); font-size: 12.5px; overflow-wrap: anywhere; }
+.pass { color: var(--accent); font-weight: 600; } .adj { color: var(--muted); }
+pre { margin: 0; padding: 12px; background: var(--field); border: 1px solid var(--line); border-radius: 6px; font: 12px/1.5 var(--mono); overflow-x: auto; }
+.row2 { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 10px; }
+.row2 h2 { margin: 0; }
+button.btn { font: 500 13px var(--sans); padding: 5px 12px; border-radius: 6px; border: 1px solid var(--line); background: var(--field); color: var(--ink); cursor: pointer; }
+button.btn:hover { border-color: var(--accent); }
+@media (max-width: 960px) { .grid { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 480px) { .term { height: 420px; padding: 12px; } .custom { grid-template-columns: 1fr; } }
+</style>
+
+<div class="page">
+  <header>
+    <h1>Terminal Companion</h1>
+    <p>A working prototype of the suggestion popup. Click the terminal and type, then change the palette, environment and settings on the right to see how the companion adapts.</p>
+  </header>
+  <div class="grid">
+    <div class="col">
+      <div class="try" id="try"><span>Try</span></div>
+      <div class="win" id="win">
+        <div class="win-bar"><span>zsh — ~/projects/companion</span><span id="focusState">click to type</span></div>
+        <div class="term" id="term">
+          <span id="cw">0000000000</span>
+          <div id="screen"></div>
+          <input id="kb" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Terminal input" aria-autocomplete="list" aria-controls="tc-list">
+        </div>
+        <div class="hint"><span><b>↑↓</b> move</span><span><b>Tab</b> insert, never runs</span><span><b>Esc</b> dismiss</span><span><b>Enter</b> runs the line as typed</span></div>
+      </div>
+      <div class="card"><h2>Diagnostics</h2><dl id="diag"></dl></div>
+    </div>
+    <form class="col" id="controls" onsubmit="return false">
+      <div class="card">
+        <h2>Terminal</h2>
+        <fieldset><legend>Palette</legend>
+          <div class="swatches" id="palettes"></div></fieldset>
+        <fieldset><legend>Colour queries (OSC 10/11)</legend>
+          <div class="seg" role="radiogroup"><label><input type="radio" name="osc" value="both" checked><span>Both</span></label><label><input type="radio" name="osc" value="bg"><span>Background</span></label><label><input type="radio" name="osc" value="none"><span>No reply</span></label></div>
+          <p class="sub">What the terminal tells the companion.</p></fieldset>
+        <fieldset><legend>Environment</legend>
+          <select id="env" aria-label="Environment"><option value="native">Native terminal (macOS)</option><option value="tmux">tmux</option><option value="wayland">Wayland</option><option value="ssh">Remote over SSH</option></select></fieldset>
+        <fieldset><legend>Accessibility permission</legend>
+          <div class="seg" role="radiogroup"><label><input type="radio" name="perm" value="granted" checked><span>Granted</span></label><label><input type="radio" name="perm" value="denied"><span>Denied</span></label></div></fieldset>
+      </div>
+      <div class="card">
+        <h2>Companion settings</h2>
+        <fieldset><legend>Theme</legend>
+          <div class="seg" role="radiogroup"><label><input type="radio" name="themeMode" value="auto" checked><span>Auto</span></label><label><input type="radio" name="themeMode" value="dark"><span>Dark</span></label><label><input type="radio" name="themeMode" value="light"><span>Light</span></label><label><input type="radio" name="themeMode" value="custom"><span>Custom</span></label></div>
+          <div class="custom" id="custom" hidden>
+            <label for="cFg">Foreground<input type="color" id="cFg" value="#e6e6e6"></label>
+            <label for="cBg">Background<input type="color" id="cBg" value="#101418"></label>
+            <label for="cAc">Accent<input type="color" id="cAc" value="#7aa2f7"></label>
+          </div></fieldset>
+        <fieldset><legend>Display</legend>
+          <div class="seg" role="radiogroup"><label><input type="radio" name="display" value="auto" checked><span>Auto</span></label><label><input type="radio" name="display" value="overlay"><span>Overlay</span></label><label><input type="radio" name="display" value="inline"><span>Inline</span></label></div></fieldset>
+        <fieldset><legend>Visible rows</legend>
+          <div class="range"><input type="range" id="rows" min="4" max="12" value="8" aria-label="Visible rows"><output id="rowsOut" for="rows">8</output></div></fieldset>
+        <fieldset><legend>Privacy</legend>
+          <label class="sw-row"><input type="checkbox" id="dyn"><span>Dynamic generators<small>Reads git branches from the repo. Off by default.</small></span></label>
+          <label class="sw-row"><input type="checkbox" id="net"><span>Network specs<small>Download completion specs. Off by default.</small></span></label>
+          <label class="sw-row"><input type="checkbox" id="tele"><span>Telemetry<small>Never includes command text. Off by default.</small></span></label>
+          <label class="sw-row"><input type="checkbox" id="hist" disabled><span>Retain command history<small>Always off. Not configurable.</small></span></label>
+        </fieldset>
+      </div>
+      <div class="card">
+        <div class="row2"><h2>config.json</h2><button class="btn" type="button" id="copy">Copy</button></div>
+        <pre id="cfg" tabindex="0"></pre>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  /* ---------- colour helpers ---------- */
+  var parse = function (h) { h = h.replace("#", ""); return [0, 2, 4].map(function (i) { return parseInt(h.slice(i, i + 2), 16); }); };
+  var hex = function (a) { return "#" + a.map(function (v) { return Math.round(Math.max(0, Math.min(255, v))).toString(16).padStart(2, "0"); }).join(""); };
+  var lum = function (h) { var c = parse(h).map(function (v) { v /= 255; return v <= .03928 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4); }); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]; };
+  var cr = function (a, b) { var x = lum(a), y = lum(b); return (Math.max(x, y) + .05) / (Math.min(x, y) + .05); };
+  var mix = function (a, b, t) { var A = parse(a), B = parse(b); return hex(A.map(function (v, i) { return v + (B[i] - v) * t; })); };
+  function ensure(fg, bgs, min) {
+    var avg = bgs.reduce(function (s, b) { return s + lum(b); }, 0) / bgs.length, target = avg < .4 ? "#ffffff" : "#000000";
+    for (var t = 0; t <= 1.0001; t += .02) { var c = mix(fg, target, t); if (bgs.every(function (b) { return cr(c, b) >= min; })) return t === 0 ? fg : c; }
+    return target;
+  }
+
+  /* design-system fallback palettes (tokens.json) */
+  var FALLBACK = {
+    dark: { base: "#0d1210", sel: "#1d3027", border: "#26362e", primary: "#c9e8d2", muted: "#8fa99a", accent: "#6fe3a0" },
+    light: { base: "#f6f1e4", sel: "#e3dcc4", border: "#d6cfb6", primary: "#2a2a22", muted: "#5a594a", accent: "#1f6b3c" }
+  };
+  function derive(bg, fg, accent) {
+    var adj = [], tp = ensure(fg, [bg], 4.5); if (tp !== fg) adj.push("text-primary");
+    var sel = mix(bg, accent || tp, .18); var tp2 = ensure(tp, [bg, sel], 4.5); if (tp2 !== tp) { tp = tp2; if (adj.indexOf("text-primary") < 0) adj.push("text-primary"); }
+    var mut0 = mix(tp, bg, .4), mut = ensure(mut0, [bg, sel], 4.5); if (mut !== mut0) adj.push("text-muted");
+    var ac = accent ? ensure(accent, [bg, sel], 4.5) : tp; if (accent && ac !== accent) adj.push("accent");
+    return { base: bg, sel: sel, border: mix(bg, tp, .18), primary: tp, muted: mut, accent: ac, adj: adj, hasAccent: !!accent };
+  }
+
+  /* ---------- data ---------- */
+  var PALETTES = {
+    green: { name: "Green on black", bg: "#0b130e", fg: "#8ee6a8", accent: "#5fd7a0" },
+    paper: { name: "Paper light", bg: "#f5f0e1", fg: "#3b3a33", accent: "#b5651d" },
+    low: { name: "Low contrast", bg: "#2a3230", fg: "#7b8985", accent: "#5c7f72" },
+    solar: { name: "Solarized-style dark", bg: "#002b36", fg: "#93a1a1", accent: "#b58900" }
+  };
+  var SUBS = {
+    git: [["add", "Add file contents to the index"], ["branch", "List, create or delete branches"], ["check-ignore", "Debug ignore behavior"], ["checkout", "Switch branches or restore paths"], ["cherry-pick", "Apply changes from a commit"], ["clean", "Remove untracked files from the working tree"], ["clone", "Clone a repository into a new directory"], ["commit", "Record changes to the repository"], ["diff", "Show changes between commits and files"], ["fetch", "Download objects and refs"], ["log", "Show commit logs"], ["merge", "Join two or more histories together"], ["pull", "Fetch from and integrate with a remote"], ["push", "Update remote refs and objects"], ["rebase", "Reapply commits on top of another base"], ["restore", "Restore working tree files"], ["stash", "Stash changes in a dirty working directory"], ["status", "Show the working tree status"], ["switch", "Switch branches"], ["tag", "Create, list or delete tags"]],
+    npm: [["audit", "Run a security audit"], ["ci", "Clean install from the lockfile"], ["init", "Create a package.json"], ["install", "Install a package"], ["outdated", "Check for outdated packages"], ["publish", "Publish a package"], ["run", "Run a package script"], ["test", "Run the test script"], ["uninstall", "Remove a package"], ["update", "Update packages"]],
+    docker: [["build", "Build an image from a Dockerfile"], ["compose", "Run multi-container applications"], ["exec", "Run a command in a running container"], ["images", "List images"], ["logs", "Fetch the logs of a container"], ["ps", "List containers"], ["pull", "Download an image"], ["push", "Upload an image"], ["rm", "Remove containers"], ["rmi", "Remove images"], ["run", "Create and run a new container"], ["stop", "Stop running containers"]]
+  };
+  var COMMANDS = [["cat", "Print files"], ["cd", "Change directory"], ["curl", "Transfer data from a URL"], ["docker", "Container runtime"], ["git", "Distributed version control"], ["ls", "List directory contents"], ["node", "Run JavaScript"], ["npm", "Node package manager"]];
+  var OPTS = {
+    "git commit": [["--all", "Stage tracked changes first"], ["--amend", "Replace the previous commit"], ["--message", "Use the given commit message"], ["--no-verify", "Skip pre-commit hooks"]],
+    "git push": [["--dry-run", "Show what would be pushed"], ["--force-with-lease", "Safer force push"], ["--set-upstream", "Track the remote branch"], ["--tags", "Push all tags"]],
+    "git checkout": [["-b", "Create and switch to a new branch"], ["--detach", "Detach HEAD at the commit"], ["--track", "Set up tracking"]],
+    "docker run": [["-d", "Run in the background"], ["--name", "Name the container"], ["-p", "Publish a port"], ["--rm", "Remove the container on exit"], ["-v", "Bind mount a volume"]],
+    "npm install": [["--global", "Install globally"], ["--save-dev", "Save as a dev dependency"], ["--save-exact", "Pin the exact version"]],
+    _: [["--help", "Show help"], ["--version", "Print the version"]]
+  };
+  var FILES = ["README.md", "MANIFEST.json", "docs/", "examples/", "schemas/", "src/", "package.json", "My Projects/", "Tài liệu/", "ảnh chụp màn hình.png"];
+  var BRANCHES = ["main", "feature/accessibility-contract", "fix/inline-fallback-quoting", "release/0.1"];
+  var SCRIPTS = [["build", "tsc && vite build"], ["dev", "vite"], ["lint", "eslint ."], ["test", "vitest run"]];
+
+  /* ---------- state ---------- */
+  var S = { line: "git ch", cur: 6, sel: 0, win: 0, dismissed: false, focused: false, palette: "green", osc: "both", themeMode: "auto", custom: { fg: "#e6e6e6", bg: "#101418", accent: "#7aa2f7" }, display: "auto", rows: 8, env: "native", perm: "granted", dyn: false, net: false, tele: false,
+    hist: [{ t: "cmd", v: "git status" }, { t: "out", v: "On branch main" }, { t: "out", v: "nothing to commit, working tree clean" }, { t: "cmd", v: "ls docs" }, { t: "out", v: "00-vision.md  01-prd.md  07-ux-design-system.md" }] };
+  var $ = function (id) { return document.getElementById(id); };
+  var esc = function (s) { return s.replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); };
+
+  /* ---------- completion engine ---------- */
+  function foldCp(c) { return c.normalize("NFD").replace(/\p{M}/gu, "").replace(/đ/g, "d").replace(/Đ/g, "D").toLowerCase(); }
+  function fold(s) { return Array.from(s).map(foldCp); }
+  function matchRanges(label, tok) {
+    var f = fold(label), q = fold(tok);
+    if (!q.length) return { r: [], s: 0 };
+    if (q.length <= f.length && q.every(function (c, i) { return f[i] === c; })) return { r: [[0, q.length]], s: 0 };
+    var r = [], pos = 0, first = -1;
+    for (var i = 0; i < q.length; i++) {
+      var j = f.indexOf(q[i], pos); if (j < 0) return null;
+      if (first < 0) first = j;
+      if (r.length && r[r.length - 1][1] === j) r[r.length - 1][1] = j + 1; else r.push([j, j + 1]);
+      pos = j + 1;
+    }
+    return { r: r, s: 1 + first + (pos - first) };
+  }
+  function tokenize(before) {
+    var toks = [], cur = "", start = 0, i = 0, inTok = false;
+    while (i < before.length) {
+      var c = before[i];
+      if (c === "\\" && i + 1 < before.length) { if (!inTok) { inTok = true; start = i; } cur += c + before[i + 1]; i += 2; continue; }
+      if (/\s/.test(c)) { if (inTok) { toks.push({ v: cur, s: start }); cur = ""; inTok = false; } i++; continue; }
+      if (!inTok) { inTok = true; start = i; } cur += c; i++;
+    }
+    if (inTok) return { words: toks, tok: cur, start: start };
+    return { words: toks, tok: "", start: before.length };
+  }
+  var unesc = function (s) { return s.replace(/\\(.)/g, "$1"); };
+  function context(before) {
+    var t = tokenize(before), w = t.words.map(function (x) { return x.v; }), cmd = w[0], sub = w[1], tok = unesc(t.tok), items, ctx;
+    var asItems = function (a, kind) { return a.map(function (x) { return { label: x[0], description: x[1], kind: kind }; }); };
+    var paths = function () { return FILES.map(function (f) { return { label: f, description: f.slice(-1) === "/" ? "Directory" : "File", kind: "path" }; }); };
+    if (!w.length) { if (!tok) return null; items = asItems(COMMANDS, "subcommand"); ctx = "commands"; }
+    else if (tok.charAt(0) === "-") { items = asItems(OPTS[cmd + " " + sub] || OPTS._, "option"); ctx = (w.length > 1 ? cmd + " " + sub : cmd) + " · options"; }
+    else if (w.length === 1 && SUBS[cmd]) { items = asItems(SUBS[cmd], "subcommand"); ctx = cmd + " · subcommands"; }
+    else if (cmd === "npm" && sub === "run" && w.length === 2) { items = asItems(SCRIPTS, "argument"); ctx = "npm run · scripts"; }
+    else if (cmd === "git" && (sub === "checkout" || sub === "switch") && w.length === 2 && S.dyn) { items = BRANCHES.map(function (b) { return { label: b, description: "Branch", kind: "argument" }; }); ctx = "git " + sub + " · branches"; }
+    else if (/^(cd|ls|cat|node)$/.test(cmd) || (cmd === "git" && /^(add|restore|diff|checkout|switch)$/.test(sub))) { items = paths(); ctx = "paths"; }
+    else if (!tok && (OPTS[cmd + " " + sub])) { items = asItems(OPTS[cmd + " " + sub], "option"); ctx = cmd + " " + sub + " · options"; }
+    else return null;
+    var out = [];
+    items.forEach(function (it, idx) { var m = matchRanges(it.label, tok); if (m) { it.matches = m.r; it.score = m.s; it.idx = idx; out.push(it); } });
+    out.sort(function (a, b) { return a.score - b.score || a.idx - b.idx; });
+    if (!out.length) return null;
+    return { items: out, context: ctx, tok: t.tok, tokUn: tok, start: t.start };
+  }
+  var shellEsc = function (it) { return it.kind === "path" ? it.label.replace(/ /g, "\\ ") : it.label; };
+  var insertion = function (it) { var s = shellEsc(it); return s + (s.slice(-1) === "/" ? "" : " "); };
+
+  /* ---------- theme resolution ---------- */
+  function resolveTheme() {
+    var P = PALETTES[S.palette], m = S.themeMode, T, src;
+    if (m === "dark" || m === "light") { var f = FALLBACK[m]; T = { base: f.base, sel: f.sel, border: f.border, primary: f.primary, muted: f.muted, accent: f.accent, adj: [], hasAccent: true }; src = "user override (" + m + ")"; }
+    else if (m === "custom") { T = derive(S.custom.bg, S.custom.fg, S.custom.accent); src = "user override (custom)"; }
+    else if (S.osc === "both") { T = derive(P.bg, P.fg, P.accent); src = "terminal OSC 10/11, verified"; }
+    else if (S.osc === "bg") { var fg = lum(P.bg) < .4 ? "#e8e8e8" : "#1b1b1b"; T = derive(P.bg, fg, null); src = "approximate (background only; foreground derived)"; }
+    else { var d = FALLBACK.dark; T = { base: d.base, sel: d.sel, border: d.border, primary: d.primary, muted: d.muted, accent: d.accent, adj: [], hasAccent: true }; src = "fallback palette (no colour reply)"; }
+    T.src = src; return T;
+  }
+  function applyTheme(T) {
+    var term = $("term"), P = PALETTES[S.palette], st = term.style;
+    st.setProperty("--t-bg", P.bg); st.setProperty("--t-fg", P.fg); st.setProperty("--t-accent", P.accent);
+    st.setProperty("--t-muted", mix(P.fg, P.bg, .45)); st.setProperty("--t-line", mix(P.bg, P.fg, .15));
+    var v = { "--surface-base": T.base, "--surface-selected": T.sel, "--border-subtle": T.border, "--text-primary": T.primary, "--text-muted": T.muted, "--accent-c": T.accent, "--text-match": T.accent, "--popup-shadow": lum(T.base) < .4 ? "0 4px 16px rgba(0,0,0,.45)" : "0 4px 16px rgba(42,42,34,.18)" };
+    for (var k in v) st.setProperty(k, v[k]);
+  }
+
+  /* ---------- display resolution ---------- */
+  function resolveDisplay(bodyW) {
+    var overlayOk = S.env === "native" && S.perm === "granted", why = "";
+    if (S.env !== "native") why = { tmux: "tmux hides the caret position", wayland: "Wayland gives no global caret position", ssh: "no overlay over a remote session" }[S.env];
+    else if (S.perm !== "granted") why = "Accessibility permission denied";
+    var mode = S.display === "inline" ? "inline" : (overlayOk ? "overlay" : "inline");
+    if (mode === "overlay" && bodyW < 340) { mode = "inline"; why = "less than 320 px available"; }
+    return { mode: mode, why: S.display === "inline" ? "chosen in settings" : (mode === "inline" ? why : ""), denied: S.env === "native" && S.perm !== "granted" && S.display !== "inline" };
+  }
+
+  /* ---------- rendering ---------- */
+  function hl(label, ranges) {
+    if (!ranges || !ranges.length) return esc(label);
+    var cps = Array.from(label), out = "", pos = 0;
+    ranges.forEach(function (m) { out += esc(cps.slice(pos, m[0]).join("")) + '<span class="tc-match">' + esc(cps.slice(m[0], m[1]).join("")) + "</span>"; pos = m[1]; });
+    return out + esc(cps.slice(pos).join(""));
+  }
+  var GL = { subcommand: "›", option: "-", path: "/", argument: "·" };
+  var charW = 7.8;
+  function windowStart(prev, sel, size, total) { var s = prev; if (sel < s) s = sel; if (sel >= s + size) s = sel - size + 1; return Math.max(0, Math.min(s, total - size)); }
+
+  function render() {
+    var before = S.line.slice(0, S.cur), after = S.line.slice(S.cur), ctx = context(before);
+    var body = $("term"), bodyW = body.clientWidth;
+    var disp = resolveDisplay(bodyW), T = resolveTheme(); applyTheme(T);
+    var list = ctx && !S.dismissed ? ctx.items : [], open = list.length > 0;
+    if (S.sel >= list.length) S.sel = 0;
+    var size = Math.min(S.rows, list.length), start = open ? windowStart(S.win, S.sel, size, list.length) : 0; S.win = start;
+    var cur = open ? list[S.sel] : null, ghost = "";
+    if (cur && disp.mode === "inline") { var ins = insertion(cur), typed = ctx.tok; if (ins.toLowerCase().indexOf(typed.toLowerCase()) === 0 && (ctx.tokUn === "" || fold(cur.label).slice(0, fold(ctx.tokUn).length).join("") === fold(ctx.tokUn).join(""))) ghost = ins.slice(typed.length).replace(/ $/, ""); }
+
+    var h = "";
+    S.hist.slice(-6).forEach(function (l) { h += l.t === "cmd" ? '<div class="ln"><span class="pr">$</span> ' + esc(l.v) + "</div>" : '<div class="ln out">' + esc(l.v) + "</div>"; });
+    var showInlineKeys = disp.mode === "inline" && open;
+    h += '<div class="cur ln" id="cur"><span class="pr">$&nbsp;</span><span class="txt">' + esc(before) + '</span><span class="caret"></span><span class="txt"><span class="tc-ghost">' + esc(ghost) + "</span>" + esc(after) + "</span>";
+    if (showInlineKeys) h += '<span class="tc-inline-keys footer">' + (list.length > 1 ? '<span class="tc-ghost">+' + (list.length - 1) + " more</span>" : "") + '<span class="tc-keycap">Tab</span></span>';
+    h += "</div>";
+    if (disp.denied) h += '<div class="tc-notice row-description" role="note"><span>Not available: <strong>Accessibility access</strong> — using inline suggestions instead.</span><span class="tc-recovery"> Enable it in System Settings, then run <code>companion doctor</code>.</span></div>';
+    $("screen").innerHTML = h;
+    $("kb").setAttribute("aria-expanded", String(open && disp.mode === "overlay"));
+
+    var old = document.getElementById("tc-pop"); if (old) old.remove();
+    if (open && disp.mode === "overlay") {
+      var rows = "";
+      for (var i = start; i < start + size; i++) {
+        var it = list[i], sel = i === S.sel;
+        rows += '<div class="tc-row' + (sel ? " tc-row-selected" : "") + '" role="option" id="tc-opt-' + i + '" aria-selected="' + sel + '" data-i="' + i + '" title="' + esc(it.label) + '"><span class="tc-glyph" aria-hidden="true">' + (sel ? "❯" : GL[it.kind]) + '</span><span class="tc-label ' + (sel ? "row-label-selected" : "row-label") + '">' + hl(it.label, it.matches) + "</span>" + (it.description ? '<span class="tc-desc row-description">' + esc(it.description) + "</span>" : "") + "</div>";
+      }
+      var pop = document.createElement("div"); pop.className = "tc-popup"; pop.id = "tc-pop";
+      pop.innerHTML = '<div class="tc-list" role="listbox" id="tc-list" aria-label="Suggestions">' + rows + '</div><div class="tc-footer footer"><span class="tc-footer-ctx">' + esc(ctx.context) + "</span>" + (list.length > size ? "<span>" + (S.sel + 1) + "/" + list.length + "</span>" : "") + '<span class="tc-keys"><kbd class="tc-keycap">↑↓</kbd><kbd class="tc-keycap">Tab</kbd><kbd class="tc-keycap">Esc</kbd></span></div><div class="sr" role="status" aria-live="polite">' + esc(cur.label + (cur.description ? ", " + cur.description : "") + ", " + (S.sel + 1) + " of " + list.length) + "</div>";
+      body.appendChild(pop);
+      var line = $("cur"), prefixCols = 2 + Array.from(before.slice(0, ctx.start)).length;
+      var left = 16 + prefixCols * charW, pw = pop.offsetWidth, ph = pop.offsetHeight;
+      left = Math.max(8, Math.min(left, body.clientWidth - pw - 8));
+      var below = line.offsetTop + line.offsetHeight + 4, top = below + ph > body.clientHeight - 4 ? line.offsetTop - ph - 4 : below;
+      pop.style.left = left + "px"; pop.style.top = Math.max(4, top) + "px";
+      $("kb").setAttribute("aria-activedescendant", "tc-opt-" + S.sel);
+    } else $("kb").removeAttribute("aria-activedescendant");
+    renderSide(T, disp, open, list, size, start);
+  }
+
+  function ratioCell(a, bgs) { var r = Math.min.apply(null, bgs.map(function (b) { return cr(a, b); })); return r.toFixed(1) + ":1 " + (r >= 4.5 ? '<span class="pass">pass</span>' : '<span class="adj">low</span>'); }
+  function renderSide(T, disp, open, list, size, start) {
+    var P = PALETTES[S.palette], d = "";
+    var row = function (k, v) { d += "<dt>" + k + "</dt><dd>" + v + "</dd>"; };
+    row("Terminal colours", P.bg + " on " + P.fg + (S.osc === "none" ? " (not reported)" : S.osc === "bg" ? " (only background reported)" : ""));
+    row("Theme source", esc(T.src));
+    row("Display", disp.mode + (disp.why ? " — " + esc(disp.why) : ""));
+    row("Window", open ? "rows " + (start + 1) + "–" + (start + size) + " of " + list.length + ", selected " + (S.sel + 1) : "hidden, keyboard untouched");
+    row("Text", ratioCell(T.primary, [T.base, T.sel]));
+    row("Muted text", ratioCell(T.muted, [T.base, T.sel]));
+    row("Match and marker", T.hasAccent ? ratioCell(T.accent, [T.base, T.sel]) : "no verified accent; bold and underline only");
+    row("Contrast adjusted", T.adj.length ? esc(T.adj.join(", ")) : "none needed");
+    $("diag").innerHTML = d;
+    var c = { configVersion: 1, display: { mode: S.display, maxSuggestions: S.rows }, theme: { mode: S.themeMode }, privacy: { telemetry: S.tele, networkSpecs: S.net, dynamicGenerators: S.dyn, retainCommandHistory: false } };
+    if (S.themeMode === "custom") { c.theme.foreground = S.custom.fg; c.theme.background = S.custom.bg; c.theme.accent = S.custom.accent; }
+    $("cfg").textContent = JSON.stringify(c, null, 2);
+  }
+
+  /* ---------- editing ---------- */
+  function setLine(l, c) { S.line = l; S.cur = c; S.sel = 0; S.win = 0; S.dismissed = false; }
+  function insertText(v) { v = v.replace(/[\r\n]+/g, " "); setLine(S.line.slice(0, S.cur) + v + S.line.slice(S.cur), S.cur + v.length); }
+  function accept(i) {
+    var before = S.line.slice(0, S.cur), ctx = context(before); if (!ctx) return;
+    var it = ctx.items[i == null ? S.sel : i], ins = insertion(it);
+    setLine(before.slice(0, ctx.start) + ins + S.line.slice(S.cur), ctx.start + ins.length);
+  }
+  function isOpen() { var c = context(S.line.slice(0, S.cur)); return !!(c && !S.dismissed); }
+  function count() { var c = context(S.line.slice(0, S.cur)); return c ? c.items.length : 0; }
+  function run() {
+    var l = S.line; S.hist.push({ t: "cmd", v: l }); if (l.trim()) S.hist.push({ t: "out", v: "(prototype: not executed. Enter ran the line as typed; no suggestion was inserted.)" });
+    S.hist = S.hist.slice(-10); setLine("", 0);
+  }
+  var kb = $("kb");
+  kb.addEventListener("keydown", function (e) {
+    var k = e.key, handled = true, open = isOpen(), n = count();
+    if (e.ctrlKey || e.metaKey) {
+      if (k === "c") setLine("", 0); else if (k === "a") S.cur = 0; else if (k === "e") S.cur = S.line.length; else if (k === "u") setLine(S.line.slice(S.cur), 0); else handled = false;
+    } else if (k === "ArrowLeft") { if (S.cur > 0) S.cur--; S.sel = 0; S.win = 0; }
+    else if (k === "ArrowRight") { if (S.cur < S.line.length) S.cur++; S.sel = 0; S.win = 0; }
+    else if (k === "Home") S.cur = 0; else if (k === "End") S.cur = S.line.length;
+    else if (k === "Backspace") { if (S.cur > 0) setLine(S.line.slice(0, S.cur - 1) + S.line.slice(S.cur), S.cur - 1); }
+    else if (k === "Delete") { if (S.cur < S.line.length) setLine(S.line.slice(0, S.cur) + S.line.slice(S.cur + 1), S.cur); }
+    else if (k === "Enter") run();
+    else if (k === "Escape") { if (open) S.dismissed = true; else { kb.blur(); handled = false; } }
+    else if (k === "ArrowDown" && open) S.sel = (S.sel + 1) % n;
+    else if (k === "ArrowUp" && open) S.sel = (S.sel - 1 + n) % n;
+    else if (k === "Tab" && open) { if (e.shiftKey) S.sel = (S.sel - 1 + n) % n; else accept(); }
+    else if (k.length === 1) insertText(k);
+    else handled = false;
+    if (handled) { e.preventDefault(); render(); }
+  });
+  kb.addEventListener("input", function () { var v = kb.value; kb.value = ""; if (v) { insertText(v); render(); } });
+  kb.addEventListener("focus", function () { S.focused = true; $("term").classList.add("focus"); $("focusState").textContent = "typing"; });
+  kb.addEventListener("blur", function () { S.focused = false; $("term").classList.remove("focus"); $("focusState").textContent = "click to type"; });
+  $("term").addEventListener("mousedown", function (e) {
+    var row = e.target.closest && e.target.closest(".tc-row");
+    if (row) { e.preventDefault(); accept(+row.getAttribute("data-i")); render(); kb.focus(); }
+  });
+
+  /* ---------- controls ---------- */
+  var pal = ""; Object.keys(PALETTES).forEach(function (k, i) { var p = PALETTES[k]; pal += '<label class="sw"><input type="radio" name="palette" value="' + k + '"' + (i === 0 ? " checked" : "") + '><i style="background:' + p.bg + ";color:" + p.fg + '">git <span style="color:' + p.accent + '">❯</span></i><span>' + p.name + "</span></label>"; });
+  $("palettes").innerHTML = pal;
+  var tries = ["git ch", "git commit --", "git push --f", "npm run ", "docker run -", "cd tai", "cat My", "git checkout "];
+  tries.forEach(function (t) { var b = document.createElement("button"); b.type = "button"; b.className = "chip"; b.textContent = t; b.addEventListener("click", function () { setLine(t, t.length); render(); kb.focus(); }); $("try").appendChild(b); });
+  $("controls").addEventListener("change", function (e) {
+    var t = e.target, n = t.name || t.id, v = t.value;
+    if (n === "palette" || n === "osc" || n === "perm" || n === "themeMode" || n === "display") S[n] = v;
+    else if (n === "env") S.env = v;
+    else if (n === "rows") { S.rows = +v; $("rowsOut").textContent = v; }
+    else if (n === "dyn" || n === "net" || n === "tele") S[n] = t.checked;
+    else if (n === "cFg") S.custom.fg = v; else if (n === "cBg") S.custom.bg = v; else if (n === "cAc") S.custom.accent = v;
+    $("custom").hidden = S.themeMode !== "custom"; S.sel = 0; S.win = 0; render();
+  });
+  $("rows").addEventListener("input", function (e) { S.rows = +e.target.value; $("rowsOut").textContent = e.target.value; render(); });
+  ["cFg", "cBg", "cAc"].forEach(function (id) { $(id).addEventListener("input", function (e) { S.custom[{ cFg: "fg", cBg: "bg", cAc: "accent" }[id]] = e.target.value; render(); }); });
+  $("copy").addEventListener("click", function () {
+    var txt = $("cfg").textContent, b = $("copy");
+    var done = function (m) { b.textContent = m; setTimeout(function () { b.textContent = "Copy"; }, 1500); };
+    var sel = function () { var r = document.createRange(); r.selectNodeContents($("cfg")); var s = getSelection(); s.removeAllRanges(); s.addRange(r); done("Selected"); };
+    try { navigator.clipboard.writeText(txt).then(function () { done("Copied"); }, sel); } catch (x) { sel(); }
+  });
+  window.addEventListener("resize", render);
+  var m = $("cw").getBoundingClientRect().width; if (m) charW = m / 10;
+  render();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { var w = $("cw").getBoundingClientRect().width; if (w) { charW = w / 10; render(); } });
+})();
+</script>

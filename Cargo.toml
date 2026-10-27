@@ -1,0 +1,14 @@
+[workspace]
+members = [
+    "crates/goh-core",
+    "crates/goh-anchor",
+    "crates/goh-daemon",
+    "crates/goh-theme",
+    "crates/goh-shells",
+    "crates/goh-popup",
+]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"

@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/terminal-companion/ipc.schema.json",
+  "title": "Terminal Companion IPC messages v1",
+  "description": "Proposed shape of local IPC frames (doc 06). Placeholder $id; update for published schema. Byte offsets are UTF-8 offsets into the buffer snapshot.",
+  "oneOf": [
+    { "$ref": "#/$defs/complete" },
+    { "$ref": "#/$defs/results" },
+    { "$ref": "#/$defs/accept" },
+    { "$ref": "#/$defs/edit" },
+    { "$ref": "#/$defs/stale" }
+  ],
+  "$defs": {
+    "common": {
+      "type": "object",
+      "required": ["v", "type", "session_id", "generation"],
+      "properties": {
+        "v": { "type": "integer", "const": 1 },
+        "session_id": { "type": "string", "minLength": 8, "maxLength": 64 },
+        "generation": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "byteOffset": { "type": "integer", "minimum": 0, "maximum": 16384 },
+    "complete": {
+      "allOf": [{ "$ref": "#/$defs/common" }],
+      "type": "object",
+      "required": ["type", "shell", "cwd", "buffer", "cursor_byte", "editor_state"],
+      "properties": {
+        "type": { "const": "complete" },
+        "shell": { "enum": ["zsh", "bash", "pwsh", "fish"] },
+        "cwd": { "type": "string", "maxLength": 4096 },
+        "buffer": { "type": "string", "maxLength": 16384 },
+        "cursor_byte": { "$ref": "#/$defs/byteOffset" },
+        "editor_state": { "enum": ["editing", "suspended"] },
+        "live": { "type": "boolean", "description": "As-you-type request: results only when the line is a recognised command in progress." }
+      }
+    },
+    "suggestion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "label", "kind", "insert_text", "replace_start_byte", "replace_end_byte", "score", "source"],
+      "properties": {
+        "id": { "type": "string", "maxLength": 256 },
+        "label": { "type": "string", "maxLength": 512 },
+        "description": { "type": "string", "maxLength": 200 },
+        "kind": { "enum": ["command", "subcommand", "option", "argument", "file", "directory"] },
+        "insert_text": { "type": "string", "maxLength": 4096 },
+        "replace_start_byte": { "$ref": "#/$defs/byteOffset" },
+        "replace_end_byte": { "$ref": "#/$defs/byteOffset" },
+        "match_ranges": {
+          "type": "array",
+          "maxItems": 64,
+          "items": { "type": "array", "prefixItems": [{ "$ref": "#/$defs/byteOffset" }, { "$ref": "#/$defs/byteOffset" }], "minItems": 2, "maxItems": 2 }
+        },
+        "score": { "type": "number" },
+        "source": { "enum": ["bundled", "local", "filesystem", "built-in generator"] }
+      }
+    },
+    "results": {
+      "allOf": [{ "$ref": "#/$defs/common" }],
+      "type": "object",
+      "required": ["type", "suggestions"],
+      "properties": {
+        "type": { "const": "results" },
+        "suggestions": { "type": "array", "maxItems": 50, "items": { "$ref": "#/$defs/suggestion" } }
+      }
+    },
+    "accept": {
+      "allOf": [{ "$ref": "#/$defs/common" }],
+      "type": "object",
+      "required": ["type", "suggestion_id", "buffer_hash"],
+      "properties": {
+        "type": { "const": "accept" },
+        "suggestion_id": { "type": "string", "maxLength": 256 },
+        "buffer_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{8,64}$" }
+      }
+    },
+    "edit": {
+      "allOf": [{ "$ref": "#/$defs/common" }],
+      "type": "object",
+      "required": ["type", "replace_start_byte", "replace_end_byte", "insert_text", "cursor_byte"],
+      "properties": {
+        "type": { "const": "edit" },
+        "replace_start_byte": { "$ref": "#/$defs/byteOffset" },
+        "replace_end_byte": { "$ref": "#/$defs/byteOffset" },
+        "insert_text": { "type": "string", "maxLength": 4096 },
+        "cursor_byte": { "$ref": "#/$defs/byteOffset" }
+      }
+    },
+    "stale": {
+      "allOf": [{ "$ref": "#/$defs/common" }],
+      "type": "object",
+      "required": ["type"],
+      "properties": { "type": { "const": "stale" } }
+    }
+  }
+}

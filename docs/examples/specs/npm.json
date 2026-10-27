@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "name": "npm",
+  "description": "Node package manager",
+  "options": [
+    {
+      "name": "--help",
+      "description": "Show help",
+      "takesValue": false
+    },
+    {
+      "name": "--version",
+      "description": "Print the version",
+      "takesValue": false
+    }
+  ],
+  "subcommands": [
+    {
+      "name": "audit",
+      "description": "Run a security audit"
+    },
+    {
+      "name": "ci",
+      "description": "Clean install from the lockfile"
+    },
+    {
+      "name": "init",
+      "description": "Create a package.json"
+    },
+    {
+      "name": "install",
+      "description": "Install a package",
+      "options": [
+        {
+          "name": "--global",
+          "description": "Install globally",
+          "takesValue": false
+        },
+        {
+          "name": "--save-dev",
+          "description": "Save as a dev dependency",
+          "takesValue": false
+        },
+        {
+          "name": "--save-exact",
+          "description": "Pin the exact version",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "outdated",
+      "description": "Check for outdated packages"
+    },
+    {
+      "name": "publish",
+      "description": "Publish a package"
+    },
+    {
+      "name": "run",
+      "description": "Run a package script",
+      "args": [
+        {
+          "name": "script",
+          "suggestions": [
+            {
+              "name": "build",
+              "description": "tsc && vite build"
+            },
+            {
+              "name": "dev",
+              "description": "vite"
+            },
+            {
+              "name": "lint",
+              "description": "eslint ."
+            },
+            {
+              "name": "test",
+              "description": "vitest run"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "test",
+      "description": "Run the test script"
+    },
+    {
+      "name": "uninstall",
+      "description": "Remove a package"
+    },
+    {
+      "name": "update",
+      "description": "Update packages"
+    }
+  ]
+}

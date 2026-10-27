@@ -1,0 +1,10 @@
+<!-- @dsCard group="Fallback" height=420 -->
+<style>body{margin:0;padding:16px;background:var(--surface-base);color:var(--text-primary);font-family:var(--font-mono)}.stage{display:grid;gap:16px}.lab{margin:0 0 8px;color:var(--text-muted);font-size:12px}.pane{background:var(--surface-base);padding:16px;border:1px solid var(--border-subtle)}</style>
+<div class="stage" id="root"></div>
+<script>
+var T = window.TerminalCompanion, h = window.React.createElement;
+function pane(theme, label, child, w) { return h("div", { "data-theme": theme }, h("p", { className: "lab" }, theme + (label ? " · " + label : "")), h("div", { className: "pane", style: w ? { width: w, boxSizing: "content-box" } : null }, child)); }
+var mid=[{b:"git che",i:"ckout",a:" main"},{b:"cd \"~/My Pro",i:"jects/\"",a:""},{b:"npm run bu",i:"ild",a:" -- --watch"}];
+window.ReactDOM.createRoot(document.getElementById("root")).render(h(window.React.Fragment, null,
+ ["dark","light"].map(function(t){ return pane(t, "end of line, quoted path, cursor mid-line", h("div", { style: { display: "grid", gap: 8 } }, mid.map(function(m,i){ return h(T.InlineFallback,{key:i,before:m.b,insertion:m.i,after:m.a,alternatives:i==0?2:0}); }))); })));
+</script>
