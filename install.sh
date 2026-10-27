@@ -64,7 +64,7 @@ remove_block() {
 }
 
 if [ "$action" = uninstall ]; then
-  command -v goh >/dev/null 2>&1 && goh stop >/dev/null 2>&1 || true
+  if command -v goh >/dev/null 2>&1; then goh stop >/dev/null 2>&1 || true; fi
   pkill -U "$(id -u)" -x goh-popup 2>/dev/null || true
   for f in goh gohd goh-popup; do rm -f "$BIN/$f"; done
   remove_block
@@ -120,7 +120,7 @@ install_release() {
 
 install_source() {
   command -v cargo >/dev/null 2>&1 || die "cargo not found. Install Rust first (https://rustup.rs), or use a release package"
-  here=$(cd "$(dirname "$0")" 2>/dev/null && pwd || true)
+  here=$(cd "$(dirname "$0")" 2>/dev/null && pwd) || here=
   if [ -n "$here" ] && [ -f "$here/Cargo.toml" ] && grep -q 'crates/goh-daemon' "$here/Cargo.toml"; then
     src=$here
   else
