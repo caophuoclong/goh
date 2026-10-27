@@ -1,0 +1,489 @@
+{
+  "schemaVersion": 1,
+  "name": "wget",
+  "description": "A non-interactive network retriever",
+  "options": [
+    {
+      "name": "-V",
+      "description": "Display the version of Wget and exit",
+      "takesValue": false
+    },
+    {
+      "name": "--version",
+      "description": "Display the version of Wget and exit",
+      "takesValue": false
+    },
+    {
+      "name": "-h",
+      "description": "Print this help",
+      "takesValue": false
+    },
+    {
+      "name": "--help",
+      "description": "Print this help",
+      "takesValue": false
+    },
+    {
+      "name": "-b",
+      "description": "Go to background after startup",
+      "takesValue": false
+    },
+    {
+      "name": "--background",
+      "description": "Go to background after startup",
+      "takesValue": false
+    },
+    {
+      "name": "-e",
+      "description": "Execute a `.wgetrc'-style command",
+      "takesValue": false
+    },
+    {
+      "name": "-o",
+      "description": "Log messages to FILE",
+      "takesValue": false
+    },
+    {
+      "name": "-a",
+      "description": "Append messages to FILE",
+      "takesValue": false
+    },
+    {
+      "name": "-q",
+      "description": "Quiet (no output)",
+      "takesValue": false
+    },
+    {
+      "name": "--quiet",
+      "description": "Quiet (no output)",
+      "takesValue": false
+    },
+    {
+      "name": "-v",
+      "description": "Be verbose (this is the default)",
+      "takesValue": false
+    },
+    {
+      "name": "--verbose",
+      "description": "Be verbose (this is the default)",
+      "takesValue": false
+    },
+    {
+      "name": "-nv",
+      "description": "Turn off verboseness, without being quiet",
+      "takesValue": false
+    },
+    {
+      "name": "--no-verbose",
+      "description": "Turn off verboseness, without being quiet",
+      "takesValue": false
+    },
+    {
+      "name": "-i",
+      "description": "Download URLs found in local or external FILE",
+      "takesValue": false
+    },
+    {
+      "name": "-F",
+      "description": "Treat input file as HTML",
+      "takesValue": false
+    },
+    {
+      "name": "--force-html",
+      "description": "Treat input file as HTML",
+      "takesValue": false
+    },
+    {
+      "name": "-B",
+      "description": "Resolves HTML input-file links (-i -F) relative to URL",
+      "takesValue": false
+    },
+    {
+      "name": "--no-config",
+      "description": "Do not read any config file",
+      "takesValue": false
+    },
+    {
+      "name": "-t",
+      "description": "Set number of retries to NUMBER (0 unlimits)",
+      "takesValue": false
+    },
+    {
+      "name": "--retry-connrefused",
+      "description": "Retry even if connection is refused",
+      "takesValue": false
+    },
+    {
+      "name": "--retry-on-http-error",
+      "description": "Comma-separated list of HTTP errors to retry",
+      "takesValue": false
+    },
+    {
+      "name": "-O",
+      "description": "Write documents to FILE",
+      "takesValue": false
+    },
+    {
+      "name": "-nc",
+      "description": "Skip downloads that would download to existing files (overwriting them)",
+      "takesValue": false
+    },
+    {
+      "name": "--no-clobber",
+      "description": "Skip downloads that would download to existing files (overwriting them)",
+      "takesValue": false
+    },
+    {
+      "name": "--no-netrc",
+      "description": "Don't try to obtain credentials from .netrc",
+      "takesValue": false
+    },
+    {
+      "name": "-c",
+      "description": "Resume getting a partially-downloaded file",
+      "takesValue": false
+    },
+    {
+      "name": "--continue",
+      "description": "Resume getting a partially-downloaded file",
+      "takesValue": false
+    },
+    {
+      "name": "--show-progress",
+      "description": "Display the progress bar in any verbosity mode",
+      "takesValue": false
+    },
+    {
+      "name": "-N",
+      "description": "Don't re-retrieve files unless newer than local",
+      "takesValue": false
+    },
+    {
+      "name": "--timestamping",
+      "description": "Don't re-retrieve files unless newer than local",
+      "takesValue": false
+    },
+    {
+      "name": "-S",
+      "description": "Print server response",
+      "takesValue": false
+    },
+    {
+      "name": "--server-response",
+      "description": "Print server response",
+      "takesValue": false
+    },
+    {
+      "name": "--spider",
+      "description": "Don't download anything",
+      "takesValue": false
+    },
+    {
+      "name": "-T",
+      "description": "Set all timeout values to SECONDS",
+      "takesValue": false
+    },
+    {
+      "name": "-w",
+      "description": "Wait SECONDS between retrievals",
+      "takesValue": false
+    },
+    {
+      "name": "--random-wait",
+      "description": "Wait from 0.5*WAIT...1.5*WAIT secs between retrievals",
+      "takesValue": false
+    },
+    {
+      "name": "--no-proxy",
+      "description": "Explicitly turn off proxy",
+      "takesValue": false
+    },
+    {
+      "name": "-Q",
+      "description": "Set retrieval quota to NUMBER",
+      "takesValue": false
+    },
+    {
+      "name": "--no-dns-cache",
+      "description": "Disable caching DNS lookups",
+      "takesValue": false
+    },
+    {
+      "name": "--ignore-case",
+      "description": "Ignore case when matching files/directories",
+      "takesValue": false
+    },
+    {
+      "name": "-4",
+      "description": "Connect only to IPv4 addresses",
+      "takesValue": false
+    },
+    {
+      "name": "--inet4-only",
+      "description": "Connect only to IPv4 addresses",
+      "takesValue": false
+    },
+    {
+      "name": "-6",
+      "description": "Connect only to IPv6 addresses",
+      "takesValue": false
+    },
+    {
+      "name": "--inet6-only",
+      "description": "Connect only to IPv6 addresses",
+      "takesValue": false
+    },
+    {
+      "name": "--ask-password",
+      "description": "Prompt for passwords",
+      "takesValue": false
+    },
+    {
+      "name": "--no-iri",
+      "description": "Turn off IRI support",
+      "takesValue": false
+    },
+    {
+      "name": "--unlink",
+      "description": "Remove file before clobber",
+      "takesValue": false
+    },
+    {
+      "name": "--xattr",
+      "description": "Turn on storage of metadata in extended file attributes",
+      "takesValue": false
+    },
+    {
+      "name": "-nd",
+      "description": "Don't create directories",
+      "takesValue": false
+    },
+    {
+      "name": "--no-directories",
+      "description": "Don't create directories",
+      "takesValue": false
+    },
+    {
+      "name": "-x",
+      "description": "Force creation of directories",
+      "takesValue": false
+    },
+    {
+      "name": "--force-directories",
+      "description": "Force creation of directories",
+      "takesValue": false
+    },
+    {
+      "name": "-nH",
+      "description": "Don't create host directories",
+      "takesValue": false
+    },
+    {
+      "name": "--no-host-directories",
+      "description": "Don't create host directories",
+      "takesValue": false
+    },
+    {
+      "name": "--protocol-directories",
+      "description": "Use protocol name in directories",
+      "takesValue": false
+    },
+    {
+      "name": "-P",
+      "description": "Save files to PREFIX/",
+      "takesValue": false
+    },
+    {
+      "name": "--no-cache",
+      "description": "Disallow server-cached data",
+      "takesValue": false
+    },
+    {
+      "name": "-E",
+      "description": "Save HTML/CSS documents with proper extensions",
+      "takesValue": false
+    },
+    {
+      "name": "--adjust-extension",
+      "description": "Save HTML/CSS documents with proper extensions",
+      "takesValue": false
+    },
+    {
+      "name": "--ignore-length",
+      "description": "Ignore 'Content-Length' header field",
+      "takesValue": false
+    },
+    {
+      "name": "--max-redirect",
+      "description": "Maximum redirections allowed per page",
+      "takesValue": false
+    },
+    {
+      "name": "--save-headers",
+      "description": "Save the HTTP headers to file",
+      "takesValue": false
+    },
+    {
+      "name": "-U",
+      "description": "Identify as AGENT instead of Wget/VERSION",
+      "takesValue": false
+    },
+    {
+      "name": "--no-http-keep-alive",
+      "description": "Disable HTTP keep-alive (persistent connections)",
+      "takesValue": false
+    },
+    {
+      "name": "--no-cookies",
+      "description": "Don't use cookies",
+      "takesValue": false
+    },
+    {
+      "name": "--keep-session-cookies",
+      "description": "Load and save session (non-permanent) cookies",
+      "takesValue": false
+    },
+    {
+      "name": "--content-on-error",
+      "description": "Output the received content on server errors",
+      "takesValue": false
+    },
+    {
+      "name": "--https-only",
+      "description": "Only follow secure HTTPS links",
+      "takesValue": false
+    },
+    {
+      "name": "--no-check-certificate",
+      "description": "Don't validate the server's certificate",
+      "takesValue": false
+    },
+    {
+      "name": "-r",
+      "description": "Specify recursive download",
+      "takesValue": false
+    },
+    {
+      "name": "--recursive",
+      "description": "Specify recursive download",
+      "takesValue": false
+    },
+    {
+      "name": "-l",
+      "description": "Maximum recursion depth (inf or 0 for infinite)",
+      "takesValue": false
+    },
+    {
+      "name": "--delete-after",
+      "description": "Delete files locally after downloading them",
+      "takesValue": false
+    },
+    {
+      "name": "-k",
+      "description": "Make links in downloaded HTML or CSS point to local files",
+      "takesValue": false
+    },
+    {
+      "name": "--convert-links",
+      "description": "Make links in downloaded HTML or CSS point to local files",
+      "takesValue": false
+    },
+    {
+      "name": "-K",
+      "description": "Before converting file X, back up as X.orig",
+      "takesValue": false
+    },
+    {
+      "name": "--backup-converted",
+      "description": "Before converting file X, back up as X.orig",
+      "takesValue": false
+    },
+    {
+      "name": "-m",
+      "description": "Shortcut for -N -r -l inf --no-remove-listing",
+      "takesValue": false
+    },
+    {
+      "name": "--mirror",
+      "description": "Shortcut for -N -r -l inf --no-remove-listing",
+      "takesValue": false
+    },
+    {
+      "name": "-p",
+      "description": "Get all images, etc. needed to display HTML page",
+      "takesValue": false
+    },
+    {
+      "name": "--page-requisites",
+      "description": "Get all images, etc. needed to display HTML page",
+      "takesValue": false
+    },
+    {
+      "name": "-A",
+      "description": "Comma-separated list of accepted extensions",
+      "takesValue": false
+    },
+    {
+      "name": "-R",
+      "description": "Comma-separated list of rejected extensions",
+      "takesValue": false
+    },
+    {
+      "name": "-D",
+      "description": "Comma-separated list of accepted domains",
+      "takesValue": false
+    },
+    {
+      "name": "--follow-ftp",
+      "description": "Follow FTP links from HTML documents",
+      "takesValue": false
+    },
+    {
+      "name": "-H",
+      "description": "Go to foreign hosts when recursive",
+      "takesValue": false
+    },
+    {
+      "name": "--span-hosts",
+      "description": "Go to foreign hosts when recursive",
+      "takesValue": false
+    },
+    {
+      "name": "-L",
+      "description": "Follow relative links only",
+      "takesValue": false
+    },
+    {
+      "name": "--relative",
+      "description": "Follow relative links only",
+      "takesValue": false
+    },
+    {
+      "name": "-I",
+      "description": "List of allowed directories",
+      "takesValue": false
+    },
+    {
+      "name": "-X",
+      "description": "List of excluded directories",
+      "takesValue": false
+    },
+    {
+      "name": "-np",
+      "description": "Don't ascend to the parent directory",
+      "takesValue": false
+    },
+    {
+      "name": "--no-parent",
+      "description": "Don't ascend to the parent directory",
+      "takesValue": false
+    }
+  ],
+  "args": [
+    {
+      "name": "url",
+      "description": "The url(s) to retrieve",
+      "isVariadic": true
+    }
+  ]
+}

@@ -1,34 +1,15 @@
-//! `gohd [--socket PATH] [--spec-dir DIR]` — one daemon per user, started on demand.
+//! `gohd [--socket PATH] [--spec-dir DIR]` — one daemon per user, started on demand. Serves the specs in
+//! the spec directory plus the ones bundled in the binary (yours win for the same command).
 
-use std::path::PathBuf;
 use std::process::ExitCode;
 use std::sync::Arc;
 
-use goh_core::{spec::Command, Engine};
-use goh_daemon::{paths, server::Server};
-
-fn load_specs(dir: &PathBuf) -> Vec<Command> {
-    let Ok(read) = std::fs::read_dir(dir) else { return vec![] };
-    let mut files: Vec<_> = read.flatten().map(|e| e.path()).filter(|p| p.extension().is_some_and(|x| x == "json")).collect();
-    files.sort();
-    files
-        .into_iter()
-        .filter_map(|p| {
-            let spec = std::fs::read_to_string(&p).ok().and_then(|s| Command::from_json(&s).ok());
-            if spec.is_none() {
-                eprintln!("gohd: skipping invalid spec {}", p.display());
-            }
-            spec
-        })
-        .collect()
-}
+use goh_core::Engine;
+use goh_daemon::{paths, server::Server, specs};
 
 fn main() -> ExitCode {
     let mut socket = paths::socket_path();
-    let mut spec_dir = std::env::var_os("GOH_SPEC_DIR")
-        .map(PathBuf::from)
-        .or_else(|| std::env::var_os("HOME").map(|h| PathBuf::from(h).join(".config/goh/specs")))
-        .unwrap_or_default();
+    let mut spec_dir = specs::default_dir();
     let mut args = std::env::args().skip(1);
     while let Some(flag) = args.next() {
         match (flag.as_str(), args.next()) {
@@ -43,7 +24,11 @@ fn main() -> ExitCode {
 
     match paths::bind(&socket) {
         Ok(Some(listener)) => {
-            Arc::new(Server::new(Engine::new(load_specs(&spec_dir)))).serve(listener);
+            let (loaded, warnings) = specs::load(&spec_dir);
+            for w in warnings {
+                eprintln!("gohd: {w}");
+            }
+            Arc::new(Server::new(Engine::new(loaded.into_iter().map(|l| l.spec).collect()))).serve(listener);
             ExitCode::SUCCESS
         }
         Ok(None) => ExitCode::SUCCESS, // already running

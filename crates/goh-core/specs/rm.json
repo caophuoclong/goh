@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "name": "rm",
+  "description": "Remove directory entries",
+  "options": [
+    {
+      "name": "-r",
+      "description": "Recursive. Attempt to remove the file hierarchy rooted in each file argument",
+      "takesValue": false
+    },
+    {
+      "name": "-R",
+      "description": "Recursive. Attempt to remove the file hierarchy rooted in each file argument",
+      "takesValue": false
+    },
+    {
+      "name": "-P",
+      "description": "Overwrite regular files before deleting them",
+      "takesValue": false
+    },
+    {
+      "name": "-d",
+      "description": "Attempt to remove directories as well as other types of files",
+      "takesValue": false
+    },
+    {
+      "name": "-f",
+      "description": "⚠️ Attempt to remove the files without prompting for confirmation",
+      "takesValue": false
+    },
+    {
+      "name": "-i",
+      "description": "Request confirmation before attempting to remove each file",
+      "takesValue": false
+    },
+    {
+      "name": "-v",
+      "description": "Be verbose when deleting files",
+      "takesValue": false
+    }
+  ],
+  "args": [
+    {
+      "name": "argument",
+      "isVariadic": true,
+      "template": "filepaths"
+    }
+  ]
+}

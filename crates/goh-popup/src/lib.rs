@@ -5,6 +5,8 @@
 //! names) and decides whether an overlay may be drawn at all. No GUI types live here.
 
 pub mod display;
+pub mod font;
+pub mod icons;
 pub mod model;
 pub mod placement;
 pub mod watch;

@@ -1,0 +1,13 @@
+{
+  "name": "goh-spec-import",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "import": "node import.mjs",
+    "check": "node import.mjs --check",
+    "test": "node --test test.mjs"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3"
+  }
+}

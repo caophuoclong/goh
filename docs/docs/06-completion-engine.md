@@ -167,6 +167,9 @@ whether the line is a **recognised command in progress** (`Completion::valid`, r
   the value of an option that takes one, or fits an argument slot of the current node (a variadic argument accepts any
   number of words). A word with no place (`git foo c`, `git checkout main extra c`) makes the line invalid;
 - an unterminated quote is not valid, and neither is a command word still being typed (`gi`);
+- an exact, plain command name at end of line (`docker`, `git`, `npm`) is valid before its first space: offer the
+  next word with a zero-width replacement at the cursor and prepend the missing space to its insertion. Do not
+  apply this transition inside a longer word, to quoted/escaped names, or when text follows the cursor;
 - the word being typed only needs to have candidates; with none, nothing is shown.
 
 Options are deliberately **not** checked (an unknown `--flag` does not invalidate the line), because specs list only
@@ -183,3 +186,90 @@ the "no execution" rule. Validity is therefore only as good as the specs: with t
 - Options are offered for an empty word or one starting with `-`, never for a plain word such as a remote name.
 - Suggestions that appear **unasked** (as-you-type mode, `live` requests) additionally drop the scattered matches
   whenever any prefix match exists (`Completion::prefix_matches_only`); asked-for completion (Tab) keeps them.
+
+## Which specs are served
+
+The daemon serves the specs in `$GOH_SPEC_DIR` (default `~/.config/goh/specs`) **plus the ones bundled in the binary**
+(`crates/goh-core/specs/`: 40 commands), so the common commands work with no setup. The original `git` and
+`npm` specs are retained; 36 commands, including expanded Docker and Node, are converted from pinned MIT-licensed Fig declarations by
+`tools/import-specs/`. Cargo discovers and embeds the checked-in JSON; building and running goh requires no
+upstream checkout, Node or network. `tools/import-specs/report.json` records source hashes and omitted features,
+and `third_party/fig-autocomplete/LICENSE` preserves the upstream license. This is a static subset, including
+selected AWS S3/configure/STS and gcloud auth/config/run trees; other delegated specs and executable generators
+are reported as omissions. A spec of yours for the same command **replaces** the bundled one (never merged), the first file wins if two
+files define one command, and an unusable file is skipped with a warning. `goh specs` lists each command, its source
+and what it replaces for the **next daemon start**, keeping tab-separated rows on stdout and an explanatory notice on
+stderr. `goh-status` labels the same configuration explicitly. These listings read the current files; the running daemon
+keeps its startup snapshot and may differ. Restart `gohd` after changing specs.
+
+Bundled specs are static and do not invent project-specific values: Git branch names and npm script names are not
+suggested until a provider reads them from the current project. Their argument slots remain valid for user-entered values.
+
+## Fixed runtime values (Docker, frequent directories)
+
+Argument specs may name one of four fixed `provider` values: `docker-containers`,
+`docker-all-containers`, `docker-images`, or `frecent-dirs` (used by `cd`, offered only once a word is typed, as directories). `frecent-dirs` runs
+`zoxide query --list` when zoxide is installed and has entries, otherwise reads goh's own history
+(`$XDG_DATA_HOME/goh/dirs`, default `~/.local/share/goh/dirs`, `GOH_VISITS` overrides), which the shell
+adapters feed with `goh visit <dir>` on every directory change; frecency weights visits by age. The daemon implements only read-only `docker ps`/`docker image ls`
+queries with fixed argument arrays, null stdin/stderr, a 120 ms read deadline, 512 KiB output cap,
+process cleanup and a two-second cache (including failures). No shell or spec-supplied script is executed.
+Names are validated, JSON rows parsed, and the engine supplies matching, escaping and edit spans.
+Explicit Docker host/context/config overrides suppress providers; the daemon's inherited environment is
+otherwise used. Built-in provider candidates use the existing IPC source `built-in generator`.
+
+Empty words at leaf commands discover flags even when positional arguments exist. `isCommand` marks an
+opaque delegated command and variadic following words, preventing parent options being offered inside
+`docker exec <container> <program> ...`. A `--` separator stops option completion. Metadata for other
+project-specific arguments still needs its own provider; free-form values cannot be inferred from a static spec.
+
+## Project values and the rest (read-only)
+
+Besides the Docker/zoxide providers above, the daemon fills argument slots from plain files in the working
+directory (nothing is run): `git-branches`, `git-remotes`, `git-tags` (newest version first), `git-stashes`,
+`package-scripts`, `make-targets`, `just-recipes` (the `#` comment above a recipe is its description),
+`taskfile-tasks`, `compose-services`, `cargo-bins`, `cargo-examples`, `cargo-features` and `workspace-packages`
+(Cargo workspace members and npm/pnpm workspaces; used by `cargo -p` and `pnpm --filter`). The two that need git's
+index, `git-changed-files` (modified and untracked, for `git add`, `restore`, `diff`) and `git-staged-files` (for
+`git reset`, `restore --staged`), run `git ls-files -m -o --exclude-standard -z` / `git diff --cached --name-only
+--relative -z` with fixed arguments, `core.fsmonitor=false`, no optional locks, a 120 ms deadline and the same
+cache as Docker; outside a repository or when git is missing they are empty. An argument may name several
+providers (`"providers": [...]`) and files may be narrowed with `"extensions": ["py"]` (directories always stay).
+
+## Slips, variables, risk notes
+
+- **Slips.** When nothing matches a word of four or more characters, subcommands, options and spec values one slip
+  away (a swapped, dropped, added or wrong letter; two slips from six characters) are offered instead, ranked
+  below any real match. File names are never corrected.
+- **Variables.** `$NA`, `${NA` and `export NA` / `unset NA` complete from the names (never values) of the shell's
+  exported variables, which the adapter sends with the rest of its context.
+- **Risk notes.** Suggestions that can do damage (`git push --force`, `git reset --hard`, `rm -r`, `kubectl delete`,
+  `terraform apply`, ...) get `⚠ what it does` at the front of their description, and for kubectl/helm the current
+  kube context (`· context: prod`), for Terraform the workspace (`.terraform/environment`). Nothing is blocked.
+- **Snippets.** `snippets.json` next to the config file: `name`, `template`, optional `description`. `{{cursor}}`
+  marks where the cursor lands (`Candidate.cursor_offset`). A snippet is offered while typing the first word (two
+  characters while typing, one on Tab), ahead of everything else.
+
+## Your command record (opt-in)
+
+With `privacy.recordCommands` (or `GOH_RECORD=on`) the adapters hand every successful command line to `goh record`,
+which appends `epoch TAB cwd TAB line` to `~/.local/share/goh/runs` (`GOH_RUNS`; mode 0600; at most ~4000 lines
+kept). `runs::looks_secret` leaves out a line containing a secret-like word, a `user:pass@host` URL or a long
+opaque token; a line starting with a space is also never recorded. From it the daemon offers:
+
+- **History lines**: at the end of a line of three or more characters, the lines you ran that start with it, by use,
+  recency and folder (`Kind::History`, after the spec's suggestions; at most three).
+- **Prediction**: at an empty prompt, what followed the last command run in this folder (within 30 minutes) at
+  least twice before, as the full line when the same line repeated, else just the command (`git commit `). The zsh
+  adapter shows it as ghost text; Right or Tab takes it (`display.predict` / `GOH_PREDICT=off` turns it off).
+- **Option values**: `kubectl -n <TAB>` lists the values earlier runs gave `-n`, first. Options named like a
+  secret (`token`, `pass`, `key`, ...) and values that look like one are never recalled.
+
+`goh forget` deletes the record along with what was learned from your picks.
+
+## Specs for programs that have none (opt-in)
+
+`goh spec gen <command>` writes a spec from `--help`. With `completion.autoSpecs` the daemon does it once, in the
+background, for the first complete word of a line that is a program on your `PATH` with no spec (never `sudo`,
+`kill`, `reboot` and similar), saves it to `~/.config/goh/specs/<command>.json`, never over an existing file, and
+serves it at once.

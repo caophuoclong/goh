@@ -14,7 +14,7 @@
 # not at the end of the line it offers nothing, because COMP_POINT counts bytes on bash 3.2 and
 # characters on bash 5.2 (measured; other versions unknown).
 
-_GOH_CTL=${GOH_CTL:-goh-ctl}
+_GOH_CTL=${GOH_CTL:-goh}
 _GOH_SESSION="bash-$$-$RANDOM"
 _GOH_REGISTERED=()
 
@@ -47,21 +47,61 @@ _goh_complete() {
   done
 }
 
+# Command record (privacy.recordCommands, GOH_RECORD=on; off by default): a successful line is handed to
+# `goh record`, which leaves out anything that looks secret. bash has no preexec, so the line is read back from
+# history after it ran; a line starting with a space is not in history (HISTCONTROL=ignorespace) and not recorded.
+_goh_record() {
+  local st=$?
+  local line; line=$(HISTTIMEFORMAT= builtin history 1 2>/dev/null | sed 's/^ *[0-9]* *//')
+  # Only a new history entry is a command that ran (an empty Enter adds none).
+  if (( st == 0 )) && [[ -n $line && ${_GOH_LAST_NUM-} != "$HISTCMD" ]]; then
+    (command "$_GOH_CTL" record --cwd "$PWD" -- "$line" >/dev/null 2>&1 &)
+  fi
+  _GOH_LAST_NUM=$HISTCMD
+  return $st
+}
+
+# Directory history for `cd` suggestions when zoxide is not installed (read by gohd; written here).
+_goh_visit() {
+  [[ $PWD == "${_GOH_LAST_PWD-}" ]] && return 0
+  _GOH_LAST_PWD=$PWD
+  (command "$_GOH_CTL" visit "$PWD" >/dev/null 2>&1 &)
+}
+
 goh-load() {
-  local dir=${GOH_SPEC_DIR:-$HOME/.config/goh/specs} f name
-  for f in "$dir"/*.json; do
-    [[ -e $f ]] || continue
-    name=${f##*/}; name=${name%.json}
+  local record=0
+  [[ $(command "$_GOH_CTL" config env 2>/dev/null) == *GOH_RECORD=on* ]] && record=1
+  _GOH_LAST_NUM=$HISTCMD   # what was in history when the shell started is not a command to record
+  if [[ $(declare -p PROMPT_COMMAND 2>/dev/null) == "declare -a"* ]]; then
+    # `_goh_record` goes first: it needs the status of the command that just ended.
+    (( record )) && PROMPT_COMMAND=(_goh_record "${PROMPT_COMMAND[@]}")
+    PROMPT_COMMAND+=(_goh_visit)
+  else
+    local first=_goh_visit
+    (( record )) && first="_goh_record;_goh_visit"
+    PROMPT_COMMAND="$first${PROMPT_COMMAND:+;$PROMPT_COMMAND}"
+  fi
+  local dir=${GOH_SPEC_DIR:-$HOME/.config/goh/specs} name source subcommands replaces
+  # Use the daemon's loader catalog, including bundled commands and user overrides.
+  while IFS=$'\t' read -r name source subcommands replaces; do
+    [[ -n $name ]] || continue
     complete -p "$name" >/dev/null 2>&1 && continue          # someone else's completion wins
     complete -o nospace -o default -o bashdefault -F _goh_complete "$name" 2>/dev/null \
       || complete -o nospace -o default -F _goh_complete "$name" 2>/dev/null \
       || continue
     _GOH_REGISTERED+=("$name")
-  done
+  done < <(GOH_SPEC_DIR="$dir" command "$_GOH_CTL" specs 2>/dev/null)
 }
 
 goh-unload() {
   local name
+  if [[ $(declare -p PROMPT_COMMAND 2>/dev/null) == "declare -a"* ]]; then
+    PROMPT_COMMAND=("${PROMPT_COMMAND[@]/_goh_visit}")
+    PROMPT_COMMAND=("${PROMPT_COMMAND[@]/_goh_record}")
+  else
+    PROMPT_COMMAND=${PROMPT_COMMAND/_goh_record;}; PROMPT_COMMAND=${PROMPT_COMMAND/_goh_record}
+    PROMPT_COMMAND=${PROMPT_COMMAND/_goh_visit;}; PROMPT_COMMAND=${PROMPT_COMMAND/_goh_visit}
+  fi
   for name in "${_GOH_REGISTERED[@]}"; do complete -r "$name" 2>/dev/null; done
   _GOH_REGISTERED=()
 }

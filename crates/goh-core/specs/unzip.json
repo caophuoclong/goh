@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "name": "unzip",
+  "description": "Extract compressed files in a ZIP archive",
+  "options": [
+    {
+      "name": "-l",
+      "description": "List the contents of a zip file without extracting",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "file",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "-c",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "file",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "-0",
+      "description": "Extract a zip file created in windows, containing files with non-ascii (chinese) filenames",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "gbk"
+        },
+        {
+          "name": "file",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "-d",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "destination",
+          "template": "folders"
+        }
+      ]
+    }
+  ],
+  "args": [
+    {
+      "name": "file",
+      "template": "filepaths",
+      "extensions": [
+        "zip",
+        "jar",
+        "whl",
+        "apk"
+      ]
+    }
+  ]
+}

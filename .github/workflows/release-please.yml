@@ -1,0 +1,56 @@
+name: Release
+
+# Every push to main updates a "release PR" that holds the next version (worked out from the commits since the last
+# release) and the changelog. Merging that PR tags vX.Y.Z, creates the GitHub release, and calls release.yml to build,
+# publish the packages and update the Homebrew tap.
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-24.04
+    outputs:
+      release_created: ${{ steps.rp.outputs.release_created }}
+      tag_name: ${{ steps.rp.outputs.tag_name }}
+      prs_created: ${{ steps.rp.outputs.prs_created }}
+      pr: ${{ steps.rp.outputs.pr }}
+    steps:
+      - id: rp
+        uses: googleapis/release-please-action@v4
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+  # The release PR changes the workspace version; Cargo.lock has to follow or `--locked` builds fail.
+  lockfile:
+    needs: release-please
+    if: needs.release-please.outputs.prs_created == 'true' || needs.release-please.outputs.pr != ''
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ fromJSON(needs.release-please.outputs.pr).headBranchName }}
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo update --workspace
+      - name: Commit Cargo.lock
+        run: |
+          if git diff --quiet -- Cargo.lock; then exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "chore: update Cargo.lock" -- Cargo.lock
+          git push
+
+  release:
+    needs: release-please
+    if: needs.release-please.outputs.release_created == 'true'
+    uses: ./.github/workflows/release.yml
+    with:
+      tag: ${{ needs.release-please.outputs.tag_name }}
+    secrets: inherit
+    permissions:
+      contents: write

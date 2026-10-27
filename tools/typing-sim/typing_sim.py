@@ -89,18 +89,16 @@ def main():
     ap.add_argument("--raw", action="store_true", help="also print every trace event")
     ap.add_argument("--save-frames", metavar="FILE", help="keep the frames sent to the popup (one JSON per line)")
     args = ap.parse_args()
-    for b in ("gohd", "goh-ctl"):
+    for b in ("gohd", "goh"):
         if not (BIN / b).exists():
             sys.exit(f"missing {BIN / b}: run `cargo build -p goh-daemon` first")
 
     tmp = Path(tempfile.mkdtemp(prefix="ts", dir="/tmp"))
-    (tmp / "specs").mkdir()
-    for f in (ROOT / "docs/examples/specs").glob("*.json"):
-        shutil.copy(f, tmp / "specs" / f.name)
+    (tmp / "specs").mkdir()   # empty: only the specs bundled in the binary are served
     sock, log, trace = tmp / "run" / "s", tmp / "popup.log", tmp / "trace.txt"
     env = {k: v for k, v in os.environ.items() if k not in ("TMUX", "STY", "SSH_CONNECTION", "TERM_PROGRAM")}
     env.update(LC_ALL=os.environ.get("LC_ALL", "en_US.UTF-8"), TERM="xterm-256color", COLUMNS="100", HOME=str(tmp),
-               GOH_SOCKET=str(sock), GOH_SPEC_DIR=str(tmp / "specs"), GOH_CONFIG=str(tmp / "none.json"), GOH_CTL=str(BIN / "goh-ctl"),
+               GOH_SOCKET=str(sock), GOH_SPEC_DIR=str(tmp / "specs"), GOH_CONFIG=str(tmp / "none.json"), GOH_CTL=str(BIN / "goh"),
                GOH_LIVE="on", GOH_DISPLAY="auto", GOH_POPUP=str(FAKE_POPUP), FAKE_LOG=str(log), FAKE_DISPLAY="overlay",
                GOH_TRACE=str(trace), PATH=f"{BIN}:{os.environ['PATH']}")
     daemon = subprocess.Popen([str(BIN / "gohd")], env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)

@@ -13,3 +13,7 @@
 
 # Local logs and scratch
 *.log
+
+# Build-time completion importer dependencies (not needed by goh at runtime)
+/tools/import-specs/node_modules/
+/dist/

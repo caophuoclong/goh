@@ -91,6 +91,18 @@ fn works_without_a_daemon_and_starts_one() {
 }
 
 #[test]
+fn bundled_commands_register_and_complete_without_user_specs() {
+    let fx = Fixture::new(require_env!(), false);
+    fs::remove_file(fx.path("specs/git.json")).unwrap();
+    let mut sh = bash(&fx);
+    sh.send("pnpm() { echo \"RAN:$*\"; }; complete -p pnpm > bundled.txt\n", 300);
+    assert!(fs::read_to_string(fx.path("bundled.txt")).unwrap().contains("_goh_complete"));
+    let out = tab_then_run(&mut sh, "pnpm add --save-d", 1);
+    assert!(out.contains("RAN:add --save-dev"), "{out:?}");
+    kill_socket_holder(&fx.socket);
+}
+
+#[test]
 fn unload_removes_only_what_it_registered() {
     let fx = Fixture::new(require_env!(), true);
     let mut sh = bash(&fx);

@@ -1,0 +1,152 @@
+{
+  "schemaVersion": 1,
+  "name": "task",
+  "description": "Run tasks from a Taskfile",
+  "options": [
+    {
+      "name": "--list",
+      "description": "List tasks with a description",
+      "takesValue": false
+    },
+    {
+      "name": "-l",
+      "description": "List tasks with a description",
+      "takesValue": false
+    },
+    {
+      "name": "--list-all",
+      "description": "List every task",
+      "takesValue": false
+    },
+    {
+      "name": "-a",
+      "description": "List every task",
+      "takesValue": false
+    },
+    {
+      "name": "--dry",
+      "description": "Print what would run",
+      "takesValue": false
+    },
+    {
+      "name": "-n",
+      "description": "Print what would run",
+      "takesValue": false
+    },
+    {
+      "name": "--force",
+      "description": "Run even if up to date",
+      "takesValue": false
+    },
+    {
+      "name": "-f",
+      "description": "Run even if up to date",
+      "takesValue": false
+    },
+    {
+      "name": "--parallel",
+      "description": "Run the given tasks in parallel",
+      "takesValue": false
+    },
+    {
+      "name": "-p",
+      "description": "Run the given tasks in parallel",
+      "takesValue": false
+    },
+    {
+      "name": "--watch",
+      "description": "Rerun when sources change",
+      "takesValue": false
+    },
+    {
+      "name": "-w",
+      "description": "Rerun when sources change",
+      "takesValue": false
+    },
+    {
+      "name": "--silent",
+      "description": "No command echo",
+      "takesValue": false
+    },
+    {
+      "name": "-s",
+      "description": "No command echo",
+      "takesValue": false
+    },
+    {
+      "name": "--verbose",
+      "description": "More output",
+      "takesValue": false
+    },
+    {
+      "name": "-v",
+      "description": "More output",
+      "takesValue": false
+    },
+    {
+      "name": "--taskfile",
+      "description": "Use this Taskfile",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "file",
+          "template": "filepaths",
+          "extensions": [
+            "yml",
+            "yaml"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "-t",
+      "description": "Use this Taskfile",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "file",
+          "template": "filepaths",
+          "extensions": [
+            "yml",
+            "yaml"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "--dir",
+      "description": "Run in this directory",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "dir",
+          "template": "folders"
+        }
+      ]
+    },
+    {
+      "name": "-d",
+      "description": "Run in this directory",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "dir",
+          "template": "folders"
+        }
+      ]
+    },
+    {
+      "name": "--init",
+      "description": "Create a Taskfile",
+      "takesValue": false
+    }
+  ],
+  "args": [
+    {
+      "name": "task",
+      "provider": "taskfile-tasks",
+      "isVariadic": true,
+      "isOptional": true
+    }
+  ]
+}

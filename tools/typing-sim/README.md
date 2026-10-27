@@ -17,6 +17,6 @@ key (median, p95, max) and a list of friction it found: **FLICKER** (open, close
 the frames sent to the popup; feed one to `goh-popup --screenshot out.png` (with a manual anchor) to see exactly what it
 would draw.
 
-It uses a stand-in popup (`crates/goh-daemon/tests/fixtures/fake-popup.sh`) and the adapter's `GOH_TRACE` log, so it sees
+It serves only the specs bundled in the binary (its spec directory is empty). It uses a stand-in popup (`crates/goh-daemon/tests/fixtures/fake-popup.sh`) and the adapter's `GOH_TRACE` log, so it sees
 the adapter's decisions and costs, **not** the real window: nothing about on-screen timing, blinking of a real window or
 the Accessibility lookups. The corpus and the friction heuristics are mine; they find the problems I thought to look for.

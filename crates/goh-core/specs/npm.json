@@ -62,24 +62,7 @@
       "args": [
         {
           "name": "script",
-          "suggestions": [
-            {
-              "name": "build",
-              "description": "tsc && vite build"
-            },
-            {
-              "name": "dev",
-              "description": "vite"
-            },
-            {
-              "name": "lint",
-              "description": "eslint ."
-            },
-            {
-              "name": "test",
-              "description": "vitest run"
-            }
-          ]
+          "provider": "package-scripts"
         }
       ]
     },

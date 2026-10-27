@@ -1,7 +1,8 @@
 //! `goh-popup`: draws the suggestion popup in a small borderless window.
 //!
-//! Presentational only (docs/07): it reads newline-delimited JSON frames on stdin and draws what
-//! it is told, at the anchor it is given. It never takes keyboard focus and never inserts text.
+//! Presentational (docs/07): it draws newline-delimited JSON frames at the supplied anchor. Wheel
+//! navigation requests go back to the adapter; only a confirmed frame changes selection. The popup
+//! never takes keyboard focus and never inserts text.
 //! Whether an overlay may be drawn at all is decided by the caller with `goh_popup::display`.
 //!
 //!   {"type":"show","state":{...},"anchor":"auto","mode":"auto","theme":{...},"max_rows":8}
@@ -15,6 +16,11 @@
 //! Flags: `--resolve` prints the decision for the focused terminal and exits (no window);
 //! `--screenshot out.png` saves the first drawn frame and exits.
 
+#[cfg(target_os = "macos")]
+mod coretext;
+#[cfg(any(target_os = "macos", test))]
+mod scroll;
+
 use std::collections::HashMap;
 use std::io::BufRead;
 use std::path::PathBuf;
@@ -26,6 +32,7 @@ use eframe::egui::{self, Align2, Color32, FontId, Pos2, Rect, Stroke, StrokeKind
 use goh_anchor::{Caret, Outcome, Rect as Screen};
 use goh_popup::display::{self, Anchor as AnchorState, Capabilities, Display, Mode as DisplayMode};
 use goh_popup::model::{self, View, CELL_WIDTH, FOOTER_HEIGHT, PAD, ROW_HEIGHT};
+use goh_popup::font::{self, TermFont};
 use goh_popup::placement::{self, Placement};
 use goh_popup::watch::{plan_tick, TickAction};
 use goh_theme::{Mode, Rgb, Terminal};
@@ -34,8 +41,10 @@ use serde::Deserialize;
 const RADIUS_POPUP: u8 = 6;
 const RADIUS_ROW: u8 = 4;
 const FONT: f32 = 13.0;
+const FONT_MIN: f32 = 10.0;
+const FONT_MAX: f32 = 18.0;
 /// How often an open menu is re-checked against the terminal's state.
-const TICK: Duration = Duration::from_millis(300);
+const TICK: Duration = Duration::from_millis(50);
 
 // Frames are short-lived and sent one at a time, so the size difference does not matter.
 #[allow(clippy::large_enum_variant)]
@@ -58,6 +67,8 @@ struct Request {
     theme: HashMap<String, String>,
     #[serde(default = "default_rows")]
     max_rows: usize,
+    #[serde(default)]
+    enter_accepts: bool,
     /// Only used with a manual anchor that has no `screen`.
     #[serde(default = "default_width")]
     available_width: f32,
@@ -124,15 +135,28 @@ impl Colors {
 }
 
 struct Shown {
+    enter_accepts: bool,
     view: View,
     colors: Colors,
 }
 
+struct Resolved {
+    view: View,
+    at: Placement,
+    reason: &'static str,
+    focus: Option<goh_anchor::Focus>,
+}
+
 struct App {
+    #[cfg(target_os = "macos")]
+    scroll: Option<scroll::Monitor>,
+    icons: HashMap<&'static str, egui::TextureHandle>,
     frames: Receiver<Frame>,
     shown: Option<Shown>,
     /// The menu currently open (until `hide`), re-checked every TICK.
     last: Option<Request>,
+    /// The window and terminal text element that first showed this menu. Never follow another tab.
+    owner: Option<goh_anchor::Focus>,
     visible: bool,
     at: Option<Placement>,
     last_tick: Instant,
@@ -149,37 +173,64 @@ impl App {
             Frame::Quit => ctx.send_viewport_cmd(egui::ViewportCommand::Close),
             Frame::Hide => {
                 self.last = None;
+                self.owner = None;
                 self.hide_window(ctx);
             }
             Frame::Show(req) => {
+                let mut watch = true;
                 match resolve_request(&req) {
                     Err(reason) => {
-                        emit(serde_json::json!({"type": "decision", "display": "inline", "reason": reason}));
+                        if self.owner.is_none() {
+                            emit(serde_json::json!({"type": "decision", "display": "inline", "reason": reason}));
+                            watch = false;
+                        }
                         self.hide_window(ctx);
                     }
-                    Ok((view, at, why)) => {
-                        emit(serde_json::json!({"type": "decision", "display": "overlay", "reason": why,
-                            "x": at.x, "y": at.y, "above": at.above}));
-                        self.show_window(ctx, view, at, &req.theme);
+                    Ok(r) => {
+                        if self.owns_focus(&r.focus) {
+                            if self.owner.is_none() { self.owner = r.focus; }
+                            emit(serde_json::json!({"type": "decision", "display": "overlay", "reason": r.reason,
+                                "x": r.at.x, "y": r.at.y, "above": r.at.above, "mouse_scroll": self.mouse_scroll()}));
+                            self.show_window(ctx, r.view, r.at, &req.theme, &req.state.id, req.enter_accepts);
+                        } else {
+                            self.hide_window(ctx);
+                        }
                     }
                 }
-                self.last = Some(req);
+                self.last = watch.then_some(req);
                 self.last_tick = Instant::now();
             }
         }
     }
 
-    fn show_window(&mut self, ctx: &egui::Context, view: View, at: Placement, theme: &HashMap<String, String>) {
+    fn owns_focus(&self, focus: &Option<goh_anchor::Focus>) -> bool {
+        self.owner.as_ref().is_none_or(|owner| focus.as_ref() == Some(owner))
+    }
+
+    fn mouse_scroll(&self) -> bool {
+        #[cfg(target_os = "macos")]
+        { self.scroll.is_some() }
+        #[cfg(not(target_os = "macos"))]
+        { false }
+    }
+
+    fn show_window(&mut self, ctx: &egui::Context, view: View, at: Placement, theme: &HashMap<String, String>, _id: &str, enter_accepts: bool) {
+        #[cfg(target_os = "macos")]
+        if let Some(scroll) = &self.scroll {
+            scroll.target(_id, Screen { x: at.x, y: at.y, w: view.width.into(), h: view.height.into() });
+        }
         ctx.send_viewport_cmd(egui::ViewportCommand::InnerSize(vec2(view.width, view.height)));
         ctx.send_viewport_cmd(egui::ViewportCommand::OuterPosition(Pos2::new(at.x as f32, at.y as f32)));
         ctx.send_viewport_cmd(egui::ViewportCommand::Visible(true));
-        self.shown = Some(Shown { view, colors: Colors::from(theme) });
+        self.shown = Some(Shown { enter_accepts, view, colors: Colors::from(theme) });
         self.drawn = 0;
         self.visible = true;
         self.at = Some(at);
     }
 
     fn hide_window(&mut self, ctx: &egui::Context) {
+        #[cfg(target_os = "macos")]
+        if let Some(scroll) = &self.scroll { scroll.hide(); }
         self.shown = None;
         self.visible = false;
         self.at = None;
@@ -192,13 +243,17 @@ impl App {
     fn tick(&mut self, ctx: &egui::Context) {
         let Some(req) = self.last.clone() else { return };
         let result = resolve_request(&req);
-        let now = result.as_ref().ok().map(|(_, at, _)| *at);
+        let now = result.as_ref().ok().filter(|r| self.owns_focus(&r.focus)).map(|r| r.at);
         match (plan_tick(self.visible, self.at, now), result) {
             (TickAction::Hide, _) => self.hide_window(ctx),
-            (TickAction::Show, Ok((view, at, _))) => self.show_window(ctx, view, at, &req.theme),
-            (TickAction::Move, Ok((_, at, _))) => {
-                ctx.send_viewport_cmd(egui::ViewportCommand::OuterPosition(Pos2::new(at.x as f32, at.y as f32)));
-                self.at = Some(at);
+            (TickAction::Show, Ok(r)) => self.show_window(ctx, r.view, r.at, &req.theme, &req.state.id, req.enter_accepts),
+            (TickAction::Move, Ok(r)) => {
+                ctx.send_viewport_cmd(egui::ViewportCommand::OuterPosition(Pos2::new(r.at.x as f32, r.at.y as f32)));
+                #[cfg(target_os = "macos")]
+                if let Some(scroll) = &self.scroll {
+                    scroll.target(&req.state.id, Screen { x: r.at.x, y: r.at.y, w: r.view.width.into(), h: r.view.height.into() });
+                }
+                self.at = Some(r.at);
             }
             _ => {}
         }
@@ -212,7 +267,7 @@ fn emit(v: serde_json::Value) {
     let _ = out.flush();
 }
 
-fn resolve_request(r: &Request) -> Result<(View, Placement, &'static str), String> {
+fn resolve_request(r: &Request) -> Result<Resolved, String> {
     let opts = goh_anchor::Options { cell_height: r.cell_height, allow_tty_query: r.tty_query };
     resolve_show(&r.state, r.anchor.clone(), r.mode, r.max_rows, r.available_width, &opts)
 }
@@ -225,7 +280,8 @@ fn resolve_show(
     max_rows: usize,
     manual_width: f32,
     opts: &goh_anchor::Options,
-) -> Result<(View, placement::Placement, &'static str), String> {
+) -> Result<Resolved, String> {
+    let mut focus = None;
     // Manual positions are vouched for by the caller; "auto" must come from a verified source.
     let (caret, screen, verified, width): (Caret, Screen, bool, f64) = match anchor {
         Some(AnchorSpec::Manual(m)) => {
@@ -234,7 +290,10 @@ fn resolve_show(
             (Caret { x: m.x, y: m.y, height: m.line_height }, screen, true, width)
         }
         Some(AnchorSpec::Keyword(k)) if k == "auto" => match goh_anchor::locate_with(opts).0 {
-            Outcome::Verified(a) => (a.caret, a.display, true, placement::available_width(a.display)),
+            Outcome::Verified(a) => {
+                focus = Some(a.focus);
+                (a.caret, a.display, true, placement::available_width(a.display))
+            }
             Outcome::Unverified(reason) => return Err(resolve_reason(mode, reason.to_string())),
         },
         // `file:PATH`, for tests and demos: "x y line_height" in the file is a caller-vouched position
@@ -258,9 +317,9 @@ fn resolve_show(
     if decision.display != Display::Overlay {
         return Err(decision.reason.to_string());
     }
-    let view = model::view(state, max_rows, width as f32).ok_or_else(|| "nothing to show".to_string())?;
+    let view = model::view_with(state, max_rows, width as f32, cell_width()).ok_or_else(|| "nothing to show".to_string())?;
     let at = placement::place(caret, (view.width as f64, view.height as f64), screen);
-    Ok((view, at, decision.reason))
+    Ok(Resolved { view, at, reason: decision.reason, focus })
 }
 
 fn resolve_reason(mode: DisplayMode, reason: String) -> String {
@@ -309,10 +368,37 @@ fn runs<'a>(label: &'a str, matches: &[[usize; 2]]) -> Vec<(&'a str, bool)> {
     out
 }
 
-fn draw(ui: &mut egui::Ui, v: &View, c: &Colors) {
+fn load_icons(ctx: &egui::Context) -> HashMap<&'static str, egui::TextureHandle> {
+    goh_popup::icons::ASSETS.iter().filter_map(|&(name, bytes)| {
+        let mut reader = png::Decoder::new(std::io::Cursor::new(bytes)).read_info().ok()?;
+        let mut buf = vec![0; reader.output_buffer_size()?];
+        let info = reader.next_frame(&mut buf).ok()?;
+        if info.color_type != png::ColorType::Rgba { return None; }
+        let image = egui::ColorImage::from_rgba_unmultiplied([info.width as usize, info.height as usize], &buf[..info.buffer_size()]);
+        Some((name, ctx.load_texture(format!("command-{name}"), image, egui::TextureOptions::LINEAR)))
+    }).collect()
+}
+
+fn logo(painter: &egui::Painter, icons: &HashMap<&str, egui::TextureHandle>, key: &str, x: f32, mid: f32, colors: &Colors) {
+    let rect = Rect::from_center_size(Pos2::new(x + 8.0, mid), vec2(16.0, 16.0));
+    if let Some(texture) = icons.get(key) {
+        let tint = if matches!(key, "rust" | "github") { colors.primary } else { Color32::WHITE };
+        painter.image(texture.id(), rect, Rect::from_min_max(Pos2::ZERO, Pos2::new(1.0, 1.0)), tint);
+    } else {
+        // Font-independent >_ fallback in the same 16-point slot as the branded logos.
+        let stroke = Stroke::new(1.2, colors.muted);
+        let point = |dx, dy| Pos2::new(rect.left() + dx, rect.top() + dy);
+        painter.rect_stroke(rect, 2, stroke, StrokeKind::Inside);
+        painter.line_segment([point(4.0, 5.0), point(7.0, 8.0)], stroke);
+        painter.line_segment([point(7.0, 8.0), point(4.0, 11.0)], stroke);
+        painter.line_segment([point(9.0, 11.0), point(12.0, 11.0)], stroke);
+    }
+}
+
+fn draw(ui: &mut egui::Ui, v: &View, c: &Colors, enter_accepts: bool, icons: &HashMap<&str, egui::TextureHandle>) {
     let full = ui.max_rect();
-    let font = FontId::monospace(FONT);
-    let small = FontId::monospace(12.0);
+    let font = FontId::monospace(font_size());
+    let small = FontId::monospace(font_size() - 1.0);
     let painter = ui.painter().clone();
     painter.rect(full, RADIUS_POPUP, c.base, Stroke::new(1.0, c.border), StrokeKind::Inside);
 
@@ -328,7 +414,11 @@ fn draw(ui: &mut egui::Ui, v: &View, c: &Colors) {
         let mid = r.center().y;
         let mut x = full.left() + PAD; // the model's width assumes PAD on both sides
         painter.text(Pos2::new(x, mid), Align2::LEFT_CENTER, if row.selected { "❯" } else { " " }, font.clone(), c.accent);
-        x += 2.0 * CELL_WIDTH;
+        x += 2.0 * cell_width();
+        if let Some(key) = row.icon {
+            logo(&painter, icons, key, x, mid, c);
+            x += 3.0 * cell_width();
+        }
 
         for (text, is_match) in runs(&row.label, &row.matches) {
             let (color, underline) = if is_match { (c.matched, Stroke::new(1.0, c.matched)) } else { (c.primary, Stroke::NONE) };
@@ -341,7 +431,7 @@ fn draw(ui: &mut egui::Ui, v: &View, c: &Colors) {
             x += w;
         }
         if let Some(d) = &row.description {
-            painter.text(Pos2::new(x + 2.0 * CELL_WIDTH, mid), Align2::LEFT_CENTER, d, font.clone(), c.muted);
+            painter.text(Pos2::new(x + 2.0 * cell_width(), mid), Align2::LEFT_CENTER, d, font.clone(), c.muted);
         }
 
         let id = ui.scope_id().with(&row.dom_id);
@@ -358,10 +448,16 @@ fn draw(ui: &mut egui::Ui, v: &View, c: &Colors) {
     let fy = full.top() + v.rows.len() as f32 * ROW_HEIGHT;
     painter.hline(full.left() + 1.0..=full.right() - 1.0, fy, Stroke::new(1.0, c.border));
     let mid = fy + FOOTER_HEIGHT / 2.0;
-    painter.text(Pos2::new(full.left() + PAD + 4.0, mid), Align2::LEFT_CENTER, &v.context, small.clone(), c.muted);
+    let mut context_x = full.left() + PAD + 4.0;
+    if let Some(key) = goh_popup::icons::key(&v.context, "") {
+        logo(&painter, icons, key, context_x, mid, c);
+        context_x += 22.0;
+    }
+    painter.text(Pos2::new(context_x, mid), Align2::LEFT_CENTER, &v.context, small.clone(), c.muted);
+    let accept = if enter_accepts { "Tab/↵/→" } else { "Tab/→" };
     let right = match &v.position {
-        Some(p) => format!("{p}   ↑↓  Tab  Esc"),
-        None => "↑↓  Tab  Esc".to_string(),
+        Some(p) => format!("{p}   ↑↓  {accept}  Esc"),
+        None => format!("↑↓  {accept}  Esc"),
     };
     painter.text(Pos2::new(full.right() - PAD - 4.0, mid), Align2::RIGHT_CENTER, right, small, c.muted);
 }
@@ -391,14 +487,20 @@ impl eframe::App for App {
                 self.last_tick = Instant::now();
                 self.tick(ctx);
             }
-            ctx.request_repaint_after(TICK);
+            ctx.request_repaint_after(TICK.saturating_sub(self.last_tick.elapsed()));
+        }
+        #[cfg(target_os = "macos")]
+        if let Some((id, delta)) = self.scroll.as_ref().and_then(scroll::Monitor::take) {
+            if self.visible && self.last.as_ref().is_some_and(|r| r.state.id == id) {
+                emit(serde_json::json!({"type": "navigate", "id": id, "delta": delta}));
+            }
         }
     }
 
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
         let ctx = ui.ctx().clone();
         if let Some(s) = &self.shown {
-            egui::CentralPanel::default().frame(egui::Frame::NONE).show(ui, |ui| draw(ui, &s.view, &s.colors));
+            egui::CentralPanel::default().frame(egui::Frame::NONE).show(ui, |ui| draw(ui, &s.view, &s.colors, s.enter_accepts, &self.icons));
             self.drawn += 1;
             if self.screenshot.is_some() && self.drawn == 6 && !self.shot_requested {
                 self.shot_requested = true;
@@ -433,7 +535,96 @@ fn save_png(path: &PathBuf, img: &egui::ColorImage) -> Result<(), Box<dyn std::e
     Ok(())
 }
 
+/// The terminal's own font, when it could be found: file bytes, the size to draw at and its cell width.
+struct TerminalFont {
+    bytes: Vec<u8>,
+    size: f32,
+    cell_width: f32,
+}
+
+static TERMINAL_FONT: std::sync::OnceLock<Option<TerminalFont>> = std::sync::OnceLock::new();
+
+fn terminal_font() -> Option<&'static TerminalFont> {
+    TERMINAL_FONT.get_or_init(load_terminal_font).as_ref()
+}
+
+fn font_size() -> f32 {
+    terminal_font().map_or(FONT, |f| f.size)
+}
+
+fn cell_width() -> f32 {
+    terminal_font().map_or(CELL_WIDTH, |f| f.cell_width)
+}
+
+/// What font the popup uses, first match wins: `GOH_POPUP_FONT` (`Name` or `Name:size`), then `popup.font` and
+/// `popup.fontSize` in the config file (`goh config`), then the terminal's own settings (VS Code, iTerm2).
+/// Terminals that keep it somewhere unreadable (the Claude app, Terminal.app) get the built-in monospace.
+fn configured_font() -> Option<TermFont> {
+    if let Some(spec) = std::env::var("GOH_POPUP_FONT").ok().filter(|s| !s.is_empty()) {
+        return font::parse_override(&spec);
+    }
+    let file = goh_theme::read_config();
+    let popup = file.as_ref().and_then(|c| c.get("popup"));
+    let size = popup.and_then(|p| p.get("fontSize")).and_then(|v| v.as_f64()).map(|s| s as f32);
+    if let Some(name) = popup.and_then(|p| p.get("font")).and_then(|v| v.as_str()).filter(|s| !s.trim().is_empty()) {
+        return Some(TermFont { families: vec![name.trim().to_string()], size });
+    }
+    let home = PathBuf::from(std::env::var_os("HOME")?);
+    match std::env::var("TERM_PROGRAM").ok()?.as_str() {
+        "vscode" => font::vscode(&std::fs::read_to_string(home.join("Library/Application Support/Code/User/settings.json")).ok()?),
+        "iTerm.app" => {
+            let out = std::process::Command::new("plutil")
+                .args(["-convert", "json", "-o", "-"])
+                .arg(home.join("Library/Preferences/com.googlecode.iterm2.plist"))
+                .output()
+                .ok()?;
+            font::iterm(&String::from_utf8_lossy(&out.stdout), std::env::var("ITERM_PROFILE").ok().as_deref())
+                .map(|f| TermFont { size: f.size.or(size), ..f })
+        }
+        _ => None,
+    }
+}
+
+#[cfg(target_os = "macos")]
+fn load_terminal_font() -> Option<TerminalFont> {
+    let wanted = configured_font()?;
+    for family in &wanted.families {
+        let want = font::normalize(family);
+        let Some(path) = coretext::font_file(family, |n| font::normalize(n) == want) else { continue };
+        let Ok(bytes) = std::fs::read(&path) else { continue };
+        if bytes.len() > 32 << 20 {
+            continue;
+        }
+        let size = wanted.size.unwrap_or(FONT).clamp(FONT_MIN, FONT_MAX);
+        if let Some(cell_width) = font::cell_width(&bytes, size) {
+            return Some(TerminalFont { bytes, size, cell_width });
+        }
+    }
+    None
+}
+
+#[cfg(not(target_os = "macos"))]
+fn load_terminal_font() -> Option<TerminalFont> {
+    None
+}
+
+fn install_terminal_font(ctx: &egui::Context) {
+    if let Some(f) = terminal_font() {
+        ctx.add_font(egui::epaint::text::FontInsert::new(
+            "terminal",
+            egui::FontData::from_owned(f.bytes.clone()),
+            vec![egui::epaint::text::InsertFontFamily { family: egui::FontFamily::Monospace, priority: egui::epaint::text::FontPriority::Highest }],
+        ));
+    }
+}
+
 fn main() -> eframe::Result {
+    if std::env::args().any(|a| a == "--probe") {
+        // Run from the terminal you want to test; the delay leaves time to focus it again if needed.
+        std::thread::sleep(std::time::Duration::from_secs(2));
+        goh_anchor::probe().iter().for_each(|l| println!("{l}"));
+        return Ok(());
+    }
     if std::env::args().any(|a| a == "--resolve") {
         std::process::exit(resolve_only());
     }
@@ -467,6 +658,7 @@ fn main() -> eframe::Result {
         Box::new(move |cc| {
             let (tx, frames) = channel();
             let ctx = cc.egui_ctx.clone();
+            install_terminal_font(&cc.egui_ctx);
             std::thread::spawn(move || {
                 for line in std::io::stdin().lock().lines().map_while(Result::ok) {
                     match serde_json::from_str::<Frame>(&line) {
@@ -485,7 +677,11 @@ fn main() -> eframe::Result {
                 ctx.request_repaint();
             });
             let (shot_tx, shot_rx) = channel();
-            Ok(Box::new(App { frames, shown: None, last: None, visible: false, at: None, last_tick: Instant::now(), drawn: 0, screenshot, shot_rx, shot_tx, shot_requested: false }))
+            Ok(Box::new(App {
+                #[cfg(target_os = "macos")]
+                scroll: scroll::Monitor::new(cc.egui_ctx.clone()),
+                icons: load_icons(&cc.egui_ctx),
+                frames, shown: None, last: None, owner: None, visible: false, at: None, last_tick: Instant::now(), drawn: 0, screenshot, shot_rx, shot_tx, shot_requested: false }))
         }),
     )
 }

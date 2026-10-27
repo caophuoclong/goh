@@ -13,6 +13,7 @@ pub const PAD: f32 = 8.0; // space-2
 /// Advance of one monospace cell at the 13 px popup font.
 pub const CELL_WIDTH: f32 = 7.8;
 
+const ICON_COLS: usize = 3;
 const MARKER_COLS: usize = 2; // "❯ "
 const GAP_COLS: usize = 2;
 /// A description narrower than this is dropped entirely rather than shown as a stub.
@@ -42,6 +43,7 @@ pub struct State {
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Row {
+    pub icon: Option<&'static str>,
     /// `<id>-opt-<index>`, with the absolute index.
     pub dom_id: String,
     pub selected: bool,
@@ -137,6 +139,11 @@ pub fn snap_ranges(label: &str, ranges: &[[usize; 2]]) -> Vec<[usize; 2]> {
 /// Build what to draw. `None` means "do not draw an overlay" (nothing to show, or less than the
 /// minimum width is available, in which case the caller uses the inline fallback).
 pub fn view(state: &State, max_rows: usize, available_width: f32) -> Option<View> {
+    view_with(state, max_rows, available_width, CELL_WIDTH)
+}
+
+/// Like [`view`] for a font whose cell is `cell_width` points wide (the terminal's own font).
+pub fn view_with(state: &State, max_rows: usize, available_width: f32, cell_width: f32) -> Option<View> {
     let n = state.items.len();
     if n == 0 || available_width < WIDTH_MIN {
         return None;
@@ -148,17 +155,19 @@ pub fn view(state: &State, max_rows: usize, available_width: f32) -> Option<View
     // Width follows content between the min and max, never beyond the space available.
     let widest = state.items[start..start + rows_visible]
         .iter()
-        .map(|it| MARKER_COLS + cols(&it.label) + it.description.as_deref().map_or(0, |d| GAP_COLS + cols(d)))
+        .map(|it| MARKER_COLS + if crate::icons::key(&state.context, &it.label).is_some() { ICON_COLS } else { 0 } + cols(&it.label) + it.description.as_deref().map_or(0, |d| GAP_COLS + cols(d)))
         .max()
         .unwrap_or(0);
-    let wanted = 2.0 * PAD + widest as f32 * CELL_WIDTH;
+    let wanted = 2.0 * PAD + widest as f32 * cell_width;
     let width = wanted.clamp(WIDTH_MIN, WIDTH_MAX.min(available_width));
-    let inner_cols = ((width - 2.0 * PAD) / CELL_WIDTH).floor() as usize;
+    let inner_cols = ((width - 2.0 * PAD) / cell_width).floor() as usize;
     let room = inner_cols.saturating_sub(MARKER_COLS);
 
     let rows = (start..start + rows_visible)
         .map(|i| {
             let it = &state.items[i];
+            let icon = crate::icons::key(&state.context, &it.label);
+            let room = room.saturating_sub(if icon.is_some() { ICON_COLS } else { 0 });
             let full = snap_ranges(&it.label, &it.match_ranges);
             let (label, description, tooltip) = if cols(&it.label) > room {
                 // The label itself must be shortened; the description is already gone.
@@ -189,7 +198,8 @@ pub fn view(state: &State, max_rows: usize, available_width: f32) -> Option<View
                 Some(d) => format!("{}, {d}", it.label),
                 None => it.label.clone(),
             };
-            Row { dom_id: format!("{}-opt-{i}", state.id), selected: i == selected, label, matches, description, tooltip, accessible_name }
+            Row {
+                icon, dom_id: format!("{}-opt-{i}", state.id), selected: i == selected, label, matches, description, tooltip, accessible_name }
         })
         .collect::<Vec<_>>();
 
@@ -270,10 +280,10 @@ mod tests {
         assert!(r.description.as_deref().unwrap().ends_with('…'));
         assert!(r.tooltip.is_none());
 
-        // Label nearly fills the row: description disappears completely, label untouched.
-        let v = view(&mk(&"l".repeat(36), &desc), 8, 330.0).unwrap();
+        // Label nearly fills the row after the icon column: description disappears, label untouched.
+        let v = view(&mk(&"l".repeat(33), &desc), 8, 330.0).unwrap();
         assert_eq!(v.rows[0].description, None);
-        assert_eq!(v.rows[0].label, "l".repeat(36));
+        assert_eq!(v.rows[0].label, "l".repeat(33));
 
         // Label does not fit at all: ellipsis, full label in tooltip and accessible name.
         let v = view(&mk(&long, "desc"), 8, 330.0).unwrap();

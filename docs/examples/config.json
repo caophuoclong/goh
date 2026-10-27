@@ -2,7 +2,13 @@
   "configVersion": 1,
   "display": {
     "mode": "auto",
-    "maxSuggestions": 8
+    "maxSuggestions": 8,
+    "live": true,
+    "predict": true
+  },
+  "popup": {
+    "font": "",
+    "fontSize": 13
   },
   "theme": {
     "mode": "auto"
@@ -11,6 +17,11 @@
     "telemetry": false,
     "networkSpecs": false,
     "dynamicGenerators": false,
-    "retainCommandHistory": false
+    "retainCommandHistory": false,
+    "learnChoices": true,
+    "recordCommands": false
+  },
+  "completion": {
+    "autoSpecs": false
   }
 }
