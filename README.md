@@ -54,7 +54,7 @@ Pick one. None needs the source.
 | How | Command |
 |---|---|
 | Install script (macOS, Linux) | `curl -fsSL https://raw.githubusercontent.com/caophuoclong/goh/main/install.sh \| sh` |
-| Homebrew | `brew install caophuoclong/goh/goh` |
+| Homebrew | `brew install caophuoclong/goh/goh && goh setup` |
 | By hand | download `goh-<version>-<target>.tar.gz` from the [releases](https://github.com/caophuoclong/goh/releases), check it against `SHA256SUMS`, put `bin/*` on your `PATH` |
 | From source | `cargo install --git https://github.com/caophuoclong/goh goh-daemon goh-popup`, or `./install.sh --from-source` |
 
@@ -66,11 +66,15 @@ The install script downloads the package for your system, checks its SHA-256, pu
 that puts that folder on `PATH` and loads the adapter. `--version 1.2.3` picks a release; re-running updates;
 `--uninstall` removes the binaries and exactly that block; `--no-rc` leaves your shell files alone.
 
-With Homebrew or a manual install, load the adapter yourself (Homebrew prints this too), then open a new terminal:
+Homebrew and manual installs do not edit your shell files (Homebrew never does). Run once, then open a new terminal:
 
 ```bash
-eval "$(goh init zsh)"      # ~/.zshrc, after compinit; bash and fish: `goh init bash`, `goh init fish | source`
+goh setup              # adds one marked block to ~/.zshrc, ~/.bashrc or fish's config.fish
+goh setup --dry-run    # shows what it would write
+goh setup --uninstall  # removes exactly that block
 ```
+
+By hand instead: `eval "$(goh init zsh)"` in `~/.zshrc` after compinit (bash: `goh init bash`, fish: `goh init fish | source`).
 
 Releases are versioned automatically from commit messages: see [CONTRIBUTING.md](CONTRIBUTING.md) and [RELEASING.md](RELEASING.md).
 

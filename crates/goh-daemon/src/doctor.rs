@@ -69,7 +69,7 @@ pub fn evaluate(i: &Inputs) -> Vec<Check> {
         out.push(check(Level::Warn, "specs", w.clone(), None));
     }
     out.push(match i.shell.as_deref() {
-        Some(s) if ADAPTERS.contains(&s) => check(Level::Info, "shell", format!("{s}: source its adapter from adapters/{s}/ (see adapters/README.md)"), None),
+        Some(s) if ADAPTERS.contains(&s) => check(Level::Info, "shell", format!("{s}: load its adapter with `goh setup` (or `goh init {s}` from your startup file)"), None),
         Some(s) => check(Level::Warn, "shell", format!("{s} has no goh adapter"), None),
         None => check(Level::Warn, "shell", "$SHELL is not set", None),
     });

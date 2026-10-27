@@ -22,6 +22,7 @@
 //! Exit 1 with no output on any failure; if the daemon is not running, start it for next time.
 
 use std::io::ErrorKind;
+use std::path::{Path, PathBuf};
 use std::time::Duration;
 use std::process::ExitCode;
 
@@ -110,6 +111,9 @@ usage: goh <command>
   restart           stop, then start the daemon
   reload            restart the daemon so it re-reads your specs (~/.config/goh/specs), and the popups so they re-read the font
   doctor [--fix]    check the setup; --fix starts the daemon and opens the macOS Accessibility settings
+  setup [--shell S] [--rc FILE] [--dry-run] [--uninstall]
+                    add the adapter to your shell's startup file (zsh, bash, fish) in one marked block;
+                    --uninstall removes exactly that block
   init <shell>      print the adapter for zsh, bash, fish, pwsh, nu, elvish or xonsh, e.g.
                       eval \"$(goh init zsh)\"          # in ~/.zshrc
   forget            delete what goh has learned from your choices and the commands it recorded (`~/.local/share/goh/usage`, `runs`)
@@ -141,6 +145,73 @@ fn adapter(shell: &str) -> Option<&'static str> {
         "xonsh" => include_str!("../../../../adapters/xonsh/goh.xsh"),
         _ => return None,
     })
+}
+
+/// `goh setup`: add (or with --uninstall remove) the marked block in the shell's startup file.
+fn setup(rest: &[String]) -> bool {
+    use goh_daemon::setup as s;
+    let fail = |m: String| {
+        eprintln!("goh: {m}");
+        false
+    };
+    let (mut shell, mut rc, mut dry, mut remove) = (None, None, false, false);
+    let mut it = rest.iter();
+    while let Some(a) = it.next() {
+        match a.as_str() {
+            "--shell" => shell = it.next().cloned(),
+            "--rc" => rc = it.next().map(PathBuf::from),
+            "--dry-run" => dry = true,
+            "--uninstall" => remove = true,
+            other => return fail(format!("unknown option `{other}`; usage: goh setup [--shell zsh|bash|fish] [--rc FILE] [--dry-run] [--uninstall]")),
+        }
+    }
+    let env = |k: &str| std::env::var(k).ok().filter(|v| !v.is_empty());
+    let shell = shell.or_else(|| env("GOH_SHELL")).or_else(|| env("SHELL").and_then(|v| Path::new(&v).file_name().map(|n| n.to_string_lossy().into_owned())));
+    let Some(shell) = shell.filter(|sh| s::supported(sh)) else {
+        return fail("could not tell your shell (zsh, bash and fish are supported); pass --shell, or add `eval \"$(goh init <shell>)\"` to its startup file yourself".into());
+    };
+    let home = env("HOME").map(PathBuf::from);
+    let Some(rc) = rc.or_else(|| env("GOH_RC").map(PathBuf::from)).or_else(|| {
+        let home = home.as_deref()?;
+        s::rc_path(&shell, home, env("ZDOTDIR").map(PathBuf::from).as_deref(), env("XDG_CONFIG_HOME").map(PathBuf::from).as_deref(), cfg!(target_os = "macos"))
+    }) else {
+        return fail("no HOME: pass --rc FILE".into());
+    };
+    let text = match std::fs::read_to_string(&rc) {
+        Ok(t) => t,
+        Err(e) if e.kind() == ErrorKind::NotFound => String::new(),
+        Err(e) => return fail(format!("{}: {e}", rc.display())),
+    };
+    let new = if remove {
+        s::remove_block(&text)
+    } else {
+        // A folder is added to PATH only when the shell would not find `goh` already (Homebrew's is on it).
+        let dir = std::env::current_exe().ok().and_then(|p| p.parent().map(Path::to_path_buf));
+        let found = env("PATH").is_some_and(|p| s::on_path(&p, "goh"));
+        s::add_block(&text, &s::block(&shell, if found { None } else { dir.as_deref() }))
+    };
+    let Some(new) = new else {
+        println!("{} {}", rc.display(), if remove { "has no goh block; nothing to remove" } else { "already has the goh block" });
+        return true;
+    };
+    if dry {
+        println!("would write {}:\n{new}", rc.display());
+        return true;
+    }
+    let backup = rc.with_file_name(format!("{}.goh-backup", rc.file_name().map_or_else(String::new, |n| n.to_string_lossy().into_owned())));
+    let mut note = String::new();
+    if rc.exists() && !backup.exists() && std::fs::copy(&rc, &backup).is_ok() {
+        note = format!(" (backup: {})", backup.display());
+    }
+    if let Err(e) = rc.parent().map_or(Ok(()), std::fs::create_dir_all).and_then(|()| std::fs::write(&rc, new)) {
+        return fail(format!("{}: {e}", rc.display()));
+    }
+    if remove {
+        println!("removed the goh block from {}", rc.display());
+    } else {
+        println!("added the goh block to {}{note}; open a new terminal (or run `exec $SHELL`) to use it", rc.display());
+    }
+    true
 }
 
 fn status() -> bool {
@@ -312,6 +383,7 @@ fn utility(sub: &str, rest: &[String]) -> Option<bool> {
         }
         "status" => status(),
         "spec" => spec(rest),
+        "setup" => setup(rest),
         "forget" => {
             let results = [goh_daemon::usage::forget(&goh_daemon::usage::path()), goh_daemon::runs::forget(&goh_daemon::runs::path())];
             match results.iter().find_map(|r| r.as_ref().err()) {

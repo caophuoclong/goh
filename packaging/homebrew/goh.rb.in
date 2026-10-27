@@ -33,11 +33,12 @@ class Goh < Formula
 
   def caveats
     <<~EOS
-      Load the adapter from your shell's startup file, then open a new terminal:
+      Homebrew does not edit your shell files. Run this once, then open a new terminal:
 
-        zsh:   eval "$(goh init zsh)"     # ~/.zshrc, after compinit
-        bash:  eval "$(goh init bash)"    # ~/.bashrc, after bash-completion
-        fish:  goh init fish | source     # ~/.config/fish/config.fish
+        goh setup
+
+      It adds one marked block to ~/.zshrc, ~/.bashrc or fish's config.fish (zsh, bash and fish);
+      `goh setup --uninstall` removes it. By hand: eval "$(goh init zsh)" in ~/.zshrc, after compinit.
 
       The overlay popup (macOS) needs Accessibility access for your terminal; `goh doctor` says what is missing.
       After `brew upgrade goh`, run `goh reload` and `exec $SHELL`.

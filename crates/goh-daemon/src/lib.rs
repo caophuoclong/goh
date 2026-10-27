@@ -15,6 +15,7 @@ pub mod runs;
 mod shell;
 pub mod snippets;
 pub mod server;
+pub mod setup;
 pub mod sources;
 pub mod specs;
 pub mod usage;
