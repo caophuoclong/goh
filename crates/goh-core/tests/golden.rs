@@ -435,7 +435,9 @@ fn extensions_narrow_files_but_not_directories() {
     std::fs::create_dir(dir.path().join("pkg")).unwrap();
     let spec = Command::from_json(r#"{"schemaVersion":1,"name":"run","args":[{"name":"f","template":"filepaths","extensions":["py","tar.gz"]}]}"#).unwrap();
     let engine = Engine::new(vec![spec]);
-    let labels: Vec<_> = engine.complete("run ", 4, dir.path()).unwrap().into_iter().map(|c| c.label).collect();
+    // With nothing typed the order is the directory's own, which differs between file systems.
+    let mut labels: Vec<_> = engine.complete("run ", 4, dir.path()).unwrap().into_iter().map(|c| c.label).collect();
+    labels.sort();
     assert_eq!(labels, ["app.py", "data.TAR.GZ", "pkg/"]);
 }
 
