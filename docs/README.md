@@ -4,7 +4,7 @@
 
 > v0.2 thêm design system, prototype tương tác (EN/VI), hợp đồng UI/accessibility, schema IPC, hướng dẫn triển khai và cập nhật backlog/QA/ADR/rủi ro tương ứng.
 
-> **Tên dự án: `goh`** (chủ dự án quyết định). Mã nguồn, binary (`goh-ctl`, `gohd`, `goh-popup`), biến môi trường (`GOH_*`) và thư mục cấu hình (`~/.config/goh/`) đã được đổi sang tên này; tên `Terminal Companion` trong tài liệu cũ vẫn là tên làm việc. Các chỗ nhắc tới "Fig" (viết hoa) là sản phẩm gốc làm nguồn cảm hứng, không phải tên của chúng ta.
+> **Tên dự án: `goh`** (chủ dự án quyết định). Mã nguồn, binary (`goh`, `gohd`, `goh-popup`), biến môi trường (`GOH_*`) và thư mục cấu hình (`~/.config/goh/`) đã được đổi sang tên này; tên `Terminal Companion` trong tài liệu cũ vẫn là tên làm việc. Các chỗ nhắc tới "Fig" (viết hoa) là sản phẩm gốc làm nguồn cảm hứng, không phải tên của chúng ta.
 >
 > Tên `Terminal Companion` là **working name**, không phải tên thương hiệu chính thức. Đây là dự án độc lập lấy cảm hứng từ trải nghiệm autocomplete của Fig/withfig, **không phụ thuộc Amazon Q/Kiro CLI**. Không sử dụng logo/tên Fig để ngụ ý liên kết hoặc chứng thực.
 

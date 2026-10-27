@@ -32,7 +32,7 @@ Consequence for the first release: **inline is the only display mode with any ev
 
 **Measured: `COMP_POINT` units.** With the line `xx ééé b` and the cursor after `xx ééé` (6 characters, 9 bytes), a completion function saw `COMP_POINT=9` on bash 3.2.57 (bytes) and `COMP_POINT=6` on bash 5.2.15 (characters). Bash 4.x and 5.0/5.1 were not measured, so the adapter does not assume either.
 
-**Also learned from the Linux run:** `goh-core`, `goh-daemon` (socket, termios, process spawning) and `goh-ctl` build and run on Linux arm64 with no changes. The zsh tests were not run there (no zsh in the image).
+**Also learned from the Linux run:** `goh-core`, `goh-daemon` (socket, termios, process spawning) and `goh` build and run on Linux arm64 with no changes. The zsh tests were not run there (no zsh in the image).
 
 **Not verified:** Ubuntu with GNOME Terminal or Kitty (the S-02 matrix names them; the container ran under a pty, not a real terminal emulator), bash 4.x, x86_64 Linux, `bash-completion` coexistence beyond "an existing spec is left alone", performance.
 
@@ -167,21 +167,21 @@ Not run. What each needs: S-05 Windows Terminal and VS Code with UI Automation; 
 
 **Third live run (user, iTerm2, same clean shell, fixed demo): an out-of-sample match.** The terminal reported its cursor at **row 25, column 8** (`ESC[6n`, asked without moving it). The window origin (x0 = 445, y0 = 223) had been derived from the previous run, so the prediction for that cell was x = 445 + 7 × 9 = 508 and y = 223 + 24 × 19 = 679. The provider's caret was **x = 508, y = 679** (popup at y = 710 = 679 + 19 + 12, below the line). Exact, in both axes, on a cell not used for calibration. The user confirmed that the popup was visibly next to the `$ git c` line ("có"; an earlier garbled reply, "Cps", was the same answer). That is a yes/no confirmation, not a description of what was seen.
 
-**Bug found by that run:** `goh-popup --resolve`, run in the same terminal just before, reported "no focused application". **First fix attempt failed:** I guessed a transient start-up failure and added a bounded retry (5 × 60 ms). The user's second run still failed, now with the code visible: **Accessibility error −25204 (`kAXErrorCannotComplete`)** from the system-wide "focused application" query, while the popup process, same terminal and permission, succeeded. So it is not transient. **Measured next (user, iTerm2, `goh-popup --resolve` with a trace):** `direct: error -25204`, `after CoreGraphics call: error -25204`, `after NSApplicationLoad: ok`, and the provider returned iTerm2's caret (x 445, y 926, height 19, display 1512 × 982) with `display: overlay`. So a plain command-line process cannot ask Accessibility for the focused application until it has connected to the window server **through AppKit**: a CoreGraphics call alone is not enough. (A GUI process such as the popup is already connected, which is why it worked all along.) `locate()` now tries the plain call and, on failure, calls `NSApplicationLoad()` and retries; the CoreGraphics step was dropped. This also means a CLI user of the provider (a future `goh-ctl anchor`) pays one `NSApplicationLoad` and may show a Dock icon briefly; not yet checked.
+**Bug found by that run:** `goh-popup --resolve`, run in the same terminal just before, reported "no focused application". **First fix attempt failed:** I guessed a transient start-up failure and added a bounded retry (5 × 60 ms). The user's second run still failed, now with the code visible: **Accessibility error −25204 (`kAXErrorCannotComplete`)** from the system-wide "focused application" query, while the popup process, same terminal and permission, succeeded. So it is not transient. **Measured next (user, iTerm2, `goh-popup --resolve` with a trace):** `direct: error -25204`, `after CoreGraphics call: error -25204`, `after NSApplicationLoad: ok`, and the provider returned iTerm2's caret (x 445, y 926, height 19, display 1512 × 982) with `display: overlay`. So a plain command-line process cannot ask Accessibility for the focused application until it has connected to the window server **through AppKit**: a CoreGraphics call alone is not enough. (A GUI process such as the popup is already connected, which is why it worked all along.) `locate()` now tries the plain call and, on failure, calls `NSApplicationLoad()` and retries; the CoreGraphics step was dropped. This also means a CLI user of the provider (a future `goh anchor`) pays one `NSApplicationLoad` and may show a Dock icon briefly; not yet checked.
 
 **Not verified:** Terminal.app (not yet run through `overlay-demo.sh` or `--resolve`); (popup visibly at the caret in iTerm2: confirmed by the user, yes/no only); whether `NSApplicationLoad` shows a Dock icon for `--resolve`; a live zsh/bash prompt other than the demo line; scale-1 displays; iTerm2 split panes (the provider cannot tell a split pane from a single one, so it can report "verified" there); the retry fix.
 
 ### zsh adapter drives the popup (built)
 
-`adapters/zsh/goh.zsh` now sends the menu to `goh-popup` (details in `adapters/zsh/README.md`): lazy background start, frames over FIFOs, the answer read asynchronously with `zle -F`, the inline menu shown at once and hidden only when the popup answers "overlay", `hide` on every close (accept, Esc, edit, Enter), `quit` when the shell exits. `goh-ctl menu` now also returns each item's match ranges; the bash adapter ignores the extra field. **Terminal.app and iTerm2 are handled alike**, because the verified-only gate lives in the popup/provider, not in the adapter.
+`adapters/zsh/goh.zsh` now sends the menu to `goh-popup` (details in `adapters/zsh/README.md`): lazy background start, frames over FIFOs, the answer read asynchronously with `zle -F`, the inline menu shown at once and hidden only when the popup answers "overlay", `hide` on every close (accept, Esc, edit, Enter), `quit` when the shell exits. `goh menu` now also returns each item's match ranges; the bash adapter ignores the extra field. **Terminal.app and iTerm2 are handled alike**, because the verified-only gate lives in the popup/provider, not in the adapter.
 
-One design problem found before wiring: the provider asked iTerm2 for its cell height on the tty. Inside the line editor, that reply is terminal input and would land in the command line. The adapter therefore asks once at load (`goh-ctl theme --probe` prints `cell-height`), passes it in each frame, and the popup refuses to query the tty unless a frame says `"tty_query": true` (only the demo does).
+One design problem found before wiring: the provider asked iTerm2 for its cell height on the tty. Inside the line editor, that reply is terminal input and would land in the command line. The adapter therefore asks once at load (`goh theme --probe` prints `cell-height`), passes it in each frame, and the popup refuses to query the tty unless a frame says `"tty_query": true` (only the demo does).
 
 **Verified here:** 5 new pty tests with a stand-in popup (it logs frames and answers `overlay`/`inline`): frames carry the items, match ranges, selection, context and theme; Down changes `selected`; Esc, accept and edits send `hide`; an `overlay` answer makes the adapter stop drawing the inline list and an `inline` answer keeps it; `GOH_DISPLAY=inline` never starts the popup; a popup that dies at once leaves the inline menu working and the shell responsive even after 400 further frames; leaving the shell sends `quit`. Mutation checks: removing the `hide` call, ignoring the overlay answer, and dropping the liveness check each make a test fail. A frame built by the adapter (quotes and backslashes in labels included) is accepted by the real `goh-popup` binary.
 
 **Bug found while testing:** a test that blindly writes into a dead popup's FIFO only fails once the pipe buffer is full; my first version wrote too few frames and could not tell a missing liveness check from a present one. It now sends 400 frames. (A test-harness write also needed to cope with a full pty.)
 
-**Live report (user, iTerm2): "no popup appears when typing `git c`", and what it turned out to be.** `goh-status` showed the adapter, `goh-ctl`, the spec and the gate all fine, but `query 'git c' -> 0 candidate(s)` and `popup ... running: no`. Cause, in part my own doing: **my test commands used `pkill -x gohd` and `pkill -x goh-popup`, and the sandbox shares the user's account, so they also killed the user's real daemon and popup.** A dead daemon leaves its socket file behind (so `goh-status` still said "running", because it only checked that the file exists), and the first request after that was swallowed while `goh-ctl` merely relaunched the daemon. Tests now only stop the daemon that holds their own temporary socket. Fixes: `goh-ctl` now starts a missing daemon, waits up to 0.5 s for its socket and asks once more (the first Tab after a cold start or a crash is no longer lost; if the daemon cannot start, the request fails within that bound); tests cover the cold start, a stale socket after the daemon is killed, and a daemon that cannot start. Re-sourcing the adapter now stops a popup left by the previous load, and `goh-status` shows the popup's process state, the theme and cell height, the last decision and the last frame. The same run showed `cell-height 19` was present, so the "iTerm2 cell height missing" suspicion was wrong. **What the overlay itself does in the user's iTerm2 session is still not known**: the report was taken after the processes had been killed, and no menu had been opened in that shell yet.
+**Live report (user, iTerm2): "no popup appears when typing `git c`", and what it turned out to be.** `goh-status` showed the adapter, `goh`, the spec and the gate all fine, but `query 'git c' -> 0 candidate(s)` and `popup ... running: no`. Cause, in part my own doing: **my test commands used `pkill -x gohd` and `pkill -x goh-popup`, and the sandbox shares the user's account, so they also killed the user's real daemon and popup.** A dead daemon leaves its socket file behind (so `goh-status` still said "running", because it only checked that the file exists), and the first request after that was swallowed while `goh` merely relaunched the daemon. Tests now only stop the daemon that holds their own temporary socket. Fixes: `goh` now starts a missing daemon, waits up to 0.5 s for its socket and asks once more (the first Tab after a cold start or a crash is no longer lost; if the daemon cannot start, the request fails within that bound); tests cover the cold start, a stale socket after the daemon is killed, and a daemon that cannot start. Re-sourcing the adapter now stops a popup left by the previous load, and `goh-status` shows the popup's process state, the theme and cell height, the last decision and the last frame. The same run showed `cell-height 19` was present, so the "iTerm2 cell height missing" suspicion was wrong. **What the overlay itself does in the user's iTerm2 session is still not known**: the report was taken after the processes had been killed, and no menu had been opened in that shell yet.
 
 **Live confirmation (user, iTerm2, two screenshots; adapter + real `goh-popup`, prompt is a two-line starship prompt with emoji):** after `git c` + Tab, the overlay appeared as a floating window just below the caret line, its left edge at the caret, listing `checkout`, `cherry-pick`, `commit` with their descriptions, a `❯` on the selected row, and a footer with `git` and the key hints; the inline list was not drawn, and the ghost text `heckout` was shown in the command line. After ↓ the selection moved to `cherry-pick` and the ghost text changed to `herry-pick`. The popup used the terminal's own colours (theme source "verified"). The window extended below the terminal window, as a separate floating window does. This shows end to end, on a real terminal, that: the adapter starts the popup, frames reach it, the Accessibility lookup gives a usable caret in a real shell prompt (the starship prompt did not break it, contrary to an earlier worry), the popup answers "overlay" and the adapter hides its inline list, and ↓ reaches the shell while the popup is visible (so it did not take the keystroke).
 
@@ -189,15 +189,19 @@ One design problem found before wiring: the provider asked iTerm2 for its cell h
 
 ### As-you-type mode (requested by the user)
 
-**Requested behaviour:** type a command and the popup appears and follows what is typed, only when the command is valid; previously the menu opened on Tab and any further keystroke closed it. **Built:** `GOH_LIVE=on` (default; `off` = Tab only) in the zsh adapter, a `live` flag on the IPC `complete` request (`goh-ctl menu --live`), and the engine's `Completion { candidates, valid }`. The definition of "valid" and the alternatives considered are in docs/docs/06-completion-engine.md. The adapter refreshes from the `zle-line-pre-redraw` hook only after typing or deleting widgets (not history recall or autosuggest accepts), skips the refresh while input is queued (`$PENDING`), keeps ↑/↓/Esc/Tab bound only while the menu is open, and does not reopen the menu by itself after an accept. One query measured 3.4 ms median, 4.7 ms p95 (40 runs each, against a running daemon), so a query per pause in typing is cheap.
+**Requested behaviour:** type a command and the popup appears and follows what is typed, only when the command is valid; previously the menu opened on Tab and any further keystroke closed it. **Built:** `GOH_LIVE=on` (default; `off` = Tab only) in the zsh adapter, a `live` flag on the IPC `complete` request (`goh menu --live`), and the engine's `Completion { candidates, valid }`. The definition of "valid" and the alternatives considered are in docs/docs/06-completion-engine.md. The adapter refreshes from the `zle-line-pre-redraw` hook only after typing or deleting widgets (not history recall or autosuggest accepts), skips the refresh while input is queued (`$PENDING`), keeps ↑/↓/Esc/Tab bound only while the menu is open, and does not reopen the menu by itself after an accept. One query measured 3.4 ms median, 4.7 ms p95 (40 runs each, against a running daemon), so a query per pause in typing is cheap.
 
 **Verified here:** engine validity rules (6 tests), the IPC flag (an explicit request is unaffected, a live one gets nothing for an invalid line), and pty tests of the adapter with the stand-in popup and the inline menu: typing alone opens it, each keystroke narrows candidates and ghost text, a no-match closes it and deleting reopens it, `zzz c`, `git foo c`, `gi` do not open it while `git ` does, Tab still completes an unknown command's files, Esc closes it until the next keystroke, accept does not reopen it, history recall does not open it, updates and a `hide` reach the popup, and `GOH_LIVE=off` restores Tab-only. Mutation checks: treating every edit as typing and dropping `--live` each made a test fail. A first version had an "Esc dismissal" flag that no test could tell from its absence (the hook never refreshes without a change anyway); it was removed.
 
 **Not verified:** this mode with the real popup in a live iTerm2 (flicker, lag per keystroke, whether the popup follows the caret smoothly as the line grows, whether it feels intrusive for commands with many arguments); behaviour with prompt plugins that redraw on every key (zsh-autosuggestions and syntax highlighting also use this hook); very fast typing on a slow machine; wrapped long lines; and the bash adapter, which has no as-you-type mode.
 
+### Specs are bundled in the binary (user asked: "doesn't the app carry them over by itself?")
+
+It did not: the richer specs lived in `docs/examples/`, the daemon read only the user's directory, and the user had only the 4-command example `git.json` that was copied there earlier, so just `git` with 4 subcommands completed. The specs for `git` (20 subcommands), `docker` (12) and `npm` (10) are now compiled into `goh-core` and served by the daemon with no setup; specs in the user's directory replace the bundled one for the same command (`goh-daemon::specs`), and `goh specs` / `goh-status` show each command's source and what it replaces. **Verified:** loader unit tests (bundled only, replace and add, unusable and duplicate files), a `goh` test where an empty spec directory still completes `git`, `docker` and `npm`, a test of the `specs` output, and a mutation check (not adding the bundled specs fails it). **Caveat found on the user's machine:** the old 4-command `~/.config/goh/specs/git.json` still replaces the bundled `git`, so it must be removed to get all 20 subcommands; the app does not delete or merge user files. Bundled suggestions are static lists (four fixed branch names, four `npm` script names), not read from the repository.
+
 ### Seeing the friction without a screen: the typing simulator (`tools/typing-sim`)
 
-The user asked how the assistant could notice inconveniences itself. It cannot see a real screen or use Accessibility, so a simulator replays realistic typing (13 command lines: git, docker, npm, unknown commands, typos) in a real zsh with the real daemon and the adapter's new `GOH_TRACE` log, and prints per keystroke whether the menu is open and with how many candidates, the adapter's cost, the frames sent, and a list of friction. It also renders the real popup for frames the adapter actually sent (`--save-frames`). Realistic specs for git (20 subcommands), docker (12) and npm (10) were generated from the prototype's data (`docs/examples/specs/`) so the simulation is not limited to the 4-command test spec.
+The user asked how the assistant could notice inconveniences itself. It cannot see a real screen or use Accessibility, so a simulator replays realistic typing (13 command lines: git, docker, npm, unknown commands, typos) in a real zsh with the real daemon and the adapter's new `GOH_TRACE` log, and prints per keystroke whether the menu is open and with how many candidates, the adapter's cost, the frames sent, and a list of friction. It also renders the real popup for frames the adapter actually sent (`--save-frames`). Realistic specs for git (20 subcommands), docker (12) and npm (10) were generated from the prototype's data (now `crates/goh-core/specs/`, bundled in the binary) so the simulation is not limited to the 4-command test spec.
 
 **Found and fixed with it:**
 
@@ -219,8 +223,122 @@ The user asked how the assistant could notice inconveniences itself. It cannot s
 
 ## Next runs, in order of value
 
-1. Use it live: in iTerm2, `source adapters/zsh/goh.zsh` with `goh-popup` on `PATH`, type `git c` + Tab, move with ↑/↓, accept, Esc; note how long the first overlay takes and whether anything flickers or steals a key.
+1. Use it live: in iTerm2, reload the adapter with `goh-popup` on `PATH`, type `git c` (no Tab), move with ↑/↓, accept with Tab/Right, dismiss with Esc/Left/Ctrl+C, and minimise or close the terminal; note latency and whether anything flickers or steals a key.
 2. (Skipped by the user) The same in Terminal.app (enable it under System Settings > Privacy & Security > Device Control and Data Access, then reopen it): `goh-popup --resolve` should say `"app":"Terminal"`.
 3. Starship-style two-line prompts with emoji, a scale-1 display, iTerm2 split panes.
 4. Bash on Ubuntu with GNOME Terminal and Kitty (real emulators), and bash 4.x if `COMP_POINT` handling is to be relaxed.
 5. PowerShell 7 on Windows 11: S-03 plus the named-pipe transport.
+
+## Keyboard and dismissal follow-up (2026-10-27)
+
+The user reported an overlay left behind after Ctrl+C, slow dismissal when closing/minimising the terminal,
+Tab still opening it in live mode, and Enter not accepting the highlighted item. These reports supersede the
+earlier keyboard defaults and the 300 ms watch interval above.
+
+The zsh adapter now also dismisses at `zle-line-init`: Ctrl+C skips `zle-line-finish`, but the next prompt must
+clear menu state and restore bindings. No signal trap is installed or replaced. Following a later user preference, Tab and Right share
+one validated insertion path and never execute a command. Enter keeps its original shell binding even
+while the menu is open: it runs the typed line without inserting a suggestion. Left dismisses and invokes
+its saved widget; arrows regain their original bindings when the menu closes. In live mode, a closed-menu Tab invokes
+the saved native completion widget; `GOH_LIVE=off` retains Tab-triggered menus.
+
+The popup watches every 50 ms and schedules the remaining interval rather than another full interval after
+an intervening redraw. The Accessibility provider rejects a missing or minimised focused window before
+reading its caret. After the first successful lookup, it uses 50 ms messaging timeouts and does not repeat
+startup retries on a disappearing terminal. Caret stabilisation remains enabled.
+
+Verified: pty regressions first reproduced all three keyboard failures, then passed with the fixes. They
+cover Ctrl+C twice, overlay hide frames, restored bindings, native Tab after dismissal, both Enter encodings,
+both horizontal-arrow encodings, no execution on accept and normal execution on a subsequent Enter.
+A native window-server check of the real popup using a caller-vouched file anchor measured 87 ms to hide
+when the anchor became unavailable and 82 ms when it was removed. Restoring the anchor showed the popup;
+an explicit hide kept it hidden; it never became the frontmost app. These measurements include observation
+overhead and simulate terminal unavailability. Real iTerm2 minimisation/closure and the new Accessibility
+window checks still need live verification; the interval is not an end-to-end latency guarantee.
+
+**Ghost-color follow-up:** the user showed `docker ps` with the inserted `s` still dim. Reproduced with and
+without the installed zsh plugins: ZLE converted the ghost's hex color to a terminal palette index, so deleting
+the original highlight string did not match. Editing also shifted its range, accumulating old highlights.
+Ghost regions now carry the native `memo=goh-ghost` ownership tag (zsh 5.9+); one cleanup helper removes them
+on refresh, accept and dismissal while preserving other plugins' regions. On older zsh, ghost text is left
+unstyled rather than adding an unidentifiable highlight. A pty regression reproduced the accumulating colors
+before the fix and verifies Tab/Enter/Right acceptance, Esc, foreign-highlight preservation and the unstyled
+fallback.
+
+**Duplicate-list follow-up:** the user reported the terminal's inline list remaining visible alongside the
+floating popup. Reproduced with a delayed stand-in popup and no subsequent keystrokes: the decision handler
+ran as a plain `zle -F` function, outside widget context, so it could set the overlay flag but saw an empty
+`BUFFER` and skipped the inline cleanup. It is now registered with `zle -F -w` and explicitly calls `zle -R`
+after rendering. The regression test checks the terminal's erase output while idle, before invoking any
+inspection widget; earlier tests inspected the flag, and their extra keystroke could hide the display bug.
+
+**Exact-command follow-up:** typing `docker`, `git` or `npm` at end of line now offers that command's
+subcommands immediately, before a space is typed. The engine treats an exact plain command name as ready
+for the next word and emits zero-width edits after it, including the missing space in the insertion.
+Ordinary completion after a typed space is unchanged. Partial/unknown names, quoted/escaped names and
+an exact prefix inside a longer word do not trigger this transition. Regression coverage checks the edit
+spans, separator handling, UTF-8 text before a pipeline, IPC validation, and live zsh selection/acceptance.
+
+**Startup-flash follow-up:** the user noticed the terminal flashing just before the popup appeared. The
+previous handoff deliberately drew the inline list first, then erased it on confirmation, moving the
+terminal's message area twice. The adapter now distinguishes pending startup from inline and overlay.
+It starts the popup before choosing the initial rendering, leaves the message area empty while awaiting
+the first answer, and retains the existing redraw-before-anchor ordering for explicit Tab menus. Only
+an actual switch to/from inline triggers a terminal redraw; repeated overlay answers do not.
+
+An asynchronous one-second startup deadline uses the popup's existing response FIFO. If no usable answer
+arrives, it enables inline completion without blocking typing. The bounded timer writes only to its
+inherited, original FIFO, so a reload cannot send its event into a replacement popup. Answered timeouts
+are ignored and a dismissed menu is never reopened. Missing binaries and explicit inline mode continue
+to fall back immediately. Pty regressions cover delayed overlay confirmation without any terminal redraw,
+an unresponsive popup falling back while idle, and Ctrl+C before the deadline.
+
+**Space and terminal-tab follow-up:** the user reported that the popup disappeared after typing the
+space following `docker`, and followed the caret into other iTerm2 tabs. The real `.zshrc` binds Space
+to Oh My Zsh's `magic-space`; the adapter now treats that widget as typing without replacing its binding.
+A fresh interactive shell loading the user's `.zshrc` verified `docker` -> `docker ` -> `docker p` keeps
+the same overlay menu open, sends no intervening hide, does not flash an inline list, and Right accepts
+`docker ps `. A regression first reproduced the space dismissal and then passed with the fix.
+
+The anchor now includes an opaque, retained identity for the native Accessibility window and focused
+text element, compared with Core Foundation equality rather than pointer addresses, caret coordinates
+or window titles. The popup binds to the first verified target for that menu, and filters other targets
+out of both show frames and watch ticks. It hides when another tab/pane/window owns focus, and can return
+only when the original target is focused again. `hide` clears ownership. Initial inline-only failures
+do not keep a watcher that could later draw an overlay without updating the adapter.
+
+Verified: native identity comparisons across new AX proxies, clones and distinct synthetic remote
+elements/windows; existing hide/return/move watch rules; all shell interaction tests and the real shell
+configuration with a stand-in popup. Live tab-switching via Accessibility is still unverified from this
+runner (`AXIsProcessTrusted` is false); no Accessibility permissions were changed. The earlier statement
+that same-window tab changes are not checked is superseded by this ownership guard.
+
+## Expanded static command pack (2026-10-27)
+
+Added 34 commands from `withfig/autocomplete` at `aef52acff84c45edde61ae610cc2c964802b9a38`, for 37 bundled
+command names total. The original git/docker/npm JSON remains unchanged. Node package tooling, system/file
+commands, SSH/network tools, Python/Rust/Go tooling and common DevOps CLIs are included. Selected literal
+`loadSpec` references expand AWS S3/configure/STS and gcloud auth/config/run; other cloud references remain
+explicitly listed as omissions. Git branch names, project scripts, container names and remote searches are
+not fabricated and no downloaded generator is executed.
+
+`tools/import-specs` parses TypeScript with the compiler API, converts static declarations and aliases,
+projects supported filesystem templates onto goh's own implementation, copies persistent flags to descendants,
+and records unsupported behavior in `report.json`. It preserves the MIT license under `third_party/` and pins
+every consumed source hash. Its tests include source containing top-level throws and side-effecting function
+bodies: these must never execute. Regeneration is deterministic and can run from the ignored download cache;
+the ordinary Cargo build and the running daemon need only the committed JSON. Cargo's build script discovers
+the JSON catalog, so adding an imported file cannot leave it omitted from the binary's hand-written list.
+
+The bash adapter now registers the same catalog via `goh specs`, including bundled commands without any
+user-installed JSON. Coverage includes all bundled files against the schema; representative aliases, flags,
+filesystem arguments and nested command trees through the engine; cold-start queries and a bundled pnpm
+completion through a real bash. The pack is a snapshot of the upstream CLI definitions, including some
+macOS/BSD-specific options, rather than a claim that every flag matches every installed CLI version/platform.
+
+**Navigation intent and deeper completions (2026-10-27):** the user refined Enter behavior: an untouched
+menu must allow normal submission, while ↑↓/Shift+Tab or wheel navigation makes Enter accept without
+execution. The adapter owns this per-query intent; edits reset it, and both inline and native hints follow it.
+The Docker spec now imports 58 root commands plus nested Container/Compose trees and flags; Node brings the
+catalog to 38 names. Fixed Docker metadata providers supply real container/image values when available,
+with bounded queries and no upstream generator execution. Native command logos are embedded Devicon assets.

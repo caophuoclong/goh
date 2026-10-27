@@ -6,6 +6,8 @@
 pub mod color;
 pub mod osc;
 
+use std::path::PathBuf;
+
 use serde::Deserialize;
 use serde_json::{json, Value};
 
@@ -161,6 +163,18 @@ impl ThemeConfig {
 }
 
 /// `COLORFGBG` is `fg;bg` (sometimes `fg;default;bg`); returns the background index.
+/// `$GOH_CONFIG`, else `~/.config/goh/config.json`.
+pub fn config_path() -> Option<PathBuf> {
+    std::env::var_os("GOH_CONFIG")
+        .map(PathBuf::from)
+        .or_else(|| std::env::var_os("HOME").map(|h| PathBuf::from(h).join(".config/goh/config.json")))
+}
+
+/// The config file as JSON; a missing or unparsable file is `None` (every setting then has its default).
+pub fn read_config() -> Option<Value> {
+    serde_json::from_str(&std::fs::read_to_string(config_path()?).ok()?).ok()
+}
+
 pub fn parse_colorfgbg(s: &str) -> Option<u8> {
     s.rsplit(';').next()?.trim().parse().ok()
 }

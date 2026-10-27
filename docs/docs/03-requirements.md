@@ -9,7 +9,7 @@
 | FR-01 | P0 | Recognize active editable command line and cursor position from supported shell | For 3 baseline shell/platform pairs, key input at prompt produces valid request; password/fullscreen disabled |
 | FR-02 | P0 | Suggest command/subcommands/options from spec with prefix match | `git ch` returns `checkout`; `git commit -` returns flags; ordering deterministic for same input |
 | FR-03 | P0 | Complete local files/directories respecting cwd and quoting | Path with space/unicode hidden file passes golden tests; no access outside current user privilege |
-| FR-04 | P0 | Keyboard navigation and safe insertion | Tab accepts; up/down move highlight; Esc hides; Enter defaults to shell; no execution on Tab |
+| FR-04 | P0 | Keyboard navigation and safe insertion | Tab accepts; up/down move highlight; Esc hides; zsh also accepts with Right while the menu is open; Left dismisses and moves normally; no acceptance key executes the command; Enter selects only after explicit menu navigation, without executing; before navigation it retains shell behavior and runs the typed line; editing resets navigation intent |
 | FR-05 | P0 | Theme reflects terminal palette where detectable | fg/bg sampled through supported adapter/OSC query; override persists; unknown source falls back sanely |
 | FR-06 | P0 | Inline fallback when overlay cannot be positioned | Wayland test has usable suggestions or native shell uninterrupted; no UI detached from caret |
 | FR-07 | P0 | App failure never blocks native editing | Kill daemon while typing -> keystrokes kept, shell remains functional |
@@ -22,6 +22,12 @@
 | FR-12 | P1 | Persist lightweight per-terminal preferences | Options overrideable global → OS → terminal → profile → session (documented resolution) |
 | FR-13 | P1 | Operate offline and without account | All static suggestions work without network |
 | FR-14 | P1 | Fuzzy/personalized ranking (local-only) | Optional setting, deterministic replay when toggled off |
+| FR-17 | P1 | Project-aware values from plain files or fixed read-only queries | git branches/tags/stashes/changed files, package scripts, make/just/task targets, compose services, Cargo bins/examples/features, workspace packages; nothing from the buffer reaches a subprocess; empty outside a project |
+| FR-18 | P1 | Correct near misses, complete `$VARIABLES`, narrow files by type | `git chekcout` → `checkout` only when nothing else matches; `$HO` lists exported names (never values); `python <TAB>` lists `.py` and directories |
+| FR-19 | P1 | Warn on risky suggestions and name their target | `git push --force`, `rm -r`, `kubectl delete`, `terraform apply` carry `⚠`; kubectl/helm show the current context, Terraform the workspace; nothing is blocked |
+| FR-20 | P1 | User snippets with a cursor marker | `snippets.json` entry is offered for the first word and accepting it leaves the cursor at `{{cursor}}` |
+| FR-21 | P1 | Opt-in command record: history lines, next-command prediction, remembered option values | Off by default; secret-looking and space-prefixed lines never written; file mode 0600; `goh forget` deletes it; nothing offered when off |
+| FR-22 | P1 | Opt-in spec generation for programs without one | Off by default; at most one `--help` run per program per daemon start; never overwrites a spec; denylist of system-state programs |
 
 ## Non-functional requirements
 

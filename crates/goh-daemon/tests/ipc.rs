@@ -165,6 +165,9 @@ fn live_requests_get_suggestions_only_for_a_recognised_command_in_progress() {
         client::menu(&sock, SESSION, "/", buf, buf.len(), 8, live).unwrap().into_iter().map(|i| i.label).collect()
     };
     assert_eq!(labels("git c", true), ["checkout", "cherry-pick"]);
+    assert_eq!(labels("git", true), ["checkout", "cherry-pick"]);
+    let bare = client::menu(&sock, SESSION, "/", "git", 3, 8, true).unwrap();
+    assert_eq!((bare[0].edit.start, bare[0].edit.end, bare[0].edit.insert.as_str()), (3, 3, " checkout "));
     assert!(labels("git foo c", true).is_empty(), "foo is not a git subcommand");
     assert!(labels("zzz c", true).is_empty(), "no spec for zzz");
     // An explicit request (Tab) is not filtered by validity: a command with no spec still gets file names.

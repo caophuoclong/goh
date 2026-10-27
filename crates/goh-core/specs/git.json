@@ -1,0 +1,848 @@
+{
+  "schemaVersion": 1,
+  "name": "git",
+  "description": "Distributed version control",
+  "options": [
+    {
+      "name": "--help",
+      "description": "Show help",
+      "takesValue": false
+    },
+    {
+      "name": "--version",
+      "description": "Print the version",
+      "takesValue": false
+    }
+  ],
+  "subcommands": [
+    {
+      "name": "add",
+      "description": "Add file contents to the index",
+      "args": [
+        {
+          "name": "pathspec",
+          "template": "filepaths",
+          "isVariadic": true,
+          "provider": "git-changed-files"
+        }
+      ],
+      "options": [
+        {
+          "name": "-p",
+          "description": "Choose hunks interactively",
+          "takesValue": false
+        },
+        {
+          "name": "-A",
+          "description": "Stage all changes, including deletions",
+          "takesValue": false
+        },
+        {
+          "name": "--update",
+          "description": "Stage changes to tracked files only",
+          "takesValue": false
+        },
+        {
+          "name": "-n",
+          "description": "Show what would be added",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "blame",
+      "description": "Show who last changed each line",
+      "options": [
+        {
+          "name": "-L",
+          "description": "Line range",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "range"
+            }
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "file",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "branch",
+      "description": "List, create or delete branches",
+      "args": [
+        {
+          "name": "branch",
+          "provider": "git-branches",
+          "isOptional": true,
+          "isVariadic": true
+        }
+      ]
+    },
+    {
+      "name": "check-ignore",
+      "description": "Debug ignore behavior"
+    },
+    {
+      "name": "checkout",
+      "description": "Switch branches or restore paths",
+      "options": [
+        {
+          "name": "-b",
+          "description": "Create and switch to a new branch",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "b"
+            }
+          ]
+        },
+        {
+          "name": "--detach",
+          "description": "Detach HEAD at the commit",
+          "takesValue": false
+        },
+        {
+          "name": "--track",
+          "description": "Set up tracking",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "branch",
+          "provider": "git-branches",
+          "providers": [
+            "git-tags"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "cherry-pick",
+      "description": "Apply changes from a commit",
+      "args": [
+        {
+          "name": "commit",
+          "provider": "git-branches"
+        }
+      ]
+    },
+    {
+      "name": "clean",
+      "description": "Remove untracked files from the working tree",
+      "options": [
+        {
+          "name": "-f",
+          "description": "Delete untracked files (cannot be undone)",
+          "takesValue": false
+        },
+        {
+          "name": "--force",
+          "description": "Delete untracked files (cannot be undone)",
+          "takesValue": false
+        },
+        {
+          "name": "-d",
+          "description": "Also untracked directories",
+          "takesValue": false
+        },
+        {
+          "name": "-x",
+          "description": "Also files ignored by .gitignore",
+          "takesValue": false
+        },
+        {
+          "name": "-n",
+          "description": "Only show what would be deleted",
+          "takesValue": false
+        },
+        {
+          "name": "--dry-run",
+          "description": "Only show what would be deleted",
+          "takesValue": false
+        },
+        {
+          "name": "-i",
+          "description": "Choose interactively",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "clone",
+      "description": "Clone a repository into a new directory"
+    },
+    {
+      "name": "commit",
+      "description": "Record changes to the repository",
+      "options": [
+        {
+          "name": "--all",
+          "description": "Stage tracked changes first",
+          "takesValue": false
+        },
+        {
+          "name": "--amend",
+          "description": "Replace the previous commit",
+          "takesValue": false
+        },
+        {
+          "name": "--message",
+          "description": "Use the given commit message",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "message"
+            }
+          ]
+        },
+        {
+          "name": "--no-verify",
+          "description": "Skip pre-commit hooks",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "diff",
+      "description": "Show changes between commits and files",
+      "args": [
+        {
+          "name": "revision",
+          "provider": "git-branches",
+          "isOptional": true,
+          "isVariadic": true,
+          "template": "filepaths",
+          "providers": [
+            "git-changed-files",
+            "git-tags"
+          ]
+        }
+      ],
+      "options": [
+        {
+          "name": "--cached",
+          "description": "Changes staged for commit",
+          "takesValue": false
+        },
+        {
+          "name": "--staged",
+          "description": "Changes staged for commit",
+          "takesValue": false
+        },
+        {
+          "name": "--stat",
+          "description": "Summarize changes per file",
+          "takesValue": false
+        },
+        {
+          "name": "--name-only",
+          "description": "Only file names",
+          "takesValue": false
+        },
+        {
+          "name": "--name-status",
+          "description": "File names with status",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "fetch",
+      "description": "Download objects and refs",
+      "args": [
+        {
+          "name": "remote",
+          "provider": "git-remotes",
+          "isOptional": true
+        },
+        {
+          "name": "branch",
+          "provider": "git-branches",
+          "isOptional": true,
+          "isVariadic": true
+        }
+      ]
+    },
+    {
+      "name": "log",
+      "description": "Show commit logs",
+      "args": [
+        {
+          "name": "revision",
+          "provider": "git-branches",
+          "isOptional": true,
+          "isVariadic": true
+        }
+      ]
+    },
+    {
+      "name": "merge",
+      "description": "Join two or more histories together",
+      "args": [
+        {
+          "name": "branch",
+          "provider": "git-branches"
+        }
+      ]
+    },
+    {
+      "name": "pull",
+      "description": "Fetch from and integrate with a remote",
+      "args": [
+        {
+          "name": "remote",
+          "provider": "git-remotes",
+          "isOptional": true
+        },
+        {
+          "name": "branch",
+          "provider": "git-branches",
+          "isOptional": true,
+          "isVariadic": true
+        }
+      ]
+    },
+    {
+      "name": "push",
+      "description": "Update remote refs and objects",
+      "options": [
+        {
+          "name": "--dry-run",
+          "description": "Show what would be pushed",
+          "takesValue": false
+        },
+        {
+          "name": "--force-with-lease",
+          "description": "Safer force push",
+          "takesValue": false
+        },
+        {
+          "name": "--set-upstream",
+          "description": "Track the remote branch",
+          "takesValue": false
+        },
+        {
+          "name": "--tags",
+          "description": "Push all tags",
+          "takesValue": false
+        },
+        {
+          "name": "--force",
+          "description": "Overwrite the remote branch (can lose commits)",
+          "takesValue": false
+        },
+        {
+          "name": "-f",
+          "description": "Overwrite the remote branch (can lose commits)",
+          "takesValue": false
+        },
+        {
+          "name": "-u",
+          "description": "Track the remote branch",
+          "takesValue": false
+        },
+        {
+          "name": "--delete",
+          "description": "Delete the remote branch or tag",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "remote",
+          "provider": "git-remotes",
+          "isOptional": true
+        },
+        {
+          "name": "branch",
+          "provider": "git-branches",
+          "isOptional": true,
+          "isVariadic": true,
+          "providers": [
+            "git-tags"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "rebase",
+      "description": "Reapply commits on top of another base",
+      "args": [
+        {
+          "name": "branch",
+          "provider": "git-branches"
+        }
+      ]
+    },
+    {
+      "name": "remote",
+      "description": "Manage the repositories you track",
+      "options": [
+        {
+          "name": "-v",
+          "description": "Show URLs",
+          "takesValue": false
+        }
+      ],
+      "subcommands": [
+        {
+          "name": "add",
+          "description": "Add a remote",
+          "args": [
+            {
+              "name": "name"
+            },
+            {
+              "name": "url"
+            }
+          ]
+        },
+        {
+          "name": "remove",
+          "description": "Remove a remote",
+          "args": [
+            {
+              "name": "remote",
+              "provider": "git-remotes"
+            }
+          ]
+        },
+        {
+          "name": "rename",
+          "description": "Rename a remote",
+          "args": [
+            {
+              "name": "remote",
+              "provider": "git-remotes"
+            },
+            {
+              "name": "new name"
+            }
+          ]
+        },
+        {
+          "name": "show",
+          "description": "Show a remote",
+          "args": [
+            {
+              "name": "remote",
+              "provider": "git-remotes"
+            }
+          ]
+        },
+        {
+          "name": "get-url",
+          "description": "Show the URL of a remote",
+          "args": [
+            {
+              "name": "remote",
+              "provider": "git-remotes"
+            }
+          ]
+        },
+        {
+          "name": "set-url",
+          "description": "Change the URL of a remote",
+          "args": [
+            {
+              "name": "remote",
+              "provider": "git-remotes"
+            },
+            {
+              "name": "url"
+            }
+          ]
+        },
+        {
+          "name": "prune",
+          "description": "Delete stale remote-tracking branches",
+          "args": [
+            {
+              "name": "remote",
+              "provider": "git-remotes"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "reset",
+      "description": "Unstage changes or move HEAD",
+      "options": [
+        {
+          "name": "--soft",
+          "description": "Keep index and working tree",
+          "takesValue": false
+        },
+        {
+          "name": "--mixed",
+          "description": "Keep the working tree, reset the index",
+          "takesValue": false
+        },
+        {
+          "name": "--hard",
+          "description": "Discard all changes in the index and working tree",
+          "takesValue": false
+        },
+        {
+          "name": "--keep",
+          "description": "Reset, keeping local changes",
+          "takesValue": false
+        },
+        {
+          "name": "--merge",
+          "description": "Reset, keeping uncommitted merge changes",
+          "takesValue": false
+        },
+        {
+          "name": "-p",
+          "description": "Choose hunks interactively",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "pathspec",
+          "provider": "git-staged-files",
+          "providers": [
+            "git-branches",
+            "git-tags"
+          ],
+          "isVariadic": true,
+          "isOptional": true
+        }
+      ]
+    },
+    {
+      "name": "restore",
+      "description": "Restore working tree files",
+      "args": [
+        {
+          "name": "pathspec",
+          "provider": "git-changed-files",
+          "template": "filepaths",
+          "isVariadic": true
+        }
+      ],
+      "options": [
+        {
+          "name": "--staged",
+          "description": "Unstage: restore the index",
+          "takesValue": false
+        },
+        {
+          "name": "--worktree",
+          "description": "Restore the working tree",
+          "takesValue": false
+        },
+        {
+          "name": "--source",
+          "description": "Restore from this commit",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "tree",
+              "provider": "git-branches"
+            }
+          ]
+        },
+        {
+          "name": "-p",
+          "description": "Choose hunks interactively",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "revert",
+      "description": "Revert existing commits",
+      "options": [
+        {
+          "name": "--no-commit",
+          "description": "Apply the change without committing",
+          "takesValue": false
+        },
+        {
+          "name": "--continue",
+          "description": "Continue after resolving conflicts",
+          "takesValue": false
+        },
+        {
+          "name": "--abort",
+          "description": "Cancel the revert",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "commit",
+          "provider": "git-branches",
+          "isVariadic": true
+        }
+      ]
+    },
+    {
+      "name": "rm",
+      "description": "Remove files from the index and working tree",
+      "options": [
+        {
+          "name": "--cached",
+          "description": "Only remove from the index",
+          "takesValue": false
+        },
+        {
+          "name": "-r",
+          "description": "Recurse into directories",
+          "takesValue": false
+        },
+        {
+          "name": "-f",
+          "description": "Override the up-to-date check",
+          "takesValue": false
+        },
+        {
+          "name": "-n",
+          "description": "Show what would be removed",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "pathspec",
+          "template": "filepaths",
+          "isVariadic": true
+        }
+      ]
+    },
+    {
+      "name": "show",
+      "description": "Show a commit, tag or file at a revision",
+      "options": [
+        {
+          "name": "--stat",
+          "description": "Summarize changes per file",
+          "takesValue": false
+        },
+        {
+          "name": "--name-only",
+          "description": "Only file names",
+          "takesValue": false
+        },
+        {
+          "name": "--oneline",
+          "description": "One line per commit",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "object",
+          "provider": "git-branches",
+          "providers": [
+            "git-tags"
+          ],
+          "isVariadic": true,
+          "isOptional": true
+        }
+      ]
+    },
+    {
+      "name": "stash",
+      "description": "Stash changes in a dirty working directory",
+      "subcommands": [
+        {
+          "name": "push",
+          "description": "Save changes to a new stash",
+          "options": [
+            {
+              "name": "-m",
+              "description": "Stash message",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "message"
+                }
+              ]
+            },
+            {
+              "name": "-u",
+              "description": "Include untracked files",
+              "takesValue": false
+            },
+            {
+              "name": "-p",
+              "description": "Choose hunks interactively",
+              "takesValue": false
+            },
+            {
+              "name": "-k",
+              "description": "Keep staged changes in the index",
+              "takesValue": false
+            }
+          ],
+          "args": [
+            {
+              "name": "pathspec",
+              "template": "filepaths",
+              "isVariadic": true,
+              "isOptional": true
+            }
+          ]
+        },
+        {
+          "name": "pop",
+          "description": "Apply a stash and drop it",
+          "args": [
+            {
+              "name": "stash",
+              "provider": "git-stashes",
+              "isOptional": true
+            }
+          ]
+        },
+        {
+          "name": "apply",
+          "description": "Apply a stash, keeping it",
+          "args": [
+            {
+              "name": "stash",
+              "provider": "git-stashes",
+              "isOptional": true
+            }
+          ]
+        },
+        {
+          "name": "drop",
+          "description": "Delete a stash",
+          "args": [
+            {
+              "name": "stash",
+              "provider": "git-stashes",
+              "isOptional": true
+            }
+          ]
+        },
+        {
+          "name": "show",
+          "description": "Show what a stash changed",
+          "args": [
+            {
+              "name": "stash",
+              "provider": "git-stashes",
+              "isOptional": true
+            }
+          ],
+          "options": [
+            {
+              "name": "-p",
+              "description": "Show the patch",
+              "takesValue": false
+            }
+          ]
+        },
+        {
+          "name": "branch",
+          "description": "Create a branch from a stash",
+          "args": [
+            {
+              "name": "branchname"
+            },
+            {
+              "name": "stash",
+              "provider": "git-stashes",
+              "isOptional": true
+            }
+          ]
+        },
+        {
+          "name": "list",
+          "description": "List stashes"
+        },
+        {
+          "name": "clear",
+          "description": "Delete every stash"
+        }
+      ]
+    },
+    {
+      "name": "status",
+      "description": "Show the working tree status"
+    },
+    {
+      "name": "switch",
+      "description": "Switch branches",
+      "args": [
+        {
+          "name": "branch",
+          "provider": "git-branches"
+        }
+      ]
+    },
+    {
+      "name": "tag",
+      "description": "Create, list or delete tags",
+      "args": [
+        {
+          "name": "tag",
+          "provider": "git-tags",
+          "isOptional": true
+        }
+      ],
+      "options": [
+        {
+          "name": "-d",
+          "description": "Delete a tag",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "tag",
+              "provider": "git-tags"
+            }
+          ]
+        },
+        {
+          "name": "--delete",
+          "description": "Delete a tag",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "tag",
+              "provider": "git-tags"
+            }
+          ]
+        },
+        {
+          "name": "-a",
+          "description": "Annotated tag",
+          "takesValue": false
+        },
+        {
+          "name": "-m",
+          "description": "Tag message",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "message"
+            }
+          ]
+        },
+        {
+          "name": "-l",
+          "description": "List tags",
+          "takesValue": false
+        },
+        {
+          "name": "-f",
+          "description": "Replace an existing tag",
+          "takesValue": false
+        }
+      ]
+    }
+  ]
+}

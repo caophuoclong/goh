@@ -139,9 +139,9 @@ impl Fixture {
         self.dir.path().join(name)
     }
 
-    /// `prog args` in a clean environment pointing at this fixture's daemon, specs and goh-ctl.
+    /// `prog args` in a clean environment pointing at this fixture's daemon, specs and goh.
     pub fn command(&self, prog: &str, args: &[&str], extra_env: &[(&str, &str)]) -> Command {
-        let ctl = Path::new(env!("CARGO_BIN_EXE_goh-ctl"));
+        let ctl = Path::new(env!("CARGO_BIN_EXE_goh"));
         let bin_dir = ctl.parent().unwrap().to_str().unwrap().to_string();
         let mut cmd = Command::new(prog);
         cmd.args(args)
@@ -165,7 +165,7 @@ impl Fixture {
     }
 }
 
-/// Stop whatever daemon holds the fixture's socket (one started on demand by goh-ctl).
+/// Stop whatever daemon holds the fixture's socket (one started on demand by goh).
 pub fn kill_socket_holder(socket: &Path) {
     if let Ok(out) = Command::new("lsof").args(["-t"]).arg(socket).output() {
         for pid in String::from_utf8_lossy(&out.stdout).split_whitespace() {

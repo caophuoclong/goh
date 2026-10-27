@@ -2,6 +2,7 @@
 name = "goh-daemon"
 version.workspace = true
 edition.workspace = true
+license.workspace = true
 
 [dependencies]
 goh-anchor = { path = "../goh-anchor" }

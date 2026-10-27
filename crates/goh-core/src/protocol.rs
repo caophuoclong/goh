@@ -11,14 +11,20 @@ pub enum Kind {
     Argument,
     File,
     Directory,
+    /// A whole command line seen before (or predicted to come next); replaces the line.
+    History,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum Source {
     #[serde(rename = "bundled")]
     Bundled,
+    #[serde(rename = "local")]
+    Local,
     #[serde(rename = "filesystem")]
     Filesystem,
+    #[serde(rename = "built-in generator")]
+    Generator,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -34,6 +40,9 @@ pub struct Candidate {
     pub match_ranges: Vec<[usize; 2]>,
     pub score: f64,
     pub source: Source,
+    /// Where the cursor goes within `insert_text` (a snippet's `{{cursor}}`); the end of it when absent.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cursor_offset: Option<usize>,
 }
 
 #[derive(Debug, Clone, Serialize)]

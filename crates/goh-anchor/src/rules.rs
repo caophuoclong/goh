@@ -28,6 +28,10 @@ impl Rect {
 pub enum App {
     ITerm2,
     Terminal,
+    /// Its terminal is xterm.js; see [`caret_from_rect`] for what is measured there.
+    VsCode,
+    /// The Claude desktop app's terminal, also xterm.js.
+    Claude,
 }
 
 impl App {
@@ -35,6 +39,8 @@ impl App {
         match self {
             App::ITerm2 => "iTerm2",
             App::Terminal => "Terminal",
+            App::VsCode => "VS Code",
+            App::Claude => "Claude",
         }
     }
 
@@ -43,6 +49,8 @@ impl App {
         match self {
             App::ITerm2 => "iTerm.app",
             App::Terminal => "Apple_Terminal",
+            App::VsCode => "vscode",
+            App::Claude => "claude-desktop",
         }
     }
 
@@ -53,7 +61,19 @@ impl App {
         match self {
             App::ITerm2 => 0,
             App::Terminal => 1,
+            App::VsCode | App::Claude => 0, // unused: xterm.js apps are read from the element's frame
         }
+    }
+
+    /// xterm.js terminals: the caret is the frame of the focused hidden input, not a text range's bounds.
+    pub fn reads_input_frame(self) -> bool {
+        matches!(self, App::VsCode | App::Claude)
+    }
+
+    /// Electron apps that build their accessibility tree only when asked (measured: Claude exposes no
+    /// focused element until `AXManualAccessibility` is set; VS Code does without it).
+    pub fn needs_manual_accessibility(self) -> bool {
+        self == App::Claude
     }
 
     pub fn from_exe_path(path: &str) -> Option<App> {
@@ -61,6 +81,10 @@ impl App {
             Some(App::ITerm2)
         } else if path.ends_with("/Terminal.app/Contents/MacOS/Terminal") {
             Some(App::Terminal)
+        } else if path.ends_with("/Visual Studio Code.app/Contents/MacOS/Code") {
+            Some(App::VsCode)
+        } else if path.ends_with("/Claude.app/Contents/MacOS/Claude") {
+            Some(App::Claude)
         } else {
             None
         }
@@ -85,9 +109,12 @@ pub enum Reason {
     TermProgramMismatch { expected: &'static str, found: String },
     Multiplexer(&'static str),
     Remote,
+    NoFocusedWindow,
+    WindowMinimized,
     NoFocusedElement { code: Option<i32> },
     NoCaretRange,
     NoBounds,
+    NotTerminalInput,
     CellHeightUnknown,
     EmptyRect,
     NoDisplay,
@@ -106,10 +133,13 @@ impl fmt::Display for Reason {
             }
             Reason::Multiplexer(m) => write!(f, "running inside {m}, which was not verified"),
             Reason::Remote => f.write_str("running over ssh: the terminal is on another machine"),
+            Reason::NoFocusedWindow => f.write_str("the terminal has no verifiable focused window"),
+            Reason::WindowMinimized => f.write_str("the terminal window is minimised"),
             Reason::NoFocusedElement { code: Some(c) } => write!(f, "the app exposes no focused element (Accessibility error {c})"),
             Reason::NoFocusedElement { code: None } => f.write_str("the app exposes no focused element"),
             Reason::NoCaretRange => f.write_str("the focused element has no selected text range"),
             Reason::NoBounds => f.write_str("the focused element returned no bounds for the caret"),
+            Reason::NotTerminalInput => f.write_str("the focused element is not the terminal's input (focus is in the editor or another widget)"),
             Reason::CellHeightUnknown => f.write_str("the terminal did not report its cell height"),
             Reason::EmptyRect => f.write_str("the caret rectangle is empty or invalid"),
             Reason::NoDisplay => f.write_str("the caret is not on any known display"),
@@ -121,6 +151,9 @@ impl fmt::Display for Reason {
 ///
 /// * Only the rectangle's **top-left** and the **cell height** are used, never its width: Terminal.app
 ///   returns a rectangle as wide as the rest of the line when the caret is at the end of typed text.
+/// * VS Code and Claude (xterm.js): `AXBoundsForRange` answers zeros, but the focused element is xterm's hidden input,
+///   which sits on the caret cell, so its `AXFrame` *is* the caret (measured: 8 x 16 pt at the cursor).
+///   Any larger frame is some other widget that has focus, never the caret.
 /// * iTerm2 returns a rectangle two lines tall, starting on the line above, for a caret at column 1
 ///   after an empty line; the caret is the last line of that rectangle. That needs the cell height
 ///   (iTerm2 reports it with `OSC 1337 ; ReportCellSize`).
@@ -131,6 +164,8 @@ pub fn caret_from_rect(app: App, rect: Rect, cell_height: Option<f64>) -> Result
     }
     match app {
         App::Terminal => Ok(Caret { x: rect.x, y: rect.y, height: rect.h }),
+        App::VsCode | App::Claude if rect.w > 64.0 || rect.h > 64.0 => Err(Reason::NotTerminalInput),
+        App::VsCode | App::Claude => Ok(Caret { x: rect.x, y: rect.y, height: rect.h }),
         App::ITerm2 => {
             let cell = cell_height.filter(|c| c.is_finite() && *c > 0.0).ok_or(Reason::CellHeightUnknown)?;
             if rect.h >= 1.5 * cell {
@@ -193,6 +228,18 @@ mod tests {
     }
 
     #[test]
+    fn vscode_caret_is_the_frame_of_xterms_input_and_nothing_larger() {
+        // Measured with `goh-popup --probe` in VS Code's terminal: focused AXTextField, AXFrame below.
+        let frame = Rect { x: 73.0, y: 780.0, w: 8.0, h: 16.0 };
+        assert_eq!(caret_from_rect(App::VsCode, frame, None).unwrap(), Caret { x: 73.0, y: 780.0, height: 16.0 });
+        // Claude's terminal, measured the same way: AXTextField at x=936 y=154, 8 x 16.
+        let claude = Rect { x: 936.0, y: 154.0, w: 8.0, h: 16.0 };
+        assert_eq!(caret_from_rect(App::Claude, claude, None).unwrap(), Caret { x: 936.0, y: 154.0, height: 16.0 });
+        let editor = Rect { x: 0.0, y: 33.0, w: 900.0, h: 20.0 }; // e.g. a search box
+        assert_eq!(caret_from_rect(App::VsCode, editor, None), Err(Reason::NotTerminalInput));
+    }
+
+    #[test]
     fn nonsense_rectangles_are_rejected() {
         for r in [Rect::default(), Rect { x: f64::NAN, y: 0.0, w: 1.0, h: 10.0 }, Rect { x: 0.0, y: 0.0, w: 1.0, h: 5000.0 }] {
             assert_eq!(caret_from_rect(App::Terminal, r, Some(15.0)), Err(Reason::EmptyRect));
@@ -203,6 +250,9 @@ mod tests {
     fn apps_are_recognised_by_executable_path_only() {
         assert_eq!(App::from_exe_path("/Applications/iTerm.app/Contents/MacOS/iTerm2"), Some(App::ITerm2));
         assert_eq!(App::from_exe_path("/System/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal"), Some(App::Terminal));
+        assert_eq!(App::from_exe_path("/Applications/Visual Studio Code.app/Contents/MacOS/Code"), Some(App::VsCode));
+        assert_eq!(App::from_exe_path("/Applications/Claude.app/Contents/MacOS/Claude"), Some(App::Claude));
+        assert_eq!(App::from_exe_path("/Applications/Claude.app/Contents/Frameworks/Claude Helper.app/Contents/MacOS/Claude Helper"), None);
         assert_eq!(App::from_exe_path("/Applications/Ghostty.app/Contents/MacOS/ghostty"), None);
         assert_eq!(App::from_exe_path("/tmp/evil/iTerm2"), None);
     }

@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "name": "make",
+  "description": "Build targets from a Makefile",
+  "options": [
+    {
+      "name": "-j",
+      "description": "Number of jobs to run at once",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "jobs"
+        }
+      ]
+    },
+    {
+      "name": "-C",
+      "description": "Change to this directory first",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "directory",
+          "template": "folders"
+        }
+      ]
+    },
+    {
+      "name": "-f",
+      "description": "Read this file as the makefile",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "file",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "-n",
+      "description": "Print what would run without running it",
+      "takesValue": false
+    },
+    {
+      "name": "-B",
+      "description": "Rebuild everything",
+      "takesValue": false
+    },
+    {
+      "name": "-k",
+      "description": "Keep going after errors",
+      "takesValue": false
+    },
+    {
+      "name": "-s",
+      "description": "Do not echo commands",
+      "takesValue": false
+    }
+  ],
+  "args": [
+    {
+      "name": "target",
+      "description": "Target from the Makefile",
+      "provider": "make-targets",
+      "isVariadic": true,
+      "isOptional": true
+    }
+  ]
+}

@@ -15,12 +15,20 @@ pub use gate::check_env;
 pub use retry::{retry, settle_from};
 pub use rules::{caret_from_rect, App, Caret, Rect, Reason};
 
-/// A caret position for which the rules were verified, plus the display it is on.
-#[derive(Debug, Clone, Copy, PartialEq)]
+/// Opaque identity of a terminal window and its focused text element, retained across caret reads.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Focus {
+    #[cfg(target_os = "macos")]
+    pub(crate) inner: ax::Focus,
+}
+
+/// A caret position tied to the particular terminal window and text element that owns it.
+#[derive(Debug, Clone, PartialEq)]
 pub struct Anchor {
     pub app: App,
     pub caret: Caret,
     pub display: Rect,
+    pub focus: Focus,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -59,6 +67,39 @@ pub fn locate_with(opts: &Options) -> (Outcome, Vec<String>) {
     {
         let _ = opts;
         (Outcome::Unverified(Reason::UnsupportedPlatform), Vec::new())
+    }
+}
+
+/// May this process use the Accessibility API? The answer belongs to the terminal app running it.
+/// `None` where there is no such permission (not macOS).
+pub fn accessibility_trusted() -> Option<bool> {
+    #[cfg(target_os = "macos")]
+    {
+        Some(ax::is_trusted())
+    }
+    #[cfg(not(target_os = "macos"))]
+    {
+        None
+    }
+}
+
+/// Shows macOS's own Accessibility prompt for the terminal app (it then appears in the list).
+pub fn request_accessibility() {
+    #[cfg(target_os = "macos")]
+    {
+        ax::request_trust();
+    }
+}
+
+/// Raw Accessibility facts about the focused app's focused element (for `goh-popup --probe`).
+pub fn probe() -> Vec<String> {
+    #[cfg(target_os = "macos")]
+    {
+        ax::probe()
+    }
+    #[cfg(not(target_os = "macos"))]
+    {
+        vec!["only available on macOS".to_string()]
     }
 }
 

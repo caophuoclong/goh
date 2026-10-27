@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "name": "node",
+  "description": "Run the node interpreter",
+  "options": [
+    {
+      "name": "-e",
+      "description": "Evaluate script",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "argument"
+        }
+      ]
+    },
+    {
+      "name": "--watch",
+      "description": "Watch input files",
+      "takesValue": false
+    },
+    {
+      "name": "--watch-path",
+      "description": "Specify a watch directory or file",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "path",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "--watch-preserve-output",
+      "description": "Disable the clearing of the console when watch mode restarts the process",
+      "takesValue": false
+    },
+    {
+      "name": "--env-file",
+      "description": "Specify a file containing environment variables",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "path",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "-p",
+      "description": "Evaluate script and print result",
+      "takesValue": false
+    },
+    {
+      "name": "--print",
+      "description": "Evaluate script and print result",
+      "takesValue": false
+    },
+    {
+      "name": "-c",
+      "description": "Syntax check script without executing",
+      "takesValue": false
+    },
+    {
+      "name": "--check",
+      "description": "Syntax check script without executing",
+      "takesValue": false
+    },
+    {
+      "name": "-v",
+      "description": "Print Node.js version",
+      "takesValue": false
+    },
+    {
+      "name": "--version",
+      "description": "Print Node.js version",
+      "takesValue": false
+    },
+    {
+      "name": "-i",
+      "description": "Always enter the REPL even if stdin does not appear to be a terminal",
+      "takesValue": false
+    },
+    {
+      "name": "--interactive",
+      "description": "Always enter the REPL even if stdin does not appear to be a terminal",
+      "takesValue": false
+    },
+    {
+      "name": "-h",
+      "description": "Print node command line options (currently set)",
+      "takesValue": false
+    },
+    {
+      "name": "--help",
+      "description": "Print node command line options (currently set)",
+      "takesValue": false
+    },
+    {
+      "name": "--inspect",
+      "description": "Activate inspector on host:port (default: 127.0.0.1:9229)",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "[host:]port",
+          "isOptional": true
+        }
+      ]
+    },
+    {
+      "name": "--preserve-symlinks",
+      "description": "Follows symlinks to directories when examining source code and templates for translation strings",
+      "takesValue": false
+    }
+  ],
+  "args": [
+    {
+      "name": "node script",
+      "template": "filepaths",
+      "extensions": [
+        "js",
+        "mjs",
+        "cjs",
+        "ts",
+        "mts",
+        "cts"
+      ]
+    }
+  ]
+}

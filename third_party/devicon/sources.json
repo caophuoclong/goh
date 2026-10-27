@@ -1,0 +1,19 @@
+{
+  "repository": "devicons/devicon",
+  "version": "v2.17.0",
+  "files": {
+    "LICENSE": "121194741d4a915b9f5890fdd6dd95121f9b1f816517c792358d72d7c838d664",
+    "icons/docker/docker-original.svg": "3fd830ea69431ed7a0b8d068cd5b34ad3f00a1a78195d50f13ff56713f2462e1",
+    "icons/nodejs/nodejs-original.svg": "3218687c5ea24a4d4c0a33dc5c287da38c33a72dcfe9382469d7ce4e0bf661fb",
+    "icons/go/go-original-wordmark.svg": "d0400ee3d76ee43fa45e84a3b38b5710a9674969eb71af9d5bb59ed7916a3225",
+    "icons/git/git-original.svg": "717a57ea97bf7e86de721dab3e68afac66332a10676d5c9abce4ae6a5a9c9983",
+    "icons/npm/npm-original-wordmark.svg": "9013d7e4c96cb5ef404ec839e4cd1802b4e91dc92280dc20809e56ed5097a932",
+    "icons/python/python-original.svg": "71493b4a732f0532b3a03a7a95da3ee11a65766367c8303b901ffbe7bf91a3a2",
+    "icons/rust/rust-original.svg": "16c6c6a98e990944fc5e1cc64cc8fc7b8be3a662ec4ee7951b7995d2e52f5e12",
+    "icons/kubernetes/kubernetes-plain.svg": "8253c15339196bd566a300530323df4af91f781458e511b6446b57dcef387e85",
+    "icons/pnpm/pnpm-original.svg": "92032f79684805a7ee223dfc833a13e903632c1ca259fe39b6e69e0e4b3c38b4",
+    "icons/yarn/yarn-original.svg": "98f289573da1bdde48ed718babc1fb2ca8bbdeef66b56cd60d64dba72b20d7f6",
+    "icons/terraform/terraform-original.svg": "0be6427291ae47f057b75f9010dffd6f58a40f0c83c43606ff68851cef1621dc",
+    "icons/github/github-original.svg": "45262793de6292206a895ed63593cdb1eaed82074173f7f4b5bdb3e427ca805a"
+  }
+}

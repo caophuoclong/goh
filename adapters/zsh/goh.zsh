@@ -1,11 +1,11 @@
 # goh.zsh — inline completion through gohd, on Tab and as you type. Source from ~/.zshrc after compinit.
 #
-# Tab      one candidate: insert it. Several: open an inline menu (ghost text + list below the line).
-# Tab      with the menu open: insert the highlighted candidate (never runs the command).
-# Up/Down  move the highlight, wrapping.   Shift+Tab: previous.   Esc: close.
-# Enter    keeps the shell's default behaviour (the menu is dropped; nothing is inserted).
+# Tab/Right with the menu open: insert the highlighted candidate (never runs the command).
+# Up/Down move the highlight, wrapping. Shift+Tab: previous. Esc/Left: close (Left also moves normally).
+# Tab with the menu closed uses native completion; GOH_LIVE=off enables Tab-triggered menus instead.
+# Enter selects only after menu navigation; otherwise it uses the original shell binding. Ctrl+C closes the menu at the next prompt.
 # With GOH_LIVE=off any edit or cursor move closes the menu (below: as-you-type keeps it in step instead).
-# Up/Down/Shift+Tab/Esc are bound only while it is open.
+# Navigation keys are bound only while the menu is open.
 #
 # As-you-type (GOH_LIVE=on, the default; `off` = Tab only): after each edit, if the line is a recognised
 # command in progress (its first word has a completion spec and every earlier word fits it; see
@@ -14,12 +14,17 @@
 # commands never open it by themselves (Tab still completes them). It reacts to typing and deleting
 # only, not to history recall, and waits out bursts of input (paste, key repeat).
 #
+# Optional, off by default (`goh config`): with privacy.recordCommands the successful lines you run are kept in a
+# private local file, so a started line can be finished from your history, the command that usually follows the
+# last one is shown as ghost text at an empty prompt (Right or Tab takes it), and values you gave an option come
+# back as suggestions. `goh forget` deletes the file.
+#
 # Fail-open: any problem (no daemon, timeout, odd values) falls through to the widget Tab was
 # bound to before. `goh-unload` restores the original binding.
 # Overlay: with GOH_DISPLAY=auto (default) or overlay, the menu is also sent to `goh-popup`, which draws
-# it at the caret when the caret is verified (iTerm2, Terminal.app) and otherwise answers "inline", in
-# which case nothing changes. GOH_DISPLAY=inline never starts it. The inline menu is shown immediately
-# and hidden only once the popup says it is drawing the overlay. Frames go over FIFOs; the answer is
+# it at the caret when the caret is verified (iTerm2, Terminal.app) and otherwise answers "inline".
+# GOH_DISPLAY=inline never starts it. While starting the popup, no temporary inline list is drawn;
+# an inline answer or a bounded startup timeout enables the fallback. Frames go over FIFOs; the answer is
 # read asynchronously (zle -F), so a slow or dead popup can never block typing.
 # Theme: ghost text uses the session's resolved `text-muted` (docs/design-system/theme-resolution.md);
 # `goh-theme` shows how it was resolved, `goh-theme-refresh` asks the terminal again.
@@ -27,29 +32,39 @@
 # Offsets on the wire are UTF-8 bytes; zsh's CURSOR and string slicing count characters, so
 # conversions happen here with LC_ALL=C (byte semantics) and nowhere else.
 
-autoload -Uz add-zle-hook-widget
+autoload -Uz add-zle-hook-widget is-at-least
 
 # Sourcing again (e.g. after rebuilding) starts clean: stop a popup left by the previous version.
 (( ${+functions[_goh_pop_stop]} )) && _goh_pop_stop 2>/dev/null
 
-typeset -g _GOH_CTL=${GOH_CTL:-goh-ctl}
+typeset -g _GOH_CTL=${GOH_CTL:-goh}
 typeset -g _GOH_SESSION="zsh-$$-$RANDOM"
-typeset -g _GOH_LIMIT=${GOH_LIMIT:-8}
+# Settings from the config file (`goh config`); an environment variable you set yourself still wins.
+{
+  local _goh_line _goh_name
+  for _goh_line in ${(f)"$(command $_GOH_CTL config env 2>/dev/null)"}; do
+    _goh_name=${_goh_line%%=*}
+    [[ -n ${(P)_goh_name-} ]] || typeset -g $_goh_name=${_goh_line#*=}
+  done
+}
+typeset -gi _GOH_LIMIT=${GOH_LIMIT:-8}
+(( _GOH_LIMIT < 1 )) && _GOH_LIMIT=1
 typeset -g _GOH_DISPLAY=${GOH_DISPLAY:-auto}   # auto | overlay | inline
 typeset -g _GOH_LIVE=${GOH_LIVE:-on}           # on | off (as-you-type suggestions)
 typeset -gi _GOH_LIVE_MIN=${GOH_LIVE_MIN:-0}   # characters of the current word before the menu may open by itself
 typeset -g _goh_seen_buf
 typeset -gi _goh_seen_cur=-1 _goh_busy=0
 # Widgets after which an edit counts as the user typing (not history recall, autosuggest accept, ...).
-typeset -ga _goh_typing_widgets=(self-insert backward-delete-char delete-char vi-backward-delete-char vi-delete-char backward-kill-word kill-word bracketed-paste quoted-insert)
+typeset -ga _goh_typing_widgets=(self-insert magic-space backward-delete-char delete-char vi-backward-delete-char vi-delete-char backward-kill-word kill-word bracketed-paste quoted-insert)
 typeset -g _GOH_POPUP=${GOH_POPUP:-goh-popup}
 typeset -g _GOH_ORIG_TAB
 typeset -g _goh_pop_dir _goh_pop_pid _goh_items_json _goh_last_decision _goh_last_frame
-typeset -gi _goh_pin=-1 _goh_pout=-1 _goh_overlay=0 _goh_win=1
+typeset -gi _goh_pin=-1 _goh_pout=-1 _goh_overlay=0 _goh_win=1 _goh_menu_id=0
+# _goh_overlay: -1 = awaiting the first popup answer, 0 = inline, 1 = overlay.
 typeset -ga _goh_ranges
 typeset -g _goh_new _goh_pre _goh_tail_out
-typeset -gi _goh_on=0 _goh_sel=1 _goh_buf_cur=0
-typeset -g _goh_buf _goh_hl
+typeset -gi _goh_on=0 _goh_sel=1 _goh_buf_cur=0 _goh_navigated=0
+typeset -g _goh_buf
 typeset -ga _goh_start _goh_end _goh_cursor _goh_kind _goh_label _goh_insert _goh_desc
 typeset -gA _goh_theme   # resolved design tokens (see goh-theme-refresh)
 typeset -g _goh_ghost_style='fg=8'
@@ -59,6 +74,9 @@ typeset -gA _goh_saved   # key -> widget it was bound to before the menu opened 
 typeset -gA _goh_menu_keys=(
   '^[[A' _goh_up   '^[OA' _goh_up
   '^[[B' _goh_down '^[OB' _goh_down
+  '^[[C' _goh_accept_key '^[OC' _goh_accept_key
+  '^[[D' _goh_left '^[OD' _goh_left
+  '^M' _goh_enter '^J' _goh_enter
   '^[[Z' _goh_up
   '^['   _goh_esc
 )
@@ -112,9 +130,28 @@ _goh_pop_stop() {
 # The popup's answers ("overlay" or "inline") arrive here whenever ZLE is idle.
 _goh_on_decision() {
   emulate -L zsh
-  local line
+  local line delta=0 step event_id MATCH
+  local -a match mbegin mend
+  local was_inline=$(( _goh_overlay == 0 ))
   if [[ -n ${2-} ]]; then _goh_pop_stop; return 0; fi    # hup/nval: the popup went away
   while read -r -u $1 -t 0 line; do
+    if [[ $line == *'"type":"popup_timeout"'* ]]; then
+      (( _goh_overlay == -1 )) || continue  # an answered or stopped popup has no pending timeout
+      line='{"type":"decision","display":"inline","reason":"popup startup timed out"}'
+    fi
+    if [[ $line == *'"type":"navigate"'* ]]; then
+      # Only the currently displayed query may navigate. The shell owns the selection and edit.
+      if (( _goh_overlay == 1 )) && _goh_valid &&
+         [[ $line =~ '"id":"([a-zA-Z0-9-]+)"' ]]; then
+        event_id=$match[1]
+        if [[ $event_id == "goh-${_GOH_SESSION}-${_goh_menu_id}" &&
+              $line =~ '"delta":(-?[0-9]{1,3})([,}])' ]]; then
+          step=$match[1]
+          (( step >= -100 && step <= 100 )) && (( delta += step ))
+        fi
+      fi
+      continue
+    fi
     _goh_last_decision=$line
     _goh_trace "decision ${line[1,80]}"
     case $line in
@@ -122,13 +159,23 @@ _goh_on_decision() {
       *'"display":"inline"'*)  _goh_overlay=0 ;;
     esac
   done
-  _goh_valid && _goh_render                              # show or clear the inline list to match
+  if (( delta )) && _goh_valid && (( _goh_overlay == 1 )); then
+    local next=$(( _goh_sel + delta ))
+    (( next < 1 )) && next=1
+    (( next > $#_goh_label )) && next=$#_goh_label
+    (( next != _goh_sel )) && _goh_move $(( next - _goh_sel ))
+  fi
+  if _goh_valid && (( was_inline != (_goh_overlay == 0) )); then
+    _goh_render
+    zle -R  # Only a real switch to/from inline needs terminal redisplay.
+  fi
   return 0
 }
 
 # Start the popup on first use. Returns non-zero (and leaves everything inline) on any problem.
 _goh_pop_start() {
   _goh_pop_alive && return 0
+  [[ -n $_goh_pop_pid ]] && return 1  # retry a failed popup on the next menu, not every navigation key
   _goh_pop_stop
   [[ $_GOH_DISPLAY == inline ]] && return 1
   command -v $_GOH_POPUP >/dev/null 2>&1 || return 1
@@ -141,7 +188,13 @@ _goh_pop_start() {
   _goh_pop_dir=$dir
   # Read-write opens never block, and keep a reader on `in` so a dead popup cannot raise SIGPIPE.
   if ! { exec {_goh_pin}<>$dir/in {_goh_pout}<>$dir/out } 2>/dev/null; then _goh_pop_stop; return 1; fi
-  zle -F $_goh_pout _goh_on_decision
+  # The decision handler reads BUFFER/CURSOR and updates the display, so it must run as a widget.
+  zle -N _goh_on_decision
+  zle -F -w $_goh_pout _goh_on_decision
+  _goh_overlay=-1
+  # Wake the same event handler if a live-but-unresponsive popup never answers. This bounded
+  # child never reads the tty, and its inherited FD belongs to this popup even after a reload.
+  ( command sleep 1; print -r -u $_goh_pout -- '{"type":"popup_timeout"}' ) 2>/dev/null &!
 }
 
 # JSON string escaping for single-line fields.
@@ -166,19 +219,19 @@ _goh_build_items() {
 _goh_pop_show() {
   [[ $_GOH_DISPLAY == inline ]] && return 1
   _goh_pop_alive || _goh_pop_start || return 1
-  local n=$#_goh_label rows
-  (( rows = n < _GOH_LIMIT ? n : _GOH_LIMIT ))
-  # The window moves one row at a time and jumps only when the selection wraps.
-  if (( _goh_sel < _goh_win )); then _goh_win=$_goh_sel
-  elif (( _goh_sel >= _goh_win + rows )); then _goh_win=$(( _goh_sel + 1 - rows )); fi
+  _goh_window
+  local enter=false; (( _goh_navigated )) && enter=true
   local theme= k ctx cell=
   for k in surface-base surface-selected border-subtle text-primary text-muted accent text-match; do
     [[ ${_goh_theme[$k]-} =~ '^#[0-9a-f]{6}$' ]] && theme+="${theme:+,}\"$k\":\"${_goh_theme[$k]}\""
   done
   [[ ${_goh_theme[cell-height]-} =~ '^[0-9]+(\.[0-9]+)?$' ]] && cell=",\"cell_height\":${_goh_theme[cell-height]}"
-  _goh_json "${${(z)BUFFER}[1]}"; ctx=$REPLY
+  # A nested scalar expansion indexes a character when (z) produces just one word.
+  # Keep tokens in an array so a bare command has the same identity as "command arg".
+  local -a words=("${(@z)BUFFER}")
+  _goh_json "${(Q)words[1]}"; ctx=$REPLY
   _goh_trace "frame sel=$_goh_sel n=$#_goh_label"
-  _goh_last_frame="{\"type\":\"show\",\"state\":{\"id\":\"goh\",\"items\":$_goh_items_json,\"selected\":$(( _goh_sel - 1 )),\"window_start\":$(( _goh_win - 1 )),\"context\":\"$ctx\"},\"anchor\":\"auto\",\"mode\":\"$_GOH_DISPLAY\",\"max_rows\":$_GOH_LIMIT,\"theme\":{$theme}$cell}"
+  _goh_last_frame="{\"type\":\"show\",\"state\":{\"id\":\"goh-${_GOH_SESSION}-${_goh_menu_id}\",\"items\":$_goh_items_json,\"selected\":$(( _goh_sel - 1 )),\"window_start\":$(( _goh_win - 1 )),\"context\":\"$ctx\"},\"anchor\":\"auto\",\"mode\":\"$_GOH_DISPLAY\",\"max_rows\":$_GOH_LIMIT,\"enter_accepts\":$enter,\"theme\":{$theme}$cell}"
   print -r -u $_goh_pin -- "$_goh_last_frame" 2>/dev/null
 }
 
@@ -206,13 +259,21 @@ _goh_keys_off() {
   _goh_saved=()
 }
 
-_goh_close() {
-  (( _goh_on )) || return 0
-  _goh_on=0
+_goh_clear_ghost() {
   POSTDISPLAY=
-  [[ -n $_goh_hl ]] && region_highlight=("${(@)region_highlight:#$_goh_hl}")
-  _goh_hl=
-  zle -M ''
+  # ZLE normalises colors and moves ranges when BUFFER changes. Its memo tag survives both;
+  # remove only our highlights, leaving syntax-highlighting and other plugins' regions intact.
+  region_highlight=("${(@)region_highlight:#*memo=goh-ghost}")
+}
+
+_goh_close() {
+  [[ -n $_goh_pop_pid ]] && ! _goh_pop_alive && _goh_pop_stop
+  (( _goh_on )) || return 0
+  _goh_on=0 _goh_navigated=0
+  _goh_clear_ghost
+  # ZLE owns message removal at line-init/line-finish. A -M refresh there leaves its
+  # next-prompt display cache stale (the last line of a multiline prompt disappears).
+  [[ ${1-} == no-redisplay ]] || zle -M ''
   _goh_pop_hide
   _goh_keys_off
 }
@@ -220,55 +281,100 @@ _goh_close() {
 # Menu is only valid while the line is exactly as it was when it opened.
 _goh_valid() { (( _goh_on )) && [[ $BUFFER == "$_goh_buf" && $CURSOR == $_goh_buf_cur ]] }
 
+# Keep both inline and native views on the same slice of the full result list.
+_goh_window() {
+  local rows=$(( $#_goh_label < _GOH_LIMIT ? $#_goh_label : _GOH_LIMIT ))
+  if (( _goh_sel < _goh_win )); then _goh_win=$_goh_sel
+  elif (( _goh_sel >= _goh_win + rows )); then _goh_win=$(( _goh_sel + 1 - rows )); fi
+}
+
 _goh_render() {
   local i marker line room desc
-  local -a rows
+  local -a rows descat
   local width=$(( ${COLUMNS:-80} - 1 ))
-  for (( i = 1; i <= $#_goh_label; i++ )); do
+  _goh_window
+  local end=$(( _goh_win + _GOH_LIMIT - 1 ))
+  (( end > $#_goh_label )) && end=$#_goh_label
+  local at
+  for (( i = _goh_win; i <= end; i++ )); do
     marker=' '; (( i == _goh_sel )) && marker='❯'
     line="$marker ${_goh_label[i]}"
     desc=${_goh_desc[i]:-${_goh_kind[i]}}   # kind keeps rows meaningful without icons
     room=$(( width - ${#line} - 2 ))
+    at=0
     if (( room > 3 )); then
       (( ${#desc} > room )) && desc="${desc[1,room-1]}…"
       line+="  $desc"
+      at=$(( ${#line} - ${#desc} ))
     fi
     rows+=("${line[1,width]}")
+    descat+=($at)
   done
-  rows+=("  Tab insert · ↑↓ move · Esc close")
-  if (( _goh_overlay )) && _goh_pop_alive; then zle -M ''; else _goh_overlay=0; zle -M "${(F)rows}"; fi
+  local accept_hint="Tab/→"; (( _goh_navigated )) && accept_hint="Tab/Enter/→"
+  rows+=("  $accept_hint insert · ↑↓ move · Esc/← close")
 
   # Ghost text only where it is honest: cursor at the end and the insertion extends what is typed.
-  [[ -n $_goh_hl ]] && region_highlight=("${(@)region_highlight:#$_goh_hl}")
-  _goh_hl=; POSTDISPLAY=
+  _goh_clear_ghost
+  local ghost=
   _goh_bytes "$BUFFER"
   if (( _goh_end[_goh_sel] == REPLY && CURSOR == ${#BUFFER} )); then
     _goh_tail "$BUFFER" ${_goh_start[_goh_sel]} "${_goh_insert[_goh_sel]}"
-    if [[ -n $_goh_tail_out ]]; then
-      POSTDISPLAY=$_goh_tail_out
-      # "P" offsets count from the start of PREDISPLAY+BUFFER+POSTDISPLAY.
-      local from=$(( ${#PREDISPLAY} + ${#BUFFER} ))
-      _goh_hl="P$from $(( from + ${#POSTDISPLAY} )) $_goh_ghost_style"
-      region_highlight+=("$_goh_hl")
-    fi
+    ghost=$_goh_tail_out
+  fi
+
+  # Inline menu: drawn as part of the line (POSTDISPLAY, below the cursor) with real styles, so it looks the
+  # same in any terminal, including the ones that cannot host the overlay (VS Code, JetBrains, Claude).
+  # `zle -M` would print escape codes literally. Needs the memo tag (zsh 5.9+) to remove only our styles.
+  local styled=0
+  if (( _goh_overlay != 0 )) && _goh_pop_alive; then
+    zle -M ''
+  else
+    _goh_overlay=0
+    if is-at-least 5.9; then styled=1; zle -M ''; else zle -M "${(F)rows}"; fi
+  fi
+
+  # "P" offsets count from the start of PREDISPLAY+BUFFER+POSTDISPLAY.
+  local from=$(( ${#PREDISPLAY} + ${#BUFFER} )) pos k
+  POSTDISPLAY=$ghost
+  if [[ -n $ghost ]] && is-at-least 5.9; then
+    # Older zsh cannot identify a plugin's highlights reliably. Keep its ghost text unstyled
+    # rather than leave a stale color on accepted text or remove someone else's highlighting.
+    region_highlight+=("P$from $(( from + ${#ghost} )) $_goh_ghost_style memo=goh-ghost")
+  fi
+  if (( styled )); then
+    POSTDISPLAY+=$'\n'"${(pj:\n:)rows}"
+    pos=$(( from + ${#ghost} + 1 ))
+    for (( k = 1; k <= $#rows; k++ )); do
+      if (( k == _goh_sel - _goh_win + 1 && k < $#rows )); then
+        region_highlight+=("P$pos $(( pos + ${#rows[k]} )) standout memo=goh-ghost")
+      elif (( k == $#rows )); then
+        region_highlight+=("P$pos $(( pos + ${#rows[k]} )) $_goh_ghost_style memo=goh-ghost")
+      elif (( descat[k] > 0 )); then
+        region_highlight+=("P$(( pos + descat[k] )) $(( pos + ${#rows[k]} )) $_goh_ghost_style memo=goh-ghost")
+      fi
+      pos=$(( pos + ${#rows[k]} + 1 ))
+    done
   fi
 }
 
 # Apply candidate $1 to the line; fails (leaving the line alone) on any inconsistency.
 _goh_apply() {
-  local i=$1 buflen
+  local i=$1 buflen before=$BUFFER
   _goh_bytes "$BUFFER"; buflen=$REPLY
   (( _goh_start[i] <= _goh_end[i] && _goh_end[i] <= buflen && _goh_cursor[i] >= _goh_start[i] )) || return 1
   [[ -n ${_goh_insert[i]} ]] || return 1
   _goh_splice "$BUFFER" ${_goh_start[i]} ${_goh_end[i]} "${_goh_insert[i]}" ${_goh_cursor[i]}
   BUFFER=$_goh_new
   CURSOR=${#_goh_pre}
+  # Remember the pick (command, subcommand and label only) so it ranks first next time.
+  { local LC_ALL=C; command $_GOH_CTL learn --cwd $PWD --prefix "${before[1,${_goh_start[i]}]}" --label "${_goh_label[i]}" >/dev/null 2>&1 &! } 2>/dev/null
 }
 
 # ---- widgets ------------------------------------------------------------------------------
 
 _goh_move() {  # _goh_move DELTA ORIG_WIDGET
   if _goh_valid; then
+    _goh_navigated=1
     _goh_sel=$(( (_goh_sel - 1 + $1 + $#_goh_label) % $#_goh_label + 1 ))
     _goh_render
     zle -R            # finish the redraw first: the popup reads the terminal cursor when it gets the frame
@@ -282,8 +388,41 @@ _goh_down() { _goh_move 1 down-line-or-history }
 _goh_up()   { _goh_move -1 up-line-or-history }
 _goh_esc()  { _goh_close; zle -R }   # stays closed: the hook refreshes only when the line changes
 
-# Parse `goh-ctl menu` output ($1) into the _goh_* arrays; REPLY = number of candidates.
+# All acceptance keys share the same validated edit and dismissal. No acceptance executes a line.
+_goh_accept() {
+  _goh_valid || return 1
+  _goh_apply $_goh_sel || { _goh_close; return 1 }
+  _goh_close
+  _goh_seen_buf=$BUFFER _goh_seen_cur=$CURSOR   # only a later edit may reopen the menu
+}
+
+# Navigation makes Enter an explicit selection. An untouched menu must not change a command
+# being submitted; delegate to the user's saved widget, including plugin wrappers.
+_goh_enter() {
+  local key=${(V)KEYS}
+  local original=${_goh_saved[$key]:-accept-line}
+  if (( _goh_navigated )) && _goh_accept; then return 0; fi
+  # Line-finish owns cleanup when the original widget submits; do not force a refresh here.
+  zle $original
+}
+
+_goh_accept_key() {
+  local key=${(V)KEYS}
+  local original=${_goh_saved[$key]:-undefined-key}
+  _goh_accept || { _goh_close; zle $original }
+}
+
+_goh_left() {
+  local key=${(V)KEYS}
+  local original=${_goh_saved[$key]:-backward-char}
+  _goh_close
+  zle $original
+}
+
+# Parse `goh menu` output ($1) into the _goh_* arrays; REPLY = number of candidates.
 _goh_parse_menu() {
+  (( ++_goh_menu_id ))
+  _goh_navigated=0
   local line; local -a f
   _goh_start=() _goh_end=() _goh_cursor=() _goh_kind=() _goh_label=() _goh_insert=() _goh_desc=() _goh_ranges=()
   for line in "${(@f)1}"; do
@@ -299,17 +438,20 @@ _goh_tab() {
   emulate -L zsh
   setopt no_unset
 
-  if _goh_valid; then
-    _goh_apply $_goh_sel; _goh_close
-    _goh_seen_buf=$BUFFER _goh_seen_cur=$CURSOR   # the next keystroke, not the accept, reopens it
+  _goh_accept_pred && return 0
+  _goh_accept && return 0
+  _goh_close
+
+  # In live mode typing owns opening the menu. Tab only accepts an open menu or completes natively.
+  if [[ $_GOH_LIVE == on ]]; then
+    zle ${_GOH_ORIG_TAB:-expand-or-complete}
     return 0
   fi
-  _goh_close
 
   if [[ $CONTEXT == start && -n ${BUFFER//[[:space:]]/} ]]; then
     _goh_bytes "${BUFFER[1,CURSOR]}"
     local out
-    out=$(command $_GOH_CTL menu --session $_GOH_SESSION --cwd $PWD --limit $_GOH_LIMIT \
+    out=$(command $_GOH_CTL menu --session $_GOH_SESSION --cwd $PWD --limit 50 \
           --cursor-byte $REPLY --buffer "$BUFFER" 2>/dev/null) || out=
     if [[ -n $out ]]; then
       _goh_parse_menu "$out"
@@ -319,6 +461,7 @@ _goh_tab() {
         _goh_on=1 _goh_sel=1 _goh_win=1 _goh_buf=$BUFFER _goh_buf_cur=$CURSOR
         _goh_keys_on
         _goh_build_items
+        [[ $_GOH_DISPLAY == inline ]] || _goh_pop_start
         _goh_render
         zle -R
         _goh_pop_show
@@ -330,7 +473,7 @@ _goh_tab() {
 }
 
 # Resolve the theme for this session. With a terminal attached it asks for the default colours
-# (OSC 10/11) via goh-ctl, which owns the bounded, filtered tty read. Run between prompts, never
+# (OSC 10/11) via goh, which owns the bounded, filtered tty read. Run between prompts, never
 # from a widget: replies arrive as terminal input.
 goh-theme-refresh() {
   local out line
@@ -360,9 +503,20 @@ goh-status() {
   sock=${GOH_SOCKET:-${XDG_RUNTIME_DIR:+$XDG_RUNTIME_DIR/goh/gohd.sock}}; sock=${sock:-/tmp/goh-$UID/gohd.sock}
   specs=${GOH_SPEC_DIR:-$HOME/.config/goh/specs}
   print -r -- "adapter    Tab is bound to: $(bindkey '^I' 2>/dev/null)   display mode: $_GOH_DISPLAY   as-you-type: $_GOH_LIVE"
-  print -r -- "goh-ctl    ${ctl:-NOT FOUND on PATH (menus cannot work)}"
+  print -r -- "goh    ${ctl:-NOT FOUND on PATH (menus cannot work)}"
   print -r -- "gohd       socket $sock $([[ -S $sock ]] && print running || print 'not running (the first Tab starts it; press Tab again)')"
-  print -r -- "specs      $specs: ${(j:, :)${(@)${(f)$(command ls $specs 2>/dev/null)}:-NONE (no completions: copy docs/examples/git.completion.json to $specs/git.json)}}"
+  if [[ -n $ctl ]]; then
+    local -a spec_lines parts; local l summary=
+    spec_lines=("${(@f)$(command $_GOH_CTL specs 2>/dev/null)}")
+    for l in $spec_lines; do
+      parts=("${(@ps:\t:)l}")
+      if [[ ${parts[2]} == bundled ]]; then summary+="${summary:+, }${parts[1]} (bundled, ${parts[3]} subcommands)"
+      else summary+="${summary:+, }${parts[1]} (yours: ${parts[2]#yours:}, ${parts[3]} subcommands${parts[4]:+; REPLACES the bundled one with ${parts[4]}})"; fi
+    done
+    print -r -- "specs      next daemon start; running daemon may differ: ${summary:-none}   [your own go in $specs; restart gohd after changes]"
+  else
+    print -r -- "specs      unknown (goh not found)"
+  fi
   if [[ -n $ctl ]]; then
     out=$(command $_GOH_CTL menu --session $_GOH_SESSION --cwd $PWD --cursor-byte 5 --buffer 'git c' 2>/dev/null)
     local -a labels; local l
@@ -389,7 +543,7 @@ _goh_live_refresh() {
     local out was_on=$_goh_on cb
     if [[ $CONTEXT != start || -z ${BUFFER//[[:space:]]/} ]]; then _goh_close; return 0; fi
     _goh_bytes "${BUFFER[1,CURSOR]}"; cb=$REPLY
-    out=$(command $_GOH_CTL menu --live --session $_GOH_SESSION --cwd $PWD --limit $_GOH_LIMIT \
+    out=$(command $_GOH_CTL menu --live --session $_GOH_SESSION --cwd $PWD --limit 50 \
           --cursor-byte $cb --buffer "$BUFFER" 2>/dev/null) || out=
     [[ -n $out ]] && _goh_parse_menu "$out" || REPLY=0
     if (( REPLY >= 1 )); then
@@ -403,6 +557,7 @@ _goh_live_refresh() {
       _goh_on=1 _goh_sel=1 _goh_win=1 _goh_buf=$BUFFER _goh_buf_cur=$CURSOR
       (( was_on )) || _goh_keys_on
       _goh_build_items
+      [[ $_GOH_DISPLAY == inline ]] || _goh_pop_start
       _goh_render
       _goh_pop_show     # no zle -R: we are inside the redraw; the popup waits for the caret to settle
     else
@@ -415,6 +570,7 @@ _goh_live_refresh() {
 
 _goh_hook_redraw() {
   (( _goh_busy )) && return 0
+  [[ -n $_goh_pred && -n $BUFFER ]] && _goh_drop_pred
   local changed=0
   [[ $BUFFER != "$_goh_seen_buf" || $CURSOR != $_goh_seen_cur ]] && changed=1
   _goh_seen_buf=$BUFFER _goh_seen_cur=$CURSOR
@@ -429,7 +585,80 @@ _goh_hook_redraw() {
   (( _goh_on )) && ! _goh_valid && _goh_close       # the line changed some other way: the menu is stale
   return 0
 }
-_goh_hook_finish() { _goh_close; _goh_seen_cur=-1; return 0 }
+_goh_hook_finish() { _goh_close no-redisplay; _goh_drop_pred; _goh_seen_cur=-1; return 0 }
+
+# What the shell knows (aliases, functions, builtins, PATH), so `g checkout ` completes as `git checkout ` and
+# the command word completes from what is installed. Sent after a command changed any of it, never per keystroke.
+typeset -g _goh_ctx_sig
+_goh_sync_context() {
+  # Names of exported variables only (for `$NA` and `export NA`), never their values.
+  local -a exported=(${(k)parameters[(R)*export*]})
+  local sig="$PATH|${(kv)aliases}|${(k)functions}|${(j: :)exported}"
+  [[ $sig == "$_goh_ctx_sig" ]] && return 0
+  _goh_ctx_sig=$sig
+  {
+    local k T=$'\t'   # a real tab: inside double quotes `\t` would stay two characters
+    print -r -- "P$T$PATH"
+    for k in ${(k)aliases}; do [[ ${aliases[$k]} == *[$'\t\n']* ]] || print -r -- "A$T$k$T${aliases[$k]}"; done
+    for k in ${(k)functions}; do [[ $k == [_.]* ]] || print -r -- "F$T$k"; done
+    for k in ${(k)builtins}; do print -r -- "B$T$k"; done
+    for k in $exported; do print -r -- "E$T$k"; done
+  } | command $_GOH_CTL context --session $_GOH_SESSION >/dev/null 2>&1 &!
+}
+
+# Directory history for `cd` suggestions when zoxide is not installed (read by gohd; written here).
+_goh_visit() { command $_GOH_CTL visit "$PWD" >/dev/null 2>&1 &! }
+
+# Command record (privacy.recordCommands, GOH_RECORD=on; off by default and then nothing below is hooked in).
+# The line and its folder are noted when it starts; a successful one is handed to `goh record`, which leaves out
+# anything that looks secret and lines starting with a space.
+typeset -g _goh_run_cmd _goh_run_cwd
+_goh_run_start() { _goh_run_cmd=$1 _goh_run_cwd=$PWD }
+_goh_run_done() {
+  local st=$?   # first thing: the status of the command that just ended
+  if (( st == 0 )) && [[ -n $_goh_run_cmd ]]; then
+    { command $_GOH_CTL record --cwd $_goh_run_cwd -- "$_goh_run_cmd" >/dev/null 2>&1 &! } 2>/dev/null
+  fi
+  _goh_run_cmd= _goh_run_cwd=
+  return $st
+}
+
+# At an empty prompt, the command that usually follows the last one run in this folder, as ghost text:
+# Right or Tab takes it, typing anything else drops it. Needs the command record (GOH_RECORD=on); GOH_PREDICT=off
+# turns it off.
+typeset -g _goh_pred _goh_orig_right_csi _goh_orig_right_ss3
+_goh_drop_pred() { [[ -n $_goh_pred ]] || return 0; _goh_pred=; _goh_clear_ghost }
+_goh_hook_predict() {
+  emulate -L zsh
+  setopt no_unset
+  _goh_pred=
+  [[ ${GOH_RECORD-} == on && ${GOH_PREDICT-on} != off && $_GOH_LIVE == on && -z $BUFFER ]] || return 0
+  (( _goh_busy )) && return 0
+  local out
+  out=$(command $_GOH_CTL menu --live --session $_GOH_SESSION --cwd $PWD --limit 1 --cursor-byte 0 --buffer '' 2>/dev/null) || return 0
+  [[ -n $out ]] || return 0
+  local -a f
+  f=("${(@ps:\x1f:)${out%%$'\n'*}}")
+  [[ $f[4] == history && -n $f[6] ]] || return 0
+  _goh_pred=$f[6]
+  _goh_clear_ghost
+  POSTDISPLAY=$_goh_pred
+  is-at-least 5.9 && region_highlight+=("P0 ${#_goh_pred} $_goh_ghost_style memo=goh-ghost")
+  return 0
+}
+_goh_accept_pred() {
+  [[ -n $_goh_pred && -z $BUFFER ]] || return 1
+  local line=$_goh_pred
+  _goh_drop_pred
+  BUFFER=$line
+  CURSOR=${#BUFFER}
+  _goh_seen_buf=$BUFFER _goh_seen_cur=$CURSOR
+}
+_goh_right() {
+  _goh_accept_pred && return 0
+  local key=${(V)KEYS}
+  if [[ $key == *'[C'* ]]; then zle ${_goh_orig_right_csi:-forward-char}; else zle ${_goh_orig_right_ss3:-forward-char}; fi
+}
 
 goh-load() {
   local current=${${(z)$(bindkey '^I' 2>/dev/null)}[2]}
@@ -438,21 +667,49 @@ goh-load() {
   _GOH_ORIG_TAB=$current
   zle -N _goh_tab
   zle -N _goh_up; zle -N _goh_down; zle -N _goh_esc
+  zle -N _goh_accept_key; zle -N _goh_enter; zle -N _goh_left
   bindkey '^I' _goh_tab
+  if [[ ${GOH_RECORD-} == on ]]; then
+    # Right takes a prediction when one is showing and is the user's own Right otherwise.
+    _goh_orig_right_csi=${${(z)$(bindkey '^[[C' 2>/dev/null)}[2]}; [[ $_goh_orig_right_csi == (undefined-key|_goh_right) ]] && _goh_orig_right_csi=forward-char
+    _goh_orig_right_ss3=${${(z)$(bindkey '^[OC' 2>/dev/null)}[2]}; [[ $_goh_orig_right_ss3 == (undefined-key|_goh_right) ]] && _goh_orig_right_ss3=forward-char
+    zle -N _goh_right
+    bindkey '^[[C' _goh_right
+    bindkey '^[OC' _goh_right
+  fi
+  # Ctrl+C aborts ZLE without line-finish. The next line-init must dismiss the old menu as well.
+  add-zle-hook-widget zle-line-init _goh_hook_finish
+  [[ ${GOH_RECORD-} == on ]] && add-zle-hook-widget zle-line-init _goh_hook_predict
   add-zle-hook-widget zle-line-pre-redraw _goh_hook_redraw
   add-zle-hook-widget zle-line-finish _goh_hook_finish
   autoload -Uz add-zsh-hook
   add-zsh-hook zshexit _goh_pop_stop
+  add-zsh-hook chpwd _goh_visit
+  add-zsh-hook precmd _goh_sync_context
+  if [[ ${GOH_RECORD-} == on ]]; then
+    add-zsh-hook preexec _goh_run_start
+    # Ahead of every other precmd: it needs the status of the command that just ended.
+    add-zsh-hook precmd _goh_run_done
+    precmd_functions=(_goh_run_done ${precmd_functions:#_goh_run_done})
+  fi
+  _goh_sync_context
 }
 
 goh-unload() {
   _goh_close 2>/dev/null
   _goh_pop_stop 2>/dev/null
   [[ -n $_GOH_ORIG_TAB ]] && bindkey '^I' $_GOH_ORIG_TAB
+  add-zle-hook-widget -d zle-line-init _goh_hook_finish
+  add-zle-hook-widget -d zle-line-init _goh_hook_predict 2>/dev/null
+  [[ -n $_goh_orig_right_csi ]] && { bindkey '^[[C' $_goh_orig_right_csi; bindkey '^[OC' ${_goh_orig_right_ss3:-forward-char} }
+  add-zsh-hook -d preexec _goh_run_start 2>/dev/null
+  add-zsh-hook -d precmd _goh_run_done 2>/dev/null
   add-zle-hook-widget -d zle-line-pre-redraw _goh_hook_redraw
   add-zle-hook-widget -d zle-line-finish _goh_hook_finish
   add-zsh-hook -d zshexit _goh_pop_stop 2>/dev/null
-  zle -D _goh_tab _goh_up _goh_down _goh_esc 2>/dev/null
+  add-zsh-hook -d chpwd _goh_visit 2>/dev/null
+  add-zsh-hook -d precmd _goh_sync_context 2>/dev/null
+  zle -D _goh_tab _goh_up _goh_down _goh_esc _goh_accept_key _goh_enter _goh_left _goh_right _goh_on_decision 2>/dev/null
   unset _GOH_ORIG_TAB
 }
 

@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "name": "cd",
+  "description": "Change the shell working directory",
+  "args": [
+    {
+      "name": "argument",
+      "template": "folders",
+      "provider": "frecent-dirs"
+    }
+  ]
+}

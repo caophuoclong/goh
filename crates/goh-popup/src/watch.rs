@@ -2,6 +2,7 @@
 //! situation it was shown for: if the terminal is minimised or hidden, another app takes focus, or the
 //! caret can no longer be read, the overlay goes away; if the window moves, it follows; and if the
 //! terminal comes back while the menu is still open, it returns.
+//! The caller filters out other terminal windows/text elements before supplying `now`.
 
 use crate::placement::Placement;
 

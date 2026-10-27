@@ -1,0 +1,3668 @@
+{
+  "schemaVersion": 1,
+  "name": "pip3",
+  "description": "Python package manager",
+  "args": [
+    {
+      "name": "argument"
+    }
+  ],
+  "subcommands": [
+    {
+      "name": "install",
+      "description": "Install packages",
+      "options": [
+        {
+          "name": "-r",
+          "description": "Install from the given requirements file. This option can be used multiple times",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "requirements file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--requirement",
+          "description": "Install from the given requirements file. This option can be used multiple times",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "requirements file",
+              "template": "filepaths"
+            }
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "package",
+          "description": "Package to install",
+          "isVariadic": true,
+          "suggestions": [
+            {
+              "name": "urllib3"
+            },
+            {
+              "name": "six"
+            },
+            {
+              "name": "botocore"
+            },
+            {
+              "name": "requests"
+            },
+            {
+              "name": "python-dateutil"
+            },
+            {
+              "name": "setuptools"
+            },
+            {
+              "name": "certifi"
+            },
+            {
+              "name": "idna"
+            },
+            {
+              "name": "s3transfer"
+            },
+            {
+              "name": "chardet"
+            },
+            {
+              "name": "pyyaml"
+            },
+            {
+              "name": "pip"
+            },
+            {
+              "name": "docutils"
+            },
+            {
+              "name": "jmespath"
+            },
+            {
+              "name": "rsa"
+            },
+            {
+              "name": "pyasn1"
+            },
+            {
+              "name": "boto3"
+            },
+            {
+              "name": "numpy"
+            },
+            {
+              "name": "wheel"
+            },
+            {
+              "name": "pytz"
+            },
+            {
+              "name": "awscli"
+            },
+            {
+              "name": "colorama"
+            },
+            {
+              "name": "cffi"
+            },
+            {
+              "name": "markupsafe"
+            },
+            {
+              "name": "protobuf"
+            },
+            {
+              "name": "quick-mail"
+            },
+            {
+              "name": "jinja2"
+            },
+            {
+              "name": "attrs"
+            },
+            {
+              "name": "cryptography"
+            },
+            {
+              "name": "importlib-metadata"
+            },
+            {
+              "name": "pycparser"
+            },
+            {
+              "name": "zipp"
+            },
+            {
+              "name": "click"
+            },
+            {
+              "name": "requests-oauthlib"
+            },
+            {
+              "name": "oauthlib"
+            },
+            {
+              "name": "pandas"
+            },
+            {
+              "name": "pyparsing"
+            },
+            {
+              "name": "pyasn1-modules"
+            },
+            {
+              "name": "futures"
+            },
+            {
+              "name": "future"
+            },
+            {
+              "name": "google-auth"
+            },
+            {
+              "name": "cachetools"
+            },
+            {
+              "name": "packaging"
+            },
+            {
+              "name": "decorator"
+            },
+            {
+              "name": "scipy"
+            },
+            {
+              "name": "werkzeug"
+            },
+            {
+              "name": "simplejson"
+            },
+            {
+              "name": "google-api-core"
+            },
+            {
+              "name": "jsonschema"
+            },
+            {
+              "name": "pygments"
+            },
+            {
+              "name": "pyrsistent"
+            },
+            {
+              "name": "pillow"
+            },
+            {
+              "name": "pyjwt"
+            },
+            {
+              "name": "wcwidth"
+            },
+            {
+              "name": "py"
+            },
+            {
+              "name": "pytest"
+            },
+            {
+              "name": "googleapis-common-protos"
+            },
+            {
+              "name": "psutil"
+            },
+            {
+              "name": "google-cloud-core"
+            },
+            {
+              "name": "grpcio"
+            },
+            {
+              "name": "google-resumable-media"
+            },
+            {
+              "name": "lxml"
+            },
+            {
+              "name": "pluggy"
+            },
+            {
+              "name": "isodate"
+            },
+            {
+              "name": "google-cloud-storage"
+            },
+            {
+              "name": "wrapt"
+            },
+            {
+              "name": "more-itertools"
+            },
+            {
+              "name": "flask"
+            },
+            {
+              "name": "google-api-python-client"
+            },
+            {
+              "name": "scikit-learn"
+            },
+            {
+              "name": "sqlalchemy"
+            },
+            {
+              "name": "websocket-client"
+            },
+            {
+              "name": "joblib"
+            },
+            {
+              "name": "coverage"
+            },
+            {
+              "name": "itsdangerous"
+            },
+            {
+              "name": "pyopenssl"
+            },
+            {
+              "name": "msrest"
+            },
+            {
+              "name": "uritemplate"
+            },
+            {
+              "name": "entrypoints"
+            },
+            {
+              "name": "appdirs"
+            },
+            {
+              "name": "pexpect"
+            },
+            {
+              "name": "tornado"
+            },
+            {
+              "name": "defusedxml"
+            },
+            {
+              "name": "tqdm"
+            },
+            {
+              "name": "ptyprocess"
+            },
+            {
+              "name": "prompt-toolkit"
+            },
+            {
+              "name": "redis"
+            },
+            {
+              "name": "azure-storage-blob"
+            },
+            {
+              "name": "prometheus-client"
+            },
+            {
+              "name": "virtualenv"
+            },
+            {
+              "name": "httplib2"
+            },
+            {
+              "name": "ipython"
+            },
+            {
+              "name": "bleach"
+            },
+            {
+              "name": "matplotlib"
+            },
+            {
+              "name": "webencodings"
+            },
+            {
+              "name": "toml"
+            },
+            {
+              "name": "enum34"
+            },
+            {
+              "name": "google-auth-httplib2"
+            },
+            {
+              "name": "typing-extensions"
+            },
+            {
+              "name": "tensorflow"
+            },
+            {
+              "name": "traitlets"
+            },
+            {
+              "name": "configparser"
+            },
+            {
+              "name": "multidict"
+            },
+            {
+              "name": "ipython-genutils"
+            },
+            {
+              "name": "openai"
+            },
+            {
+              "name": "mccabe"
+            },
+            {
+              "name": "absl-py"
+            },
+            {
+              "name": "beautifulsoup4"
+            },
+            {
+              "name": "pickleshare"
+            },
+            {
+              "name": "bcrypt"
+            },
+            {
+              "name": "docker"
+            },
+            {
+              "name": "tabulate"
+            },
+            {
+              "name": "filelock"
+            },
+            {
+              "name": "google-cloud-bigquery"
+            },
+            {
+              "name": "yarl"
+            },
+            {
+              "name": "azure-common"
+            },
+            {
+              "name": "google-auth-oauthlib"
+            },
+            {
+              "name": "ipaddress"
+            },
+            {
+              "name": "boto"
+            },
+            {
+              "name": "pyzmq"
+            },
+            {
+              "name": "pynacl"
+            },
+            {
+              "name": "pycodestyle"
+            },
+            {
+              "name": "paramiko"
+            },
+            {
+              "name": "tensorboard"
+            },
+            {
+              "name": "mock"
+            },
+            {
+              "name": "psycopg2-binary"
+            },
+            {
+              "name": "aiohttp"
+            },
+            {
+              "name": "kiwisolver"
+            },
+            {
+              "name": "regex"
+            },
+            {
+              "name": "gunicorn"
+            },
+            {
+              "name": "typed-ast"
+            },
+            {
+              "name": "soupsieve"
+            },
+            {
+              "name": "nbformat"
+            },
+            {
+              "name": "tensorflow-estimator"
+            },
+            {
+              "name": "jupyter-core"
+            },
+            {
+              "name": "async-timeout"
+            },
+            {
+              "name": "cycler"
+            },
+            {
+              "name": "azure-core"
+            },
+            {
+              "name": "mistune"
+            },
+            {
+              "name": "nbconvert"
+            },
+            {
+              "name": "jupyter-client"
+            },
+            {
+              "name": "pbr"
+            },
+            {
+              "name": "typing"
+            },
+            {
+              "name": "ipykernel"
+            },
+            {
+              "name": "markdown"
+            },
+            {
+              "name": "babel"
+            },
+            {
+              "name": "testpath"
+            },
+            {
+              "name": "pandocfilters"
+            },
+            {
+              "name": "notebook"
+            },
+            {
+              "name": "pyarrow"
+            },
+            {
+              "name": "argparse"
+            },
+            {
+              "name": "distlib"
+            },
+            {
+              "name": "gitpython"
+            },
+            {
+              "name": "dnspython"
+            },
+            {
+              "name": "terminado"
+            },
+            {
+              "name": "send2trash"
+            },
+            {
+              "name": "jedi"
+            },
+            {
+              "name": "pyflakes"
+            },
+            {
+              "name": "parso"
+            },
+            {
+              "name": "lazy-object-proxy"
+            },
+            {
+              "name": "isort"
+            },
+            {
+              "name": "asn1crypto"
+            },
+            {
+              "name": "ujson"
+            },
+            {
+              "name": "widgetsnbextension"
+            },
+            {
+              "name": "ipywidgets"
+            },
+            {
+              "name": "sqlparse"
+            },
+            {
+              "name": "termcolor"
+            },
+            {
+              "name": "flake8"
+            },
+            {
+              "name": "backcall"
+            },
+            {
+              "name": "cython"
+            },
+            {
+              "name": "h5py"
+            },
+            {
+              "name": "py4j"
+            },
+            {
+              "name": "tzlocal"
+            },
+            {
+              "name": "contextlib2"
+            },
+            {
+              "name": "tensorflow-metadata"
+            },
+            {
+              "name": "requests-toolbelt"
+            },
+            {
+              "name": "oauth2client"
+            },
+            {
+              "name": "pymongo"
+            },
+            {
+              "name": "adal"
+            },
+            {
+              "name": "psycopg2"
+            },
+            {
+              "name": "smart-open"
+            },
+            {
+              "name": "jupyter-console"
+            },
+            {
+              "name": "qtconsole"
+            },
+            {
+              "name": "jupyter"
+            },
+            {
+              "name": "msgpack"
+            },
+            {
+              "name": "pathlib2"
+            },
+            {
+              "name": "retrying"
+            },
+            {
+              "name": "importlib-resources"
+            },
+            {
+              "name": "dill"
+            },
+            {
+              "name": "networkx"
+            },
+            {
+              "name": "azure-devops"
+            },
+            {
+              "name": "smmap"
+            },
+            {
+              "name": "tensorflow-serving-api"
+            },
+            {
+              "name": "tensorflow-transform"
+            },
+            {
+              "name": "sortedcontainers"
+            },
+            {
+              "name": "fsspec"
+            },
+            {
+              "name": "cloudpickle"
+            },
+            {
+              "name": "pyspark"
+            },
+            {
+              "name": "gast"
+            },
+            {
+              "name": "google-cloud-logging"
+            },
+            {
+              "name": "websockets"
+            },
+            {
+              "name": "xlrd"
+            },
+            {
+              "name": "pytest-cov"
+            },
+            {
+              "name": "azure-storage-common"
+            },
+            {
+              "name": "gensim"
+            },
+            {
+              "name": "mako"
+            },
+            {
+              "name": "atomicwrites"
+            },
+            {
+              "name": "qtpy"
+            },
+            {
+              "name": "alembic"
+            },
+            {
+              "name": "astroid"
+            },
+            {
+              "name": "keras-preprocessing"
+            },
+            {
+              "name": "docopt"
+            },
+            {
+              "name": "gitdb"
+            },
+            {
+              "name": "pymysql"
+            },
+            {
+              "name": "distro"
+            },
+            {
+              "name": "zope-interface"
+            },
+            {
+              "name": "tfx-bsl"
+            },
+            {
+              "name": "pylint"
+            },
+            {
+              "name": "pandas-gbq"
+            },
+            {
+              "name": "django"
+            },
+            {
+              "name": "datadog"
+            },
+            {
+              "name": "pydata-google-auth"
+            },
+            {
+              "name": "ordereddict"
+            },
+            {
+              "name": "msrestazure"
+            },
+            {
+              "name": "pycryptodomex"
+            },
+            {
+              "name": "pathspec"
+            },
+            {
+              "name": "scandir"
+            },
+            {
+              "name": "xmltodict"
+            },
+            {
+              "name": "python-editor"
+            },
+            {
+              "name": "tensorflow-data-validation"
+            },
+            {
+              "name": "funcsigs"
+            },
+            {
+              "name": "slackclient"
+            },
+            {
+              "name": "tensorflow-model-analysis"
+            },
+            {
+              "name": "gcsfs"
+            },
+            {
+              "name": "ruamel-yaml"
+            },
+            {
+              "name": "nltk"
+            },
+            {
+              "name": "google-pasta"
+            },
+            {
+              "name": "mypy-extensions"
+            },
+            {
+              "name": "pycryptodome"
+            },
+            {
+              "name": "s3fs"
+            },
+            {
+              "name": "cached-property"
+            },
+            {
+              "name": "pytest-runner"
+            },
+            {
+              "name": "elasticsearch"
+            },
+            {
+              "name": "keras-applications"
+            },
+            {
+              "name": "ansible"
+            },
+            {
+              "name": "azure-nspkg"
+            },
+            {
+              "name": "jsonpickle"
+            },
+            {
+              "name": "marshmallow"
+            },
+            {
+              "name": "google-crc32c"
+            },
+            {
+              "name": "rfc3986"
+            },
+            {
+              "name": "pycrypto"
+            },
+            {
+              "name": "astor"
+            },
+            {
+              "name": "ruamel-yaml-clib"
+            },
+            {
+              "name": "xlsxwriter"
+            },
+            {
+              "name": "singledispatch"
+            },
+            {
+              "name": "setuptools-scm"
+            },
+            {
+              "name": "backports-functools-lru-cache"
+            },
+            {
+              "name": "applicationinsights"
+            },
+            {
+              "name": "mypy"
+            },
+            {
+              "name": "greenlet"
+            },
+            {
+              "name": "simplegeneric"
+            },
+            {
+              "name": "h11"
+            },
+            {
+              "name": "openpyxl"
+            },
+            {
+              "name": "pyodbc"
+            },
+            {
+              "name": "text-unidecode"
+            },
+            {
+              "name": "jdcal"
+            },
+            {
+              "name": "oscrypto"
+            },
+            {
+              "name": "bs4"
+            },
+            {
+              "name": "et-xmlfile"
+            },
+            {
+              "name": "argon2-cffi"
+            },
+            {
+              "name": "backports-shutil-get-terminal-size"
+            },
+            {
+              "name": "monotonic"
+            },
+            {
+              "name": "databricks-cli"
+            },
+            {
+              "name": "backports-abc"
+            },
+            {
+              "name": "selenium"
+            },
+            {
+              "name": "xgboost"
+            },
+            {
+              "name": "sentry-sdk"
+            },
+            {
+              "name": "snowflake-connector-python"
+            },
+            {
+              "name": "plotly"
+            },
+            {
+              "name": "uvloop"
+            },
+            {
+              "name": "opt-einsum"
+            },
+            {
+              "name": "snowballstemmer"
+            },
+            {
+              "name": "ply"
+            },
+            {
+              "name": "nose"
+            },
+            {
+              "name": "gevent"
+            },
+            {
+              "name": "aiofiles"
+            },
+            {
+              "name": "black"
+            },
+            {
+              "name": "tenacity"
+            },
+            {
+              "name": "azure-mgmt-resource"
+            },
+            {
+              "name": "async-generator"
+            },
+            {
+              "name": "argcomplete"
+            },
+            {
+              "name": "httptools"
+            },
+            {
+              "name": "python-dotenv"
+            },
+            {
+              "name": "opencv-python"
+            },
+            {
+              "name": "mozlog"
+            },
+            {
+              "name": "sniffio"
+            },
+            {
+              "name": "html5lib"
+            },
+            {
+              "name": "grpc-google-iam-v1"
+            },
+            {
+              "name": "mozrunner"
+            },
+            {
+              "name": "toolz"
+            },
+            {
+              "name": "lockfile"
+            },
+            {
+              "name": "iniconfig"
+            },
+            {
+              "name": "unidecode"
+            },
+            {
+              "name": "sphinx"
+            },
+            {
+              "name": "kubernetes"
+            },
+            {
+              "name": "kombu"
+            },
+            {
+              "name": "secretstorage"
+            },
+            {
+              "name": "httpx"
+            },
+            {
+              "name": "netaddr"
+            },
+            {
+              "name": "amqp"
+            },
+            {
+              "name": "thrift"
+            },
+            {
+              "name": "sklearn"
+            },
+            {
+              "name": "ijson"
+            },
+            {
+              "name": "threadpoolctl"
+            },
+            {
+              "name": "celery"
+            },
+            {
+              "name": "jeepney"
+            },
+            {
+              "name": "discord-py"
+            },
+            {
+              "name": "keras"
+            },
+            {
+              "name": "functools32"
+            },
+            {
+              "name": "shapely"
+            },
+            {
+              "name": "nest-asyncio"
+            },
+            {
+              "name": "statsmodels"
+            },
+            {
+              "name": "geopy"
+            },
+            {
+              "name": "lightgbm"
+            },
+            {
+              "name": "virtualenv-clone"
+            },
+            {
+              "name": "djangorestframework"
+            },
+            {
+              "name": "azure-mgmt-storage"
+            },
+            {
+              "name": "mysqlclient"
+            },
+            {
+              "name": "aioopenssl"
+            },
+            {
+              "name": "aiosasl"
+            },
+            {
+              "name": "graphviz"
+            },
+            {
+              "name": "sortedcollections"
+            },
+            {
+              "name": "ecdsa"
+            },
+            {
+              "name": "hpack"
+            },
+            {
+              "name": "aioconsole"
+            },
+            {
+              "name": "h2"
+            },
+            {
+              "name": "hyperframe"
+            },
+            {
+              "name": "portalocker"
+            },
+            {
+              "name": "google-cloud-pubsub"
+            },
+            {
+              "name": "nbclient"
+            },
+            {
+              "name": "billiard"
+            },
+            {
+              "name": "pysftp"
+            },
+            {
+              "name": "keyring"
+            },
+            {
+              "name": "arrow"
+            },
+            {
+              "name": "aioxmpp"
+            },
+            {
+              "name": "python-jose"
+            },
+            {
+              "name": "gitdb2"
+            },
+            {
+              "name": "sanic"
+            },
+            {
+              "name": "querystring-parser"
+            },
+            {
+              "name": "mlflow"
+            },
+            {
+              "name": "imagesize"
+            },
+            {
+              "name": "alabaster"
+            },
+            {
+              "name": "jupyterlab-pygments"
+            },
+            {
+              "name": "pipenv"
+            },
+            {
+              "name": "tox"
+            },
+            {
+              "name": "pytest-mock"
+            },
+            {
+              "name": "fortnitepy"
+            },
+            {
+              "name": "vine"
+            },
+            {
+              "name": "apache-beam"
+            },
+            {
+              "name": "fuzzywuzzy"
+            },
+            {
+              "name": "pkginfo"
+            },
+            {
+              "name": "inflection"
+            },
+            {
+              "name": "unicodecsv"
+            },
+            {
+              "name": "imageio"
+            },
+            {
+              "name": "flask-cors"
+            },
+            {
+              "name": "prometheus-flask-exporter"
+            },
+            {
+              "name": "hstspreload"
+            },
+            {
+              "name": "pytest-forked"
+            },
+            {
+              "name": "faker"
+            },
+            {
+              "name": "execnet"
+            },
+            {
+              "name": "flask-sqlalchemy"
+            },
+            {
+              "name": "humanfriendly"
+            },
+            {
+              "name": "apipkg"
+            },
+            {
+              "name": "pytest-xdist"
+            },
+            {
+              "name": "watchdog"
+            },
+            {
+              "name": "twisted"
+            },
+            {
+              "name": "ua-parser"
+            },
+            {
+              "name": "seaborn"
+            },
+            {
+              "name": "fasteners"
+            },
+            {
+              "name": "dataclasses"
+            },
+            {
+              "name": "iso8601"
+            },
+            {
+              "name": "azure-mgmt-containerregistry"
+            },
+            {
+              "name": "subprocess32"
+            },
+            {
+              "name": "azure-mgmt-keyvault"
+            },
+            {
+              "name": "pywavelets"
+            },
+            {
+              "name": "colorlog"
+            },
+            {
+              "name": "patsy"
+            },
+            {
+              "name": "jsonpointer"
+            },
+            {
+              "name": "gorilla"
+            },
+            {
+              "name": "pendulum"
+            },
+            {
+              "name": "stevedore"
+            },
+            {
+              "name": "ndg-httpsclient"
+            },
+            {
+              "name": "asgiref"
+            },
+            {
+              "name": "readme-renderer"
+            },
+            {
+              "name": "kafka-python"
+            },
+            {
+              "name": "incremental"
+            },
+            {
+              "name": "deprecated"
+            },
+            {
+              "name": "tensorboard-plugin-wit"
+            },
+            {
+              "name": "responses"
+            },
+            {
+              "name": "pyhamcrest"
+            },
+            {
+              "name": "fastavro"
+            },
+            {
+              "name": "aniso8601"
+            },
+            {
+              "name": "msal"
+            },
+            {
+              "name": "hvac"
+            },
+            {
+              "name": "texttable"
+            },
+            {
+              "name": "pytzdata"
+            },
+            {
+              "name": "retry"
+            },
+            {
+              "name": "ezfnsetup"
+            },
+            {
+              "name": "backports-weakref"
+            },
+            {
+              "name": "python-http-client"
+            },
+            {
+              "name": "dask"
+            },
+            {
+              "name": "cachecontrol"
+            },
+            {
+              "name": "blessings"
+            },
+            {
+              "name": "smmap2"
+            },
+            {
+              "name": "mysql-connector-python"
+            },
+            {
+              "name": "azure-datalake-store"
+            },
+            {
+              "name": "docker-pycreds"
+            },
+            {
+              "name": "astunparse"
+            },
+            {
+              "name": "azure-keyvault"
+            },
+            {
+              "name": "bottle"
+            },
+            {
+              "name": "azure-storage-queue"
+            },
+            {
+              "name": "scikit-image"
+            },
+            {
+              "name": "sendgrid"
+            },
+            {
+              "name": "pygsheets"
+            },
+            {
+              "name": "mozdevice"
+            },
+            {
+              "name": "sphinxcontrib-serializinghtml"
+            },
+            {
+              "name": "discord"
+            },
+            {
+              "name": "python-levenshtein"
+            },
+            {
+              "name": "jsonpatch"
+            },
+            {
+              "name": "blinker"
+            },
+            {
+              "name": "mozinfo"
+            },
+            {
+              "name": "mozprocess"
+            },
+            {
+              "name": "azure-mgmt-authorization"
+            },
+            {
+              "name": "google-cloud-datastore"
+            },
+            {
+              "name": "backports-ssl-match-hostname"
+            },
+            {
+              "name": "llvmlite"
+            },
+            {
+              "name": "python-magic"
+            },
+            {
+              "name": "azure-graphrbac"
+            },
+            {
+              "name": "proto-plus"
+            },
+            {
+              "name": "requests-file"
+            },
+            {
+              "name": "avro-python3"
+            },
+            {
+              "name": "torch"
+            },
+            {
+              "name": "statsd"
+            },
+            {
+              "name": "msal-extensions"
+            },
+            {
+              "name": "service-identity"
+            },
+            {
+              "name": "mozprofile"
+            },
+            {
+              "name": "python-daemon"
+            },
+            {
+              "name": "sphinxcontrib-htmlhelp"
+            },
+            {
+              "name": "numba"
+            },
+            {
+              "name": "sphinxcontrib-applehelp"
+            },
+            {
+              "name": "idna-ssl"
+            },
+            {
+              "name": "sphinxcontrib-devhelp"
+            },
+            {
+              "name": "sphinxcontrib-qthelp"
+            },
+            {
+              "name": "tldextract"
+            },
+            {
+              "name": "azure-mgmt-nspkg"
+            },
+            {
+              "name": "maxminddb"
+            },
+            {
+              "name": "cssselect"
+            },
+            {
+              "name": "freezegun"
+            },
+            {
+              "name": "hyperlink"
+            },
+            {
+              "name": "prettytable"
+            },
+            {
+              "name": "automat"
+            },
+            {
+              "name": "constantly"
+            },
+            {
+              "name": "sphinxcontrib-jsmath"
+            },
+            {
+              "name": "deepdiff"
+            },
+            {
+              "name": "pathtools"
+            },
+            {
+              "name": "s3cmd"
+            },
+            {
+              "name": "pydot"
+            },
+            {
+              "name": "python-json-logger"
+            },
+            {
+              "name": "azure-mgmt-compute"
+            },
+            {
+              "name": "wtforms"
+            },
+            {
+              "name": "croniter"
+            },
+            {
+              "name": "mozfile"
+            },
+            {
+              "name": "azure-cosmosdb-table"
+            },
+            {
+              "name": "hdfs"
+            },
+            {
+              "name": "mozterm"
+            },
+            {
+              "name": "raven"
+            },
+            {
+              "name": "configobj"
+            },
+            {
+              "name": "geoip2"
+            },
+            {
+              "name": "google-cloud"
+            },
+            {
+              "name": "nodeenv"
+            },
+            {
+              "name": "identify"
+            },
+            {
+              "name": "azure-cosmosdb-nspkg"
+            },
+            {
+              "name": "jsondiff"
+            },
+            {
+              "name": "pyproj"
+            },
+            {
+              "name": "azure-identity"
+            },
+            {
+              "name": "typing-inspect"
+            },
+            {
+              "name": "python-slugify"
+            },
+            {
+              "name": "django-cors-headers"
+            },
+            {
+              "name": "pre-commit"
+            },
+            {
+              "name": "backoff"
+            },
+            {
+              "name": "azure-mgmt-network"
+            },
+            {
+              "name": "tblib"
+            },
+            {
+              "name": "cfgv"
+            },
+            {
+              "name": "pycurl"
+            },
+            {
+              "name": "pyhive"
+            },
+            {
+              "name": "dockerpty"
+            },
+            {
+              "name": "pypandoc"
+            },
+            {
+              "name": "autopep8"
+            },
+            {
+              "name": "crcmod"
+            },
+            {
+              "name": "docker-compose"
+            },
+            {
+              "name": "pathlib"
+            },
+            {
+              "name": "google-cloud-bigtable"
+            },
+            {
+              "name": "hiredis"
+            },
+            {
+              "name": "holidays"
+            },
+            {
+              "name": "gspread"
+            },
+            {
+              "name": "grpcio-tools"
+            },
+            {
+              "name": "azure-mgmt-datalake-nspkg"
+            },
+            {
+              "name": "azure-mgmt-sql"
+            },
+            {
+              "name": "voluptuous"
+            },
+            {
+              "name": "azure-batch"
+            },
+            {
+              "name": "django-filter"
+            },
+            {
+              "name": "aws-xray-sdk"
+            },
+            {
+              "name": "netifaces"
+            },
+            {
+              "name": "pymssql"
+            },
+            {
+              "name": "semantic-version"
+            },
+            {
+              "name": "pysocks"
+            },
+            {
+              "name": "promise"
+            },
+            {
+              "name": "geographiclib"
+            },
+            {
+              "name": "elasticsearch-dsl"
+            },
+            {
+              "name": "pydantic"
+            },
+            {
+              "name": "scp"
+            },
+            {
+              "name": "django-extensions"
+            },
+            {
+              "name": "zope-event"
+            },
+            {
+              "name": "flask-wtf"
+            },
+            {
+              "name": "pika"
+            },
+            {
+              "name": "google-apitools"
+            },
+            {
+              "name": "munch"
+            },
+            {
+              "name": "azure-mgmt-rdbms"
+            },
+            {
+              "name": "ordered-set"
+            },
+            {
+              "name": "sphinx-rtd-theme"
+            },
+            {
+              "name": "azure-servicebus"
+            },
+            {
+              "name": "uwsgi"
+            },
+            {
+              "name": "pywin32"
+            },
+            {
+              "name": "user-agents"
+            },
+            {
+              "name": "pytest-timeout"
+            },
+            {
+              "name": "zope-deprecation"
+            },
+            {
+              "name": "aws-sam-translator"
+            },
+            {
+              "name": "simple-salesforce"
+            },
+            {
+              "name": "pyaml"
+            },
+            {
+              "name": "webrtcvad-wheels"
+            },
+            {
+              "name": "sqlalchemy-utils"
+            },
+            {
+              "name": "pyserial"
+            },
+            {
+              "name": "aiobotocore"
+            },
+            {
+              "name": "azure-mgmt-batch"
+            },
+            {
+              "name": "azure-mgmt-cosmosdb"
+            },
+            {
+              "name": "youtube-dl"
+            },
+            {
+              "name": "lunardate"
+            },
+            {
+              "name": "lz4"
+            },
+            {
+              "name": "jpype1"
+            },
+            {
+              "name": "azure-mgmt-datalake-store"
+            },
+            {
+              "name": "sh"
+            },
+            {
+              "name": "bz2file"
+            },
+            {
+              "name": "humanize"
+            },
+            {
+              "name": "tomlkit"
+            },
+            {
+              "name": "influxdb"
+            },
+            {
+              "name": "requests-aws4auth"
+            },
+            {
+              "name": "cerberus"
+            },
+            {
+              "name": "passlib"
+            },
+            {
+              "name": "spacy"
+            },
+            {
+              "name": "python3-openid"
+            },
+            {
+              "name": "azure-mgmt-cdn"
+            },
+            {
+              "name": "ephem"
+            },
+            {
+              "name": "azure-mgmt-monitor"
+            },
+            {
+              "name": "azure-mgmt-web"
+            },
+            {
+              "name": "google-cloud-spanner"
+            },
+            {
+              "name": "pycountry"
+            },
+            {
+              "name": "yamllint"
+            },
+            {
+              "name": "flask-login"
+            },
+            {
+              "name": "azure-storage"
+            },
+            {
+              "name": "thinc"
+            },
+            {
+              "name": "httpcore"
+            },
+            {
+              "name": "pygithub"
+            },
+            {
+              "name": "bokeh"
+            },
+            {
+              "name": "invoke"
+            },
+            {
+              "name": "cfn-lint"
+            },
+            {
+              "name": "moto"
+            },
+            {
+              "name": "datetime"
+            },
+            {
+              "name": "azure-mgmt-containerservice"
+            },
+            {
+              "name": "awscli-cwlogs"
+            },
+            {
+              "name": "emoji"
+            },
+            {
+              "name": "twine"
+            },
+            {
+              "name": "preshed"
+            },
+            {
+              "name": "ipdb"
+            },
+            {
+              "name": "azure-mgmt-datalake-analytics"
+            },
+            {
+              "name": "sentencepiece"
+            },
+            {
+              "name": "avro"
+            },
+            {
+              "name": "pyperclip"
+            },
+            {
+              "name": "murmurhash"
+            },
+            {
+              "name": "mmh3"
+            },
+            {
+              "name": "shellingham"
+            },
+            {
+              "name": "multiprocess"
+            },
+            {
+              "name": "requests-mock"
+            },
+            {
+              "name": "aliyun-python-sdk-core"
+            },
+            {
+              "name": "google-gax"
+            },
+            {
+              "name": "cymem"
+            },
+            {
+              "name": "azure-mgmt-devtestlabs"
+            },
+            {
+              "name": "jira"
+            },
+            {
+              "name": "webob"
+            },
+            {
+              "name": "ddtrace"
+            },
+            {
+              "name": "factory-boy"
+            },
+            {
+              "name": "inflect"
+            },
+            {
+              "name": "azure-mgmt-iothub"
+            },
+            {
+              "name": "plac"
+            },
+            {
+              "name": "codecov"
+            },
+            {
+              "name": "marshmallow-enum"
+            },
+            {
+              "name": "python-gflags"
+            },
+            {
+              "name": "setproctitle"
+            },
+            {
+              "name": "configargparse"
+            },
+            {
+              "name": "django-storages"
+            },
+            {
+              "name": "uamqp"
+            },
+            {
+              "name": "phonenumbers"
+            },
+            {
+              "name": "python-pam"
+            },
+            {
+              "name": "blis"
+            },
+            {
+              "name": "zeep"
+            },
+            {
+              "name": "redis-py-cluster"
+            },
+            {
+              "name": "azure-cli-core"
+            },
+            {
+              "name": "aliyun-python-sdk-ecs"
+            },
+            {
+              "name": "google"
+            },
+            {
+              "name": "azure-mgmt-redis"
+            },
+            {
+              "name": "srsly"
+            },
+            {
+              "name": "antlr4-python3-runtime"
+            },
+            {
+              "name": "aliyunsdkcore"
+            },
+            {
+              "name": "pip-tools"
+            },
+            {
+              "name": "azure-mgmt-loganalytics"
+            },
+            {
+              "name": "azure-mgmt-dns"
+            },
+            {
+              "name": "coloredlogs"
+            },
+            {
+              "name": "confluent-kafka"
+            },
+            {
+              "name": "newrelic"
+            },
+            {
+              "name": "pep8"
+            },
+            {
+              "name": "natsort"
+            },
+            {
+              "name": "junit-xml"
+            },
+            {
+              "name": "cx-oracle"
+            },
+            {
+              "name": "azure-mgmt-containerinstance"
+            },
+            {
+              "name": "wasabi"
+            },
+            {
+              "name": "flask-restful"
+            },
+            {
+              "name": "azure-mgmt-cognitiveservices"
+            },
+            {
+              "name": "argh"
+            },
+            {
+              "name": "pycalverter"
+            },
+            {
+              "name": "azure-mgmt-eventhub"
+            },
+            {
+              "name": "azure-mgmt-trafficmanager"
+            },
+            {
+              "name": "azure-mgmt-media"
+            },
+            {
+              "name": "pyluach"
+            },
+            {
+              "name": "pox"
+            },
+            {
+              "name": "backports-tempfile"
+            },
+            {
+              "name": "poetry"
+            },
+            {
+              "name": "azure-storage-nspkg"
+            },
+            {
+              "name": "aenum"
+            },
+            {
+              "name": "sympy"
+            },
+            {
+              "name": "koalas"
+            },
+            {
+              "name": "distributed"
+            },
+            {
+              "name": "pytest-django"
+            },
+            {
+              "name": "convertdate"
+            },
+            {
+              "name": "numexpr"
+            },
+            {
+              "name": "pydocstyle"
+            },
+            {
+              "name": "pathos"
+            },
+            {
+              "name": "pystan"
+            },
+            {
+              "name": "parameterized"
+            },
+            {
+              "name": "fire"
+            },
+            {
+              "name": "parsedatetime"
+            },
+            {
+              "name": "semver"
+            },
+            {
+              "name": "progressbar2"
+            },
+            {
+              "name": "parse"
+            },
+            {
+              "name": "ppft"
+            },
+            {
+              "name": "azureml-core"
+            },
+            {
+              "name": "msgpack-python"
+            },
+            {
+              "name": "pytest-html"
+            },
+            {
+              "name": "azure-mgmt-iotcentral"
+            },
+            {
+              "name": "python-utils"
+            },
+            {
+              "name": "pystache"
+            },
+            {
+              "name": "cleo"
+            },
+            {
+              "name": "azure-kusto-data"
+            },
+            {
+              "name": "graphql-core"
+            },
+            {
+              "name": "pyrfc3339"
+            },
+            {
+              "name": "python-gnupg"
+            },
+            {
+              "name": "google-cloud-firestore"
+            },
+            {
+              "name": "dateparser"
+            },
+            {
+              "name": "pastel"
+            },
+            {
+              "name": "kazoo"
+            },
+            {
+              "name": "pymeeus"
+            },
+            {
+              "name": "marshmallow-sqlalchemy"
+            },
+            {
+              "name": "azure-mgmt-recoveryservicesbackup"
+            },
+            {
+              "name": "knack"
+            },
+            {
+              "name": "azure-mgmt-applicationinsights"
+            },
+            {
+              "name": "pylev"
+            },
+            {
+              "name": "azure-mgmt-eventgrid"
+            },
+            {
+              "name": "heapdict"
+            },
+            {
+              "name": "azure-mgmt-marketplaceordering"
+            },
+            {
+              "name": "azure-mgmt-servicebus"
+            },
+            {
+              "name": "click-plugins"
+            },
+            {
+              "name": "azure-mgmt-servicefabric"
+            },
+            {
+              "name": "zict"
+            },
+            {
+              "name": "azure-mgmt-reservations"
+            },
+            {
+              "name": "azure-mgmt-search"
+            },
+            {
+              "name": "itypes"
+            },
+            {
+              "name": "cachy"
+            },
+            {
+              "name": "libcst"
+            },
+            {
+              "name": "clikit"
+            },
+            {
+              "name": "coreapi"
+            },
+            {
+              "name": "azure-mgmt-recoveryservices"
+            },
+            {
+              "name": "coreschema"
+            },
+            {
+              "name": "pytest-metadata"
+            },
+            {
+              "name": "apispec"
+            },
+            {
+              "name": "google-cloud-monitoring"
+            },
+            {
+              "name": "azure-mgmt-iothubprovisioningservices"
+            },
+            {
+              "name": "azure-cosmos"
+            },
+            {
+              "name": "azure-mgmt-msi"
+            },
+            {
+              "name": "waitress"
+            },
+            {
+              "name": "shap"
+            },
+            {
+              "name": "azure-mgmt-advisor"
+            },
+            {
+              "name": "linecache2"
+            },
+            {
+              "name": "jellyfish"
+            },
+            {
+              "name": "python-consul"
+            },
+            {
+              "name": "azure-mgmt-billing"
+            },
+            {
+              "name": "azure-mgmt-datafactory"
+            },
+            {
+              "name": "azure-mgmt-consumption"
+            },
+            {
+              "name": "azure-mgmt-batchai"
+            },
+            {
+              "name": "supervisor"
+            },
+            {
+              "name": "azure-loganalytics"
+            },
+            {
+              "name": "gym"
+            },
+            {
+              "name": "xlwt"
+            },
+            {
+              "name": "stripe"
+            },
+            {
+              "name": "azure-mgmt-policyinsights"
+            },
+            {
+              "name": "azure-mgmt-relay"
+            },
+            {
+              "name": "grpcio-gcp"
+            },
+            {
+              "name": "fabric"
+            },
+            {
+              "name": "cattrs"
+            },
+            {
+              "name": "expiringdict"
+            },
+            {
+              "name": "azure-storage-file"
+            },
+            {
+              "name": "apscheduler"
+            },
+            {
+              "name": "deprecation"
+            },
+            {
+              "name": "django-debug-toolbar"
+            },
+            {
+              "name": "imbalanced-learn"
+            },
+            {
+              "name": "pypdf2"
+            },
+            {
+              "name": "unittest2"
+            },
+            {
+              "name": "ldap3"
+            },
+            {
+              "name": "cognite-sdk"
+            },
+            {
+              "name": "watchtower"
+            },
+            {
+              "name": "setuptools-git"
+            },
+            {
+              "name": "azure-mgmt-signalr"
+            },
+            {
+              "name": "w3lib"
+            },
+            {
+              "name": "eventlet"
+            },
+            {
+              "name": "torchvision"
+            },
+            {
+              "name": "google-cloud-vision"
+            },
+            {
+              "name": "sshpubkeys"
+            },
+            {
+              "name": "cligj"
+            },
+            {
+              "name": "azure-mgmt-managementgroups"
+            },
+            {
+              "name": "flask-caching"
+            },
+            {
+              "name": "addict"
+            },
+            {
+              "name": "traceback2"
+            },
+            {
+              "name": "pydocumentdb"
+            },
+            {
+              "name": "flask-babel"
+            },
+            {
+              "name": "reportlab"
+            },
+            {
+              "name": "cognite-model-hosting"
+            },
+            {
+              "name": "ratelimit"
+            },
+            {
+              "name": "azure-mgmt-datamigration"
+            },
+            {
+              "name": "sphinxcontrib-websupport"
+            },
+            {
+              "name": "aioitertools"
+            },
+            {
+              "name": "hypothesis"
+            },
+            {
+              "name": "twilio"
+            },
+            {
+              "name": "email-validator"
+            },
+            {
+              "name": "pycairo"
+            },
+            {
+              "name": "sasl"
+            },
+            {
+              "name": "azure-mgmt-maps"
+            },
+            {
+              "name": "validators"
+            },
+            {
+              "name": "tensorflow-hub"
+            },
+            {
+              "name": "findspark"
+            },
+            {
+              "name": "fbprophet"
+            },
+            {
+              "name": "opencensus-context"
+            },
+            {
+              "name": "azure"
+            },
+            {
+              "name": "pyxdg"
+            },
+            {
+              "name": "strict-rfc3339"
+            },
+            {
+              "name": "pypika"
+            },
+            {
+              "name": "opentracing"
+            },
+            {
+              "name": "pycares"
+            },
+            {
+              "name": "dicttoxml"
+            },
+            {
+              "name": "catalogue"
+            },
+            {
+              "name": "flask-migrate"
+            },
+            {
+              "name": "whitenoise"
+            },
+            {
+              "name": "flask-admin"
+            },
+            {
+              "name": "django-redis"
+            },
+            {
+              "name": "ml-metadata"
+            },
+            {
+              "name": "azure-servicemanagement-legacy"
+            },
+            {
+              "name": "flask-jwt-extended"
+            },
+            {
+              "name": "azure-servicefabric"
+            },
+            {
+              "name": "brotli"
+            },
+            {
+              "name": "pygobject"
+            },
+            {
+              "name": "fiona"
+            },
+            {
+              "name": "opencensus"
+            },
+            {
+              "name": "commonmark"
+            },
+            {
+              "name": "thrift-sasl"
+            },
+            {
+              "name": "authlib"
+            },
+            {
+              "name": "feedparser"
+            },
+            {
+              "name": "yapf"
+            },
+            {
+              "name": "rx"
+            },
+            {
+              "name": "slacker"
+            },
+            {
+              "name": "blobfile"
+            },
+            {
+              "name": "azure-mgmt-logic"
+            },
+            {
+              "name": "azure-mgmt"
+            },
+            {
+              "name": "requests-futures"
+            },
+            {
+              "name": "python-snappy"
+            },
+            {
+              "name": "stringcase"
+            },
+            {
+              "name": "structlog"
+            },
+            {
+              "name": "python-mimeparse"
+            },
+            {
+              "name": "tld"
+            },
+            {
+              "name": "uptime"
+            },
+            {
+              "name": "dotnetcore2"
+            },
+            {
+              "name": "bandit"
+            },
+            {
+              "name": "mysql-connector"
+            },
+            {
+              "name": "pytest-rerunfailures"
+            },
+            {
+              "name": "azure-mgmt-scheduler"
+            },
+            {
+              "name": "flask-appbuilder"
+            },
+            {
+              "name": "plumbum"
+            },
+            {
+              "name": "azure-eventgrid"
+            },
+            {
+              "name": "pytest-asyncio"
+            },
+            {
+              "name": "tokenizers"
+            },
+            {
+              "name": "python-jenkins"
+            },
+            {
+              "name": "sacremoses"
+            },
+            {
+              "name": "filemagic"
+            },
+            {
+              "name": "jaydebeapi"
+            },
+            {
+              "name": "google-cloud-language"
+            },
+            {
+              "name": "binaryornot"
+            },
+            {
+              "name": "intel-openmp"
+            },
+            {
+              "name": "py-bcrypt"
+            },
+            {
+              "name": "azure-mgmt-subscription"
+            },
+            {
+              "name": "mkl"
+            },
+            {
+              "name": "apache-airflow"
+            },
+            {
+              "name": "mpmath"
+            },
+            {
+              "name": "aspy-yaml"
+            },
+            {
+              "name": "parsel"
+            },
+            {
+              "name": "azure-kusto-ingest"
+            },
+            {
+              "name": "azure-cli-telemetry"
+            },
+            {
+              "name": "multi-key-dict"
+            },
+            {
+              "name": "typeguard"
+            },
+            {
+              "name": "pyglet"
+            },
+            {
+              "name": "pkgconfig"
+            },
+            {
+              "name": "google-cloud-videointelligence"
+            },
+            {
+              "name": "python-crontab"
+            },
+            {
+              "name": "bitarray"
+            },
+            {
+              "name": "azure-mgmt-notificationhubs"
+            },
+            {
+              "name": "wandb"
+            },
+            {
+              "name": "azure-mgmt-managementpartner"
+            },
+            {
+              "name": "geojson"
+            },
+            {
+              "name": "geopandas"
+            },
+            {
+              "name": "fakeredis"
+            },
+            {
+              "name": "olefile"
+            },
+            {
+              "name": "cliff"
+            },
+            {
+              "name": "terminaltables"
+            },
+            {
+              "name": "repoze-lru"
+            },
+            {
+              "name": "cchardet"
+            },
+            {
+              "name": "cookiecutter"
+            },
+            {
+              "name": "bitstring"
+            },
+            {
+              "name": "queuelib"
+            },
+            {
+              "name": "pydispatcher"
+            },
+            {
+              "name": "tftpy"
+            },
+            {
+              "name": "tensorflow-gpu"
+            },
+            {
+              "name": "tifffile"
+            },
+            {
+              "name": "azure-mgmt-commerce"
+            },
+            {
+              "name": "azure-mgmt-powerbiembedded"
+            },
+            {
+              "name": "pg8000"
+            },
+            {
+              "name": "azure-mgmt-hanaonazure"
+            },
+            {
+              "name": "azure-mgmt-machinelearningcompute"
+            },
+            {
+              "name": "cmd2"
+            },
+            {
+              "name": "mongoengine"
+            },
+            {
+              "name": "azure-cli-nspkg"
+            },
+            {
+              "name": "transformers"
+            },
+            {
+              "name": "scikit-optimize"
+            },
+            {
+              "name": "scrapy"
+            },
+            {
+              "name": "dj-database-url"
+            },
+            {
+              "name": "qrcode"
+            },
+            {
+              "name": "poyo"
+            },
+            {
+              "name": "azureml-dataprep"
+            },
+            {
+              "name": "jsmin"
+            },
+            {
+              "name": "jinja2-time"
+            },
+            {
+              "name": "google-cloud-kms"
+            },
+            {
+              "name": "flask-swagger"
+            },
+            {
+              "name": "azureml-dataprep-native"
+            },
+            {
+              "name": "pyfarmhash"
+            },
+            {
+              "name": "html2text"
+            },
+            {
+              "name": "partd"
+            },
+            {
+              "name": "google-cloud-bigquery-storage"
+            },
+            {
+              "name": "korean-lunar-calendar"
+            },
+            {
+              "name": "prison"
+            },
+            {
+              "name": "python-memcached"
+            },
+            {
+              "name": "aiodns"
+            },
+            {
+              "name": "tablib"
+            },
+            {
+              "name": "uvicorn"
+            },
+            {
+              "name": "tinycss2"
+            },
+            {
+              "name": "unittest-xml-reporting"
+            },
+            {
+              "name": "azure-eventhub"
+            },
+            {
+              "name": "azure-mgmt-core"
+            },
+            {
+              "name": "intervaltree"
+            },
+            {
+              "name": "hyperopt"
+            },
+            {
+              "name": "josepy"
+            },
+            {
+              "name": "ntlm-auth"
+            },
+            {
+              "name": "flaky"
+            },
+            {
+              "name": "flask-openid"
+            },
+            {
+              "name": "flower"
+            },
+            {
+              "name": "locket"
+            },
+            {
+              "name": "debtcollector"
+            },
+            {
+              "name": "oslo-i18n"
+            },
+            {
+              "name": "qds-sdk"
+            },
+            {
+              "name": "tensorflow-datasets"
+            },
+            {
+              "name": "azure-mgmt-devspaces"
+            },
+            {
+              "name": "acme"
+            },
+            {
+              "name": "boltons"
+            },
+            {
+              "name": "anyjson"
+            },
+            {
+              "name": "zope-component"
+            },
+            {
+              "name": "pyelftools"
+            },
+            {
+              "name": "altair"
+            },
+            {
+              "name": "testfixtures"
+            },
+            {
+              "name": "azure-applicationinsights"
+            },
+            {
+              "name": "starlette"
+            },
+            {
+              "name": "django-appconf"
+            },
+            {
+              "name": "jupyterlab"
+            },
+            {
+              "name": "multipledispatch"
+            },
+            {
+              "name": "pypiwin32"
+            },
+            {
+              "name": "azure-keyvault-secrets"
+            },
+            {
+              "name": "recommonmark"
+            },
+            {
+              "name": "vcrpy"
+            },
+            {
+              "name": "azure-cli"
+            },
+            {
+              "name": "flask-bcrypt"
+            },
+            {
+              "name": "json-merge-patch"
+            },
+            {
+              "name": "webtest"
+            },
+            {
+              "name": "suds-jurko"
+            },
+            {
+              "name": "zope-proxy"
+            },
+            {
+              "name": "zope-hookable"
+            },
+            {
+              "name": "flake8-polyfill"
+            },
+            {
+              "name": "cairocffi"
+            },
+            {
+              "name": "pylint-plugin-utils"
+            },
+            {
+              "name": "immutables"
+            },
+            {
+              "name": "jaraco-functools"
+            },
+            {
+              "name": "drf-yasg"
+            },
+            {
+              "name": "patch"
+            },
+            {
+              "name": "requests-ntlm"
+            },
+            {
+              "name": "langid"
+            },
+            {
+              "name": "dogpile-cache"
+            },
+            {
+              "name": "gapic-google-cloud-logging-v2"
+            },
+            {
+              "name": "oslo-config"
+            },
+            {
+              "name": "sshtunnel"
+            },
+            {
+              "name": "proto-google-cloud-logging-v2"
+            },
+            {
+              "name": "h2o"
+            },
+            {
+              "name": "cssselect2"
+            },
+            {
+              "name": "parse-type"
+            },
+            {
+              "name": "paho-mqtt"
+            },
+            {
+              "name": "zope-deferredimport"
+            },
+            {
+              "name": "pynamodb"
+            },
+            {
+              "name": "tables"
+            },
+            {
+              "name": "fusepy"
+            },
+            {
+              "name": "pytesseract"
+            },
+            {
+              "name": "crayons"
+            },
+            {
+              "name": "cairosvg"
+            },
+            {
+              "name": "cfn-flip"
+            },
+            {
+              "name": "frozendict"
+            },
+            {
+              "name": "python-box"
+            },
+            {
+              "name": "atlassian-jwt-auth"
+            },
+            {
+              "name": "json5"
+            },
+            {
+              "name": "easyprocess"
+            },
+            {
+              "name": "pybind11"
+            },
+            {
+              "name": "oslo-utils"
+            },
+            {
+              "name": "cassandra-driver"
+            },
+            {
+              "name": "graphene"
+            },
+            {
+              "name": "schema"
+            },
+            {
+              "name": "fastparquet"
+            },
+            {
+              "name": "graphql-relay"
+            },
+            {
+              "name": "certbot"
+            },
+            {
+              "name": "google-cloud-error-reporting"
+            },
+            {
+              "name": "ciso8601"
+            },
+            {
+              "name": "clickclick"
+            },
+            {
+              "name": "pyotp"
+            },
+            {
+              "name": "python-crfsuite"
+            },
+            {
+              "name": "bashlex"
+            },
+            {
+              "name": "databricks-api"
+            },
+            {
+              "name": "presto-python-client"
+            },
+            {
+              "name": "falcon"
+            },
+            {
+              "name": "appnope"
+            },
+            {
+              "name": "oslo-serialization"
+            },
+            {
+              "name": "basictracer"
+            },
+            {
+              "name": "jupyterlab-server"
+            },
+            {
+              "name": "google-cloud-dlp"
+            },
+            {
+              "name": "livereload"
+            },
+            {
+              "name": "python-ldap"
+            },
+            {
+              "name": "haversine"
+            },
+            {
+              "name": "contextvars"
+            },
+            {
+              "name": "curlify"
+            },
+            {
+              "name": "cheroot"
+            },
+            {
+              "name": "python-augeas"
+            },
+            {
+              "name": "tdigest"
+            },
+            {
+              "name": "proto-google-cloud-datastore-v1"
+            },
+            {
+              "name": "google-cloud-secret-manager"
+            },
+            {
+              "name": "django-model-utils"
+            },
+            {
+              "name": "robotframework"
+            },
+            {
+              "name": "accumulation-tree"
+            },
+            {
+              "name": "mysql-python"
+            },
+            {
+              "name": "pyudorandom"
+            },
+            {
+              "name": "testtools"
+            },
+            {
+              "name": "flask-restplus"
+            },
+            {
+              "name": "flatbuffers"
+            },
+            {
+              "name": "sqlalchemy-redshift"
+            },
+            {
+              "name": "asyncio"
+            },
+            {
+              "name": "letsencrypt"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "download",
+      "description": "Download packages",
+      "options": [
+        {
+          "name": "-c",
+          "description": "Constrain versions using the given constraints file. This option can be used multiple times",
+          "takesValue": false
+        },
+        {
+          "name": "--constraint",
+          "description": "Constrain versions using the given constraints file. This option can be used multiple times",
+          "takesValue": false
+        },
+        {
+          "name": "-r",
+          "description": "Install from the given requirements file. This option can be used multiple times",
+          "takesValue": false
+        },
+        {
+          "name": "--requirement",
+          "description": "Install from the given requirements file. This option can be used multiple times",
+          "takesValue": false
+        },
+        {
+          "name": "--no-deps",
+          "description": "Don’t install package dependencies",
+          "takesValue": false
+        },
+        {
+          "name": "--global-option",
+          "description": "Extra global options to be supplied to the setup.py call before the install command",
+          "takesValue": false
+        },
+        {
+          "name": "--no-binary",
+          "description": "Constrain versions using the given constraints file. This option can be used multiple times",
+          "takesValue": false
+        },
+        {
+          "name": "--only-binary",
+          "description": "Do not use source packages",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument",
+              "suggestions": [
+                {
+                  "name": ":all:",
+                  "description": "Disable all source packages"
+                },
+                {
+                  "name": ":none:",
+                  "description": "Empty the set"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--prefer-binary",
+          "description": "Prefer older binary packages over newer source packages",
+          "takesValue": false
+        },
+        {
+          "name": "--src",
+          "description": "Directory to check out editable projects into",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "source folder",
+              "template": "folders"
+            }
+          ]
+        },
+        {
+          "name": "--pre",
+          "description": "Include pre-release and development versions. By default, pip only finds stable versions",
+          "takesValue": false
+        },
+        {
+          "name": "--require-hashes",
+          "description": "Require a hash to check each requirement against, for repeatable installs",
+          "takesValue": false
+        },
+        {
+          "name": "--progress-bar",
+          "description": "Specify type of progress to be displayed",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument",
+              "suggestions": [
+                {
+                  "name": "off"
+                },
+                {
+                  "name": "on"
+                },
+                {
+                  "name": "ascii"
+                },
+                {
+                  "name": "pretty"
+                },
+                {
+                  "name": "emoji"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--no-build-isolation",
+          "description": "Disable isolation when building a modern source distribution",
+          "takesValue": false
+        },
+        {
+          "name": "--use-pep517",
+          "description": "Use PEP 517 for building source distributions",
+          "takesValue": false
+        },
+        {
+          "name": "--ignore-requires-python",
+          "description": "Ignore the Requires-Python information",
+          "takesValue": false
+        },
+        {
+          "name": "-d",
+          "description": "Require a hash to check each requirement against, for repeatable installs",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "dir",
+              "template": "folders"
+            }
+          ]
+        },
+        {
+          "name": "--dest",
+          "description": "Require a hash to check each requirement against, for repeatable installs",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "dir",
+              "template": "folders"
+            }
+          ]
+        },
+        {
+          "name": "--platform",
+          "description": "Only use wheels compatible with platform",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "platform"
+            }
+          ]
+        },
+        {
+          "name": "--python-version",
+          "description": "The Python interpreter version to use for wheel and “Requires-Python” compatibility checks",
+          "takesValue": false
+        },
+        {
+          "name": "--implementation",
+          "description": "Only use wheels compatible with Python implementation",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "implementation"
+            }
+          ]
+        },
+        {
+          "name": "--abi",
+          "description": "Only use wheels compatible with Python abi <abi>, e.g. ‘pypy_41’",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "abi"
+            }
+          ]
+        },
+        {
+          "name": "--no-clean",
+          "description": "Don’t clean up build directories",
+          "takesValue": false
+        },
+        {
+          "name": "-i",
+          "description": "Base URL of the Python Package Index",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "url"
+            }
+          ]
+        },
+        {
+          "name": "--index-url",
+          "description": "Base URL of the Python Package Index",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "url"
+            }
+          ]
+        },
+        {
+          "name": "--no-index",
+          "description": "Ignore package index (only looking at --find-links URLs instead)",
+          "takesValue": false
+        },
+        {
+          "name": "--extra-index-url",
+          "description": "Extra URLs of package indexes to use in addition to --index-url. Should follow the same rules as --index-url",
+          "takesValue": false
+        },
+        {
+          "name": "-f",
+          "description": "Look for archives in the directory listing",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "url",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--find-links",
+          "description": "Look for archives in the directory listing",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "url",
+              "template": "filepaths"
+            }
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "path",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "uninstall",
+      "description": "Uninstall packages",
+      "args": [
+        {
+          "name": "argument"
+        }
+      ]
+    },
+    {
+      "name": "freeze",
+      "description": "Output installed packages in requirements format",
+      "options": [
+        {
+          "name": "-r",
+          "description": "Use the order in the given requirements file and its comments when generating output",
+          "takesValue": false
+        },
+        {
+          "name": "--requirement",
+          "description": "Use the order in the given requirements file and its comments when generating output",
+          "takesValue": false
+        },
+        {
+          "name": "-l",
+          "description": "If in a virtualenv that has global access, do not output globally-installed packages",
+          "takesValue": false
+        },
+        {
+          "name": "--local",
+          "description": "If in a virtualenv that has global access, do not output globally-installed packages",
+          "takesValue": false
+        },
+        {
+          "name": "--user",
+          "description": "Only output packages installed in user-site",
+          "takesValue": false
+        },
+        {
+          "name": "--path",
+          "description": "Restrict to the specified installation path for listing packages (can be used multiple times)",
+          "takesValue": false
+        },
+        {
+          "name": "--all",
+          "description": "Do not skip these packages in the output: setuptools, distribute, pip, wheel",
+          "takesValue": false
+        },
+        {
+          "name": "--exclude-editable",
+          "description": "Exclude editable package from output",
+          "takesValue": false
+        },
+        {
+          "name": "--exclude",
+          "description": "Exclude specified package from the output",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "package"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "list",
+      "description": "List installed packages",
+      "options": [
+        {
+          "name": "-o",
+          "description": "List outdated packages",
+          "takesValue": false
+        },
+        {
+          "name": "--outdated",
+          "description": "List outdated packages",
+          "takesValue": false
+        },
+        {
+          "name": "-u",
+          "description": "List uptodate packages",
+          "takesValue": false
+        },
+        {
+          "name": "--uptodate",
+          "description": "List uptodate packages",
+          "takesValue": false
+        },
+        {
+          "name": "-e",
+          "description": "List editable projects",
+          "takesValue": false
+        },
+        {
+          "name": "--editable",
+          "description": "List editable projects",
+          "takesValue": false
+        },
+        {
+          "name": "-l",
+          "description": "If in a virtualenv that has global access, do not list globally-installed packages",
+          "takesValue": false
+        },
+        {
+          "name": "--local",
+          "description": "If in a virtualenv that has global access, do not list globally-installed packages",
+          "takesValue": false
+        },
+        {
+          "name": "--user",
+          "description": "Only output packages installed in user-site",
+          "takesValue": false
+        },
+        {
+          "name": "--path",
+          "description": "Restrict to the specified installation path for listing packages (can be used multiple times)",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "path",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--pre",
+          "description": "Include pre-release and development versions. By default, pip only finds stable versions",
+          "takesValue": false
+        },
+        {
+          "name": "--format",
+          "description": "Select the output format among: columns (default), freeze, or json",
+          "takesValue": false
+        },
+        {
+          "name": "--not-required",
+          "description": "List packages that are not dependencies of installed packages",
+          "takesValue": false
+        },
+        {
+          "name": "--exclude-editable",
+          "description": "Exclude editable package from output",
+          "takesValue": false
+        },
+        {
+          "name": "--include-editable",
+          "description": "Include editable package from output",
+          "takesValue": false
+        },
+        {
+          "name": "--exclude",
+          "description": "Exclude specified package from the output",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "package"
+            }
+          ]
+        },
+        {
+          "name": "-i",
+          "description": "Base URL of the Python Package Index (default https://pypi.org/simple)",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--index-url",
+          "description": "Base URL of the Python Package Index (default https://pypi.org/simple)",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--extra-index-url",
+          "description": "Include pre-release and development versions. By default, pip only finds stable versions",
+          "takesValue": false
+        },
+        {
+          "name": "--no-index",
+          "description": "Ignore package index (only looking at --find-links URLs instead)",
+          "takesValue": false
+        },
+        {
+          "name": "-f",
+          "description": "If a URL or path to an html file, then parse for links to archives such as sdist (.tar.gz) or wheel (.whl) files",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "url"
+            }
+          ]
+        },
+        {
+          "name": "--find-links",
+          "description": "If a URL or path to an html file, then parse for links to archives such as sdist (.tar.gz) or wheel (.whl) files",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "url"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "show",
+      "description": "Show information about installed packages",
+      "options": [
+        {
+          "name": "-f",
+          "takesValue": false
+        },
+        {
+          "name": "--files",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "check",
+      "description": "Verify installed packages have compatible dependencies"
+    },
+    {
+      "name": "config",
+      "description": "Manage local and global configuration",
+      "options": [
+        {
+          "name": "--editor",
+          "description": "Editor to use to edit the file. Uses VISUAL or EDITOR environment variables if not provided",
+          "takesValue": false
+        },
+        {
+          "name": "--global",
+          "description": "Use the system-wide configuration file only",
+          "takesValue": false
+        },
+        {
+          "name": "--user",
+          "description": "Use the user configuration file only",
+          "takesValue": false
+        },
+        {
+          "name": "--site",
+          "description": "Use the current environment configuration file only",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "search",
+      "description": "Search PyPI for packages",
+      "options": [
+        {
+          "name": "-i",
+          "takesValue": false
+        },
+        {
+          "name": "--index",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "cache",
+      "description": "Inspect and manage pip's wheel cache"
+    },
+    {
+      "name": "wheel",
+      "description": "Build wheels from your requirements"
+    },
+    {
+      "name": "hash",
+      "description": "Compute hashes of package archives",
+      "options": [
+        {
+          "name": "-a",
+          "description": "The hash algorithm to use",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument",
+              "suggestions": [
+                {
+                  "name": "sha256"
+                },
+                {
+                  "name": "sha384"
+                },
+                {
+                  "name": "sha512"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--algorithm",
+          "description": "The hash algorithm to use",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument",
+              "suggestions": [
+                {
+                  "name": "sha256"
+                },
+                {
+                  "name": "sha384"
+                },
+                {
+                  "name": "sha512"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "completion",
+      "description": "A helper command used for command completion"
+    },
+    {
+      "name": "debug",
+      "description": "Show information useful for debugging",
+      "options": [
+        {
+          "name": "--platform",
+          "description": "Only use wheels compatible with platform",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "platform"
+            }
+          ]
+        },
+        {
+          "name": "--python-version",
+          "description": "The Python interpreter version to use for wheel and “Requires-Python” compatibility checks",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "python version"
+            }
+          ]
+        },
+        {
+          "name": "--implementation",
+          "description": "Only use wheels compatible with Python implementation",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "implementation"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "help",
+      "description": "Show help for commands"
+    }
+  ]
+}

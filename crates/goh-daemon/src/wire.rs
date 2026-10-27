@@ -32,6 +32,18 @@ pub enum Request {
         suggestion_id: String,
         buffer_hash: String,
     },
+    /// What the shell knows (aliases, functions, builtins, `PATH`), sent by the adapter when it changes.
+    Context {
+        v: u32,
+        session_id: String,
+        aliases: Vec<[String; 2]>,
+        functions: Vec<String>,
+        builtins: Vec<String>,
+        path: String,
+        /// Names of the exported variables (never their values).
+        #[serde(default)]
+        env: Vec<String>,
+    },
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -48,6 +60,7 @@ pub enum Reply {
         cursor_byte: usize,
     },
     Stale { v: u32, session_id: String, generation: u64 },
+    Ack { v: u32 },
 }
 
 pub fn buffer_hash(buffer: &str) -> String {

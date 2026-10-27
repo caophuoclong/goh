@@ -5,46 +5,164 @@
   "description": "Proposed local-only config shape. Placeholder $id; update for published schema.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["configVersion", "display", "theme", "privacy"],
+  "required": [
+    "configVersion",
+    "display",
+    "theme",
+    "privacy"
+  ],
   "properties": {
-    "configVersion": { "type": "integer", "const": 1 },
+    "configVersion": {
+      "type": "integer",
+      "const": 1
+    },
     "display": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["mode", "maxSuggestions"],
+      "required": [
+        "mode",
+        "maxSuggestions"
+      ],
       "properties": {
-        "mode": { "enum": ["auto", "overlay", "inline"] },
-        "maxSuggestions": { "type": "integer", "minimum": 4, "maximum": 12 }
+        "mode": {
+          "enum": [
+            "auto",
+            "overlay",
+            "inline"
+          ]
+        },
+        "maxSuggestions": {
+          "type": "integer",
+          "minimum": 4,
+          "maximum": 12
+        },
+        "live": {
+          "type": "boolean",
+          "default": true,
+          "description": "Open the menu by itself while typing; false = on Tab only."
+        },
+        "predict": {
+          "type": "boolean",
+          "default": true,
+          "description": "At an empty prompt, offer the command that usually follows the last one run in this folder. Needs privacy.recordCommands."
+        }
+      }
+    },
+    "popup": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "font": {
+          "type": "string",
+          "description": "Font family for the popup. Empty = follow the terminal's font where it can be read."
+        },
+        "fontSize": {
+          "type": "number",
+          "minimum": 10,
+          "maximum": 18
+        }
       }
     },
     "theme": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["mode"],
+      "required": [
+        "mode"
+      ],
       "properties": {
-        "mode": { "enum": ["auto", "light", "dark", "custom"] },
-        "foreground": { "$ref": "#/$defs/hexColor" },
-        "background": { "$ref": "#/$defs/hexColor" },
-        "accent": { "$ref": "#/$defs/hexColor" }
+        "mode": {
+          "enum": [
+            "auto",
+            "light",
+            "dark",
+            "custom"
+          ]
+        },
+        "foreground": {
+          "$ref": "#/$defs/hexColor"
+        },
+        "background": {
+          "$ref": "#/$defs/hexColor"
+        },
+        "accent": {
+          "$ref": "#/$defs/hexColor"
+        }
       },
       "allOf": [
-        { "if": { "properties": { "mode": { "const": "custom" } }, "required": ["mode"] },
-          "then": { "required": ["foreground", "background"] } }
+        {
+          "if": {
+            "properties": {
+              "mode": {
+                "const": "custom"
+              }
+            },
+            "required": [
+              "mode"
+            ]
+          },
+          "then": {
+            "required": [
+              "foreground",
+              "background"
+            ]
+          }
+        }
       ]
     },
     "privacy": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["telemetry", "networkSpecs", "dynamicGenerators", "retainCommandHistory"],
+      "required": [
+        "telemetry",
+        "networkSpecs",
+        "dynamicGenerators",
+        "retainCommandHistory"
+      ],
       "properties": {
-        "telemetry": { "type": "boolean", "default": false },
-        "networkSpecs": { "type": "boolean", "default": false },
-        "dynamicGenerators": { "type": "boolean", "default": false },
-        "retainCommandHistory": { "type": "boolean", "const": false }
+        "telemetry": {
+          "type": "boolean",
+          "default": false
+        },
+        "networkSpecs": {
+          "type": "boolean",
+          "default": false
+        },
+        "dynamicGenerators": {
+          "type": "boolean",
+          "default": false
+        },
+        "retainCommandHistory": {
+          "type": "boolean",
+          "const": false
+        },
+        "learnChoices": {
+          "type": "boolean",
+          "default": true,
+          "description": "Remember which suggestions you pick (command, subcommand and the chosen label only) to rank them first next time. `goh forget` deletes it."
+        },
+        "recordCommands": {
+          "type": "boolean",
+          "default": false,
+          "description": "Keep the successful command lines you run (never ones that look like they hold a secret, nor ones starting with a space) in a private local file, to finish a started line from your history, predict the next command, and remember the values you give options. `goh forget` deletes it."
+        }
+      }
+    },
+    "completion": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "autoSpecs": {
+          "type": "boolean",
+          "default": false,
+          "description": "The first time you type a program that has no spec, run `<program> --help` once in the background and save a spec read from it (like `goh spec gen`)."
+        }
       }
     }
   },
   "$defs": {
-    "hexColor": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" }
+    "hexColor": {
+      "type": "string",
+      "pattern": "^#[0-9A-Fa-f]{6}$"
+    }
   }
 }

@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "name": "just",
+  "description": "Run recipes from a justfile",
+  "options": [
+    {
+      "name": "--list",
+      "description": "List recipes",
+      "takesValue": false
+    },
+    {
+      "name": "-l",
+      "description": "List recipes",
+      "takesValue": false
+    },
+    {
+      "name": "--choose",
+      "description": "Choose a recipe with a selector",
+      "takesValue": false
+    },
+    {
+      "name": "--dry-run",
+      "description": "Print what would run",
+      "takesValue": false
+    },
+    {
+      "name": "--evaluate",
+      "description": "Print variables",
+      "takesValue": false
+    },
+    {
+      "name": "--summary",
+      "description": "List recipe names on one line",
+      "takesValue": false
+    },
+    {
+      "name": "--show",
+      "description": "Show a recipe's source",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "recipe",
+          "provider": "just-recipes"
+        }
+      ]
+    },
+    {
+      "name": "-s",
+      "description": "Show a recipe's source",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "recipe",
+          "provider": "just-recipes"
+        }
+      ]
+    },
+    {
+      "name": "--justfile",
+      "description": "Use this justfile",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "file",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "-f",
+      "description": "Use this justfile",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "file",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "--working-directory",
+      "description": "Run recipes here",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "dir",
+          "template": "folders"
+        }
+      ]
+    },
+    {
+      "name": "--fmt",
+      "description": "Format the justfile",
+      "takesValue": false
+    },
+    {
+      "name": "--init",
+      "description": "Create a justfile",
+      "takesValue": false
+    },
+    {
+      "name": "--quiet",
+      "description": "Do not echo recipe lines",
+      "takesValue": false
+    },
+    {
+      "name": "-q",
+      "description": "Do not echo recipe lines",
+      "takesValue": false
+    },
+    {
+      "name": "--verbose",
+      "description": "More output",
+      "takesValue": false
+    },
+    {
+      "name": "-v",
+      "description": "More output",
+      "takesValue": false
+    }
+  ],
+  "args": [
+    {
+      "name": "recipe",
+      "provider": "just-recipes",
+      "isVariadic": true,
+      "isOptional": true
+    }
+  ]
+}

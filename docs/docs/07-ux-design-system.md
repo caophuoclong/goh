@@ -33,10 +33,11 @@ Schematic only. Avoid icon assets/emojis as mandatory UI; prefer tiny vector sym
 | Input | Default behavior |
 |---|---|
 | Up/Down | Move popup highlight only when popup owns navigation context and shell adapter can safely delegate. Selection **wraps** (Down on last → first, Up on first → last) and the window jumps with it |
-| Tab | Accept highlighted completion; never auto-run command |
+| Tab | Accept highlighted completion; never auto-run command. In zsh live mode, use native completion when the menu is closed; only `GOH_LIVE=off` uses Tab to open it |
 | Shift+Tab | Previous selection where shell supports safely |
 | Esc | Dismiss popup, restore native editor |
-| Enter | **Shell's existing behavior by default**, not implicit accept |
+| Enter | After explicit menu navigation, insert the selected completion without executing; before navigation use the shell's existing behavior. Typing resets this intent |
+| Right / Left | In zsh, Right accepts the highlighted completion; Left dismisses and performs the original cursor movement. Original bindings apply when the menu is closed |
 | Ctrl+C / Ctrl+D | Pass through shell semantics; close suggestion UI |
 | Mouse | Optional select, but keyboard-only complete |
 
@@ -109,7 +110,7 @@ The implemented source of truth is the design system under `design-system/` (see
 
 ### Windowing
 
-The visible window always contains the selected row. It moves one row at a time; the footer shows `n/total` when there are more results than rows. At either end the selection wraps and the window jumps with it.
+The visible window always contains the selected row. It moves one row at a time; the footer shows `n/total` when there are more results than rows. Arrow navigation wraps at either end and the window jumps with it. Wheel/trackpad navigation stops at either end. The macOS overlay forwards relative wheel movement to the shell with a per-query id; only the shell changes selection, so accepting always inserts the highlighted item. Wheel handling is confined to the visible popup bounds and does not activate the window. The visible row limit is independent of the query limit (up to 50 results).
 
 ### Width and truncation
 
@@ -150,3 +151,7 @@ One quiet line naming the OS capability and why it is needed. After a refusal it
 | Rendered check of previews, real keyboard and screen-reader behaviour | **Not yet verified** |
 | High-fidelity Figma mockups | Optional; not required now that the design system is code |
 | Overlay-vs-inline usability test | Still needed after the spikes |
+
+Command logos are bundled local Devicon assets, with a reserved icon column in the row width calculation.
+Aliases share their tool's logo, and nested command rows retain the parent brand. Commands without a bundled logo use a muted, font-independent `>_` terminal outline in the same icon column. The footer's Enter hint follows the adapter's `enter_accepts`
+flag; the renderer never decides whether Enter accepts or executes.

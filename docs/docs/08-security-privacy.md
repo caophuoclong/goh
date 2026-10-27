@@ -4,7 +4,8 @@
 
 - All static autocomplete works locally and offline; **no account**; **no network required**.
 - The app may receive content typed at an interactive prompt. This is **potentially sensitive data** (tokens, paths, credentials, command arguments), even when no command executes. Treat it as ephemeral confidential input.
-- No raw command buffer, command history or environment-variable values in persistent logs, crash dumps, support reports or analytics by default.
+- No raw command buffer, command history or environment-variable values in persistent logs, crash dumps, support reports or analytics by default. Environment **names** (not values) are sent from the shell to the daemon to complete `$NA`.
+- **One opt-in exception:** `privacy.recordCommands` (default `false`) keeps successful command lines in a private, local, bounded file (`runs`, mode 0600) for history completion, prediction and remembered option values. Lines that look like they hold a secret, and lines starting with a space, are never written; `goh forget` deletes the file. It is never logged, sent anywhere or included in `goh doctor`.
 - User controls whether dynamic providers run; any external registry/update requires separate opt-in and transparent network description.
 
 ## Assets, trust boundaries
@@ -27,7 +28,7 @@ Assets: editable line buffer, cwd, local files, terminal focus state, per-user I
 
 **Level 0 (default):** static JSON specs + filesystem enumeration under current user privileges. File paths are read for names only; do not open contents for completion.
 
-**Level 1 (explicit enable):** shipped read-only Rust providers (`git branches`, e.g.) with bounded commands and narrowly allowed working directory. User may disable by provider. Fail closed when policy cannot be enforced.
+**Level 1 (explicit enable):** shipped read-only Rust providers (`git branches`, e.g.) with bounded commands and narrowly allowed working directory. The two that run `git` (changed and staged files) pass fixed arguments with `core.fsmonitor=false` so a repository's own configuration cannot make them run a program, and take no text from the buffer. User may disable by provider. Fail closed when policy cannot be enforced.
 
 **Level 2 (future):** third-party script generators, isolated process/container/WASM if feasible, permission manifest, per-provider consent, no ambient network or broad filesystem privileges. Must **not** be shipped as silent defaults.
 
@@ -50,10 +51,15 @@ Assets: editable line buffer, cwd, local files, terminal focus state, per-user I
     "telemetry": false,
     "networkSpecs": false,
     "dynamicGenerators": false,
-    "retainCommandHistory": false
-  }
+    "retainCommandHistory": false,
+    "recordCommands": false
+  },
+  "completion": { "autoSpecs": false }
 }
 ```
+
+`retainCommandHistory` stays `false`: nothing is retained by default. `recordCommands` and `autoSpecs` are the explicit,
+documented opt-ins; `autoSpecs` runs `<program> --help` (as `goh spec gen` does) for a program on `PATH` that you typed.
 
 ## Security release gate
 

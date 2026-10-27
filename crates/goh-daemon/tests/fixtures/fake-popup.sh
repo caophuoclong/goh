@@ -5,7 +5,9 @@ log=${FAKE_LOG:?FAKE_LOG must be set}
 while IFS= read -r line; do
   printf '%s\n' "$line" >> "$log"
   case $line in
-    *'"type":"show"'*) printf '{"type":"decision","display":"%s","reason":"fake"}\n' "${FAKE_DISPLAY:-overlay}" ;;
+    *'"type":"show"'*)
+      [[ -n ${FAKE_DELAY:-} ]] && sleep "$FAKE_DELAY"
+      printf '{"type":"decision","display":"%s","reason":"fake"}\n' "${FAKE_DISPLAY:-overlay}" ;;
     *'"type":"quit"'*) exit 0 ;;
   esac
 done
