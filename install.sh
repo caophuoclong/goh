@@ -103,7 +103,8 @@ install_release() {
   say "downloading $name"
   ( cd "$work" &&
     curl -fsSL -o "$name.tar.gz" "$RELEASES/download/v$ver/$name.tar.gz" &&
-    curl -fsSL -o "$name.tar.gz.sha256" "$RELEASES/download/v$ver/$name.tar.gz.sha256" &&
+    curl -fsSL -o SHA256SUMS "$RELEASES/download/v$ver/SHA256SUMS" &&
+    grep " $name.tar.gz\$" SHA256SUMS > "$name.tar.gz.sha256" &&
     sha256_check "$name.tar.gz.sha256" &&
     tar -xzf "$name.tar.gz" ) || { say "download or checksum failed for $name"; return 1; }
   for f in "$work/$name"/bin/*; do

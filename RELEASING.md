@@ -9,7 +9,7 @@ push to main ──► release PR opened/updated (version + CHANGELOG, from the 
         tag vX.Y.Z + GitHub release ──► build 4 packages ──► attach them + SHA256SUMS ──► update the Homebrew tap
 ```
 
-Packages (`goh-X.Y.Z-<target>.tar.gz`, each with a `.sha256`): `aarch64-apple-darwin`, `x86_64-apple-darwin`,
+Packages (`goh-X.Y.Z-<target>.tar.gz`, with one `SHA256SUMS` file for all): `aarch64-apple-darwin`, `x86_64-apple-darwin`,
 `aarch64-unknown-linux-gnu`, `x86_64-unknown-linux-gnu`. macOS ones contain `goh`, `gohd`, `goh-popup`; the Linux ones
 leave out the popup (verified on macOS only). `install.sh` and the Homebrew formula use exactly these files.
 
