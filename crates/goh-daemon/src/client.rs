@@ -96,6 +96,10 @@ pub struct Item {
     pub kind: String,
     /// UTF-8 byte ranges of `label` that matched what was typed.
     pub matches: Vec<[usize; 2]>,
+    /// An option followed by a value, as opposed to a flag.
+    pub takes_value: bool,
+    /// Picked before for this command.
+    pub used: bool,
 }
 
 fn single_line(s: &str, max_chars: usize) -> String {
@@ -134,6 +138,8 @@ pub fn menu(sock: &Path, session: &str, cwd: &str, buffer: &str, cursor_byte: us
                 description: single_line(c.description.as_deref().unwrap_or(""), 120),
                 kind: format!("{:?}", c.kind).to_lowercase(),
                 matches: c.match_ranges,
+                takes_value: c.takes_value,
+                used: c.used,
             })
         })
         .take(limit)

@@ -22,7 +22,32 @@ Terminal Companion is autocomplete that looks like part of the terminal it sits 
 
 ## Iconography
 
-No icon set. Kind is shown by one text glyph before the label: `›` subcommand, `-` option, `/` path, `·` argument. These render in `text-muted`. The selected row replaces its glyph with `❯` in `accent`. Never make an image or emoji mandatory.
+No icon font, image or emoji. Kind is shown by one single-cell text glyph before the label, so it survives any font and `NO_COLOR`:
+
+| Kind | Glyph | Inline colour (ANSI, follows the terminal palette) |
+|---|---|---|
+| command | `⌘` | cyan |
+| subcommand | `↳` | magenta |
+| option that takes a value | `◇` | blue |
+| flag (option without a value) | `⚑` | yellow |
+| argument | `●` | green |
+| directory | `▸` | blue |
+| file | `◦` | none |
+| history line | `↺` | `text-muted` |
+
+With learned choices on, the first three suggestions picked before replace their glyph with `①` `②` `③`, in the kind's colour. None are shown while learning is off. The popup does not draw glyphs yet.
+
+## Inline menu
+
+The inline menu is the main surface outside iTerm2, Terminal.app, VS Code and Claude: tmux, ssh, Ghostty, WezTerm, Kitty and Linux terminals. It is also the one a screen reader can read. It is flat: no fill, no border.
+
+- **Rows.** `❯`, glyph, label. Labels share one column as wide as the longest label in the list (at most 32 cells), so the menu does not shift while scrolling.
+- **Selection.** `❯` and the label in `accent`, bold. Never colour alone: the marker and weight carry it under `NO_COLOR`.
+- **Matches.** Bold and underlined, in `text-match` when the theme gives one.
+- **Risk.** A warning (`⚠ overwrites the remote branch · context: prod`) follows the label column on every row, bold yellow, so it is seen before it is selected.
+- **Detail line.** Below the rows: the selected suggestion's description (without the warning, already on its row), or its kind when it has none. In `text-muted`.
+- **Footer.** Position (`3/24`, `50/50+` when more were cut) and key hints, in `text-muted`. The hints shorten, then go, as the terminal narrows.
+- **No motion.** Moving the selection redraws at once; nothing waits or animates.
 
 ## Components
 

@@ -332,6 +332,8 @@ fn candidate(seen: &Seen, start: usize, end: usize, typed_len: usize, note: Stri
         score: 20.0 + seen.score.min(15.0),
         source: Source::Local,
         cursor_offset: None,
+        takes_value: false,
+        used: false,
     }
 }
 

@@ -67,7 +67,7 @@ typeset -ga _goh_ranges
 typeset -g _goh_new _goh_pre _goh_tail_out
 typeset -gi _goh_on=0 _goh_sel=1 _goh_buf_cur=0 _goh_navigated=0
 typeset -g _goh_buf
-typeset -ga _goh_start _goh_end _goh_cursor _goh_kind _goh_label _goh_insert _goh_desc
+typeset -ga _goh_start _goh_end _goh_cursor _goh_kind _goh_label _goh_insert _goh_desc _goh_value _goh_used
 typeset -gA _goh_theme   # resolved design tokens (see goh-theme-refresh)
 typeset -g _goh_ghost_style='fg=8'
 typeset -gA _goh_saved   # key -> widget it was bound to before the menu opened ("" = unbound)
@@ -159,7 +159,8 @@ _goh_on_decision() {
     if (( ! _goh_told_permission )) && [[ $line == *'"display":"inline"'*'not allowed to use the Accessibility'* && -z ${TMUX-}${STY-}${SSH_CONNECTION-} &&
          $TERM_PROGRAM == (iTerm.app|Apple_Terminal|vscode|claude-desktop) ]]; then
       _goh_told_permission=1
-      zle -M "goh: this terminal is not allowed to use Accessibility, so menus are drawn inline. Run: goh doctor --fix"
+      # In the menu, not `zle -M`: that line goes at the next key, which is usually already being typed.
+      _goh_notice="goh: this terminal is not allowed to use Accessibility, so menus are drawn inline. Run: goh doctor --fix"
     fi
     _goh_trace "decision ${line[1,80]}"
     case $line in
@@ -286,12 +287,16 @@ _goh_clear_ghost() {
 # below the line, and two in one refresh (accepting a directory closes, then reopens) leave it one row too
 # high, so a multiline prompt is overwritten.
 typeset -gi _goh_msg=0
+# A one-time notice drawn under the inline menu until that menu closes (see _goh_on_decision).
+typeset -g _goh_notice=
+typeset -gi _goh_notice_shown=0
 _goh_clear_msg() { (( _goh_msg )) || return 0; _goh_msg=0; zle -M '' }
 
 _goh_close() {
   [[ -n $_goh_pop_pid ]] && ! _goh_pop_alive && _goh_pop_stop
   (( _goh_on )) || return 0
   _goh_on=0 _goh_navigated=0
+  (( _goh_notice_shown )) && _goh_notice= _goh_notice_shown=0
   _goh_clear_ghost
   # ZLE owns message removal at line-init/line-finish. A -M refresh there leaves its
   # next-prompt display cache stale (the last line of a multiline prompt disappears).
@@ -310,30 +315,117 @@ _goh_window() {
   elif (( _goh_sel >= _goh_win + rows )); then _goh_win=$(( _goh_sel + 1 - rows )); fi
 }
 
+# The first $2 bytes of $1 in REPLY; the caller counts them in characters.
+_goh_byte_prefix() { local LC_ALL=C; REPLY=${1[1,$2]} }
+
+# Kind glyph and colour of candidate $1 -> _goh_g, _goh_gs (docs/design-system/README.md, Iconography).
+typeset -g _goh_g _goh_gs
+_goh_glyph() {
+  case ${_goh_kind[$1]} in
+    command)    _goh_g='⌘' _goh_gs=fg=cyan ;;
+    subcommand) _goh_g='↳' _goh_gs=fg=magenta ;;
+    option)     if [[ -n ${_goh_value[$1]} ]]; then _goh_g='◇' _goh_gs=fg=blue; else _goh_g='⚑' _goh_gs=fg=yellow; fi ;;
+    argument)   _goh_g='●' _goh_gs=fg=green ;;
+    directory)  _goh_g='▸' _goh_gs=fg=blue ;;
+    file)       _goh_g='◦' _goh_gs= ;;
+    history)    _goh_g='↺' _goh_gs=$_goh_ghost_style ;;
+    *)          _goh_g='·' _goh_gs= ;;
+  esac
+}
+
+# Inline menu layout (docs/design-system/README.md, Inline menu): rows of marker, glyph, label and any
+# warning; the selected suggestion's description; position and key hints. Shapes, not colour, carry
+# every cue, so NO_COLOR keeps all of it but the colours.
 _goh_render() {
-  local i marker line room desc
-  local -a rows descat
+  local i k n p s e row label shown risk desc room pad
+  local -a rows hl
   local width=$(( ${COLUMNS:-80} - 1 ))
+  local muted=$_goh_ghost_style accent=fg=cyan match=bold,underline warn=bold,fg=yellow
+  [[ ${_goh_theme[accent]-} =~ '^#[0-9a-f]{6}$' ]] && accent="fg=${_goh_theme[accent]}"
+  [[ ${_goh_theme[text-match]-} =~ '^#[0-9a-f]{6}$' ]] && match+=",fg=${_goh_theme[text-match]}"
+  local color=1
+  if [[ -n ${NO_COLOR-} ]]; then color=0 muted= accent= match=bold,underline warn=bold; fi
   _goh_window
   local end=$(( _goh_win + _GOH_LIMIT - 1 ))
   (( end > $#_goh_label )) && end=$#_goh_label
-  local at
+
+  # One label column for the whole list, so it does not shift while scrolling.
+  local col=1
+  for label in "${_goh_label[@]}"; do (( ${#label} > col )) && col=${#label}; done
+  (( col > 32 )) && col=32
+  (( col > width - 4 )) && col=$(( width - 4 ))
+  (( col < 1 )) && col=1
+
+  # The first three suggestions picked before (only ever set while learned choices are on).
+  local -A badge
+  local -a marks=('①' '②' '③')
+  n=0
+  for (( i = 1; i <= $#_goh_label && n < 3; i++ )); do [[ -n ${_goh_used[i]} ]] && badge[$i]=${marks[++n]}; done
+
+  # hl entries: "ROW START END STYLE", character offsets within the row.
   for (( i = _goh_win; i <= end; i++ )); do
-    marker=' '; (( i == _goh_sel )) && marker='❯'
-    line="$marker ${_goh_label[i]}"
-    desc=${_goh_desc[i]:-${_goh_kind[i]}}   # kind keeps rows meaningful without icons
-    room=$(( width - ${#line} - 2 ))
-    at=0
-    if (( room > 3 )); then
-      (( ${#desc} > room )) && desc="${desc[1,room-1]}…"
-      line+="  $desc"
-      at=$(( ${#line} - ${#desc} ))
+    k=$(( $#rows + 1 ))
+    _goh_glyph $i
+    label=${_goh_label[i]} shown=${_goh_label[i]}
+    (( ${#shown} > col )) && shown="${shown[1,col-1]}…"
+    if (( i == _goh_sel )); then
+      row="❯ ${badge[$i]:-$_goh_g} $shown"
+      hl+=("$k 0 1 bold${accent:+,$accent}" "$k 4 $(( 4 + ${#shown} )) bold${accent:+,$accent}")
+    else
+      row="  ${badge[$i]:-$_goh_g} $shown"
     fi
-    rows+=("${line[1,width]}")
-    descat+=($at)
+    (( color )) && [[ -n $_goh_gs ]] && hl+=("$k 2 3 $_goh_gs")
+    for p in ${(s:,:)_goh_ranges[i]}; do
+      [[ $p == <->-<-> ]] || continue
+      _goh_byte_prefix "$label" ${p%-*}; s=${#REPLY}
+      _goh_byte_prefix "$label" ${p#*-}; e=${#REPLY}
+      (( ${#shown} < ${#label} && e > ${#shown} - 1 )) && e=$(( ${#shown} - 1 ))
+      (( s < e )) && hl+=("$k $(( 4 + s )) $(( 4 + e )) $match")
+    done
+    # A warning shows on every row, not only the selected one: it should be seen before it is picked.
+    desc=${_goh_desc[i]}
+    if [[ $desc == '⚠'* ]]; then
+      risk=${desc%% — *}
+      pad=$(( 4 + col + 2 ))
+      room=$(( width - pad ))
+      if (( room > 3 )); then
+        (( ${#risk} > room )) && risk="${risk[1,room-1]}…"
+        row="${(r:pad:)row}$risk"
+        hl+=("$k $pad $(( pad + ${#risk} )) $warn")
+      fi
+    fi
+    rows+=("${row[1,width]}")
   done
-  local accept_hint="Tab/→"; (( _goh_navigated )) && accept_hint="Tab/Enter/→"
-  rows+=("  $accept_hint insert · ↑↓ move · Esc/← close")
+
+  # The selected suggestion's description, without the warning already on its row.
+  desc=${_goh_desc[_goh_sel]}
+  if [[ $desc == '⚠'* ]]; then
+    if [[ $desc == *' — '* ]]; then desc=${desc#* — }; else desc=; fi
+  fi
+  desc="  ${desc:-${_goh_kind[_goh_sel]}}"
+  (( ${#desc} > width )) && desc="${desc[1,width-1]}…"
+  rows+=("$desc")
+  hl+=("$#rows 0 ${#desc} $muted")
+
+  local pos="$_goh_sel/$#_goh_label" accept_hint="Tab/→"
+  (( $#_goh_label >= 50 )) && pos+='+'   # menus ask for 50: there may be more
+  (( _goh_navigated )) && accept_hint="Tab/Enter/→"
+  row="  $pos · $accept_hint insert · ↑↓ move · Esc/← close"
+  (( ${#row} > width )) && row="  $pos · ↑↓ $accept_hint Esc"
+  (( ${#row} > width )) && row="  $pos"
+  rows+=("${row[1,width]}")
+  hl+=("$#rows 0 ${#row} $muted")
+
+  # The notice, wrapped at word boundaries.
+  if [[ -n $_goh_notice ]]; then
+    row=
+    for p in ${=_goh_notice}; do
+      if [[ -n $row ]] && (( ${#row} + 1 + ${#p} > width )); then rows+=("$row"); row=; fi
+      row+="${row:+ }$p"
+    done
+    rows+=("${row[1,width]}")
+    (( _goh_overlay == 0 )) && _goh_notice_shown=1
+  fi
 
   # Ghost text only where it is honest: cursor at the end and the insertion extends what is typed.
   _goh_clear_ghost
@@ -356,7 +448,8 @@ _goh_render() {
   fi
 
   # "P" offsets count from the start of PREDISPLAY+BUFFER+POSTDISPLAY.
-  local from=$(( ${#PREDISPLAY} + ${#BUFFER} )) pos k
+  local from=$(( ${#PREDISPLAY} + ${#BUFFER} )) h
+  local -a at=(0) f
   POSTDISPLAY=$ghost
   if [[ -n $ghost ]] && is-at-least 5.9; then
     # Older zsh cannot identify a plugin's highlights reliably. Keep its ghost text unstyled
@@ -365,20 +458,17 @@ _goh_render() {
   fi
   if (( styled )); then
     POSTDISPLAY+=$'\n'"${(pj:\n:)rows}"
-    pos=$(( from + ${#ghost} + 1 ))
-    for (( k = 1; k <= $#rows; k++ )); do
-      if (( k == _goh_sel - _goh_win + 1 && k < $#rows )); then
-        region_highlight+=("P$pos $(( pos + ${#rows[k]} )) standout memo=goh-ghost")
-      elif (( k == $#rows )); then
-        region_highlight+=("P$pos $(( pos + ${#rows[k]} )) $_goh_ghost_style memo=goh-ghost")
-      elif (( descat[k] > 0 )); then
-        region_highlight+=("P$(( pos + descat[k] )) $(( pos + ${#rows[k]} )) $_goh_ghost_style memo=goh-ghost")
-      fi
-      pos=$(( pos + ${#rows[k]} + 1 ))
+    p=$(( from + ${#ghost} + 1 ))
+    for row in "${rows[@]}"; do at+=($p); p=$(( p + ${#row} + 1 )); done
+    for h in "${hl[@]}"; do
+      f=(${=h})
+      (( $#f == 4 )) || continue            # no style (NO_COLOR, unresolved theme)
+      e=${#rows[f[1]]}
+      (( f[3] < e )) && e=$f[3]
+      (( f[2] < e )) && region_highlight+=("P$(( at[f[1]+1] + f[2] )) $(( at[f[1]+1] + e )) $f[4] memo=goh-ghost")
     done
   fi
 }
-
 # Apply candidate $1 to the line; fails (leaving the line alone) on any inconsistency.
 _goh_apply() {
   local i=$1 buflen before=$BUFFER
@@ -452,12 +542,13 @@ _goh_parse_menu() {
   (( ++_goh_menu_id ))
   _goh_navigated=0
   local line; local -a f
-  _goh_start=() _goh_end=() _goh_cursor=() _goh_kind=() _goh_label=() _goh_insert=() _goh_desc=() _goh_ranges=()
+  _goh_start=() _goh_end=() _goh_cursor=() _goh_kind=() _goh_label=() _goh_insert=() _goh_desc=() _goh_ranges=() _goh_value=() _goh_used=()
   for line in "${(@f)1}"; do
     f=("${(@ps:\x1f:)line}")
     [[ $f[1] == <-> && $f[2] == <-> && $f[3] == <-> ]] || continue
     _goh_start+=($f[1]) _goh_end+=($f[2]) _goh_cursor+=($f[3])
     _goh_kind+=("$f[4]") _goh_label+=("$f[5]") _goh_insert+=("$f[6]") _goh_desc+=("$f[7]") _goh_ranges+=("$f[8]")
+    _goh_value+=("${f[9]-}") _goh_used+=("${f[10]-}")   # absent from an older goh
   done
   REPLY=$#_goh_label
 }

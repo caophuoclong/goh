@@ -57,7 +57,9 @@ impl Server {
     fn rank_by_usage(&self, cwd: &str, buffer: &str, candidates: &mut [Candidate]) {
         let usage = self.usage();
         for c in candidates.iter_mut() {
-            c.score += usage.boost(cwd, buffer.get(..c.replace_start_byte).unwrap_or(""), &c.label);
+            let boost = usage.boost(cwd, buffer.get(..c.replace_start_byte).unwrap_or(""), &c.label);
+            c.used = boost > 0.0; // never true while learning is off: the usage is then empty
+            c.score += boost;
         }
         candidates.sort_by(|a, b| b.score.total_cmp(&a.score)); // stable: ties keep the engine's order
     }

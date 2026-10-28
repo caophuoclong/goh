@@ -80,6 +80,8 @@ pub fn candidates(snippets: &[Snippet], buffer: &str, cursor: usize, live: bool)
                 score: 100.0,
                 source: Source::Local,
                 cursor_offset,
+                takes_value: false,
+                used: false,
             }
         })
         .collect()
