@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.3.0](https://github.com/caophuoclong/goh/compare/v1.2.0...v1.3.0) (2026-10-28)
+
+
+### Features
+
+* **doctor:** check the adapter and daemon version, add --test, --report, logs and specs --missing ([596693d](https://github.com/caophuoclong/goh/commit/596693d0d7aec4ff8555912d5a8271b1c2f5e0f8))
+* richer goh doctor, daemon log, and 39 more bundled specs ([24ed044](https://github.com/caophuoclong/goh/commit/24ed044f08bcc5e38bd5df22ce659c8b77058a71))
+* **specs:** bundle 39 more common commands ([3731440](https://github.com/caophuoclong/goh/commit/3731440ae26b5f95a1b47b3898fd7fbce4d6e46c))
+
 ## [1.2.0](https://github.com/caophuoclong/goh/compare/v1.1.3...v1.2.0) (2026-10-28)
 
 
