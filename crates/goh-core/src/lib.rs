@@ -359,6 +359,8 @@ impl<'a> Sink<'a> {
             score: m.score,
             source,
             cursor_offset: None,
+            takes_value: false,
+            used: false,
         };
         if close { self.near.push(candidate) } else { self.out.push(candidate) }
     }
@@ -382,7 +384,11 @@ impl<'a> Sink<'a> {
 
     fn options(&mut self, node: &Command, scope: &str) {
         for o in &node.options {
+            let (out, near) = (self.out.len(), self.near.len());
             self.push(&o.name, o.description.as_deref(), Kind::Option, format!("{} ", o.name), Source::Bundled, scope);
+            for c in self.out[out..].iter_mut().chain(&mut self.near[near..]) {
+                c.takes_value = o.takes_value;
+            }
         }
     }
 

@@ -43,6 +43,12 @@ pub struct Candidate {
     /// Where the cursor goes within `insert_text` (a snippet's `{{cursor}}`); the end of it when absent.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cursor_offset: Option<usize>,
+    /// An option followed by a value (`--output FILE`), as opposed to a flag.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub takes_value: bool,
+    /// Picked before for this command (learned choices); menus mark the first few.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub used: bool,
 }
 
 #[derive(Debug, Clone, Serialize)]

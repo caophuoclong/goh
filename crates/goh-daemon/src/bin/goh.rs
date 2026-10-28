@@ -5,8 +5,10 @@
 //! Adapter helper.
 //!   goh menu     --session S --cwd D --cursor-byte N --buffer B [--limit N] [--live]
 //!       --live: as-you-type; no output unless the line is a recognised command in progress
-//!       -> one line per candidate: start US end US cursor US kind US label US insert US description US ranges
+//!       -> one line per candidate: start US end US cursor US kind US label US insert US description US ranges US value US used
 //!          (ranges = `s-e,s-e` byte ranges of the label that matched; may be empty)
+//!          (value = `1` for an option that takes a value; used = `1` when picked before; both empty otherwise)
+//!          (adapters read fields by position: new ones go at the end)
 //!          (US = 0x1f; offsets are UTF-8 bytes)
 //!   goh complete --session S --cwd D --cursor-byte N --buffer B   -> results JSON
 //!   goh specs
@@ -589,7 +591,11 @@ fn run() -> Option<()> {
                 for i in items {
                     let e = i.edit;
                     let ranges: Vec<String> = i.matches.iter().map(|r| format!("{}-{}", r[0], r[1])).collect();
-                    println!("{}\x1f{}\x1f{}\x1f{}\x1f{}\x1f{}\x1f{}\x1f{}", e.start, e.end, e.cursor, i.kind, i.label, e.insert, i.description, ranges.join(","));
+                    let flag = |b: bool| if b { "1" } else { "" };
+                    println!(
+                        "{}\x1f{}\x1f{}\x1f{}\x1f{}\x1f{}\x1f{}\x1f{}\x1f{}\x1f{}",
+                        e.start, e.end, e.cursor, i.kind, i.label, e.insert, i.description, ranges.join(","), flag(i.takes_value), flag(i.used)
+                    );
                 }
             })
         }),

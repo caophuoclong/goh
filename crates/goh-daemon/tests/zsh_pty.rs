@@ -93,6 +93,31 @@ impl Fixture {
 
 const CLEAR: &str = "\x15";
 
+/// The selected first row of the `git c` menu, as it reads on screen.
+const SELECTED: &str = "❯ ↳ checkout";
+
+/// What the terminal shows: `out` without its escape sequences (CSI, and OSC up to BEL or ST).
+fn screen(out: &str) -> String {
+    let (mut text, mut chars) = (String::new(), out.chars().peekable());
+    while let Some(c) = chars.next() {
+        match (c, chars.peek()) {
+            ('\x1b', Some('[')) => {
+                chars.next();
+                while chars.next().is_some_and(|c| !('@'..='~').contains(&c)) {}
+            }
+            ('\x1b', Some(']')) => {
+                while let Some(c) = chars.next() {
+                    if c == '\x07' || (c == '\x1b' && chars.next_if_eq(&'\\').is_some()) {
+                        break;
+                    }
+                }
+            }
+            _ => text.push(c),
+        }
+    }
+    text
+}
+
 // ---- keyboard flow ---------------------------------------------------------------------------
 
 #[test]
@@ -103,8 +128,8 @@ fn keyboard_flow() {
 
     sh.send("git c", 150);
     let drawn = sh.send("\t", 500);
-    for needle in ["❯ checkout", "cherry-pick", "commit", "Tab/→ insert"] {
-        assert!(drawn.contains(needle), "menu should show {needle:?}: {drawn:?}");
+    for needle in [SELECTED, "↳ cherry-pick", "↳ commit", "Tab/→ insert"] {
+        assert!(screen(&drawn).contains(needle), "menu should show {needle:?}: {drawn:?}");
     }
     assert_eq!(fx.state(&mut sh), "BUF[git c] CUR=5 on=1 sel=1 post[heckout ]");
 
@@ -333,7 +358,7 @@ fn overlay_start_and_confirmation_do_not_flash_an_inline_list() {
     let mut sh = fx.shell(&envs, true);
     sh.send(&format!("dumpdisplay() {{ print -r -- \"$_goh_overlay\" >> {}; }}; zle -N dumpdisplay; bindkey '^Xv' dumpdisplay\n", fx.path("display.txt").display()), 200);
     let initial = sh.send("git c", 100);
-    assert!(!initial.contains("❯ checkout"), "do not draw a temporary inline list while starting the popup: {initial:?}");
+    assert!(!screen(&initial).contains(SELECTED), "do not draw a temporary inline list while starting the popup: {initial:?}");
     // Do not press a key or invoke an inspection widget until the display change has arrived.
     let idle = String::from_utf8_lossy(&sh.drain(Duration::from_millis(1000), Duration::from_secs(3))).into_owned();
     assert!(idle.is_empty(), "overlay confirmation should not redraw the terminal: {idle:?}");
@@ -352,9 +377,9 @@ fn an_unresponsive_popup_falls_back_without_blocking_typing() {
     let start = Instant::now();
     let initial = sh.send("git c", 100);
     assert!(start.elapsed() < Duration::from_millis(700), "starting the popup must not wait for its deadline");
-    assert!(!initial.contains("❯ checkout"), "{initial:?}");
+    assert!(!screen(&initial).contains(SELECTED), "{initial:?}");
     let idle = String::from_utf8_lossy(&sh.drain(Duration::from_millis(1300), Duration::from_secs(3))).into_owned();
-    assert!(idle.contains("❯ checkout"), "a popup that never confirms needs an inline fallback while idle: {idle:?}");
+    assert!(screen(&idle).contains(SELECTED), "a popup that never confirms needs an inline fallback while idle: {idle:?}");
     assert!(fx.state(&mut sh).contains("on=1"));
 }
 
@@ -369,7 +394,7 @@ fn a_popup_startup_timeout_does_not_reopen_a_dismissed_menu() {
     sh.send("git c", 100);
     sh.send("\x03", 100);
     let idle = String::from_utf8_lossy(&sh.drain(Duration::from_millis(1300), Duration::from_secs(3))).into_owned();
-    assert!(!idle.contains("❯ checkout"), "the old menu must not return at its deadline: {idle:?}");
+    assert!(!screen(&idle).contains(SELECTED), "the old menu must not return at its deadline: {idle:?}");
     assert!(fx.state(&mut sh).starts_with("BUF[] CUR=0 on=0"));
 }
 
@@ -444,8 +469,53 @@ fn an_inline_decision_keeps_the_inline_menu() {
     sh.send("git c", 150);
     let drawn = sh.send("\t", 900);
     wait_frames(&mut sh, &log, |f| f.iter().any(|v| v["type"] == "show"));
-    assert!(drawn.contains("❯ checkout"), "inline menu is drawn: {drawn:?}");
+    assert!(screen(&drawn).contains(SELECTED), "inline menu is drawn: {drawn:?}");
     assert_eq!(fx.state_file(&mut sh, "\x18o", "ov.txt"), "ov=0 on=1 sel=1");
+}
+
+/// The inline menu's rows after a `git c` Tab menu that the fake popup answers inline with `reason`.
+fn inline_answer_menu(fx: &Fixture, reason: &str) -> (Pty, Vec<String>) {
+    let (log, popup) = (fx.path("popup.log"), fake_popup());
+    let envs = [
+        ("GOH_DISPLAY", "auto"),
+        ("GOH_POPUP", popup.to_str().unwrap()),
+        ("FAKE_LOG", log.to_str().unwrap()),
+        ("FAKE_DISPLAY", "inline"),
+        ("FAKE_REASON", reason),
+        ("TERM_PROGRAM", "iTerm.app"),
+    ];
+    let mut sh = fx.shell(&envs, true);
+    menu_dump(fx, &mut sh);
+    sh.send("git c", 150);
+    sh.send("\t", 900);
+    wait_frames(&mut sh, &log, |f| f.iter().any(|v| v["type"] == "show"));
+    sh.drain(Duration::from_millis(300), Duration::from_secs(2));
+    let (rows, _) = menu(fx, &mut sh);
+    (sh, rows)
+}
+
+fn notice(rows: &[String]) -> bool {
+    rows.join(" ").contains("Run: goh doctor --fix")
+}
+
+#[test]
+fn the_accessibility_notice_stays_under_the_inline_menu_until_it_closes_and_comes_once() {
+    let fx = Fixture::new(require_env!(), true);
+    let (mut sh, rows) = inline_answer_menu(&fx, "this terminal is not allowed to use the Accessibility API");
+    assert!(notice(&rows) && rows.iter().all(|r| r.chars().count() <= 59), "wrapped under the menu: {rows:?}");
+    sh.send("\x1b[B", 300);
+    assert!(notice(&menu(&fx, &mut sh).0), "a key press does not take it away");
+    sh.send("\x1b", 900);
+    sh.send("\t", 900);
+    let (rows, _) = menu(&fx, &mut sh);
+    assert!(rows.len() > 2 && !notice(&rows), "once per shell: {rows:?}");
+}
+
+#[test]
+fn other_accessibility_errors_do_not_claim_a_missing_permission() {
+    let fx = Fixture::new(require_env!(), true);
+    let (_sh, rows) = inline_answer_menu(&fx, "no focused application (Accessibility error -25204)");
+    assert!(rows.len() > 2 && !notice(&rows), "{rows:?}");
 }
 
 #[test]
@@ -454,7 +524,7 @@ fn display_inline_never_starts_the_popup() {
     let (mut sh, log) = overlay_shell(&fx, fake_popup().to_str().unwrap(), "overlay", "inline");
     sh.send("git c", 150);
     let drawn = sh.send("\t", 900);
-    assert!(drawn.contains("❯ checkout"));
+    assert!(screen(&drawn).contains(SELECTED));
     sh.send("\x1b[B", 300);
     assert!(!log.exists(), "no popup process should have been started");
 }
@@ -466,7 +536,7 @@ fn a_dead_popup_fails_open_and_never_blocks_the_shell() {
     let (mut sh, _log) = overlay_shell(&fx, "/usr/bin/false", "overlay", "auto");
     sh.send("git c", 150);
     let drawn = sh.send("\t", 1300);
-    assert!(drawn.contains("❯ checkout"), "inline menu still appears: {drawn:?}");
+    assert!(screen(&drawn).contains(SELECTED), "inline menu still appears: {drawn:?}");
     // Far more frames than a FIFO buffers (each is about 1 KB): writing blindly would block the shell.
     sh.send(&"\x1b[B".repeat(400), 1500);
     sh.send("\t", 400);
@@ -657,8 +727,115 @@ fn the_inline_menu_is_drawn_below_the_line_with_the_selected_row_highlighted() {
     );
     sh.send("git c", 400);
     let s = fx.state_file(&mut sh, "\x18m", "menu.txt");
-    assert!(s.contains("heckout |❯ checkout"), "ghost, then the rows below the line: {s}");
-    assert!(s.contains("standout memo=goh-ghost"), "the selected row is highlighted: {s}");
+    assert!(s.contains("heckout |❯ ↳ checkout|  ↳ cherry-pick|  ↳ commit|  Switch branches|  1/3 · Tab/→ insert"), "ghost, rows, detail and footer below the line: {s}");
+    assert!(s.split(';').any(|h| h.starts_with("P14 15 ") && h.contains("bold")), "the selected marker is bold, not only coloured: {s}");
+    assert!(!s.contains("standout"), "no reverse-video row: {s}");
+}
+
+/// Bind `^Xm` to dump the inline menu (rows joined by `|`) and the highlights to `menu.txt`.
+fn menu_dump(fx: &Fixture, sh: &mut Pty) {
+    sh.send(
+        &format!("dumpmenu() {{ print -r -- \"POST[${{POSTDISPLAY//[[:cntrl:]]/|}}] H:[${{(j:;:)region_highlight}}]\" >> {}; }}; zle -N dumpmenu; bindkey '^Xm' dumpmenu\n", fx.path("menu.txt").display()),
+        300,
+    );
+}
+
+/// The menu's rows (ghost line first) and its highlights.
+fn menu(fx: &Fixture, sh: &mut Pty) -> (Vec<String>, String) {
+    let s = fx.state_file(sh, "\x18m", "menu.txt");
+    let (post, h) = s.split_once("] H:[").unwrap();
+    (post.trim_start_matches("POST[").split('|').map(str::to_string).collect(), h.trim_end_matches(']').to_string())
+}
+
+#[test]
+fn rows_show_kind_glyphs_learned_badges_and_every_rows_warning() {
+    let fx = Fixture::new(require_env!(), false);
+    let push = serde_json::json!({"schemaVersion":1,"name":"git","subcommands":[{"name":"push","options":[
+        {"name":"--force","description":"Force"},
+        {"name":"--repo","description":"Repository","takesValue":true,"args":[{"name":"repo"}]},
+        {"name":"--delete","description":"Delete refs"},
+        {"name":"--tags","description":"Push all tags"}]}]});
+    fs::write(fx.path("specs/git.json"), push.to_string()).unwrap();
+    let now = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_secs();
+    fs::create_dir_all(fx.path(".local/share/goh")).unwrap();
+    fs::write(fx.path(".local/share/goh/usage"), format!("{now}\t/elsewhere\tgit push\t--tags\n")).unwrap();
+    let mut sh = fx.shell(LIVE, true);
+    menu_dump(&fx, &mut sh);
+    sh.send("git push --", 600);
+    let (rows, _) = menu(&fx, &mut sh);
+    assert_eq!(rows[1], "❯ ① --tags", "a learned pick ranks first and takes a badge: {rows:?}");
+    let row = |label: &str| rows.iter().find(|r| r.contains(label)).cloned().unwrap_or_default();
+    assert!(row("--repo").starts_with("  ◇ --repo"), "an option that takes a value: {rows:?}");
+    assert!(row("--force").starts_with("  ⚑ --force") && row("--force").ends_with("⚠ overwrites the remote branch"), "an unselected row shows its warning: {rows:?}");
+    assert!(row("--delete").ends_with("⚠ deletes the remote branch or tag"), "{rows:?}");
+    assert_eq!(rows[rows.len() - 2], "  Push all tags", "the detail line describes the selected row: {rows:?}");
+
+    while !menu(&fx, &mut sh).0.iter().any(|r| r.starts_with("❯ ⚑ --force")) {
+        sh.send("\x1b[B", 200);
+    }
+    let (rows, _) = menu(&fx, &mut sh);
+    assert_eq!(rows[rows.len() - 2], "  Force", "the warning is on the row, not repeated in the detail line: {rows:?}");
+    kill_socket_holder(&fx.socket);
+}
+
+#[test]
+fn no_badges_while_learned_choices_are_off() {
+    let fx = Fixture::new(require_env!(), false);
+    fs::write(fx.path("no-config.json"), r#"{"privacy":{"learnChoices":false}}"#).unwrap();
+    let now = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_secs();
+    fs::create_dir_all(fx.path(".local/share/goh")).unwrap();
+    fs::write(fx.path(".local/share/goh/usage"), format!("{now}\t/x\tgit\tcommit\n")).unwrap();
+    let mut sh = fx.shell(LIVE, true);
+    menu_dump(&fx, &mut sh);
+    sh.send("git c", 600);
+    let (rows, _) = menu(&fx, &mut sh);
+    assert_eq!(&rows[1..4], ["❯ ↳ checkout", "  ↳ cherry-pick", "  ↳ commit"], "{rows:?}");
+    kill_socket_holder(&fx.socket);
+}
+
+#[test]
+fn no_color_keeps_every_cue_but_colour() {
+    let fx = Fixture::new(require_env!(), true);
+    let mut sh = fx.shell(&[("GOH_LIVE", "on"), ("NO_COLOR", "1")], true);
+    menu_dump(&fx, &mut sh);
+    sh.send("git c", 400);
+    let (rows, h) = menu(&fx, &mut sh);
+    assert_eq!(rows[1], "❯ ↳ checkout");
+    let menu_styles: Vec<&str> = h.split(';').filter(|e| !e.starts_with("P5 ")).collect(); // P5: the ghost text
+    assert!(menu_styles.iter().all(|e| !e.contains("fg=")), "no colour in the menu: {h}");
+    assert!(menu_styles.iter().any(|e| e.starts_with("P14 15 bold")), "the marker is still bold: {h}");
+    assert!(menu_styles.iter().any(|e| e.contains("bold,underline")), "matches still stand out: {h}");
+}
+
+#[test]
+fn a_narrow_terminal_shortens_the_footer_and_clips_every_row() {
+    let fx = Fixture::new(require_env!(), true);
+    let mut sh = fx.shell(LIVE, true);
+    menu_dump(&fx, &mut sh);
+    sh.send("COLUMNS=24\n", 300);
+    sh.send("git c", 400);
+    let (rows, _) = menu(&fx, &mut sh);
+    assert_eq!(rows.last().unwrap(), "  1/3 · ↑↓ Tab/→ Esc", "{rows:?}");
+    assert!(rows[1..].iter().all(|r| r.chars().count() <= 23), "{rows:?}");
+}
+
+#[test]
+fn a_long_list_shows_its_position_and_keeps_its_label_column() {
+    let fx = Fixture::new(require_env!(), false);
+    let mut sh = fx.shell(&[("GOH_LIVE", "on"), ("GOH_LIMIT", "5")], true);
+    menu_dump(&fx, &mut sh);
+    sh.send("tmux ", 600);
+    let (rows, _) = menu(&fx, &mut sh);
+    assert_eq!(rows.len(), 1 + 5 + 2, "five rows, detail and footer: {rows:?}");
+    assert!(rows.last().unwrap().starts_with("  1/50+ · "), "164 subcommands, 50 asked for: {rows:?}");
+    sh.send("\x1b[A", 300); // wraps to the last one
+    let (rows, _) = menu(&fx, &mut sh);
+    assert!(rows.last().unwrap().starts_with("  50/50+ · "), "{rows:?}");
+    sh.send(CLEAR, 100);
+    sh.send("tsc --", 600);
+    let (rows, _) = menu(&fx, &mut sh);
+    assert!(rows[1..6].iter().all(|r| r.contains("◇ --") || r.contains("⚑ --")), "options and flags: {rows:?}");
+    kill_socket_holder(&fx.socket);
 }
 
 #[test]

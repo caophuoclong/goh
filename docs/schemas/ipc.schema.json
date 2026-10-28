@@ -54,6 +54,8 @@
         },
         "score": { "type": "number" },
         "cursor_offset": { "$ref": "#/$defs/byteOffset" },
+        "takes_value": { "type": "boolean", "description": "An option followed by a value, as opposed to a flag." },
+        "used": { "type": "boolean", "description": "Picked before for this command (learned choices)." },
         "source": { "enum": ["bundled", "local", "filesystem", "built-in generator"] }
       }
     },

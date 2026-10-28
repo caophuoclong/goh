@@ -90,7 +90,7 @@ mod tests {
     fn candidate(label: &str, kind: Kind, start: usize, description: Option<&str>) -> Candidate {
         Candidate {
             id: label.into(), label: label.into(), description: description.map(str::to_string), kind, insert_text: format!("{label} "),
-            replace_start_byte: start, replace_end_byte: start, match_ranges: vec![], score: 100.0, source: Source::Bundled, cursor_offset: None,
+            replace_start_byte: start, replace_end_byte: start, match_ranges: vec![], score: 100.0, source: Source::Bundled, cursor_offset: None, takes_value: false, used: false,
         }
     }
 
