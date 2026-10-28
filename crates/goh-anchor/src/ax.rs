@@ -283,7 +283,7 @@ fn note(trace: &mut Vec<String>, step: &str, r: &Result<(Cf, i32), i32>) {
 /// once its window system is up) are connected. Measured in iTerm2: a CoreGraphics call is not enough,
 /// `NSApplicationLoad()` is. So try the plain call first (free in the popup) and connect only if it
 /// fails, recording each step so a failure says which one was missing.
-fn focused_app(trace: &mut Vec<String>, startup: bool, timeout: f32) -> Result<(Cf, i32), i32> {
+fn system_focused_app(trace: &mut Vec<String>, startup: bool, timeout: f32) -> Result<(Cf, i32), i32> {
     let r = focused_pid(timeout);
     note(trace, "direct", &r);
     if r.is_ok() || !startup {
@@ -294,6 +294,31 @@ fn focused_app(trace: &mut Vec<String>, startup: bool, timeout: f32) -> Result<(
     let r = retry(RETRIES, RETRY_DELAY, || focused_pid(timeout));
     note(trace, "after NSApplicationLoad", &r);
     r
+}
+
+/// The focused application, or failing that the app hosting this terminal while it is frontmost. Claude's
+/// accessibility tree is off until `AXManualAccessibility` is set, and until then the system-wide query
+/// answers "no value"; the setting is made only once the app is known, so without this fallback the
+/// popup would never start. A hosting app that is not frontmost is not focused, so it stays an error.
+fn focused_app(trace: &mut Vec<String>, startup: bool, timeout: f32) -> Result<(Cf, i32), i32> {
+    let code = match system_focused_app(trace, startup, timeout) {
+        Ok(found) => return Ok(found),
+        Err(code) => code,
+    };
+    let host = hosting_app().ok_or(code)?;
+    unsafe { AXUIElementSetMessagingTimeout(host.0 .0, timeout) };
+    if bool_attr(&host.0, "AXFrontmost") {
+        trace.push("hosting app: frontmost".into());
+        Ok(host)
+    } else {
+        trace.push("hosting app: not frontmost".into());
+        Err(code)
+    }
+}
+
+fn bool_attr(el: &Cf, key: &str) -> bool {
+    // SAFETY: the owned attribute is live. Check its type before treating it as a CFBoolean.
+    attr(el, key).is_ok_and(|v| unsafe { CFGetTypeID(v.0) == CFBooleanGetTypeID() && CFBooleanGetValue(v.0) })
 }
 
 fn read(trace: &mut Vec<String>, opts: &Options, startup: bool) -> Result<Anchor, Reason> {
@@ -462,19 +487,22 @@ fn enable_accessibility(app_el: &Cf, pid: i32) {
 /// The outermost `.app` among this process's ancestors: the app hosting the terminal. Used when the
 /// system-wide "focused application" query fails, so the app can still be asked about directly.
 fn hosting_app() -> Option<(Cf, i32)> {
-    let mut pid = std::process::id() as i32;
-    let mut found = None;
-    for _ in 0..32 {
-        let out = std::process::Command::new("ps").args(["-o", "ppid=", "-p", &pid.to_string()]).output().ok()?;
-        pid = String::from_utf8_lossy(&out.stdout).trim().parse().ok()?;
-        if pid <= 1 {
-            break;
+    static PID: OnceLock<Option<i32>> = OnceLock::new();
+    let pid = (*PID.get_or_init(|| {
+        let mut pid = std::process::id() as i32;
+        let mut found = None;
+        for _ in 0..32 {
+            let out = std::process::Command::new("ps").args(["-o", "ppid=", "-p", &pid.to_string()]).output().ok()?;
+            pid = String::from_utf8_lossy(&out.stdout).trim().parse().ok()?;
+            if pid <= 1 {
+                break;
+            }
+            if exe_path(pid).is_some_and(|p| p.contains(".app/Contents/MacOS/")) {
+                found = Some(pid);
+            }
         }
-        if exe_path(pid).is_some_and(|p| p.contains(".app/Contents/MacOS/")) {
-            found = Some(pid);
-        }
-    }
-    let pid = found?;
+        found
+    }))?;
     // SAFETY: plain constructor; the returned proxy is owned (Create rule).
     Cf::new(unsafe { AXUIElementCreateApplication(pid) }).map(|el| (el, pid))
 }
@@ -488,7 +516,7 @@ pub fn probe() -> Vec<String> {
     if !unsafe { AXIsProcessTrusted() } {
         return vec!["not trusted: allow this terminal under Privacy & Security > Accessibility".into()];
     }
-    let focused = match focused_app(&mut out, true, AX_TIMEOUT_SECS) {
+    let focused = match system_focused_app(&mut out, true, AX_TIMEOUT_SECS) {
         Ok(f) => f,
         Err(code) => {
             out.push(format!("no focused application (error {code}); asking the app that hosts this terminal instead"));
