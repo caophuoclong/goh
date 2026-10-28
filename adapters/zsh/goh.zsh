@@ -42,11 +42,13 @@ typeset -g _GOH_SESSION="zsh-$$-$RANDOM"
 # Lets `goh doctor` tell whether this very shell loaded the adapter (it compares the pid with its parent's).
 typeset -gx GOH_ADAPTER="zsh:$$"
 # Settings from the config file (`goh config`); an environment variable you set yourself still wins.
+# _goh_from_config names the ones set here, so `goh reload` can read them again.
+typeset -ga _goh_from_config=()
 {
   local _goh_line _goh_name
   for _goh_line in ${(f)"$(command $_GOH_CTL config env 2>/dev/null)"}; do
     _goh_name=${_goh_line%%=*}
-    [[ -n ${(P)_goh_name-} ]] || typeset -g $_goh_name=${_goh_line#*=}
+    [[ -n ${(P)_goh_name-} ]] || { typeset -g $_goh_name=${_goh_line#*=}; _goh_from_config+=($_goh_name) }
   done
 }
 typeset -gi _GOH_LIMIT=${GOH_LIMIT:-8}
@@ -251,21 +253,58 @@ _goh_pop_hide() {
 
 # ---- menu state ---------------------------------------------------------------------------
 
+# zsh-autosuggestions shows its suggestion in POSTDISPLAY, where the menu and its ghost text are, and its answer
+# can arrive after ours, so the menu would vanish. While the menu is open the plugin is paused (unless you turned it
+# off yourself), and its keys that take a suggestion into the line (End, Ctrl+E, Alt+F, autosuggest-accept, ...)
+# close the menu first, or they would take the menu's text instead.
+typeset -gi _goh_as_paused=0 _goh_as_found=0
+typeset -ga _goh_as_keys _goh_bound
+
+_goh_as_find_keys() {
+  (( ${+widgets[autosuggest-accept]} )) || return 0
+  local -a takers=(autosuggest-accept autosuggest-execute autosuggest-partial-accept
+    ${ZSH_AUTOSUGGEST_ACCEPT_WIDGETS-} ${ZSH_AUTOSUGGEST_PARTIAL_ACCEPT_WIDGETS-} ${ZSH_AUTOSUGGEST_EXECUTE_WIDGETS-})
+  local line; local -a w
+  for line in "${(@f)$(bindkey -L)}"; do
+    w=(${(z)line})   # bindkey "KEY" WIDGET (ranges, `bindkey -R`, are never these widgets)
+    (( $#w == 3 && ${takers[(Ie)$w[3]]} )) && _goh_as_keys+=("${(Q)w[2]}")
+  done
+}
+
 _goh_keys_on() {
   local k
-  for k in ${(k)_goh_menu_keys}; do
+  (( _goh_as_found )) || { _goh_as_found=1; _goh_as_find_keys }
+  local -a menu=(${(k)_goh_menu_keys})
+  _goh_bound=($menu ${_goh_as_keys:|menu})
+  for k in $_goh_bound; do
     _goh_saved[$k]=${${(z)$(bindkey -- $k 2>/dev/null)}[2]}
     [[ ${_goh_saved[$k]} == undefined-key ]] && _goh_saved[$k]=
-    bindkey -- $k ${_goh_menu_keys[$k]}
+    bindkey -- $k ${_goh_menu_keys[$k]:-_goh_left}   # _goh_left: close, then the key's own widget
   done
+  if (( ${+widgets[autosuggest-disable]} && ! ${+_ZSH_AUTOSUGGEST_DISABLED} )); then
+    _goh_as_paused=1
+    zle autosuggest-disable
+    # An answer already on its way (async mode) would still land in POSTDISPLAY. Cancel it as the plugin cancels
+    # one for a newer request; with another version that keeps no such fd, it can still blink the menu away once.
+    if [[ -n ${_ZSH_AUTOSUGGEST_ASYNC_FD-} ]] && { true <&$_ZSH_AUTOSUGGEST_ASYNC_FD } 2>/dev/null; then
+      zle -F $_ZSH_AUTOSUGGEST_ASYNC_FD
+      exec {_ZSH_AUTOSUGGEST_ASYNC_FD}<&-
+      [[ -n ${_ZSH_AUTOSUGGEST_CHILD_PID-} ]] && kill -TERM $_ZSH_AUTOSUGGEST_CHILD_PID 2>/dev/null
+      _ZSH_AUTOSUGGEST_ASYNC_FD=
+    fi
+  fi
 }
 
 _goh_keys_off() {
   local k
-  for k in ${(k)_goh_menu_keys}; do
+  for k in $_goh_bound; do
     if [[ -n ${_goh_saved[$k]-} ]]; then bindkey -- $k ${_goh_saved[$k]}; else bindkey -r -- $k; fi
   done
-  _goh_saved=()
+  _goh_saved=() _goh_bound=()
+  if (( _goh_as_paused )); then
+    _goh_as_paused=0
+    zle autosuggest-enable
+  fi
 }
 
 _goh_clear_ghost() {
@@ -785,6 +824,16 @@ _goh_right() {
   _goh_accept_pred && return 0
   local key=${(V)KEYS}
   if [[ $key == *'[C'* ]]; then zle ${_goh_orig_right_csi:-forward-char}; else zle ${_goh_orig_right_ss3:-forward-char}; fi
+}
+
+# `goh reload` restarts gohd; in this shell it also loads the adapter again, from the goh now installed and with the
+# config read again, so no `exec $SHELL` is needed here. Other open shells keep theirs until they do the same.
+goh() {
+  command $_GOH_CTL "$@" || return
+  [[ ${1-} == reload && -n $_GOH_ORIG_TAB ]] || return 0   # after `goh-unload`, stays unloaded
+  goh-unload
+  (( $#_goh_from_config )) && unset $_goh_from_config   # values you set yourself stay
+  eval "$(command $_GOH_CTL init zsh)" && print -r -- "goh: this shell's adapter is loaded again too"
 }
 
 goh-load() {

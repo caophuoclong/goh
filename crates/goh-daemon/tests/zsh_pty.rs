@@ -778,6 +778,68 @@ fn rows_show_kind_glyphs_learned_badges_and_every_rows_warning() {
     kill_socket_holder(&fx.socket);
 }
 
+fn fake_autosuggest() -> PathBuf {
+    Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/fake-autosuggest.zsh")
+}
+
+/// A live shell with the zsh-autosuggestions stand-in loaded before the adapter, as plugin managers do.
+fn autosuggest_shell(fx: &Fixture) -> Pty {
+    let mut sh = fx.shell(LIVE, false);
+    sh.send(&format!("source {}\nsource {}\n", fake_autosuggest().display(), adapter().display()), 900);
+    menu_dump(fx, &mut sh);
+    sh
+}
+
+#[test]
+fn a_late_autosuggestion_does_not_wipe_the_inline_menu() {
+    let fx = Fixture::new(require_env!(), true);
+    let mut sh = autosuggest_shell(&fx);
+    sh.send("git c", 900); // the plugin's answer for `git c` lands 200 ms after the menu opened
+    let (rows, _) = menu(&fx, &mut sh);
+    assert!(rows.len() > 3 && rows[1] == SELECTED && !rows[0].contains("from-history"), "{rows:?}");
+    sh.send("\x1b", 900);
+    sh.send("x", 900);
+    assert!(fx.state(&mut sh).ends_with("post[-from-history]"), "with the menu closed the plugin suggests again");
+}
+
+#[test]
+fn an_autosuggest_accept_key_closes_the_menu_instead_of_taking_its_text() {
+    let fx = Fixture::new(require_env!(), true);
+    let mut sh = autosuggest_shell(&fx);
+    sh.send("git c", 900);
+    sh.send("\x05", 400); // ^E: autosuggest-accept
+    let s = fx.state(&mut sh);
+    assert!(s.starts_with("BUF[git c] CUR=5 on=0"), "the line keeps what was typed: {s}");
+    sh.send("\x18m", 300);
+    assert_eq!(fx.keymap(&mut sh, 1).lines().find(|l| l.starts_with("bindkey \"^E\"")), Some("bindkey \"^E\" autosuggest-accept"), "its own key is back");
+}
+
+#[test]
+fn a_plugin_you_turned_off_stays_off_after_the_menu() {
+    let fx = Fixture::new(require_env!(), true);
+    let mut sh = autosuggest_shell(&fx);
+    sh.send("typeset -g _ZSH_AUTOSUGGEST_DISABLED\n", 300);
+    sh.send("git c", 900);
+    sh.send("\x1b", 900);
+    sh.send("x", 900);
+    assert!(fx.state(&mut sh).ends_with("post[]"), "goh only resumes what it paused");
+}
+
+#[test]
+fn goh_reload_loads_the_adapter_again_with_the_config_read_again() {
+    let fx = Fixture::new(require_env!(), false);
+    fs::write(fx.path("no-config.json"), r#"{"display":{"maxSuggestions":3}}"#).unwrap();
+    let mut sh = fx.shell(&[], true);
+    assert!(screen(&sh.send("print -r -- LIMIT=$_GOH_LIMIT\n", 300)).contains("LIMIT=3"));
+    fs::write(fx.path("no-config.json"), r#"{"display":{"maxSuggestions":5}}"#).unwrap();
+    let out = screen(&sh.send("goh reload\n", 2500));
+    assert!(out.contains("reloaded: gohd now serves") && out.contains("adapter is loaded again too"), "{out:?}");
+    assert!(screen(&sh.send("print -r -- LIMIT=$_GOH_LIMIT TAB=$_GOH_ORIG_TAB\n", 300)).contains("LIMIT=5 TAB=expand-or-complete"), "Tab still has its own widget to fall back to");
+    sh.send("git c", 150);
+    assert!(screen(&sh.send("\t", 600)).contains(SELECTED), "the reloaded adapter completes");
+    kill_socket_holder(&fx.socket);
+}
+
 #[test]
 fn no_badges_while_learned_choices_are_off() {
     let fx = Fixture::new(require_env!(), false);

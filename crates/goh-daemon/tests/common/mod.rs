@@ -130,7 +130,9 @@ impl Fixture {
         if daemon {
             let listener = paths::bind(&socket).unwrap().unwrap();
             let engine = Engine::new(vec![Spec::from_json(GIT).unwrap()]);
-            std::thread::spawn(move || Arc::new(Server::new(engine)).serve(listener));
+            // Learns nothing: neither the developer's own picks nor the ones a test makes (`goh learn` writes under HOME).
+            let usage = dir.path().join("no-usage");
+            std::thread::spawn(move || Arc::new(Server::new(engine).with_usage(usage)).serve(listener));
         }
         Fixture { dir, socket, locale }
     }

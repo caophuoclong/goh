@@ -34,6 +34,14 @@ If the daemon is not running (first use, or it died and left a stale socket), `g
 Inspect candidates as JSON: `goh complete --session zsh-demo-0001 --cwd . --cursor-byte 6 --buffer "git ch"`.
 `GOH_LIMIT` sets the visible row count (default 8, minimum 1). The adapter requests up to 50 candidates independently; arrows and scrolling can reach results beyond the first visible rows.
 
+`goh reload` restarts `gohd` and, in this shell, loads the adapter again (from the installed `goh`, with the config
+read again), so no `exec $SHELL` is needed there; other open shells keep their adapter until they do the same.
+
+With zsh-autosuggestions loaded, both draw after the line (`POSTDISPLAY`), so while the menu is open the plugin is
+paused, an answer it already had on the way is cancelled, and its keys that take a suggestion into the line (End,
+Ctrl+E, Alt+F, `autosuggest-accept`, ...) close the menu first. It resumes when the menu closes, unless you had turned
+it off yourself.
+
 Socket: `$XDG_RUNTIME_DIR/goh/gohd.sock` or `/tmp/goh-<uid>/gohd.sock` (dir 0700, socket 0600); override with `GOH_SOCKET`
 (Unix socket paths must stay under ~104 bytes).
 
