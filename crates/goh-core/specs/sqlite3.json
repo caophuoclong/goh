@@ -1,0 +1,210 @@
+{
+  "schemaVersion": 1,
+  "name": "sqlite3",
+  "description": "A command line interface for SQLite version 3",
+  "options": [
+    {
+      "name": "-append",
+      "description": "Append the database to the end of the file",
+      "takesValue": false
+    },
+    {
+      "name": "-ascii",
+      "description": "Set output mode to 'ascii'",
+      "takesValue": false
+    },
+    {
+      "name": "-bail",
+      "description": "Stop after hitting an error",
+      "takesValue": false
+    },
+    {
+      "name": "-batch",
+      "description": "Force batch I/O",
+      "takesValue": false
+    },
+    {
+      "name": "-column",
+      "description": "Set output mode to 'column'",
+      "takesValue": false
+    },
+    {
+      "name": "-cmd",
+      "description": "Run \"COMMAND\" before reading stdin",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "COMMAND"
+        }
+      ]
+    },
+    {
+      "name": "-csv",
+      "description": "Set output mode to 'csv'",
+      "takesValue": false
+    },
+    {
+      "name": "-echo",
+      "description": "Print commands before execution",
+      "takesValue": false
+    },
+    {
+      "name": "-init",
+      "description": "Read/process named file",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "FILENAME",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "-header",
+      "description": "Turn headers on",
+      "takesValue": false
+    },
+    {
+      "name": "-noheader",
+      "description": "Turn headers off",
+      "takesValue": false
+    },
+    {
+      "name": "-help",
+      "description": "Show help message",
+      "takesValue": false
+    },
+    {
+      "name": "-html",
+      "description": "Set output mode to HTML",
+      "takesValue": false
+    },
+    {
+      "name": "-interactive",
+      "description": "Force interactive I/O",
+      "takesValue": false
+    },
+    {
+      "name": "-line",
+      "description": "Set output mode to 'line'",
+      "takesValue": false
+    },
+    {
+      "name": "-list",
+      "description": "Set output mode to 'list'",
+      "takesValue": false
+    },
+    {
+      "name": "-lookaside",
+      "description": "Use N entries of SZ bytes for lookaside memory",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "SIZE"
+        },
+        {
+          "name": "N"
+        }
+      ]
+    },
+    {
+      "name": "-memtrace",
+      "description": "Trace all memory allocations and deallocations",
+      "takesValue": false
+    },
+    {
+      "name": "-mmap",
+      "description": "Default mmap size set to N",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "N"
+        }
+      ]
+    },
+    {
+      "name": "-newline",
+      "description": "Set output row separator",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "SEP"
+        }
+      ]
+    },
+    {
+      "name": "-nofollow",
+      "description": "Refuse to open symbolic links to database files",
+      "takesValue": false
+    },
+    {
+      "name": "-nullvalue",
+      "description": "Set text string for NULL values",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "TEXT"
+        }
+      ]
+    },
+    {
+      "name": "-pagecache",
+      "description": "Use N slots of SZ bytes each for page cache memory",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "SIZE"
+        },
+        {
+          "name": "N"
+        }
+      ]
+    },
+    {
+      "name": "-quote",
+      "description": "Set output mode to 'quote'",
+      "takesValue": false
+    },
+    {
+      "name": "-readonly",
+      "description": "Open the database read-only",
+      "takesValue": false
+    },
+    {
+      "name": "-separator",
+      "description": "Set output column separator",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "SEP"
+        }
+      ]
+    },
+    {
+      "name": "-stats",
+      "description": "Print memory stats before each finalize",
+      "takesValue": false
+    },
+    {
+      "name": "-version",
+      "description": "Show SQLite version",
+      "takesValue": false
+    },
+    {
+      "name": "-vfs",
+      "description": "Use NAME as the default VFS",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "NAME"
+        }
+      ]
+    }
+  ],
+  "args": [
+    {
+      "name": "FILENAME",
+      "template": "filepaths"
+    }
+  ]
+}

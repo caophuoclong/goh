@@ -1,0 +1,254 @@
+{
+  "schemaVersion": 1,
+  "name": "nvim",
+  "description": "Hyperextensible Vim-based text editor",
+  "options": [
+    {
+      "name": "--cmd",
+      "description": "Execute <cmd> before any config",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "cmd"
+        }
+      ]
+    },
+    {
+      "name": "-c",
+      "description": "Execute <cmd> after config and first file",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "cmd"
+        }
+      ]
+    },
+    {
+      "name": "-b",
+      "description": "Binary mode",
+      "takesValue": false
+    },
+    {
+      "name": "-d",
+      "description": "Diff mode",
+      "takesValue": false
+    },
+    {
+      "name": "-e",
+      "description": "Ex mode",
+      "takesValue": false
+    },
+    {
+      "name": "-E",
+      "description": "Ex mode",
+      "takesValue": false
+    },
+    {
+      "name": "-es",
+      "description": "Silent (batch) mode",
+      "takesValue": false
+    },
+    {
+      "name": "-Es",
+      "description": "Silent (batch) mode",
+      "takesValue": false
+    },
+    {
+      "name": "-h",
+      "description": "Print this help message",
+      "takesValue": false
+    },
+    {
+      "name": "--help",
+      "description": "Print this help message",
+      "takesValue": false
+    },
+    {
+      "name": "-i",
+      "description": "Use this shada file",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "shada",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "-m",
+      "description": "Modifications (writing files) not allowed",
+      "takesValue": false
+    },
+    {
+      "name": "-M",
+      "description": "Modifications in text not allowed",
+      "takesValue": false
+    },
+    {
+      "name": "-n",
+      "description": "No swap file, use memory only",
+      "takesValue": false
+    },
+    {
+      "name": "-o",
+      "description": "Open N windows (default: one per file)",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "N"
+        }
+      ]
+    },
+    {
+      "name": "-O",
+      "description": "Open N vertical windows (default: one per file)",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "N"
+        }
+      ]
+    },
+    {
+      "name": "-p",
+      "description": "Open N tab pages (default: one per file)",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "N"
+        }
+      ]
+    },
+    {
+      "name": "-L",
+      "description": "List swap files",
+      "takesValue": false
+    },
+    {
+      "name": "-r",
+      "description": "Recover edit state for this file",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "file",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "-R",
+      "description": "Read-only mode",
+      "takesValue": false
+    },
+    {
+      "name": "-S",
+      "description": "Source <session> after loading the first file",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "session",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "-s",
+      "description": "Read Normal mode commands from <scriptin>",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "scriptin",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "-u",
+      "description": "Use this config file",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "config",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "-v",
+      "description": "Print version information",
+      "takesValue": false
+    },
+    {
+      "name": "--version",
+      "description": "Print version information",
+      "takesValue": false
+    },
+    {
+      "name": "--api-info",
+      "description": "Write msgpack-encoded API metadata to stdout",
+      "takesValue": false
+    },
+    {
+      "name": "--embed",
+      "description": "Use stdin/stdout as a msgpack-rpc channel",
+      "takesValue": false
+    },
+    {
+      "name": "--headless",
+      "description": "Don't start a user interface",
+      "takesValue": false
+    },
+    {
+      "name": "--listen",
+      "description": "Serve RPC API from this address",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "address"
+        }
+      ]
+    },
+    {
+      "name": "--noplugin",
+      "description": "Don't load plugins",
+      "takesValue": false
+    },
+    {
+      "name": "--remote",
+      "description": "Execute commands remotely on a server",
+      "takesValue": false
+    },
+    {
+      "name": "--remote-subcommand",
+      "description": "Execute commands remotely on a server",
+      "takesValue": false
+    },
+    {
+      "name": "--server",
+      "description": "Specify RPC server to send commands to",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "address"
+        }
+      ]
+    },
+    {
+      "name": "--startuptime",
+      "description": "Write startup timing messages to <file>",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "file",
+          "template": "filepaths"
+        }
+      ]
+    }
+  ],
+  "args": [
+    {
+      "name": "argument",
+      "template": "filepaths"
+    }
+  ]
+}

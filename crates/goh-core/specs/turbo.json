@@ -1,0 +1,313 @@
+{
+  "schemaVersion": 1,
+  "name": "turbo",
+  "description": "Turborepo is a high-performance build system for JavaScript and TypeScript codebases",
+  "options": [
+    {
+      "name": "--version",
+      "description": "Print the version",
+      "takesValue": false
+    },
+    {
+      "name": "--help",
+      "description": "Print a help message",
+      "takesValue": false
+    }
+  ],
+  "subcommands": [
+    {
+      "name": "bin",
+      "description": "Get the path to the turbo binary",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Print a help message",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "link",
+      "description": "Link your local directory to a Vercel organization and enable remote caching",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Print a help message",
+          "takesValue": false
+        },
+        {
+          "name": "--no-gitignore",
+          "description": "Do not create or modify .gitignore",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "login",
+      "description": "Login to your Vercel account",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Print a help message",
+          "takesValue": false
+        },
+        {
+          "name": "--sso-team",
+          "description": "Attempt to authenticate to the specified team using SSO",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "logout",
+      "description": "Logout of your Vercel account",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Print a help message",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "prune",
+      "description": "Prepare a subset of your monorepo",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Print a help message",
+          "takesValue": false
+        },
+        {
+          "name": "--scope",
+          "description": "Specify package to act as entry point for pruned monorepo",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "package"
+            }
+          ]
+        },
+        {
+          "name": "--docker",
+          "description": "Output pruned workspace into 'fill' and 'json' directories optimized for Docker layer caching",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "unlink",
+      "description": "Unlink the current directory from your Vercel organization and disable remote caching",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Print a help message",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "run",
+      "description": "Run tasks in your monorepo",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Print a help message",
+          "takesValue": false
+        },
+        {
+          "name": "--scope",
+          "description": "Specify packages to act as entry points for task execution",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "package"
+            }
+          ]
+        },
+        {
+          "name": "--cache-dir",
+          "description": "Specify local filesystem cache directory",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "dir",
+              "template": "folders"
+            }
+          ]
+        },
+        {
+          "name": "--concurrency",
+          "description": "Limit the concurrency of task execution (use `1` for serial)",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "limit"
+            }
+          ]
+        },
+        {
+          "name": "--continue",
+          "description": "Continue execution even if a task exits with an error",
+          "takesValue": false
+        },
+        {
+          "name": "--force",
+          "description": "Ignore the existing cache",
+          "takesValue": false
+        },
+        {
+          "name": "--graph",
+          "description": "Generate a Dot graph of the task execution",
+          "takesValue": false
+        },
+        {
+          "name": "--global-deps",
+          "description": "Specify glob of global filesystem dependencies to be hashed (useful for .env and files in the root directory)",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "glob"
+            }
+          ]
+        },
+        {
+          "name": "--since",
+          "description": "Limit/set scope to changed packages since a mergebase",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "branch"
+            }
+          ]
+        },
+        {
+          "name": "--team",
+          "description": "The slug of a turborepo.com team",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "slug"
+            }
+          ]
+        },
+        {
+          "name": "--token",
+          "description": "A turborepo.com access token",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "token"
+            }
+          ]
+        },
+        {
+          "name": "--ignore",
+          "description": "Files to ignore when calculating changed files (supports globs)",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "files"
+            }
+          ]
+        },
+        {
+          "name": "--profile",
+          "description": "File to write turbo's performance profile into",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--parallel",
+          "description": "Execute all tasks in parallel",
+          "takesValue": false
+        },
+        {
+          "name": "--include-dependencies",
+          "description": "Include the dependencies of tasks in execution",
+          "takesValue": false
+        },
+        {
+          "name": "--no-deps",
+          "description": "Exclude dependent task consumers from execution",
+          "takesValue": false
+        },
+        {
+          "name": "--no-cache",
+          "description": "Avoid saving task results to the cache (useful for development/watch tasks)",
+          "takesValue": false
+        },
+        {
+          "name": "--output-logs",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "level",
+              "suggestions": [
+                {
+                  "name": "new-only",
+                  "description": "Only new output with hashes for cached tasks"
+                },
+                {
+                  "name": "hash-only",
+                  "description": "Only turbo-computed task hashes"
+                },
+                {
+                  "name": "full",
+                  "description": "Show all output"
+                },
+                {
+                  "name": "none",
+                  "description": "Hide process output"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--dry",
+          "description": "List the packages in scope and the tasks that would be run",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "format",
+              "isOptional": true,
+              "suggestions": [
+                {
+                  "name": "json"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--dry-run",
+          "description": "List the packages in scope and the tasks that would be run",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "format",
+              "isOptional": true,
+              "suggestions": [
+                {
+                  "name": "json"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "tasks",
+          "isVariadic": true
+        }
+      ]
+    }
+  ]
+}

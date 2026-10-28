@@ -1,0 +1,308 @@
+{
+  "schemaVersion": 1,
+  "name": "vim",
+  "description": "Vi IMproved, a programmer's text editor",
+  "options": [
+    {
+      "name": "-v",
+      "description": "Vi mode (like 'vi')",
+      "takesValue": false
+    },
+    {
+      "name": "-e",
+      "description": "Ex mode (like 'ex')",
+      "takesValue": false
+    },
+    {
+      "name": "-E",
+      "description": "Improved Ex mode",
+      "takesValue": false
+    },
+    {
+      "name": "-s",
+      "description": "Enable silent mode (when in ex mode), or Read Normal mode commands from file",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "scriptin",
+          "isOptional": true,
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "-d",
+      "description": "Diff mode (like 'vimdiff')",
+      "takesValue": false
+    },
+    {
+      "name": "-y",
+      "description": "Easy mode (like 'evim', modeless)",
+      "takesValue": false
+    },
+    {
+      "name": "-R",
+      "description": "Readonly mode (like 'view')",
+      "takesValue": false
+    },
+    {
+      "name": "-Z",
+      "description": "Restricted mode (like 'rvim')",
+      "takesValue": false
+    },
+    {
+      "name": "-m",
+      "description": "Modifications (writing files) not allowed",
+      "takesValue": false
+    },
+    {
+      "name": "-M",
+      "description": "Modifications in text not allowed",
+      "takesValue": false
+    },
+    {
+      "name": "-b",
+      "description": "Binary mode",
+      "takesValue": false
+    },
+    {
+      "name": "-l",
+      "description": "Lisp mode",
+      "takesValue": false
+    },
+    {
+      "name": "-C",
+      "description": "Compatible with Vi: 'compatible'",
+      "takesValue": false
+    },
+    {
+      "name": "-N",
+      "description": "Not fully Vi compatible: 'nocompatible'",
+      "takesValue": false
+    },
+    {
+      "name": "-V",
+      "description": "Be verbose [level N] [log messages to fname]",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "N"
+        },
+        {
+          "name": "fname",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "-D",
+      "description": "Debugging mode",
+      "takesValue": false
+    },
+    {
+      "name": "-n",
+      "description": "No swap file, use memory only",
+      "takesValue": false
+    },
+    {
+      "name": "-r",
+      "description": "Recover crashed session if filename is specified, otherwise list swap files and exit",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "filename",
+          "isOptional": true,
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "-L",
+      "description": "Same as -r",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "filename",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "-T",
+      "description": "Set terminal type to <terminal>",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "terminal"
+        }
+      ]
+    },
+    {
+      "name": "--not-a-term",
+      "description": "Skip warning for input/output not being a terminal",
+      "takesValue": false
+    },
+    {
+      "name": "--ttyfail",
+      "description": "Exit if input or output is not a terminal",
+      "takesValue": false
+    },
+    {
+      "name": "-u",
+      "description": "Use <vimrc> instead of any .vimrc",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "vimrc",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "--noplugin",
+      "description": "Don't load plugin scripts",
+      "takesValue": false
+    },
+    {
+      "name": "-p",
+      "description": "Open N tab pages (default: one for each file)",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "N",
+          "isOptional": true
+        }
+      ]
+    },
+    {
+      "name": "-o",
+      "description": "Open N windows (default: one for each file)",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "N",
+          "isOptional": true
+        }
+      ]
+    },
+    {
+      "name": "-O",
+      "description": "Like -o but split vertically",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "N",
+          "isOptional": true
+        }
+      ]
+    },
+    {
+      "name": "--cmd",
+      "description": "Execute <command> before loading any vimrc file",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "command",
+          "isVariadic": true,
+          "isCommand": true
+        }
+      ]
+    },
+    {
+      "name": "-c",
+      "description": "Execute <command> after loading the first file",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "command"
+        }
+      ]
+    },
+    {
+      "name": "-S",
+      "description": "Source file <session> after loading the first file",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "session",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "-w",
+      "description": "Append all typed commands to file <scriptout>",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "scriptout",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "-W",
+      "description": "Write all typed commands to file <scriptout>",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "scriptout",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "-x",
+      "description": "Edit encrypted files",
+      "takesValue": false
+    },
+    {
+      "name": "--startuptime",
+      "description": "Write startup timing messages to <file>",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "file",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "-i",
+      "description": "Use <viminfo> instead of .viminfo",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "viminfo",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "--clean",
+      "description": "'nocompatible', Vim defaults, no plugins, no viminfo",
+      "takesValue": false
+    },
+    {
+      "name": "-h",
+      "description": "Print Help message and exit",
+      "takesValue": false
+    },
+    {
+      "name": "--help",
+      "description": "Print Help message and exit",
+      "takesValue": false
+    },
+    {
+      "name": "--version",
+      "description": "Print version information and exit",
+      "takesValue": false
+    }
+  ],
+  "args": [
+    {
+      "name": "argument",
+      "template": "filepaths"
+    }
+  ]
+}

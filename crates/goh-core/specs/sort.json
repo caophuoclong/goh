@@ -1,0 +1,444 @@
+{
+  "schemaVersion": 1,
+  "name": "sort",
+  "description": "Sort or merge records (lines) of text and binary files",
+  "options": [
+    {
+      "name": "--help",
+      "description": "Shows help message",
+      "takesValue": false
+    },
+    {
+      "name": "--version",
+      "description": "Displays the current version of sort",
+      "takesValue": false
+    },
+    {
+      "name": "-c",
+      "description": "Check that the single input file is sorted",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "output",
+          "description": "Suppress errors on false check",
+          "isOptional": true,
+          "suggestions": [
+            {
+              "name": "silent"
+            },
+            {
+              "name": "quiet"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "--check",
+      "description": "Check that the single input file is sorted",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "output",
+          "description": "Suppress errors on false check",
+          "isOptional": true,
+          "suggestions": [
+            {
+              "name": "silent"
+            },
+            {
+              "name": "quiet"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "-C",
+      "description": "Check that the single input file is sorted",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "output",
+          "description": "Suppress errors on false check",
+          "isOptional": true,
+          "suggestions": [
+            {
+              "name": "silent"
+            },
+            {
+              "name": "quiet"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "-m",
+      "description": "Merge only.  The input files are assumed to be pre-sorted.  If they are not sorted the output order is undefined",
+      "takesValue": false
+    },
+    {
+      "name": "--merge",
+      "description": "Merge only.  The input files are assumed to be pre-sorted.  If they are not sorted the output order is undefined",
+      "takesValue": false
+    },
+    {
+      "name": "-o",
+      "description": "Print the output to the output file instead of the standard output",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "output"
+        }
+      ]
+    },
+    {
+      "name": "--output",
+      "description": "Print the output to the output file instead of the standard output",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "output"
+        }
+      ]
+    },
+    {
+      "name": "-S",
+      "description": "Use size for the maximum size of the memory buffer",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "size"
+        }
+      ]
+    },
+    {
+      "name": "--buffer-size",
+      "description": "Use size for the maximum size of the memory buffer",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "size"
+        }
+      ]
+    },
+    {
+      "name": "-T",
+      "description": "Store temporary files in the directory dir",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "dir",
+          "template": "folders"
+        }
+      ]
+    },
+    {
+      "name": "--temporary-directory",
+      "description": "Store temporary files in the directory dir",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "dir",
+          "template": "folders"
+        }
+      ]
+    },
+    {
+      "name": "-u",
+      "description": "Unique keys. Suppress all lines that have a key that is equal to an already processed one",
+      "takesValue": false
+    },
+    {
+      "name": "--unique",
+      "description": "Unique keys. Suppress all lines that have a key that is equal to an already processed one",
+      "takesValue": false
+    },
+    {
+      "name": "-s",
+      "description": "Stable sort. This option maintains the original record order of records that have an equal key",
+      "takesValue": false
+    },
+    {
+      "name": "-b",
+      "description": "Ignore leading blank characters when comparing lines",
+      "takesValue": false
+    },
+    {
+      "name": "--ignore-leading-blanks",
+      "description": "Ignore leading blank characters when comparing lines",
+      "takesValue": false
+    },
+    {
+      "name": "-d",
+      "description": "Consider only blank spaces and alphanumeric characters in comparisons",
+      "takesValue": false
+    },
+    {
+      "name": "--dictionary-order",
+      "description": "Consider only blank spaces and alphanumeric characters in comparisons",
+      "takesValue": false
+    },
+    {
+      "name": "-f",
+      "description": "Convert all lowercase characters to their upper case equivalent before comparison",
+      "takesValue": false
+    },
+    {
+      "name": "--ignore-case",
+      "description": "Convert all lowercase characters to their upper case equivalent before comparison",
+      "takesValue": false
+    },
+    {
+      "name": "-g",
+      "description": "Sort by general numerical value",
+      "takesValue": false
+    },
+    {
+      "name": "--general-numeric-sort",
+      "description": "Sort by general numerical value",
+      "takesValue": false
+    },
+    {
+      "name": "-h",
+      "description": "Sort by numerical value, but take into account the SI suffix, if present",
+      "takesValue": false
+    },
+    {
+      "name": "--human-numeric-sort",
+      "description": "Sort by numerical value, but take into account the SI suffix, if present",
+      "takesValue": false
+    },
+    {
+      "name": "-i",
+      "description": "Ignore all non-printable characters",
+      "takesValue": false
+    },
+    {
+      "name": "--ignore-nonprinting",
+      "description": "Ignore all non-printable characters",
+      "takesValue": false
+    },
+    {
+      "name": "-M",
+      "description": "Sort by month abbreviations.  Unknown strings are considered smaller than the month names",
+      "takesValue": false
+    },
+    {
+      "name": "--month-sort",
+      "description": "Sort by month abbreviations.  Unknown strings are considered smaller than the month names",
+      "takesValue": false
+    },
+    {
+      "name": "-n",
+      "description": "Sort fields numerically by arithmetic value",
+      "takesValue": false
+    },
+    {
+      "name": "--numeric-sort",
+      "description": "Sort fields numerically by arithmetic value",
+      "takesValue": false
+    },
+    {
+      "name": "-R",
+      "description": "Sort by a random order",
+      "takesValue": false
+    },
+    {
+      "name": "--random-sort",
+      "description": "Sort by a random order",
+      "takesValue": false
+    },
+    {
+      "name": "-r",
+      "description": "Sort in reverse order",
+      "takesValue": false
+    },
+    {
+      "name": "--reverse",
+      "description": "Sort in reverse order",
+      "takesValue": false
+    },
+    {
+      "name": "-V",
+      "description": "Sort version numbers",
+      "takesValue": false
+    },
+    {
+      "name": "--version-sort",
+      "description": "Sort version numbers",
+      "takesValue": false
+    },
+    {
+      "name": "-k",
+      "description": "Define a restricted sort key that has the starting position field1, and optional ending position field2",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "field1"
+        },
+        {
+          "name": "field2",
+          "isOptional": true
+        }
+      ]
+    },
+    {
+      "name": "--key",
+      "description": "Define a restricted sort key that has the starting position field1, and optional ending position field2",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "field1"
+        },
+        {
+          "name": "field2",
+          "isOptional": true
+        }
+      ]
+    },
+    {
+      "name": "-t",
+      "description": "Use char as a field separator character",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "char"
+        }
+      ]
+    },
+    {
+      "name": "--field-separator",
+      "description": "Use char as a field separator character",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "char"
+        }
+      ]
+    },
+    {
+      "name": "-z",
+      "description": "Use NUL as record separator",
+      "takesValue": false
+    },
+    {
+      "name": "--zero-terminated",
+      "description": "Use NUL as record separator",
+      "takesValue": false
+    },
+    {
+      "name": "--batch-size",
+      "description": "Specify maximum number of files that can be opened by sort at once",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "num"
+        }
+      ]
+    },
+    {
+      "name": "--compress-program",
+      "description": "Use PROGRAM to compress temporary files (eg. bzip2)",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "PROGRAM",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "--random-source",
+      "description": "In random sort, the file content is used as the source of the 'seed' data for the hash function choice",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "filename",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "--debug",
+      "description": "Print some extra information about the sorting process to the standard output",
+      "takesValue": false
+    },
+    {
+      "name": "--parallel",
+      "description": "Set the maximum number of execution threads.  Default number equals to the number of CPUs",
+      "takesValue": false
+    },
+    {
+      "name": "--files0-from",
+      "description": "Take the input file list from the file filename",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "filename",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "--radixsort",
+      "description": "Try to use radix sort, if the sort specifications allow",
+      "takesValue": false
+    },
+    {
+      "name": "--mergesort",
+      "description": "Use mergesort.  This is a universal algorithm that can always be used, but it is not always the fastest",
+      "takesValue": false
+    },
+    {
+      "name": "--qsort",
+      "description": "Try to use quick sort, if the sort specifications allow.  This sort algorithm cannot be used with -u and -s",
+      "takesValue": false
+    },
+    {
+      "name": "--heapsort",
+      "description": "Try to use heap sort, if the sort specifications allow.  This sort algorithm cannot be used with -u and -s",
+      "takesValue": false
+    },
+    {
+      "name": "--mmap",
+      "description": "Try to use file memory mapping system call.  It may increase speed in some cases",
+      "takesValue": false
+    },
+    {
+      "name": "--sort",
+      "description": "Select how to sort values",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "type",
+          "suggestions": [
+            {
+              "name": "general-numeric"
+            },
+            {
+              "name": "human-numeric"
+            },
+            {
+              "name": "month"
+            },
+            {
+              "name": "numeric"
+            },
+            {
+              "name": "random"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "args": [
+    {
+      "name": "file",
+      "isVariadic": true,
+      "template": "filepaths"
+    }
+  ]
+}

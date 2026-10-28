@@ -4,6 +4,8 @@
   "license": "MIT",
   "files": {
     "LICENSE": "5129f8779dca579cfcb235570688a2f15822b270575e04f27ef906aabbcc0355",
+    "src/ansible.ts": "d142d65c0c30fd85011199ffe9117f31a99d563791e97b6376877f3e599047b9",
+    "src/apt.ts": "96b14d9aca9b5e666e5ba3dddcc80abe2db3d49bee5ba1f776ece33ed850a77a",
     "src/autocannon.ts": "a9b30c9c1c6cffcc00e468ae90cea91c15f7cfd728803cafa62cb0726bc73f61",
     "src/aws.ts": "81c27542146f30306c9c580619f1b117389b381f8a583a77242aad3493e4d1ea",
     "src/aws/configure.ts": "a4ef1dde6fee04b979856476d4914db5f5cd8feab0581d258c0f2a309916a7ea",
@@ -13,29 +15,51 @@
     "src/brew.ts": "9b766825d599a433319e8b9f1c667a735aba992ddf1f5a92bff14e5496848485",
     "src/bun.ts": "307ce836022e7fefee0ccd8e04eabc9777800687b1bc1a794b6996cb25c2aee4",
     "src/cargo.ts": "141f574fd1613a8608d2c841672d0c281badc3681a2568953e1a1b554b8405b8",
+    "src/cat.ts": "3efdb97ca3914bcfeee1a373e265210422d4569e72dd5aec673030d4dc563a87",
     "src/cd.ts": "005dbbe249edd5a387bd41e02b1e32f9e45b98c2beeb2a72c8dcec65f0a9b4dc",
+    "src/chmod.ts": "e2deb58b80a0ffdfe899aa260942e4da16154806e481ae8d3d5e5ed962e1af89",
+    "src/chown.ts": "2c7e2678a2d9244ceaabdb6f312e15991cbcb09a9f78f637d94e545c2b27e0d3",
+    "src/code.ts": "3d3a04a87034d638a1f36548c56a5758ed3ef773202fcab306df01e6209b906a",
     "src/cp.ts": "03f3b2ece3c6f45ed09610de3bce5888e6d685318e10d22f663619a759eb4adf",
     "src/curl.ts": "2d8541c325dcaccce3e466bad07f62137750eae994698a28d5d18737b9bda069",
+    "src/df.ts": "0a60410c41e6f6f18c1f508ce0f7023a9b8e44c454c18d8ef5f970a190dc96c9",
+    "src/diff.ts": "507f6fbaa4a4d1f979149e372a9c3796096214651a63119730bbfee86d59ba4f",
     "src/docker-compose.ts": "a01443cd8897464406eaee4879a9f95c44c4b3644e98a66a8d17338aa1e45735",
     "src/docker.ts": "3529f00f9775ed9005d30750713eb7ff3cf3d65a987d88fb92fad5158c5856b0",
+    "src/du.ts": "ae73b86ac024904ea76027ab0eeb2c48b287280ffabf98d18577318c2a104159",
+    "src/eslint.ts": "fefe6377b4b5ddde5a8aa8b2523ad7debab2278982f96e5a0f15d8c23e62d99d",
     "src/find.ts": "63fa1e298ca2ee3c9b15a456797fce33a5fe9089dc56618cd834dcc0680b7649",
+    "src/fzf.ts": "165c60a134fbc05cddc1229eaf1aaee72c244b62025156ef9ba85f0954cd7a21",
     "src/gcloud.ts": "3618f7a05b90d7397529b213ddcca7706636e7e5ce17560151e632b8b0b43da3",
     "src/gcloud/auth.ts": "5152632ae306ae405a21757f4d932e939346961c0265b7f0cdfb8c243d599b69",
     "src/gcloud/config.ts": "d326be0ca8c4086e883a7e7eb1ad488f2e94379ec94f3c6a9ba75f55bcdba03b",
     "src/gcloud/run.ts": "a1c9d59c3c08369ad014eab8643883fd82d92d890141a0be5c6762a29bebf150",
     "src/gh.ts": "dd74040c9340749174857d07525a18d5d716797b63bfb7f061f307956fae5e85",
+    "src/git.ts": "e0977582189a410bcc3ace58554cdb5cb4561e1f40566daa94acb72de1fef009",
     "src/go.ts": "18f11ed7b5a40136750c29b28c2d3ab9a5752b1d8f3b4b0ba5044b6a2ab88028",
+    "src/gpg.ts": "f4ee78ca09db8274cc7ea2b1370a754aadad64a576d868410a1a6f93622970b2",
+    "src/grep.ts": "51c7bd1ae31bf2e872a9f66b0edef9c6cb4bc34af822c18597e59914080c1dab",
+    "src/head.ts": "0c834927ef66ca9eabd6fc7045d8af3c2e001178142e7455473091d2d1ab3775",
     "src/helm.ts": "480e52cbc8ad87e546a7b7409e0763bf9fba4b3ac7d83e444cc639c7c1828903",
+    "src/jq.ts": "ddd7a961cd792ff3bf1868e320370edc920cd6372207899fe9f8cf97fde67402",
     "src/kubectl.ts": "ba4c4efdf8725b6e5857f7d4b6b865f1e5904c1ae0089d5e9831e3fce643343b",
+    "src/ln.ts": "2a78ff3707d79545937ff65a8612b565d93c6b5e83400b95afffce3064b2a91c",
     "src/ls.ts": "1d82b0dc3bfbe876acfb3f5f4fdb57c177e81f08ae4b364a7f41aaa0d4e8f395",
     "src/mkdir.ts": "70342466f6e474859a528c153f128b5520091e8b04a018319f9a0178cd837454",
     "src/mv.ts": "c31bd1f5199c2c6d8090bcbad06a6ab7a3aa154f5b99de2fe95cc1195539772b",
+    "src/next.ts": "a40a0606a50d32b1b79b38b8f1154040c45a679ce263931fc69720a79f681255",
     "src/node.ts": "ab61ad7288f2b76588de0701a3765144e87283b2d9f416cc9df632d82300037f",
     "src/npm.ts": "ac1aaae606b66a925725c0302ed883c21eb7bbb75e8ac97dbcb60e235f44b6b7",
     "src/npx.ts": "40111ccc5c999ea8321da41b77ab1ac04b2f2b385ce38a39251363fc22ebdd45",
+    "src/nvim.ts": "beebb914c00093df7af2bb25e6201136a6b3c8e7cd2523ba82faa0fabe404d6e",
     "src/pip.ts": "ce0a2ffbdd7c917b5b08172f2a32a816d35f54477dbc3c16c19d84ffee7f3a69",
     "src/pip3.ts": "0dd141ac7c21245e6a6616578bac2d08ea52828f166ef2c35e8b18b34eaf9a8a",
     "src/pnpm.ts": "6928e48394fb1b16fe4b4155f22080f1b5cf711574addfd592e7c1624ddbfd57",
+    "src/poetry.ts": "ba6eda26065fbf2d6e9af76a99f33578d96f266f9a57efb358b8c6ce3025f894",
+    "src/prettier.ts": "2675bf7f252dc636e6ca78bb090a346282069d345901b83e9bc4f08a51153ec4",
+    "src/prisma.ts": "ce198f5aadb1bae41ad8804feb12a22a4f335483c0a0eda2fbe079938a0c1e8d",
+    "src/ps.ts": "9f4c3c50149659fddfeacf7daec8a41d62290cd9e0b9db457e1aaeaa5a3adf53",
+    "src/psql.ts": "1ed89a0d1df02f8e689aeea4e0ed583355187b7dfd2ac748ae3e760628c81e5a",
     "src/python.ts": "67e6735e880ad1d278b16e46db894ced700790f8d29f3aa23afc17caa6695dd0",
     "src/python3.ts": "9d138898b25002d31b39cc8b5dca9215c42ae4645766c5be179e0a2dda0553a8",
     "src/rg.ts": "9819666d4bfda5f5402f35dc67c1609d171e8e0bb00eb0db3b1dbeeabbfe628f",
@@ -43,11 +67,27 @@
     "src/rsync.ts": "143a28d4032942757c3c5dd8581e484f8fc95bc1bee8ef9cd1641509b936ab26",
     "src/rustup.ts": "d7a8382b66f9e7b64a17437e390e2fe645eb6d8fc9052f677754c16005ee809d",
     "src/scp.ts": "b0962a36e58998874ae1df30f9e9febf0d8eabe0c716fc62baa05fd5b21727b1",
+    "src/sed.ts": "1edf0b4377181a02cf6f045aeca62cbb881c4536e6965761cc1063ba30c8d67f",
+    "src/sort.ts": "939e44c0ba8f0c98d771d05759463168d17a0a51cb04d64ab86f43bf5f60a08a",
+    "src/sqlite3.ts": "94aa5afc84e27be1d716229581064f7c62bdae58cb6d463bb0821c2cb9484222",
+    "src/ssh-keygen.ts": "7bb0bfa5411f4faf7f903d1b90c8bff65cf95c3a4c2535d76c8cde0499a37c73",
     "src/ssh.ts": "3030565bd2d2ee59ae3cae066a17813c13579739d79d616b8e4fbc89b3d23b78",
+    "src/supabase.ts": "6c55646f914b5eb4861050dd5747c81f6dd2fe5310292fbcf23dad587f140259",
+    "src/systemctl.ts": "779ac239fb9200e70c9fca91a69af42c3803b9b967c2982e1f33e60c4bc2b8a9",
+    "src/tail.ts": "41faee49dfc0f2bc532ef64aad0d9ac5c733587a611ceda64df3d580fba635c6",
     "src/tar.ts": "5d076d441e633e9c2599ff15c53befea64276886effde7c1bbe60c80907df15f",
     "src/terraform.ts": "b907c66163c000e6d15417bcbcc66d4287477c43101890bb999f0f9680976f33",
+    "src/tmux.ts": "be7496f84c2f5e852f2269732b922ba781643dba9868215c555391566e954628",
+    "src/touch.ts": "9b293612191f89219d8c4ddd0274003538e8c073d542e23d5d0ae285a5870ae4",
+    "src/tree.ts": "99bae997f44c4fe3bb4545714cede69f3683da8b07c50d685b284b2f88bce6a2",
+    "src/tsc.ts": "93dc2c187f2d16791352f191dac852d90d397b4f5ad571eec2cf632a54376e2e",
+    "src/turbo.ts": "54ef5a29e6592471dea72cf088f075a19c6810a20c022f7292c11e890b702df0",
     "src/unzip.ts": "3e9150e95164e8f319a83986bddcb80cfdbef77ca9410a423c090d34d22a78c6",
     "src/uv.ts": "6f58cb0c469d90306fc6c62ab794ef227c7017dd6341d6a8eb56f1cdd4719ca7",
+    "src/vercel.ts": "39bb81bc5e8e8a0a8beb738e68664daf6f067107677e30d5798a4fa6d48de450",
+    "src/vim.ts": "b876c8d18ce8d7ae1b4111ab791064d1743dbae534160ac43f34db32bc52ade3",
+    "src/vite.ts": "b14a9ebe2f6e50e6dd5df9da4a1c9e8373519306800e4cb2905ad3d5d60efc15",
+    "src/wc.ts": "170359fc26dcb1b982f41ef0b46c3d42847fec1b2f9e8e0bc14ac24523c0185e",
     "src/wget.ts": "eef51a29b603db2f77523201cbe5e2164e7ba587c01d7a7c1b1e1a26028ba8a3",
     "src/yarn.ts": "b8d146194dc8f413043c4a00fd0931801f5e7134f8e28cc8aeca0d752e1b1d47"
   },
@@ -187,7 +227,12 @@
           "feature": "nonliteral-or-unsupported-name"
         }
       ],
-      "enhancements": []
+      "enhancements": [
+        {
+          "source": "https://pnpm.io/filtering",
+          "feature": "workspace-package-filter"
+        }
+      ]
     },
     {
       "command": "yarn",
@@ -3247,7 +3292,12 @@
           "feature": "nonliteral-or-unsupported-name"
         }
       ],
-      "enhancements": []
+      "enhancements": [
+        {
+          "source": "https://pubs.opengroup.org/onlinepubs/9699919799/utilities/",
+          "feature": "file-extension-filter"
+        }
+      ]
     },
     {
       "command": "unzip",
@@ -3255,7 +3305,12 @@
       "subcommands": 0,
       "options": 4,
       "omitted": [],
-      "enhancements": []
+      "enhancements": [
+        {
+          "source": "https://pubs.opengroup.org/onlinepubs/9699919799/utilities/",
+          "feature": "file-extension-filter"
+        }
+      ]
     },
     {
       "command": "python",
@@ -3280,7 +3335,12 @@
           "feature": "generators"
         }
       ],
-      "enhancements": []
+      "enhancements": [
+        {
+          "source": "https://pubs.opengroup.org/onlinepubs/9699919799/utilities/",
+          "feature": "file-extension-filter"
+        }
+      ]
     },
     {
       "command": "python3",
@@ -3309,7 +3369,12 @@
           "feature": "generators"
         }
       ],
-      "enhancements": []
+      "enhancements": [
+        {
+          "source": "https://pubs.opengroup.org/onlinepubs/9699919799/utilities/",
+          "feature": "file-extension-filter"
+        }
+      ]
     },
     {
       "command": "pip",
@@ -4409,7 +4474,12 @@
           "feature": "generators"
         }
       ],
-      "enhancements": []
+      "enhancements": [
+        {
+          "source": "https://doc.rust-lang.org/cargo/reference/cargo-targets.html",
+          "feature": "manifest-targets-features-packages"
+        }
+      ]
     },
     {
       "command": "rustup",
@@ -9058,6 +9128,10 @@
         {
           "source": "https://docs.docker.com/reference/cli/docker/",
           "feature": "global-context-selectors"
+        },
+        {
+          "source": "https://docs.docker.com/reference/cli/docker/compose/",
+          "feature": "compose-file-services"
         }
       ]
     },
@@ -9092,10 +9166,2006 @@
           "feature": "generators"
         }
       ],
+      "enhancements": [
+        {
+          "source": "https://pubs.opengroup.org/onlinepubs/9699919799/utilities/",
+          "feature": "file-extension-filter"
+        }
+      ]
+    },
+    {
+      "command": "jq",
+      "source": "src/jq.ts",
+      "subcommands": 0,
+      "options": 38,
+      "omitted": [],
+      "enhancements": []
+    },
+    {
+      "command": "systemctl",
+      "source": "src/systemctl.ts",
+      "subcommands": 68,
+      "options": 64,
+      "omitted": [
+        {
+          "at": "systemctl/options/7",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "systemctl/options/8",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "systemctl/options/9",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "systemctl/options/10",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "systemctl/options/19",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "systemctl/options/20",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "systemctl/options/21",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "systemctl/list-units/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "systemctl/is-active/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "systemctl/is-failed/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "systemctl/status/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "systemctl/show/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "systemctl/cat/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "systemctl/help/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "systemctl/list-dependencies/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "systemctl/start/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "systemctl/stop/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "systemctl/reload/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "systemctl/restart/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "systemctl/try-restart/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "systemctl/try-reload-or-restart/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "systemctl/isolate/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "systemctl/kill/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "systemctl/clean/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "systemctl/set-property/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "systemctl/bind/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "systemctl/mount-image/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "systemctl/list-unit-files/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "systemctl/enable/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "systemctl/disable/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "systemctl/reenable/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "systemctl/preset/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "systemctl/preset-all/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "systemctl/mask/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "systemctl/unmask/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "systemctl/revert/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "systemctl/edit/args/0",
+          "feature": "generators"
+        }
+      ],
+      "enhancements": []
+    },
+    {
+      "command": "apt",
+      "source": "src/apt.ts",
+      "subcommands": 21,
+      "options": 4,
+      "omitted": [
+        {
+          "at": "apt/update/options/0",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "apt/update/options/1",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "apt/upgrade/options/2",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "apt/upgrade/options/3",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "apt/upgrade/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "apt/full-upgrade/options/2",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "apt/full-upgrade/options/3",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "apt/install/options/2",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "apt/install/options/3",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "apt/install/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "apt/reinstall/options/0",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "apt/reinstall/options/1",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "apt/reinstall/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "apt/remove/options/0",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "apt/remove/options/1",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "apt/remove/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "apt/purge/options/0",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "apt/purge/options/1",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "apt/purge/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "apt/autoremove/options/0",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "apt/autoremove/options/1",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "apt/auto-remove/options/0",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "apt/auto-remove/options/1",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "apt/search/options/0",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "apt/search/options/1",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "apt/show/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "apt/satisfy/options/2",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "apt/satisfy/options/3",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "apt/satisfy/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "apt/clean/options/0",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "apt/clean/options/1",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "apt/edit-sources/options/0",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "apt/edit-sources/options/1",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "apt/source/options/2",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "apt/source/options/3",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "apt/source/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "apt/build-dep/options/2",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "apt/build-dep/options/3",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "apt/build-dep/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "apt/download/options/2",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "apt/download/options/3",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "apt/download/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "apt/autoclean/options/2",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "apt/autoclean/options/3",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "apt/auto-clean/options/2",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "apt/auto-clean/options/3",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "apt/changelog/options/2",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "apt/changelog/options/3",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "apt/changelog/args/0",
+          "feature": "generators"
+        }
+      ],
+      "enhancements": []
+    },
+    {
+      "command": "ansible",
+      "source": "src/ansible.ts",
+      "subcommands": 0,
+      "options": 59,
+      "omitted": [],
+      "enhancements": []
+    },
+    {
+      "command": "gpg",
+      "source": "src/gpg.ts",
+      "subcommands": 0,
+      "options": 102,
+      "omitted": [
+        {
+          "at": "gpg/options/1",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gpg/options/7",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gpg/options/8",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gpg/options/9",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gpg/options/10",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gpg/options/11",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gpg/options/12",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gpg/options/18",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gpg/options/20",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gpg/options/21",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gpg/options/22",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gpg/options/30",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gpg/options/31",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gpg/options/32",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gpg/options/38",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gpg/options/39",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gpg/options/40",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gpg/options/50/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "gpg/options/51/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "gpg/options/52/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "gpg/options/53/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "gpg/options/56/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "gpg/options/70",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gpg/options/71",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gpg/options/72",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gpg/options/74",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gpg",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gpg",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gpg",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gpg",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gpg",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gpg",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gpg",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gpg",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gpg",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gpg",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gpg",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gpg",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gpg",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gpg",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gpg",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gpg",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gpg",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gpg",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gpg",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gpg",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gpg",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gpg",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gpg",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gpg",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gpg",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gpg",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gpg",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gpg",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gpg",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gpg",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gpg",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gpg",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gpg",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gpg",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gpg",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gpg",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gpg",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gpg",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gpg",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gpg",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gpg",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gpg",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gpg",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gpg",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gpg",
+          "feature": "nonliteral-or-unsupported-name"
+        }
+      ],
+      "enhancements": []
+    },
+    {
+      "command": "fzf",
+      "source": "src/fzf.ts",
+      "subcommands": 0,
+      "options": 61,
+      "omitted": [
+        {
+          "at": "fzf/options/0",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "fzf/options/1",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "fzf/options/1",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "fzf/options/4",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "fzf/options/5",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "fzf/options/5",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "fzf/options/10",
+          "feature": "nonliteral-or-unsupported-name"
+        }
+      ],
+      "enhancements": []
+    },
+    {
+      "command": "tmux",
+      "source": "src/tmux.ts",
+      "subcommands": 164,
+      "options": 0,
+      "omitted": [
+        {
+          "at": "tmux/a/options/5/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/at/options/5/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/attach/options/5/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/attach-session/options/5/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/breakp/options/5/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/breakp/options/6/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/breakp/options/7/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/break-pane/options/5/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/break-pane/options/6/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/break-pane/options/7/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/capturep/options/8/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/capturep/options/11/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/capture-pane/options/8/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/capture-pane/options/11/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/choose-buffer/options/6/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/choose-client/options/6/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/choose-tree/options/9/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/command-prompt/options/8/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/confirm/options/1/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/confirm-before/options/1/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/copy-mode/options/5/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/copy-mode/options/6/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/deleteb/options/0/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/delete-buffer/options/0/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/detach/options/3/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/detach/options/4/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/detach-client/options/3/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/detach-client/options/4/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/menu/options/1/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/menu/options/2/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/display-menu/options/1/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/display-menu/options/2/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/display/options/3/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/display/options/5/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/display-message/options/3/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/display-message/options/5/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/displayp/options/3/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/display-panes/options/3/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/findw/options/6/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/find-window/options/6/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/has/options/0/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/has-session/options/0/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/joinp/options/0/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/joinp/options/2/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/joinp/options/3/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/join-pane/options/0/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/join-pane/options/2/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/join-pane/options/3/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/movep/options/0/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/movep/options/2/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/movep/options/3/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/move-pane/options/0/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/move-pane/options/2/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/move-pane/options/3/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/killp/options/1/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/kill-pane/options/1/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/kill-ses/options/0/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/kill-session/options/0/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/killw/options/1/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/kill-window/options/1/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/lastp/options/3/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/last-pane/options/3/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/last/options/0/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/last-window/options/0/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/linkw/options/4/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/linkw/options/5/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/link-window/options/4/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/link-window/options/5/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/lsc/options/1/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/list-clients/options/1/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/lsp/options/4/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/list-panes/options/4/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/lsw/options/3/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/list-windows/options/3/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/loadb/options/1/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/loadb/options/2/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/load-buffer/options/1/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/load-buffer/options/2/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/lockc/options/0/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/lock-client/options/0/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/locks/options/0/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/lock-session/options/0/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/movew/options/5/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/movew/options/6/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/move-window/options/5/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/move-window/options/6/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/neww/options/10/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/new-window/options/10/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/nextl/options/0/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/next-layout/options/0/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/next/options/1/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/next-window/options/1/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/pipep/options/3/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/pipe-pane/options/3/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/prevl/options/0/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/previous-layout/options/0/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/prev/options/1/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/previous-window/options/1/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/refresh/options/7/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/refresh/options/11/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/refresh-client/options/7/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/refresh-client/options/11/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/rename/options/0/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/rename-session/options/0/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/renamew/options/0/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/rename-window/options/0/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/resizep/options/7/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/resize-pane/options/7/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/resizew/options/6/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/resize-window/options/6/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/respawnp/options/3/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/respawn-pane/options/3/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/respawnw/options/3/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/respawn-window/options/3/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/rotatew/options/3/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/rotate-window/options/3/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/selectl/options/4/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/select-layout/options/4/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/selectp/options/11/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/select-pane/options/11/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/selectw/options/4/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/select-window/options/4/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/setb/options/2/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/setb/options/3/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/set-buffer/options/2/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/set-buffer/options/3/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/showenv/options/0/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/show-environment/options/0/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/showmsgs/options/2/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/show-messages/options/2/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/splitw/options/9/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/split-window/options/9/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/suspendc/options/0/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/suspend-client/options/0/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/swapp/options/4/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/swapp/options/5/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/swap-pane/options/4/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/swap-pane/options/5/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/swapw/options/1/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/swapw/options/2/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/swap-window/options/1/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/swap-window/options/2/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/switchc/options/6/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/switchc/options/7/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/switch-client/options/6/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/switch-client/options/7/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/unlinkw/options/1/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/unlink-window/options/1/args/0",
+          "feature": "dynamic-argument"
+        },
+        {
+          "at": "tmux/wait/options/0",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "tmux/wait/options/1",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "tmux/wait-for/options/0",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "tmux/wait-for/options/1",
+          "feature": "exclusiveOn"
+        }
+      ],
+      "enhancements": []
+    },
+    {
+      "command": "vim",
+      "source": "src/vim.ts",
+      "subcommands": 0,
+      "options": 39,
+      "omitted": [
+        {
+          "at": "vim/options/27",
+          "feature": "nonliteral-or-unsupported-name"
+        }
+      ],
+      "enhancements": []
+    },
+    {
+      "command": "nvim",
+      "source": "src/nvim.ts",
+      "subcommands": 0,
+      "options": 34,
+      "omitted": [
+        {
+          "at": "nvim",
+          "feature": "parserDirectives"
+        },
+        {
+          "at": "nvim/options/0",
+          "feature": "nonliteral-or-unsupported-name"
+        }
+      ],
+      "enhancements": []
+    },
+    {
+      "command": "code",
+      "source": "src/code.ts",
+      "subcommands": 0,
+      "options": 42,
+      "omitted": [
+        {
+          "at": "code/options/0",
+          "feature": "nonliteral-or-unsupported-name"
+        }
+      ],
+      "enhancements": []
+    },
+    {
+      "command": "prisma",
+      "source": "src/prisma.ts",
+      "subcommands": 7,
+      "options": 0,
+      "omitted": [
+        {
+          "at": "prisma",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "prisma/version",
+          "feature": "nonliteral-or-unsupported-name"
+        }
+      ],
+      "enhancements": []
+    },
+    {
+      "command": "vercel",
+      "source": "src/vercel.ts",
+      "subcommands": 23,
+      "options": 33,
+      "omitted": [],
+      "enhancements": []
+    },
+    {
+      "command": "supabase",
+      "source": "src/supabase.ts",
+      "subcommands": 15,
+      "options": 3,
+      "omitted": [],
+      "enhancements": []
+    },
+    {
+      "command": "poetry",
+      "source": "src/poetry.ts",
+      "subcommands": 22,
+      "options": 17,
+      "omitted": [],
+      "enhancements": []
+    },
+    {
+      "command": "ln",
+      "source": "src/ln.ts",
+      "subcommands": 0,
+      "options": 7,
+      "omitted": [],
+      "enhancements": []
+    },
+    {
+      "command": "chmod",
+      "source": "src/chmod.ts",
+      "subcommands": 0,
+      "options": 7,
+      "omitted": [],
+      "enhancements": []
+    },
+    {
+      "command": "chown",
+      "source": "src/chown.ts",
+      "subcommands": 0,
+      "options": 8,
+      "omitted": [
+        {
+          "at": "chown/options/5",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "chown/options/5",
+          "feature": "dependsOn"
+        },
+        {
+          "at": "chown/options/6",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "chown/options/6",
+          "feature": "dependsOn"
+        },
+        {
+          "at": "chown/options/7",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "chown/options/7",
+          "feature": "dependsOn"
+        },
+        {
+          "at": "chown/args/0",
+          "feature": "generators"
+        }
+      ],
+      "enhancements": []
+    },
+    {
+      "command": "tree",
+      "source": "src/tree.ts",
+      "subcommands": 0,
+      "options": 51,
+      "omitted": [
+        {
+          "at": "tree/options/36",
+          "feature": "requiresSeparator"
+        }
+      ],
+      "enhancements": []
+    },
+    {
+      "command": "ssh-keygen",
+      "source": "src/ssh-keygen.ts",
+      "subcommands": 0,
+      "options": 42,
+      "omitted": [
+        {
+          "at": "ssh-keygen/options/0",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "ssh-keygen/options/2",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "ssh-keygen/options/5",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "ssh-keygen/options/6",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "ssh-keygen/options/8",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "ssh-keygen/options/9",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "ssh-keygen/options/12",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "ssh-keygen/options/14",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "ssh-keygen/options/15",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "ssh-keygen/options/16",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "ssh-keygen/options/17",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "ssh-keygen/options/17",
+          "feature": "dependsOn"
+        },
+        {
+          "at": "ssh-keygen/options/18",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "ssh-keygen/options/19",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "ssh-keygen/options/20",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "ssh-keygen/options/26",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "ssh-keygen/options/27",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "ssh-keygen/options/29",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "ssh-keygen/options/30",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "ssh-keygen/options/38",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "ssh-keygen/options/39",
+          "feature": "exclusiveOn"
+        }
+      ],
+      "enhancements": []
+    },
+    {
+      "command": "psql",
+      "source": "src/psql.ts",
+      "subcommands": 0,
+      "options": 69,
+      "omitted": [
+        {
+          "at": "psql/options/34",
+          "feature": "nonliteral-or-unsupported-name"
+        }
+      ],
+      "enhancements": []
+    },
+    {
+      "command": "sqlite3",
+      "source": "src/sqlite3.ts",
+      "subcommands": 0,
+      "options": 29,
+      "omitted": [
+        {
+          "at": "sqlite3",
+          "feature": "parserDirectives"
+        },
+        {
+          "at": "sqlite3/options/8/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "sqlite3/args/0",
+          "feature": "generators"
+        }
+      ],
+      "enhancements": []
+    },
+    {
+      "command": "tsc",
+      "source": "src/tsc.ts",
+      "subcommands": 0,
+      "options": 118,
+      "omitted": [
+        {
+          "at": "tsc/options/65",
+          "feature": "dependsOn"
+        },
+        {
+          "at": "tsc/args/0",
+          "feature": "generators"
+        }
+      ],
+      "enhancements": []
+    },
+    {
+      "command": "eslint",
+      "source": "src/eslint.ts",
+      "subcommands": 0,
+      "options": 42,
+      "omitted": [
+        {
+          "at": "eslint/options/2/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "eslint/options/9/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "eslint/options/13",
+          "feature": "dependsOn"
+        },
+        {
+          "at": "eslint/options/23",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "eslint/options/24",
+          "feature": "exclusiveOn"
+        }
+      ],
+      "enhancements": []
+    },
+    {
+      "command": "prettier",
+      "source": "src/prettier.ts",
+      "subcommands": 0,
+      "options": 50,
+      "omitted": [
+        {
+          "at": "prettier/options/20",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "prettier/options/21",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "prettier/options/29",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "prettier/options/30",
+          "feature": "exclusiveOn"
+        }
+      ],
+      "enhancements": []
+    },
+    {
+      "command": "vite",
+      "source": "src/vite.ts",
+      "subcommands": 3,
+      "options": 23,
+      "omitted": [
+        {
+          "at": "vite/options/14/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "vite/options/14/args/0",
+          "feature": "generators"
+        }
+      ],
+      "enhancements": []
+    },
+    {
+      "command": "next",
+      "source": "src/next.ts",
+      "subcommands": 5,
+      "options": 4,
+      "omitted": [
+        {
+          "at": "next/dev/options/1",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "next/start/options/1",
+          "feature": "nonliteral-or-unsupported-name"
+        }
+      ],
+      "enhancements": []
+    },
+    {
+      "command": "turbo",
+      "source": "src/turbo.ts",
+      "subcommands": 7,
+      "options": 2,
+      "omitted": [
+        {
+          "at": "turbo/login/options/0",
+          "feature": "requiresSeparator"
+        },
+        {
+          "at": "turbo/prune/options/0",
+          "feature": "requiresSeparator"
+        },
+        {
+          "at": "turbo/run/options/0",
+          "feature": "requiresSeparator"
+        },
+        {
+          "at": "turbo/run/options/1",
+          "feature": "requiresSeparator"
+        },
+        {
+          "at": "turbo/run/options/2",
+          "feature": "requiresSeparator"
+        },
+        {
+          "at": "turbo/run/options/6",
+          "feature": "requiresSeparator"
+        },
+        {
+          "at": "turbo/run/options/6",
+          "feature": "insertValue"
+        },
+        {
+          "at": "turbo/run/options/7",
+          "feature": "requiresSeparator"
+        },
+        {
+          "at": "turbo/run/options/7/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "turbo/run/options/8",
+          "feature": "requiresSeparator"
+        },
+        {
+          "at": "turbo/run/options/9",
+          "feature": "requiresSeparator"
+        },
+        {
+          "at": "turbo/run/options/10",
+          "feature": "requiresSeparator"
+        },
+        {
+          "at": "turbo/run/options/11",
+          "feature": "requiresSeparator"
+        },
+        {
+          "at": "turbo/run/options/16",
+          "feature": "requiresSeparator"
+        },
+        {
+          "at": "turbo/run/options/17",
+          "feature": "requiresSeparator"
+        },
+        {
+          "at": "turbo/run/args/0",
+          "feature": "generators"
+        }
+      ],
+      "enhancements": []
+    },
+    {
+      "command": "grep",
+      "source": "src/grep.ts",
+      "subcommands": 0,
+      "options": 80,
+      "omitted": [
+        {
+          "at": "grep/options/11",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "grep/options/12",
+          "feature": "exclusiveOn"
+        }
+      ],
+      "enhancements": []
+    },
+    {
+      "command": "sed",
+      "source": "src/sed.ts",
+      "subcommands": 34,
+      "options": 10,
+      "omitted": [
+        {
+          "at": "sed",
+          "feature": "nonliteral-or-unsupported-name"
+        }
+      ],
+      "enhancements": []
+    },
+    {
+      "command": "head",
+      "source": "src/head.ts",
+      "subcommands": 0,
+      "options": 11,
+      "omitted": [],
+      "enhancements": []
+    },
+    {
+      "command": "tail",
+      "source": "src/tail.ts",
+      "subcommands": 0,
+      "options": 2,
+      "omitted": [],
+      "enhancements": []
+    },
+    {
+      "command": "wc",
+      "source": "src/wc.ts",
+      "subcommands": 0,
+      "options": 4,
+      "omitted": [],
+      "enhancements": []
+    },
+    {
+      "command": "sort",
+      "source": "src/sort.ts",
+      "subcommands": 0,
+      "options": 56,
+      "omitted": [],
+      "enhancements": []
+    },
+    {
+      "command": "diff",
+      "source": "src/diff.ts",
+      "subcommands": 0,
+      "options": 72,
+      "omitted": [
+        {
+          "at": "diff/options/1",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "diff/options/2",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "diff/options/41",
+          "feature": "dynamic-option"
+        },
+        {
+          "at": "diff/options/43",
+          "feature": "dynamic-option"
+        }
+      ],
+      "enhancements": []
+    },
+    {
+      "command": "du",
+      "source": "src/du.ts",
+      "subcommands": 0,
+      "options": 14,
+      "omitted": [
+        {
+          "at": "du/options/0",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "du/options/2",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "du/options/3",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "du/options/4",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "du/options/5",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "du/options/6",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "du/options/8",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "du/options/10",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "du/options/11",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "du/options/12",
+          "feature": "exclusiveOn"
+        }
+      ],
+      "enhancements": []
+    },
+    {
+      "command": "df",
+      "source": "src/df.ts",
+      "subcommands": 0,
+      "options": 12,
+      "omitted": [
+        {
+          "at": "df/options/1",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "df/options/2",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "df/options/3",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "df/options/4",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "df/options/5",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "df/options/6",
+          "feature": "exclusiveOn"
+        }
+      ],
+      "enhancements": []
+    },
+    {
+      "command": "touch",
+      "source": "src/touch.ts",
+      "subcommands": 0,
+      "options": 8,
+      "omitted": [],
+      "enhancements": []
+    },
+    {
+      "command": "cat",
+      "source": "src/cat.ts",
+      "subcommands": 0,
+      "options": 8,
+      "omitted": [],
+      "enhancements": []
+    },
+    {
+      "command": "ps",
+      "source": "src/ps.ts",
+      "subcommands": 0,
+      "options": 41,
+      "omitted": [
+        {
+          "at": "ps/options/9",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "ps/options/18",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "ps/options/19",
+          "feature": "nonliteral-or-unsupported-name"
+        }
+      ],
       "enhancements": []
     }
   ],
   "parserOmissions": [
+    {
+      "source": "src/apt.ts",
+      "line": 137,
+      "feature": "file-extension-filter-not-supported"
+    },
     {
       "source": "src/bun.ts",
       "line": 642,
@@ -9110,6 +11180,16 @@
       "source": "src/bun.ts",
       "line": 755,
       "feature": "file-extension-filter-not-supported"
+    },
+    {
+      "source": "src/diff.ts",
+      "line": 206,
+      "feature": "dynamic-array-spread"
+    },
+    {
+      "source": "src/diff.ts",
+      "line": 212,
+      "feature": "dynamic-array-spread"
     },
     {
       "source": "src/gh.ts",
@@ -9129,6 +11209,26 @@
     {
       "source": "src/python3.ts",
       "line": 26,
+      "feature": "file-extension-filter-not-supported"
+    },
+    {
+      "source": "src/sqlite3.ts",
+      "line": 3,
+      "feature": "file-extension-filter-not-supported"
+    },
+    {
+      "source": "src/systemctl.ts",
+      "line": 427,
+      "feature": "file-extension-filter-not-supported"
+    },
+    {
+      "source": "src/systemctl.ts",
+      "line": 442,
+      "feature": "file-extension-filter-not-supported"
+    },
+    {
+      "source": "src/tsc.ts",
+      "line": 723,
       "feature": "file-extension-filter-not-supported"
     },
     {

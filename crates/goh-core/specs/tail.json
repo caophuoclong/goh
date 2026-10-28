@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "name": "tail",
+  "description": "Display the last part of a file",
+  "options": [
+    {
+      "name": "-f",
+      "description": "Wait for additional data to be appended",
+      "takesValue": false
+    },
+    {
+      "name": "-r",
+      "description": "Display in reverse order",
+      "takesValue": false
+    }
+  ],
+  "args": [
+    {
+      "name": "argument",
+      "isVariadic": true,
+      "template": "filepaths"
+    }
+  ]
+}

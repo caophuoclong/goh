@@ -41,7 +41,7 @@ Rust tests, and are exercised through engine, daemon and shell tests.
 
 ## Coverage and limitations
 
-This pack generates 36 command specs; with the hand-written git, npm, just and task specs, 40 commands are bundled. It is static coverage, not full Fig runtime compatibility.
+This pack generates 75 command specs (the first 36 plus 39 common tools such as `jq`, `tmux`, `systemctl`, `psql`, `tsc`, `vim`); with the hand-written git, npm, just and task specs, 80 commands are bundled. The 39 newer ones are exactly what `npm run import` writes. Several of the first 36 (`cd`, `helm`, `docker`, ...) were edited after import, so `npm run check` fails on them until those edits move into `enhance.mjs`; do not run `npm run import` over them without reviewing `git diff` first. It is static coverage, not full Fig runtime compatibility.
 Some upstream files describe particular CLI versions or macOS/BSD flags; validate flags against your installed
 tool when needed. This is a snapshot pinned to the recorded commit, not a live update service.
 

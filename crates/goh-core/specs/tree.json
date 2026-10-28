@@ -1,0 +1,337 @@
+{
+  "schemaVersion": 1,
+  "name": "tree",
+  "description": "Display directories as trees (with optional color/HTML output)",
+  "options": [
+    {
+      "name": "-a",
+      "description": "All files are listed",
+      "takesValue": false
+    },
+    {
+      "name": "-d",
+      "description": "List directories only",
+      "takesValue": false
+    },
+    {
+      "name": "-l",
+      "description": "Follow symbolic links like directories",
+      "takesValue": false
+    },
+    {
+      "name": "-f",
+      "description": "Print the full path prefix for each file",
+      "takesValue": false
+    },
+    {
+      "name": "-x",
+      "description": "Stay on current filesystem only",
+      "takesValue": false
+    },
+    {
+      "name": "-L",
+      "description": "Descend only level directories deep",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "level"
+        }
+      ]
+    },
+    {
+      "name": "-R",
+      "description": "Rerun tree when max dir level reached",
+      "takesValue": false
+    },
+    {
+      "name": "-P",
+      "description": "List only those files that match the pattern given",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "pattern"
+        }
+      ]
+    },
+    {
+      "name": "-I",
+      "description": "Do not list files that match the given pattern",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "pattern"
+        }
+      ]
+    },
+    {
+      "name": "--ignore-case",
+      "description": "Ignore case when pattern matching",
+      "takesValue": false
+    },
+    {
+      "name": "--matchdirs",
+      "description": "Include directory names in -P pattern matching",
+      "takesValue": false
+    },
+    {
+      "name": "--noreport",
+      "description": "Turn off file/directory count at end of tree listing",
+      "takesValue": false
+    },
+    {
+      "name": "--charset",
+      "description": "Use charset X for terminal/HTML and indentation line output",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "charset"
+        }
+      ]
+    },
+    {
+      "name": "--filelimit",
+      "description": "Do not descend dirs with more than # files in them",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "number",
+          "description": "Number of files"
+        }
+      ]
+    },
+    {
+      "name": "--timefmt",
+      "description": "Print and format time according to the format <f>",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "format",
+          "description": "Format in strftime syntax"
+        }
+      ]
+    },
+    {
+      "name": "-o",
+      "description": "Output to file instead of stdout",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "filename"
+        }
+      ]
+    },
+    {
+      "name": "-q",
+      "description": "Print non-printable characters as '?'",
+      "takesValue": false
+    },
+    {
+      "name": "-N",
+      "description": "Print non-printable characters as is",
+      "takesValue": false
+    },
+    {
+      "name": "-Q",
+      "description": "Quote filenames with double quotes",
+      "takesValue": false
+    },
+    {
+      "name": "-p",
+      "description": "Print the protections for each file",
+      "takesValue": false
+    },
+    {
+      "name": "-u",
+      "description": "Displays file owner or UID number",
+      "takesValue": false
+    },
+    {
+      "name": "-g",
+      "description": "Displays file group owner or GID number",
+      "takesValue": false
+    },
+    {
+      "name": "-s",
+      "description": "Print the size in bytes of each file",
+      "takesValue": false
+    },
+    {
+      "name": "-h",
+      "description": "Print the size in a more human readable way",
+      "takesValue": false
+    },
+    {
+      "name": "--si",
+      "description": "Like -h but use SI units (powers of 1000) instead",
+      "takesValue": false
+    },
+    {
+      "name": "--du",
+      "description": "For each directory report its size as the accumulation of sizes of all its files and sub-directories (and their files, and so on). The total amount of used space is also given in the final report (like the 'du -c' command.) This option requires tree to read the entire directory tree before emitting it, see BUGS AND NOTES below. Implies -s",
+      "takesValue": false
+    },
+    {
+      "name": "-D",
+      "description": "Print the date of the last modification time or if -c is used, the last status change time for the file listed",
+      "takesValue": false
+    },
+    {
+      "name": "-F",
+      "description": "Appends '/', '=', '*', '@', '|' or '>' as per ls -F",
+      "takesValue": false
+    },
+    {
+      "name": "--inodes",
+      "description": "Print inode number of each file",
+      "takesValue": false
+    },
+    {
+      "name": "--device",
+      "description": "Print device ID number to which each file belongs",
+      "takesValue": false
+    },
+    {
+      "name": "-v",
+      "description": "Sort files alphanumerically by version",
+      "takesValue": false
+    },
+    {
+      "name": "-t",
+      "description": "Sort files by last modification time",
+      "takesValue": false
+    },
+    {
+      "name": "-c",
+      "description": "Sort files by last status change time",
+      "takesValue": false
+    },
+    {
+      "name": "-U",
+      "description": "Leave files unsorted",
+      "takesValue": false
+    },
+    {
+      "name": "-r",
+      "description": "Reverse the order of the sort",
+      "takesValue": false
+    },
+    {
+      "name": "--dirsfirst",
+      "description": "List directories before files (-U disables)",
+      "takesValue": false
+    },
+    {
+      "name": "--sort",
+      "description": "Select sort",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "type",
+          "suggestions": [
+            {
+              "name": "name"
+            },
+            {
+              "name": "version"
+            },
+            {
+              "name": "size"
+            },
+            {
+              "name": "mtime"
+            },
+            {
+              "name": "ctime"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "-i",
+      "description": "Don't print indentation lines",
+      "takesValue": false
+    },
+    {
+      "name": "-A",
+      "description": "Print ANSI lines graphic indentation lines",
+      "takesValue": false
+    },
+    {
+      "name": "-S",
+      "description": "Print with CP437 (console) graphics indentation lines",
+      "takesValue": false
+    },
+    {
+      "name": "-n",
+      "description": "Turn colorization off always (-C overrides)",
+      "takesValue": false
+    },
+    {
+      "name": "-C",
+      "description": "Turn colorization on always",
+      "takesValue": false
+    },
+    {
+      "name": "-X",
+      "description": "Prints out an XML representation of the tree",
+      "takesValue": false
+    },
+    {
+      "name": "-J",
+      "description": "Prints out an JSON representation of the tree",
+      "takesValue": false
+    },
+    {
+      "name": "-H",
+      "description": "Prints out HTML format with baseHREF as top directory",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "baseHREF"
+        }
+      ]
+    },
+    {
+      "name": "-T",
+      "description": "Replace the default HTML title and H1 header with string",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "title"
+        }
+      ]
+    },
+    {
+      "name": "--nolinks",
+      "description": "Turn off hyperlinks in HTML output",
+      "takesValue": false
+    },
+    {
+      "name": "--fromfile",
+      "description": "Reads paths from files",
+      "takesValue": false
+    },
+    {
+      "name": "--version",
+      "description": "Print version and exit",
+      "takesValue": false
+    },
+    {
+      "name": "--help",
+      "description": "Print usage and this help message and exit",
+      "takesValue": false
+    },
+    {
+      "name": "--",
+      "description": "Options processing terminator",
+      "takesValue": false
+    }
+  ],
+  "args": [
+    {
+      "name": "argument",
+      "template": "folders"
+    }
+  ]
+}

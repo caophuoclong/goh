@@ -1,0 +1,505 @@
+{
+  "schemaVersion": 1,
+  "name": "diff",
+  "description": "Compare files line by line",
+  "options": [
+    {
+      "name": "-i",
+      "description": "Ignore case differences in file contents",
+      "takesValue": false
+    },
+    {
+      "name": "--ignore-case",
+      "description": "Ignore case differences in file contents",
+      "takesValue": false
+    },
+    {
+      "name": "--ignore-file-name-case",
+      "description": "Ignore case when comparing file names",
+      "takesValue": false
+    },
+    {
+      "name": "--no-ignore-file-name-case",
+      "description": "Consider case when comparing file names",
+      "takesValue": false
+    },
+    {
+      "name": "-E",
+      "description": "Ignore changes due to tab expansion",
+      "takesValue": false
+    },
+    {
+      "name": "--ignore-tab-expansion",
+      "description": "Ignore changes due to tab expansion",
+      "takesValue": false
+    },
+    {
+      "name": "-b",
+      "description": "Ignore changes in the amount of white space",
+      "takesValue": false
+    },
+    {
+      "name": "--ignore-space-change",
+      "description": "Ignore changes in the amount of white space",
+      "takesValue": false
+    },
+    {
+      "name": "-w",
+      "description": "Ignore all white space",
+      "takesValue": false
+    },
+    {
+      "name": "--ignore-all-space",
+      "description": "Ignore all white space",
+      "takesValue": false
+    },
+    {
+      "name": "-B",
+      "description": "Ignore changes whose lines are all blank",
+      "takesValue": false
+    },
+    {
+      "name": "--ignore-blank-lines",
+      "description": "Ignore changes whose lines are all blank",
+      "takesValue": false
+    },
+    {
+      "name": "-I",
+      "description": "Ignore changes whose lines all match RE",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "RE"
+        }
+      ]
+    },
+    {
+      "name": "--ignore-matching-lines",
+      "description": "Ignore changes whose lines all match RE",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "RE"
+        }
+      ]
+    },
+    {
+      "name": "--strip-trailing-cr",
+      "description": "Strip trailing carriage return on input",
+      "takesValue": false
+    },
+    {
+      "name": "-a",
+      "description": "Treat all files as text",
+      "takesValue": false
+    },
+    {
+      "name": "--text",
+      "description": "Treat all files as text",
+      "takesValue": false
+    },
+    {
+      "name": "-c",
+      "description": "Output NUM lines of copied context",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "NUM"
+        }
+      ]
+    },
+    {
+      "name": "-C",
+      "description": "Output NUM lines of copied context",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "NUM"
+        }
+      ]
+    },
+    {
+      "name": "--context",
+      "description": "Output NUM lines of copied context",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "NUM"
+        }
+      ]
+    },
+    {
+      "name": "-u",
+      "description": "Output NUM lines of unified context",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "NUM"
+        }
+      ]
+    },
+    {
+      "name": "-U",
+      "description": "Output NUM lines of unified context",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "NUM"
+        }
+      ]
+    },
+    {
+      "name": "--unified",
+      "description": "Output NUM lines of unified context",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "NUM"
+        }
+      ]
+    },
+    {
+      "name": "--label",
+      "description": "Use LABEL instead of file name",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "LABEL"
+        }
+      ]
+    },
+    {
+      "name": "-p",
+      "description": "Show which C function each change is in",
+      "takesValue": false
+    },
+    {
+      "name": "--show-c-function",
+      "description": "Show which C function each change is in",
+      "takesValue": false
+    },
+    {
+      "name": "-F",
+      "description": "Show the most recent line matching RE",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "RE"
+        }
+      ]
+    },
+    {
+      "name": "--show-function-line",
+      "description": "Show the most recent line matching RE",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "RE"
+        }
+      ]
+    },
+    {
+      "name": "-q",
+      "description": "Output only whether files differ",
+      "takesValue": false
+    },
+    {
+      "name": "--brief",
+      "description": "Output only whether files differ",
+      "takesValue": false
+    },
+    {
+      "name": "-e",
+      "description": "Output an ed script",
+      "takesValue": false
+    },
+    {
+      "name": "--ed",
+      "description": "Output an ed script",
+      "takesValue": false
+    },
+    {
+      "name": "--normal",
+      "description": "Output a normal diff",
+      "takesValue": false
+    },
+    {
+      "name": "-n",
+      "description": "Output an RCS format diff",
+      "takesValue": false
+    },
+    {
+      "name": "--rcs",
+      "description": "Output an RCS format diff",
+      "takesValue": false
+    },
+    {
+      "name": "-y",
+      "description": "Output in two columns",
+      "takesValue": false
+    },
+    {
+      "name": "--side-by-side",
+      "description": "Output in two columns",
+      "takesValue": false
+    },
+    {
+      "name": "-W",
+      "description": "Output at most NUM (default 130) print columns",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "NUM"
+        }
+      ]
+    },
+    {
+      "name": "--width",
+      "description": "Output at most NUM (default 130) print columns",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "NUM"
+        }
+      ]
+    },
+    {
+      "name": "--left-column",
+      "description": "Output only the left column of common lines",
+      "takesValue": false
+    },
+    {
+      "name": "--suppress-common-lines",
+      "description": "Do not output common lines",
+      "takesValue": false
+    },
+    {
+      "name": "-D",
+      "description": "Output merged file to show `#ifdef NAME' diffs",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "NAME"
+        }
+      ]
+    },
+    {
+      "name": "--ifdef",
+      "description": "Output merged file to show `#ifdef NAME' diffs",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "NAME"
+        }
+      ]
+    },
+    {
+      "name": "-l",
+      "description": "Pass the output through `pr' to paginate it",
+      "takesValue": false
+    },
+    {
+      "name": "--paginate",
+      "description": "Pass the output through `pr' to paginate it",
+      "takesValue": false
+    },
+    {
+      "name": "-t",
+      "description": "Expand tabs to spaces in output",
+      "takesValue": false
+    },
+    {
+      "name": "--expand-tabs",
+      "description": "Expand tabs to spaces in output",
+      "takesValue": false
+    },
+    {
+      "name": "-T",
+      "description": "Make tabs line up by prepending a tab",
+      "takesValue": false
+    },
+    {
+      "name": "--initial-tab",
+      "description": "Make tabs line up by prepending a tab",
+      "takesValue": false
+    },
+    {
+      "name": "-r",
+      "description": "Recursively compare any subdirectories found",
+      "takesValue": false
+    },
+    {
+      "name": "--recursive",
+      "description": "Recursively compare any subdirectories found",
+      "takesValue": false
+    },
+    {
+      "name": "-N",
+      "description": "Treat absent files as empty",
+      "takesValue": false
+    },
+    {
+      "name": "--new-file",
+      "description": "Treat absent files as empty",
+      "takesValue": false
+    },
+    {
+      "name": "--unidirectional-new-file",
+      "description": "Treat absent first files as empty",
+      "takesValue": false
+    },
+    {
+      "name": "-s",
+      "description": "Report when two files are the same",
+      "takesValue": false
+    },
+    {
+      "name": "--report-identical-files",
+      "description": "Report when two files are the same",
+      "takesValue": false
+    },
+    {
+      "name": "-x",
+      "description": "Exclude files that match PAT",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "PAT"
+        }
+      ]
+    },
+    {
+      "name": "--exclude",
+      "description": "Exclude files that match PAT",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "PAT"
+        }
+      ]
+    },
+    {
+      "name": "-X",
+      "description": "Exclude files that match any pattern in FILE",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "FILE",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "--exclude-from",
+      "description": "Exclude files that match any pattern in FILE",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "FILE",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "-S",
+      "description": "Start with FILE when comparing directories",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "FILE",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "--starting-file",
+      "description": "Start with FILE when comparing directories",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "FILE",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "--from-file",
+      "description": "Compare FILE1 to all operands. FILE1 can be a directory",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "FILE1",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "--to-file",
+      "description": "Compare all operands to FILE2. FILE2 can be a directory",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "FILE2",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "--horizon-lines",
+      "description": "Keep NUM lines of the common prefix and suffix",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "NUM"
+        }
+      ]
+    },
+    {
+      "name": "-d",
+      "description": "Try hard to find a smaller set of changes",
+      "takesValue": false
+    },
+    {
+      "name": "--minimal",
+      "description": "Try hard to find a smaller set of changes",
+      "takesValue": false
+    },
+    {
+      "name": "--speed-large-files",
+      "description": "Assume large files and many scattered small changes",
+      "takesValue": false
+    },
+    {
+      "name": "-v",
+      "description": "Output version info",
+      "takesValue": false
+    },
+    {
+      "name": "--version",
+      "description": "Output version info",
+      "takesValue": false
+    },
+    {
+      "name": "--help",
+      "description": "Show help",
+      "takesValue": false
+    },
+    {
+      "name": "--line-format",
+      "description": "Format all input lines with LFMT",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "LFTM"
+        }
+      ]
+    }
+  ],
+  "args": [
+    {
+      "name": "file",
+      "isVariadic": true,
+      "template": "filepaths"
+    }
+  ]
+}

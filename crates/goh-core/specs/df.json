@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "name": "df",
+  "description": "Display free disk space",
+  "options": [
+    {
+      "name": "-a",
+      "description": "Show all mount points",
+      "takesValue": false
+    },
+    {
+      "name": "-b",
+      "description": "Use 512-byte blocks (default)",
+      "takesValue": false
+    },
+    {
+      "name": "-P",
+      "description": "Use 512-byte blocks (default)",
+      "takesValue": false
+    },
+    {
+      "name": "-g",
+      "description": "Use 1073741824-byte (1-Gbyte) blocks",
+      "takesValue": false
+    },
+    {
+      "name": "-m",
+      "description": "Use 1048576-byte (1-Mbyte) blocks",
+      "takesValue": false
+    },
+    {
+      "name": "-k",
+      "description": "Use 1024-byte (1-Kbyte) blocks",
+      "takesValue": false
+    },
+    {
+      "name": "-H",
+      "description": "\"Human-readable\" output, uses base 10 unit suffixes",
+      "takesValue": false
+    },
+    {
+      "name": "-h",
+      "description": "\"Human-readable\" output, uses base 2 unit suffixes",
+      "takesValue": false
+    },
+    {
+      "name": "-i",
+      "description": "Include the number of free inodes",
+      "takesValue": false
+    },
+    {
+      "name": "-l",
+      "description": "Only display information about locally-mounted filesystems",
+      "takesValue": false
+    },
+    {
+      "name": "-n",
+      "description": "Print out the previously obtained statistics",
+      "takesValue": false
+    },
+    {
+      "name": "-T",
+      "description": "Only print out statistics for filesystems of the specified types (comma separated)",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "filesystem"
+        }
+      ]
+    }
+  ],
+  "args": [
+    {
+      "name": "file or filesystem"
+    }
+  ]
+}
