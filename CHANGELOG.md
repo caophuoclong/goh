@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.3](https://github.com/caophuoclong/goh/compare/v1.1.2...v1.1.3) (2026-10-28)
+
+
+### Bug fixes
+
+* **anchor:** fall back to the terminal's host app when Claude hides its accessibility tree ([f022a4b](https://github.com/caophuoclong/goh/commit/f022a4bf2f269b7e5120cb33c053ceecf757e416))
+* zsh cd alias and redraw fixes, daemon upgrade detection, Claude popup anchor ([3d80c4b](https://github.com/caophuoclong/goh/commit/3d80c4bb4055bac5089569182cb893708b671768))
+
 ## [1.1.2](https://github.com/caophuoclong/goh/compare/v1.1.1...v1.1.2) (2026-10-28)
 
 
