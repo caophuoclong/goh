@@ -34,6 +34,7 @@ pub struct Server {
     shells: crate::shell::Shells,
     contexts: Mutex<HashMap<String, Arc<ShellContext>>>,
     usage: Mutex<(Instant, Arc<crate::usage::Usage>)>,
+    usage_file: std::path::PathBuf,
     connections: AtomicUsize,
 }
 
@@ -47,7 +48,7 @@ impl Server {
         let Ok(mut cached) = self.usage.lock() else { return Arc::default() };
         if cached.0.elapsed() >= USAGE_TTL {
             let on = crate::usage::enabled();
-            let loaded = if on { crate::usage::Usage::load(&crate::usage::path(), crate::visits::now()) } else { Default::default() };
+            let loaded = if on { crate::usage::Usage::load(&self.usage_file, crate::visits::now()) } else { Default::default() };
             *cached = (Instant::now(), Arc::new(loaded));
         }
         Arc::clone(&cached.1)
@@ -91,7 +92,13 @@ impl Server {
         let engine = Arc::new(engine.with_recall(Box::new(move |command, option, cwd| {
             recall.get().values_for(command, option, &cwd.to_string_lossy(), crate::visits::now())
         })));
-        Self { engine, runs, snippets: Default::default(), autospecs: Default::default(), providers: Default::default(), sessions: Mutex::new(HashMap::new()), shells: Default::default(), contexts: Mutex::new(HashMap::new()), usage: Mutex::new((Instant::now() - USAGE_TTL, Arc::default())), connections: AtomicUsize::new(0) }
+        Self { engine, runs, snippets: Default::default(), autospecs: Default::default(), providers: Default::default(), sessions: Mutex::new(HashMap::new()), shells: Default::default(), contexts: Mutex::new(HashMap::new()), usage: Mutex::new((Instant::now() - USAGE_TTL, Arc::default())), usage_file: crate::usage::path(), connections: AtomicUsize::new(0) }
+    }
+
+    /// Read what was picked before from `file` instead of the user's own (so a test can supply its own).
+    pub fn with_usage(mut self, file: std::path::PathBuf) -> Self {
+        self.usage_file = file;
+        self
     }
 
     /// `None` means the request is malformed: the caller drops the connection without replying.
