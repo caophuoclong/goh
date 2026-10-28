@@ -263,7 +263,15 @@ _goh_clear_ghost() {
   POSTDISPLAY=
   # ZLE normalises colors and moves ranges when BUFFER changes. Its memo tag survives both;
   # remove only our highlights, leaving syntax-highlighting and other plugins' regions intact.
-  region_highlight=("${(@)region_highlight:#*memo=goh-ghost}")
+  # Also a highlight that starts past the line: it was for the text shown after it (a zsh-autosuggestions
+  # suggestion), which is gone now. Left in place, it would dim the next text accepted there.
+  local h; local -a keep
+  for h in "${region_highlight[@]}"; do
+    [[ $h == *memo=goh-ghost ]] && continue
+    [[ $h == <->' '* ]] && (( ${h%% *} >= ${#BUFFER} )) && continue
+    keep+=("$h")
+  done
+  region_highlight=("${keep[@]}")
 }
 
 # Remove the menu message (zsh < 5.9 only), and only if one is shown: every `zle -M` makes ZLE redraw

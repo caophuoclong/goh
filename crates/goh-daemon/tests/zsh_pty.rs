@@ -781,6 +781,30 @@ fn accepting_a_directory_redraws_the_line_in_place_under_a_multiline_prompt() {
 }
 
 #[test]
+fn accepted_text_is_not_left_in_another_plugins_suggestion_highlight() {
+    let fx = Fixture::new(require_env!(), false);
+    fs::create_dir_all(fx.path("project/src")).unwrap();
+    let mut sh = fx.shell(LIVE, true);
+    // As zsh-autosuggestions does: self-insert replaced by a wrapper that shows a suggestion after the line and
+    // highlights it from the end of BUFFER.
+    let rh = fx.path("rh.txt");
+    sh.send(
+        &format!(
+            "_sugg() {{ zle .self-insert; POSTDISPLAY=hint; region_highlight+=(\"$#BUFFER $(( $#BUFFER + 4 )) fg=8\") }}; zle -N self-insert _sugg\n\
+             rh() {{ print -r -- \"${{(j:;:)region_highlight}}\" >> {} }}; zle -N rh; bindkey '^Xh' rh\n",
+            rh.display()
+        ),
+        300,
+    );
+    sh.send("cd pro", 500);
+    sh.send("\t", 800);
+    assert!(fx.state(&mut sh).starts_with("BUF[cd project/] CUR=11"));
+    let highlights = fx.state_file(&mut sh, "\x18h", "rh.txt");
+    assert!(!highlights.contains("fg=8"), "the suggestion's highlight would dim `project/`: {highlights}");
+    kill_socket_holder(&fx.socket);
+}
+
+#[test]
 fn enter_accepts_after_navigation_and_executes_an_untouched_menu() {
     let fx = Fixture::new(require_env!(), true);
     let mut sh = fx.shell(LIVE, true);
