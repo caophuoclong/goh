@@ -370,6 +370,54 @@ fn branches_remotes_scripts_and_targets_come_from_the_project() {
 }
 
 #[test]
+fn package_managers_ask_for_the_names_they_can_act_on() {
+    use goh_core::spec::{Provider, Suggestion};
+    let engine = Engine::new(goh_core::bundled_specs());
+    // Every provider answers with one name, `Debug` of itself with a `p` in front (`pBrewInstalled`), so the
+    // completion shows which one the spec asked for.
+    let values = |p: Provider, _: &Path| vec![Suggestion { name: format!("p{p:?}"), description: None, insert_value: None }];
+    let empty = tempfile::tempdir().unwrap();
+    let offered = |line: &str| -> Vec<String> {
+        let r = engine.complete_with(line, line.len(), empty.path(), &values).unwrap();
+        r.candidates.into_iter().filter(|c| c.label.starts_with('p') && c.label[1..].starts_with(char::is_uppercase)).map(|c| c.label).collect()
+    };
+    for (line, provider) in [
+        ("brew install ", "BrewAvailable"),
+        ("brew info ", "BrewAvailable"),
+        ("brew home ", "BrewAvailable"),
+        ("brew uninstall ", "BrewInstalled"),
+        ("brew remove ", "BrewInstalled"),
+        ("brew rm ", "BrewInstalled"),
+        ("brew reinstall ", "BrewInstalled"),
+        ("brew upgrade ", "BrewInstalled"),
+        ("brew list ", "BrewInstalled"),
+        ("brew uninstall wget ", "BrewInstalled"), // a second name
+        ("brew services restart ", "BrewInstalled"),
+        ("npm uninstall ", "PackageDependencies"),
+        ("npm rm ", "PackageDependencies"),
+        ("npm update ", "PackageDependencies"),
+        ("pnpm remove ", "PackageDependencies"),
+        ("pnpm update ", "PackageDependencies"),
+        ("yarn remove ", "PackageDependencies"),
+        ("bun remove ", "PackageDependencies"),
+        ("bun rm ", "PackageDependencies"),
+        ("cargo uninstall ", "CargoInstalled"),
+        ("cargo remove ", "CargoDependencies"),
+        ("pip uninstall ", "PipPackages"),
+        ("pip3 show ", "PipPackages"),
+        ("uv pip uninstall ", "PipPackages"),
+        ("uv tool uninstall ", "UvTools"),
+        ("uv tool upgrade ", "UvTools"),
+    ] {
+        assert_eq!(offered(line), [format!("p{provider}")], "{line}");
+    }
+    // Installing from PyPI, crates.io or the npm registry stays free text.
+    for line in ["pip install ", "cargo install ", "npm install ", "pnpm add ", "yarn add ", "uv add "] {
+        assert!(offered(line).is_empty(), "{line}");
+    }
+}
+
+#[test]
 fn an_alias_is_seen_through_and_spans_stay_in_the_line_as_typed() {
     use goh_core::shellctx::{NameKind, ShellContext};
     let engine = Engine::new(goh_core::bundled_specs());

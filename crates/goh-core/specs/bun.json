@@ -1227,7 +1227,8 @@
       "args": [
         {
           "name": "package",
-          "isVariadic": true
+          "isVariadic": true,
+          "provider": "package-dependencies"
         }
       ]
     },
@@ -1444,7 +1445,8 @@
       "args": [
         {
           "name": "package",
-          "isVariadic": true
+          "isVariadic": true,
+          "provider": "package-dependencies"
         }
       ]
     },
@@ -2896,7 +2898,8 @@
         {
           "name": "package",
           "isVariadic": true,
-          "isOptional": true
+          "isOptional": true,
+          "provider": "package-dependencies"
         }
       ]
     },

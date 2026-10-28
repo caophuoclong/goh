@@ -78,6 +78,20 @@ pub enum Provider {
     CargoExamples,
     CargoFeatures,
     WorkspacePackages,
+    /// What `npm uninstall`, `pnpm remove`, `yarn remove` and `bun remove` can take out: the nearest `package.json`'s dependencies.
+    PackageDependencies,
+    /// The crates in the nearest `Cargo.toml`'s dependency tables (`cargo remove`).
+    CargoDependencies,
+    /// Crates installed with `cargo install` (`cargo uninstall`).
+    CargoInstalled,
+    /// Python packages installed for `pip`: the project's virtualenv if it has one, else the user and system site-packages.
+    PipPackages,
+    /// Tools installed with `uv tool install`.
+    UvTools,
+    /// Installed Homebrew formulae and casks (`brew uninstall`, `upgrade`, `list`).
+    BrewInstalled,
+    /// Every Homebrew formula and cask Homebrew knows of, from its own local cache of the API (`brew install`, `info`).
+    BrewAvailable,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize)]
