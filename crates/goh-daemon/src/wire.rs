@@ -32,6 +32,8 @@ pub enum Request {
         suggestion_id: String,
         buffer_hash: String,
     },
+    /// Which daemon is this? Answered with [`Reply::Hello`]; an older daemon drops the connection instead.
+    Hello { v: u32 },
     /// What the shell knows (aliases, functions, builtins, `PATH`), sent by the adapter when it changes.
     Context {
         v: u32,
@@ -61,6 +63,7 @@ pub enum Reply {
     },
     Stale { v: u32, session_id: String, generation: u64 },
     Ack { v: u32 },
+    Hello { v: u32, version: String, pid: u32 },
 }
 
 pub fn buffer_hash(buffer: &str) -> String {

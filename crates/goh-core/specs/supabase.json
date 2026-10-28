@@ -1,0 +1,2638 @@
+{
+  "schemaVersion": 1,
+  "name": "supabase",
+  "description": "Supabase CLI",
+  "options": [
+    {
+      "name": "--debug",
+      "description": "Output debug logs to stderr",
+      "takesValue": false
+    },
+    {
+      "name": "--help",
+      "description": "Display help",
+      "takesValue": false
+    },
+    {
+      "name": "-h",
+      "description": "Display help",
+      "takesValue": false
+    }
+  ],
+  "subcommands": [
+    {
+      "name": "completion",
+      "description": "Generate the autocompletion script for the specified shell",
+      "options": [
+        {
+          "name": "--debug",
+          "description": "Output debug logs to stderr",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Display help",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Display help",
+          "takesValue": false
+        }
+      ],
+      "subcommands": [
+        {
+          "name": "bash",
+          "description": "Generate the autocompletion script for bash",
+          "options": [
+            {
+              "name": "--debug",
+              "description": "Output debug logs to stderr",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "--no-descriptions",
+              "description": "Disable completion descriptions",
+              "takesValue": false
+            }
+          ]
+        },
+        {
+          "name": "fish",
+          "description": "Generate the autocompletion script for fish",
+          "options": [
+            {
+              "name": "--debug",
+              "description": "Output debug logs to stderr",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "--no-descriptions",
+              "description": "Disable completion descriptions",
+              "takesValue": false
+            }
+          ]
+        },
+        {
+          "name": "powershell",
+          "description": "Generate the autocompletion script for powershell",
+          "options": [
+            {
+              "name": "--debug",
+              "description": "Output debug logs to stderr",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "--no-descriptions",
+              "description": "Disable completion descriptions",
+              "takesValue": false
+            }
+          ]
+        },
+        {
+          "name": "zsh",
+          "description": "Generate the autocompletion script for zsh",
+          "options": [
+            {
+              "name": "--debug",
+              "description": "Output debug logs to stderr",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "--no-descriptions",
+              "description": "Disable completion descriptions",
+              "takesValue": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "db",
+      "description": "Manage local Postgres databases",
+      "options": [
+        {
+          "name": "--debug",
+          "description": "Output debug logs to stderr",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Display help",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Display help",
+          "takesValue": false
+        }
+      ],
+      "subcommands": [
+        {
+          "name": "branch",
+          "description": "Manage local database branches",
+          "options": [
+            {
+              "name": "--debug",
+              "description": "Output debug logs to stderr",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Display help",
+              "takesValue": false
+            }
+          ],
+          "subcommands": [
+            {
+              "name": "create",
+              "description": "Create a branch",
+              "options": [
+                {
+                  "name": "--debug",
+                  "description": "Output debug logs to stderr",
+                  "takesValue": false
+                },
+                {
+                  "name": "--help",
+                  "description": "Display help",
+                  "takesValue": false
+                },
+                {
+                  "name": "-h",
+                  "description": "Display help",
+                  "takesValue": false
+                }
+              ]
+            },
+            {
+              "name": "delete",
+              "description": "Delete a branch",
+              "options": [
+                {
+                  "name": "--debug",
+                  "description": "Output debug logs to stderr",
+                  "takesValue": false
+                },
+                {
+                  "name": "--help",
+                  "description": "Display help",
+                  "takesValue": false
+                },
+                {
+                  "name": "-h",
+                  "description": "Display help",
+                  "takesValue": false
+                }
+              ]
+            },
+            {
+              "name": "list",
+              "description": "List branches",
+              "options": [
+                {
+                  "name": "--debug",
+                  "description": "Output debug logs to stderr",
+                  "takesValue": false
+                },
+                {
+                  "name": "--help",
+                  "description": "Display help",
+                  "takesValue": false
+                },
+                {
+                  "name": "-h",
+                  "description": "Display help",
+                  "takesValue": false
+                }
+              ]
+            },
+            {
+              "name": "switch",
+              "description": "Switch the active branch",
+              "options": [
+                {
+                  "name": "--debug",
+                  "description": "Output debug logs to stderr",
+                  "takesValue": false
+                },
+                {
+                  "name": "--help",
+                  "description": "Display help",
+                  "takesValue": false
+                },
+                {
+                  "name": "-h",
+                  "description": "Display help",
+                  "takesValue": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "diff",
+          "description": "Diffs the local database for schema changes",
+          "options": [
+            {
+              "name": "--debug",
+              "description": "Output debug logs to stderr",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "--file",
+              "description": "Saves schema diff to a file",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "file",
+                  "template": "filepaths"
+                }
+              ]
+            },
+            {
+              "name": "-f",
+              "description": "Saves schema diff to a file",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "file",
+                  "template": "filepaths"
+                }
+              ]
+            },
+            {
+              "name": "--schema",
+              "description": "List of schema to include",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "schema"
+                }
+              ]
+            },
+            {
+              "name": "-s",
+              "description": "List of schema to include",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "schema"
+                }
+              ]
+            },
+            {
+              "name": "--use-migra",
+              "description": "Use migra to generate schema diff",
+              "takesValue": false
+            }
+          ]
+        },
+        {
+          "name": "dump",
+          "description": "Dumps data or schemas from the remote database",
+          "options": [
+            {
+              "name": "--debug",
+              "description": "Output debug logs to stderr",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for dump",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Help for dump",
+              "takesValue": false
+            },
+            {
+              "name": "--data-only",
+              "description": "Dumps only data records",
+              "takesValue": false
+            },
+            {
+              "name": "--db-url",
+              "description": "Dumps from the database specified by the connection string (must be percent-encoded)",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "string"
+                }
+              ]
+            },
+            {
+              "name": "--dry-run",
+              "description": "Prints the pg_dump script that would be executed",
+              "takesValue": false
+            },
+            {
+              "name": "--file",
+              "description": "File path to save the dumped contents",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "string",
+                  "template": "filepaths"
+                }
+              ]
+            },
+            {
+              "name": "-f",
+              "description": "File path to save the dumped contents",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "string",
+                  "template": "filepaths"
+                }
+              ]
+            },
+            {
+              "name": "--keep-comments",
+              "description": "Keeps commented lines from pg_dump output",
+              "takesValue": false
+            },
+            {
+              "name": "--linked",
+              "description": "Dumps from the linked project. (default true)",
+              "takesValue": false
+            },
+            {
+              "name": "--local",
+              "description": "Dumps from the local database",
+              "takesValue": false
+            },
+            {
+              "name": "--password",
+              "description": "Password to your remote Postgres database",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "string"
+                }
+              ]
+            },
+            {
+              "name": "-p",
+              "description": "Password to your remote Postgres database",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "string"
+                }
+              ]
+            },
+            {
+              "name": "--role-only",
+              "description": "Dumps only cluster roles",
+              "takesValue": false
+            },
+            {
+              "name": "--schema",
+              "description": "Comma separated list of schema to include. (default all)",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "string"
+                }
+              ]
+            },
+            {
+              "name": "-s",
+              "description": "Comma separated list of schema to include. (default all)",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "string"
+                }
+              ]
+            },
+            {
+              "name": "--use-copy",
+              "description": "Uses copy statements in place of inserts",
+              "takesValue": false
+            }
+          ]
+        },
+        {
+          "name": "lint",
+          "description": "Checks local database for typing error",
+          "options": [
+            {
+              "name": "--debug",
+              "description": "Output debug logs to stderr",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "--level",
+              "description": "Error level to emit",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "level"
+                }
+              ]
+            },
+            {
+              "name": "--schema",
+              "description": "List of schema to include",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "schema"
+                }
+              ]
+            },
+            {
+              "name": "-s",
+              "description": "List of schema to include",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "schema"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "pull",
+          "description": "Pull schema from the remote database",
+          "options": [
+            {
+              "name": "--debug",
+              "description": "Output debug logs to stderr",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Display help",
+              "takesValue": false
+            }
+          ]
+        },
+        {
+          "name": "push",
+          "description": "Push new migrations to the remote database",
+          "options": [
+            {
+              "name": "--debug",
+              "description": "Output debug logs to stderr",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "--dry-run",
+              "description": "Print the migrations that would be applied, but don't actually apply them",
+              "takesValue": false
+            },
+            {
+              "name": "--password",
+              "description": "Password to your remote Postgres database",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "password"
+                }
+              ]
+            },
+            {
+              "name": "-p",
+              "description": "Password to your remote Postgres database",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "password"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "remote",
+          "description": "Manage remote databases",
+          "options": [
+            {
+              "name": "--debug",
+              "description": "Output debug logs to stderr",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "--password",
+              "description": "Password to your remote Postgres database",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "password"
+                }
+              ]
+            },
+            {
+              "name": "-p",
+              "description": "Password to your remote Postgres database",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "password"
+                }
+              ]
+            }
+          ],
+          "subcommands": [
+            {
+              "name": "changes",
+              "description": "Show changes on the remote database",
+              "options": [
+                {
+                  "name": "--debug",
+                  "description": "Output debug logs to stderr",
+                  "takesValue": false
+                },
+                {
+                  "name": "--help",
+                  "description": "Display help",
+                  "takesValue": false
+                },
+                {
+                  "name": "-h",
+                  "description": "Display help",
+                  "takesValue": false
+                },
+                {
+                  "name": "--password",
+                  "description": "Password to your remote Postgres database",
+                  "takesValue": true,
+                  "args": [
+                    {
+                      "name": "password"
+                    }
+                  ]
+                },
+                {
+                  "name": "-p",
+                  "description": "Password to your remote Postgres database",
+                  "takesValue": true,
+                  "args": [
+                    {
+                      "name": "password"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "commit",
+              "description": "Commit remote changes as a new migration",
+              "options": [
+                {
+                  "name": "--debug",
+                  "description": "Output debug logs to stderr",
+                  "takesValue": false
+                },
+                {
+                  "name": "--help",
+                  "description": "Display help",
+                  "takesValue": false
+                },
+                {
+                  "name": "-h",
+                  "description": "Display help",
+                  "takesValue": false
+                },
+                {
+                  "name": "--password",
+                  "description": "Password to your remote Postgres database",
+                  "takesValue": true,
+                  "args": [
+                    {
+                      "name": "password"
+                    }
+                  ]
+                },
+                {
+                  "name": "-p",
+                  "description": "Password to your remote Postgres database",
+                  "takesValue": true,
+                  "args": [
+                    {
+                      "name": "password"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "reset",
+          "description": "Resets the local database to current migrations",
+          "options": [
+            {
+              "name": "--debug",
+              "description": "Output debug logs to stderr",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Display help",
+              "takesValue": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "functions",
+      "description": "Manage Supabase Edge functions",
+      "options": [
+        {
+          "name": "--debug",
+          "description": "Output debug logs to stderr",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Display help",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Display help",
+          "takesValue": false
+        }
+      ],
+      "subcommands": [
+        {
+          "name": "delete",
+          "description": "Delete a Function from Supabase",
+          "options": [
+            {
+              "name": "--debug",
+              "description": "Output debug logs to stderr",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "--project-ref",
+              "description": "Project ref of the Supabase project",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "project-ref"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "deploy",
+          "description": "Deploy a Function to Supabase",
+          "options": [
+            {
+              "name": "--debug",
+              "description": "Output debug logs to stderr",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "--no-verify-jwt",
+              "description": "Disable JWT verification for the Function",
+              "takesValue": false
+            },
+            {
+              "name": "--project-ref",
+              "description": "Project ref of the Supabase project",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "project-ref"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "new",
+          "description": "Create a new Function locally",
+          "options": [
+            {
+              "name": "--debug",
+              "description": "Output debug logs to stderr",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Display help",
+              "takesValue": false
+            }
+          ]
+        },
+        {
+          "name": "serve",
+          "description": "Serve a Function locally",
+          "options": [
+            {
+              "name": "--debug",
+              "description": "Output debug logs to stderr",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "--env-file",
+              "description": "Path to an env file to be populated to the Function environment",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "env-file",
+                  "template": "filepaths"
+                }
+              ]
+            },
+            {
+              "name": "--no-verify-jwt",
+              "description": "Disable JWT verification for the Function",
+              "takesValue": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "gen",
+      "description": "Run code generation tools",
+      "options": [
+        {
+          "name": "--debug",
+          "description": "Output debug logs to stderr",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Display help",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Display help",
+          "takesValue": false
+        }
+      ],
+      "subcommands": [
+        {
+          "name": "types",
+          "description": "Generate types from Postgres schema",
+          "options": [
+            {
+              "name": "--debug",
+              "description": "Output debug logs to stderr",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Display help",
+              "takesValue": false
+            }
+          ],
+          "subcommands": [
+            {
+              "name": "typescript",
+              "description": "Generate types for TypeScript",
+              "options": [
+                {
+                  "name": "--debug",
+                  "description": "Output debug logs to stderr",
+                  "takesValue": false
+                },
+                {
+                  "name": "--help",
+                  "description": "Display help",
+                  "takesValue": false
+                },
+                {
+                  "name": "-h",
+                  "description": "Display help",
+                  "takesValue": false
+                },
+                {
+                  "name": "--db-url",
+                  "description": "Generate types from a database url",
+                  "takesValue": true,
+                  "args": [
+                    {
+                      "name": "db-url"
+                    }
+                  ]
+                },
+                {
+                  "name": "--local",
+                  "description": "Generate types from the local dev database",
+                  "takesValue": false
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "init",
+      "description": "Initialize a local project",
+      "options": [
+        {
+          "name": "--debug",
+          "description": "Output debug logs to stderr",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Display help",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Display help",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "link",
+      "description": "Link to a Supabase project",
+      "options": [
+        {
+          "name": "--debug",
+          "description": "Output debug logs to stderr",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Display help",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Display help",
+          "takesValue": false
+        },
+        {
+          "name": "--password",
+          "description": "Password to your remote Postgres database",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "password"
+            }
+          ]
+        },
+        {
+          "name": "-p",
+          "description": "Password to your remote Postgres database",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "password"
+            }
+          ]
+        },
+        {
+          "name": "--project-ref",
+          "description": "Project ref of the Supabase project",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "project-ref"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "login",
+      "description": "Authenticate using an access token",
+      "options": [
+        {
+          "name": "--debug",
+          "description": "Output debug logs to stderr",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Display help",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Display help",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "migration",
+      "description": "Manage database migration scripts",
+      "options": [
+        {
+          "name": "--debug",
+          "description": "Output debug logs to stderr",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Display help",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Display help",
+          "takesValue": false
+        }
+      ],
+      "subcommands": [
+        {
+          "name": "list",
+          "description": "List local and remote migrations",
+          "options": [
+            {
+              "name": "--debug",
+              "description": "Output debug logs to stderr",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "--password",
+              "description": "Password to your remote Postgres database",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "password"
+                }
+              ]
+            },
+            {
+              "name": "-p",
+              "description": "Password to your remote Postgres database",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "password"
+                }
+              ]
+            },
+            {
+              "name": "--local",
+              "description": "Lists migrations applied to the local database",
+              "takesValue": false
+            },
+            {
+              "name": "--linked",
+              "description": "Lists migrations applied to the linked project (default true)",
+              "takesValue": false
+            },
+            {
+              "name": "--db-url",
+              "description": "Database URL to connect to",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "string"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "new",
+          "description": "Create an empty migration script",
+          "options": [
+            {
+              "name": "--debug",
+              "description": "Output debug logs to stderr",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Display help",
+              "takesValue": false
+            }
+          ],
+          "args": [
+            {
+              "name": "migration name"
+            }
+          ]
+        },
+        {
+          "name": "repair",
+          "description": "Repair the migration history table",
+          "options": [
+            {
+              "name": "--debug",
+              "description": "Output debug logs to stderr",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "--status",
+              "description": "Version status to update",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "status",
+                  "suggestions": [
+                    {
+                      "name": "applied"
+                    },
+                    {
+                      "name": "reverted"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "--password",
+              "description": "Password to your remote Postgres database",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "password"
+                }
+              ]
+            },
+            {
+              "name": "-p",
+              "description": "Password to your remote Postgres database",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "password"
+                }
+              ]
+            },
+            {
+              "name": "--local",
+              "description": "Repairs the migration history of the local database",
+              "takesValue": false
+            },
+            {
+              "name": "--linked",
+              "description": "Repairs the migration history of the linked project (default true)",
+              "takesValue": false
+            },
+            {
+              "name": "--db-url",
+              "description": "Database URL to connect to",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "string"
+                }
+              ]
+            }
+          ],
+          "args": [
+            {
+              "name": "version"
+            }
+          ]
+        },
+        {
+          "name": "squash",
+          "description": "Squash migrations to a single file",
+          "options": [
+            {
+              "name": "--debug",
+              "description": "Output debug logs to stderr",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "--password",
+              "description": "Password to your remote Postgres database",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "password"
+                }
+              ]
+            },
+            {
+              "name": "-p",
+              "description": "Password to your remote Postgres database",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "password"
+                }
+              ]
+            },
+            {
+              "name": "--local",
+              "description": "Squashes the migration history of the local database",
+              "takesValue": false
+            },
+            {
+              "name": "--version",
+              "description": "Squash up to the specified version",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "string"
+                }
+              ]
+            },
+            {
+              "name": "--linked",
+              "description": "Squashes the migration history of the linked project (default true)",
+              "takesValue": false
+            },
+            {
+              "name": "--db-url",
+              "description": "Database URL to connect to",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "string"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "up",
+          "description": "Apply pending migrations to local database",
+          "options": [
+            {
+              "name": "--debug",
+              "description": "Output debug logs to stderr",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Display help",
+              "takesValue": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "orgs",
+      "description": "Manage Supabase organizations",
+      "options": [
+        {
+          "name": "--debug",
+          "description": "Output debug logs to stderr",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Display help",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Display help",
+          "takesValue": false
+        }
+      ],
+      "subcommands": [
+        {
+          "name": "list",
+          "description": "List all organizations",
+          "options": [
+            {
+              "name": "--debug",
+              "description": "Output debug logs to stderr",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Display help",
+              "takesValue": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "projects",
+      "description": "Manage Supabase projects",
+      "options": [
+        {
+          "name": "--debug",
+          "description": "Output debug logs to stderr",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Display help",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Display help",
+          "takesValue": false
+        }
+      ],
+      "subcommands": [
+        {
+          "name": "create",
+          "description": "Create a project on Supabase",
+          "options": [
+            {
+              "name": "--debug",
+              "description": "Output debug logs to stderr",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "--db-password",
+              "description": "Database password of the project",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "db-password"
+                }
+              ]
+            },
+            {
+              "name": "--interactive",
+              "description": "Enables interactive mode",
+              "takesValue": false
+            },
+            {
+              "name": "-i",
+              "description": "Enables interactive mode",
+              "takesValue": false
+            },
+            {
+              "name": "--org-id",
+              "description": "Organization ID to create the project in",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "org-id"
+                }
+              ]
+            },
+            {
+              "name": "--plan",
+              "description": "Select a plan that suits your needs",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "plan"
+                }
+              ]
+            },
+            {
+              "name": "--region",
+              "description": "Select a region close to you for the best performance",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "region"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "list",
+          "description": "List all Supabase projects",
+          "options": [
+            {
+              "name": "--debug",
+              "description": "Output debug logs to stderr",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Display help",
+              "takesValue": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "secrets",
+      "description": "Manage Supabase secrets",
+      "options": [
+        {
+          "name": "--debug",
+          "description": "Output debug logs to stderr",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Display help",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Display help",
+          "takesValue": false
+        }
+      ],
+      "subcommands": [
+        {
+          "name": "list",
+          "description": "List all secrets on Supabase",
+          "options": [
+            {
+              "name": "--debug",
+              "description": "Output debug logs to stderr",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Display help",
+              "takesValue": false
+            }
+          ]
+        },
+        {
+          "name": "set",
+          "description": "Set a secret(s) on Supabase",
+          "options": [
+            {
+              "name": "--debug",
+              "description": "Output debug logs to stderr",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "--env-file",
+              "description": "Read secrets from a .env file",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "env-file",
+                  "template": "filepaths"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "unset",
+          "description": "Unset a secret(s) on Supabase",
+          "options": [
+            {
+              "name": "--debug",
+              "description": "Output debug logs to stderr",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Display help",
+              "takesValue": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "start",
+      "description": "Start containers for Supabase local development",
+      "options": [
+        {
+          "name": "--debug",
+          "description": "Output debug logs to stderr",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Display help",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Display help",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "status",
+      "description": "Show status of local Supabase containers",
+      "options": [
+        {
+          "name": "--debug",
+          "description": "Output debug logs to stderr",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Display help",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Display help",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "stop",
+      "description": "Stop all local Supabase containers",
+      "options": [
+        {
+          "name": "--debug",
+          "description": "Output debug logs to stderr",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Display help",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Display help",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "help",
+      "description": "Help about any command",
+      "options": [
+        {
+          "name": "--debug",
+          "description": "Output debug logs to stderr",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Display help",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Display help",
+          "takesValue": false
+        }
+      ],
+      "subcommands": [
+        {
+          "name": "completion",
+          "description": "Generate the autocompletion script for the specified shell",
+          "options": [
+            {
+              "name": "--debug",
+              "description": "Output debug logs to stderr",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Display help",
+              "takesValue": false
+            }
+          ],
+          "subcommands": [
+            {
+              "name": "bash",
+              "description": "Generate the autocompletion script for bash",
+              "options": [
+                {
+                  "name": "--debug",
+                  "description": "Output debug logs to stderr",
+                  "takesValue": false
+                },
+                {
+                  "name": "--help",
+                  "description": "Display help",
+                  "takesValue": false
+                },
+                {
+                  "name": "-h",
+                  "description": "Display help",
+                  "takesValue": false
+                }
+              ]
+            },
+            {
+              "name": "fish",
+              "description": "Generate the autocompletion script for fish",
+              "options": [
+                {
+                  "name": "--debug",
+                  "description": "Output debug logs to stderr",
+                  "takesValue": false
+                },
+                {
+                  "name": "--help",
+                  "description": "Display help",
+                  "takesValue": false
+                },
+                {
+                  "name": "-h",
+                  "description": "Display help",
+                  "takesValue": false
+                }
+              ]
+            },
+            {
+              "name": "powershell",
+              "description": "Generate the autocompletion script for powershell",
+              "options": [
+                {
+                  "name": "--debug",
+                  "description": "Output debug logs to stderr",
+                  "takesValue": false
+                },
+                {
+                  "name": "--help",
+                  "description": "Display help",
+                  "takesValue": false
+                },
+                {
+                  "name": "-h",
+                  "description": "Display help",
+                  "takesValue": false
+                }
+              ]
+            },
+            {
+              "name": "zsh",
+              "description": "Generate the autocompletion script for zsh",
+              "options": [
+                {
+                  "name": "--debug",
+                  "description": "Output debug logs to stderr",
+                  "takesValue": false
+                },
+                {
+                  "name": "--help",
+                  "description": "Display help",
+                  "takesValue": false
+                },
+                {
+                  "name": "-h",
+                  "description": "Display help",
+                  "takesValue": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "db",
+          "description": "Manage local Postgres databases",
+          "options": [
+            {
+              "name": "--debug",
+              "description": "Output debug logs to stderr",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Display help",
+              "takesValue": false
+            }
+          ],
+          "subcommands": [
+            {
+              "name": "branch",
+              "description": "Manage local database branches",
+              "options": [
+                {
+                  "name": "--debug",
+                  "description": "Output debug logs to stderr",
+                  "takesValue": false
+                },
+                {
+                  "name": "--help",
+                  "description": "Display help",
+                  "takesValue": false
+                },
+                {
+                  "name": "-h",
+                  "description": "Display help",
+                  "takesValue": false
+                }
+              ],
+              "subcommands": [
+                {
+                  "name": "create",
+                  "description": "Create a branch",
+                  "options": [
+                    {
+                      "name": "--debug",
+                      "description": "Output debug logs to stderr",
+                      "takesValue": false
+                    },
+                    {
+                      "name": "--help",
+                      "description": "Display help",
+                      "takesValue": false
+                    },
+                    {
+                      "name": "-h",
+                      "description": "Display help",
+                      "takesValue": false
+                    }
+                  ]
+                },
+                {
+                  "name": "delete",
+                  "description": "Delete a branch",
+                  "options": [
+                    {
+                      "name": "--debug",
+                      "description": "Output debug logs to stderr",
+                      "takesValue": false
+                    },
+                    {
+                      "name": "--help",
+                      "description": "Display help",
+                      "takesValue": false
+                    },
+                    {
+                      "name": "-h",
+                      "description": "Display help",
+                      "takesValue": false
+                    }
+                  ]
+                },
+                {
+                  "name": "list",
+                  "description": "List branches",
+                  "options": [
+                    {
+                      "name": "--debug",
+                      "description": "Output debug logs to stderr",
+                      "takesValue": false
+                    },
+                    {
+                      "name": "--help",
+                      "description": "Display help",
+                      "takesValue": false
+                    },
+                    {
+                      "name": "-h",
+                      "description": "Display help",
+                      "takesValue": false
+                    }
+                  ]
+                },
+                {
+                  "name": "switch",
+                  "description": "Switch the active branch",
+                  "options": [
+                    {
+                      "name": "--debug",
+                      "description": "Output debug logs to stderr",
+                      "takesValue": false
+                    },
+                    {
+                      "name": "--help",
+                      "description": "Display help",
+                      "takesValue": false
+                    },
+                    {
+                      "name": "-h",
+                      "description": "Display help",
+                      "takesValue": false
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "diff",
+              "description": "Diffs the local database for schema changes",
+              "options": [
+                {
+                  "name": "--debug",
+                  "description": "Output debug logs to stderr",
+                  "takesValue": false
+                },
+                {
+                  "name": "--help",
+                  "description": "Display help",
+                  "takesValue": false
+                },
+                {
+                  "name": "-h",
+                  "description": "Display help",
+                  "takesValue": false
+                }
+              ]
+            },
+            {
+              "name": "lint",
+              "description": "Checks local database for typing error",
+              "options": [
+                {
+                  "name": "--debug",
+                  "description": "Output debug logs to stderr",
+                  "takesValue": false
+                },
+                {
+                  "name": "--help",
+                  "description": "Display help",
+                  "takesValue": false
+                },
+                {
+                  "name": "-h",
+                  "description": "Display help",
+                  "takesValue": false
+                }
+              ]
+            },
+            {
+              "name": "push",
+              "description": "Push new migrations to the remote database",
+              "options": [
+                {
+                  "name": "--debug",
+                  "description": "Output debug logs to stderr",
+                  "takesValue": false
+                },
+                {
+                  "name": "--help",
+                  "description": "Display help",
+                  "takesValue": false
+                },
+                {
+                  "name": "-h",
+                  "description": "Display help",
+                  "takesValue": false
+                }
+              ]
+            },
+            {
+              "name": "remote",
+              "description": "Manage remote databases",
+              "options": [
+                {
+                  "name": "--debug",
+                  "description": "Output debug logs to stderr",
+                  "takesValue": false
+                },
+                {
+                  "name": "--help",
+                  "description": "Display help",
+                  "takesValue": false
+                },
+                {
+                  "name": "-h",
+                  "description": "Display help",
+                  "takesValue": false
+                }
+              ],
+              "subcommands": [
+                {
+                  "name": "changes",
+                  "description": "Show changes on the remote database",
+                  "options": [
+                    {
+                      "name": "--debug",
+                      "description": "Output debug logs to stderr",
+                      "takesValue": false
+                    },
+                    {
+                      "name": "--help",
+                      "description": "Display help",
+                      "takesValue": false
+                    },
+                    {
+                      "name": "-h",
+                      "description": "Display help",
+                      "takesValue": false
+                    }
+                  ]
+                },
+                {
+                  "name": "commit",
+                  "description": "Commit remote changes as a new migration",
+                  "options": [
+                    {
+                      "name": "--debug",
+                      "description": "Output debug logs to stderr",
+                      "takesValue": false
+                    },
+                    {
+                      "name": "--help",
+                      "description": "Display help",
+                      "takesValue": false
+                    },
+                    {
+                      "name": "-h",
+                      "description": "Display help",
+                      "takesValue": false
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "reset",
+              "description": "Resets the local database to current migrations",
+              "options": [
+                {
+                  "name": "--debug",
+                  "description": "Output debug logs to stderr",
+                  "takesValue": false
+                },
+                {
+                  "name": "--help",
+                  "description": "Display help",
+                  "takesValue": false
+                },
+                {
+                  "name": "-h",
+                  "description": "Display help",
+                  "takesValue": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "functions",
+          "description": "Manage Supabase Edge functions",
+          "options": [
+            {
+              "name": "--debug",
+              "description": "Output debug logs to stderr",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Display help",
+              "takesValue": false
+            }
+          ],
+          "subcommands": [
+            {
+              "name": "delete",
+              "description": "Delete a Function from Supabase",
+              "options": [
+                {
+                  "name": "--debug",
+                  "description": "Output debug logs to stderr",
+                  "takesValue": false
+                },
+                {
+                  "name": "--help",
+                  "description": "Display help",
+                  "takesValue": false
+                },
+                {
+                  "name": "-h",
+                  "description": "Display help",
+                  "takesValue": false
+                }
+              ]
+            },
+            {
+              "name": "deploy",
+              "description": "Deploy a Function to Supabase",
+              "options": [
+                {
+                  "name": "--debug",
+                  "description": "Output debug logs to stderr",
+                  "takesValue": false
+                },
+                {
+                  "name": "--help",
+                  "description": "Display help",
+                  "takesValue": false
+                },
+                {
+                  "name": "-h",
+                  "description": "Display help",
+                  "takesValue": false
+                }
+              ]
+            },
+            {
+              "name": "new",
+              "description": "Create a new Function locally",
+              "options": [
+                {
+                  "name": "--debug",
+                  "description": "Output debug logs to stderr",
+                  "takesValue": false
+                },
+                {
+                  "name": "--help",
+                  "description": "Display help",
+                  "takesValue": false
+                },
+                {
+                  "name": "-h",
+                  "description": "Display help",
+                  "takesValue": false
+                }
+              ]
+            },
+            {
+              "name": "serve",
+              "description": "Serve a Function locally",
+              "options": [
+                {
+                  "name": "--debug",
+                  "description": "Output debug logs to stderr",
+                  "takesValue": false
+                },
+                {
+                  "name": "--help",
+                  "description": "Display help",
+                  "takesValue": false
+                },
+                {
+                  "name": "-h",
+                  "description": "Display help",
+                  "takesValue": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "gen",
+          "description": "Run code generation tools",
+          "options": [
+            {
+              "name": "--debug",
+              "description": "Output debug logs to stderr",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Display help",
+              "takesValue": false
+            }
+          ],
+          "subcommands": [
+            {
+              "name": "types",
+              "description": "Generate types from Postgres schema",
+              "options": [
+                {
+                  "name": "--debug",
+                  "description": "Output debug logs to stderr",
+                  "takesValue": false
+                },
+                {
+                  "name": "--help",
+                  "description": "Display help",
+                  "takesValue": false
+                },
+                {
+                  "name": "-h",
+                  "description": "Display help",
+                  "takesValue": false
+                }
+              ],
+              "subcommands": [
+                {
+                  "name": "typescript",
+                  "description": "Generate types for TypeScript",
+                  "options": [
+                    {
+                      "name": "--debug",
+                      "description": "Output debug logs to stderr",
+                      "takesValue": false
+                    },
+                    {
+                      "name": "--help",
+                      "description": "Display help",
+                      "takesValue": false
+                    },
+                    {
+                      "name": "-h",
+                      "description": "Display help",
+                      "takesValue": false
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "init",
+          "description": "Initialize a local project",
+          "options": [
+            {
+              "name": "--debug",
+              "description": "Output debug logs to stderr",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Display help",
+              "takesValue": false
+            }
+          ]
+        },
+        {
+          "name": "link",
+          "description": "Link to a Supabase project",
+          "options": [
+            {
+              "name": "--debug",
+              "description": "Output debug logs to stderr",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Display help",
+              "takesValue": false
+            }
+          ]
+        },
+        {
+          "name": "login",
+          "description": "Authenticate using an access token",
+          "options": [
+            {
+              "name": "--debug",
+              "description": "Output debug logs to stderr",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Display help",
+              "takesValue": false
+            }
+          ]
+        },
+        {
+          "name": "migration",
+          "description": "Manage database migration scripts",
+          "options": [
+            {
+              "name": "--debug",
+              "description": "Output debug logs to stderr",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Display help",
+              "takesValue": false
+            }
+          ],
+          "subcommands": [
+            {
+              "name": "list",
+              "description": "List local and remote migrations",
+              "options": [
+                {
+                  "name": "--debug",
+                  "description": "Output debug logs to stderr",
+                  "takesValue": false
+                },
+                {
+                  "name": "--help",
+                  "description": "Display help",
+                  "takesValue": false
+                },
+                {
+                  "name": "-h",
+                  "description": "Display help",
+                  "takesValue": false
+                }
+              ]
+            },
+            {
+              "name": "new",
+              "description": "Create an empty migration script",
+              "options": [
+                {
+                  "name": "--debug",
+                  "description": "Output debug logs to stderr",
+                  "takesValue": false
+                },
+                {
+                  "name": "--help",
+                  "description": "Display help",
+                  "takesValue": false
+                },
+                {
+                  "name": "-h",
+                  "description": "Display help",
+                  "takesValue": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "orgs",
+          "description": "Manage Supabase organizations",
+          "options": [
+            {
+              "name": "--debug",
+              "description": "Output debug logs to stderr",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Display help",
+              "takesValue": false
+            }
+          ],
+          "subcommands": [
+            {
+              "name": "list",
+              "description": "List all organizations",
+              "options": [
+                {
+                  "name": "--debug",
+                  "description": "Output debug logs to stderr",
+                  "takesValue": false
+                },
+                {
+                  "name": "--help",
+                  "description": "Display help",
+                  "takesValue": false
+                },
+                {
+                  "name": "-h",
+                  "description": "Display help",
+                  "takesValue": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "projects",
+          "description": "Manage Supabase projects",
+          "options": [
+            {
+              "name": "--debug",
+              "description": "Output debug logs to stderr",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Display help",
+              "takesValue": false
+            }
+          ],
+          "subcommands": [
+            {
+              "name": "create",
+              "description": "Create a project on Supabase",
+              "options": [
+                {
+                  "name": "--debug",
+                  "description": "Output debug logs to stderr",
+                  "takesValue": false
+                },
+                {
+                  "name": "--help",
+                  "description": "Display help",
+                  "takesValue": false
+                },
+                {
+                  "name": "-h",
+                  "description": "Display help",
+                  "takesValue": false
+                }
+              ]
+            },
+            {
+              "name": "list",
+              "description": "List all Supabase projects",
+              "options": [
+                {
+                  "name": "--debug",
+                  "description": "Output debug logs to stderr",
+                  "takesValue": false
+                },
+                {
+                  "name": "--help",
+                  "description": "Display help",
+                  "takesValue": false
+                },
+                {
+                  "name": "-h",
+                  "description": "Display help",
+                  "takesValue": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "secrets",
+          "description": "Manage Supabase secrets",
+          "options": [
+            {
+              "name": "--debug",
+              "description": "Output debug logs to stderr",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Display help",
+              "takesValue": false
+            }
+          ],
+          "subcommands": [
+            {
+              "name": "list",
+              "description": "List all secrets on Supabase",
+              "options": [
+                {
+                  "name": "--debug",
+                  "description": "Output debug logs to stderr",
+                  "takesValue": false
+                },
+                {
+                  "name": "--help",
+                  "description": "Display help",
+                  "takesValue": false
+                },
+                {
+                  "name": "-h",
+                  "description": "Display help",
+                  "takesValue": false
+                }
+              ]
+            },
+            {
+              "name": "set",
+              "description": "Set a secret(s) on Supabase",
+              "options": [
+                {
+                  "name": "--debug",
+                  "description": "Output debug logs to stderr",
+                  "takesValue": false
+                },
+                {
+                  "name": "--help",
+                  "description": "Display help",
+                  "takesValue": false
+                },
+                {
+                  "name": "-h",
+                  "description": "Display help",
+                  "takesValue": false
+                }
+              ]
+            },
+            {
+              "name": "unset",
+              "description": "Unset a secret(s) on Supabase",
+              "options": [
+                {
+                  "name": "--debug",
+                  "description": "Output debug logs to stderr",
+                  "takesValue": false
+                },
+                {
+                  "name": "--help",
+                  "description": "Display help",
+                  "takesValue": false
+                },
+                {
+                  "name": "-h",
+                  "description": "Display help",
+                  "takesValue": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "start",
+          "description": "Start containers for Supabase local development",
+          "options": [
+            {
+              "name": "--debug",
+              "description": "Output debug logs to stderr",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Display help",
+              "takesValue": false
+            }
+          ]
+        },
+        {
+          "name": "status",
+          "description": "Show status of local Supabase containers",
+          "options": [
+            {
+              "name": "--debug",
+              "description": "Output debug logs to stderr",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Display help",
+              "takesValue": false
+            }
+          ]
+        },
+        {
+          "name": "stop",
+          "description": "Stop all local Supabase containers",
+          "options": [
+            {
+              "name": "--debug",
+              "description": "Output debug logs to stderr",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Display help",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Display help",
+              "takesValue": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

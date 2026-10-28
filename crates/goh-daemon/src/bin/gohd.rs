@@ -5,7 +5,7 @@ use std::process::ExitCode;
 use std::sync::Arc;
 
 use goh_core::Engine;
-use goh_daemon::{paths, server::Server, specs};
+use goh_daemon::{log, paths, server::Server, specs};
 
 fn main() -> ExitCode {
     let mut socket = paths::socket_path();
@@ -24,9 +24,12 @@ fn main() -> ExitCode {
 
     match paths::bind(&socket) {
         Ok(Some(listener)) => {
+            log::init();
             let (loaded, warnings) = specs::load(&spec_dir);
+            log::line(&format!("gohd {} (pid {}) started with {} commands", env!("CARGO_PKG_VERSION"), std::process::id(), loaded.len()));
             for w in warnings {
                 eprintln!("gohd: {w}");
+                log::line(&format!("spec warning: {w}"));
             }
             Arc::new(Server::new(Engine::new(loaded.into_iter().map(|l| l.spec).collect()))).serve(listener);
             ExitCode::SUCCESS
@@ -34,6 +37,8 @@ fn main() -> ExitCode {
         Ok(None) => ExitCode::SUCCESS, // already running
         Err(e) => {
             eprintln!("gohd: {}: {e}", socket.display());
+            log::init();
+            log::line(&format!("could not bind the socket: {e}"));
             ExitCode::FAILURE
         }
     }

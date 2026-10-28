@@ -121,6 +121,22 @@ pub fn forget(file: &Path) -> std::io::Result<bool> {
     }
 }
 
+/// The program each recorded line starts with and how often it was run, most-run first (ties by name). A leading
+/// `VAR=value` assignment is skipped; a word that is not a plain program name (a path, a subshell) is left out.
+pub fn programs(record: &str) -> Vec<(String, usize)> {
+    let mut counts: HashMap<&str, usize> = HashMap::new();
+    for line in record.lines() {
+        let Some(command) = line.splitn(3, '\t').nth(2) else { continue };
+        let Some(word) = command.split_whitespace().find(|w| !w.contains('=')) else { continue };
+        if word.chars().all(|c| c.is_ascii_alphanumeric() || matches!(c, '-' | '_' | '.' | '+')) && !word.starts_with(['-', '.']) {
+            *counts.entry(word).or_default() += 1;
+        }
+    }
+    let mut all: Vec<(String, usize)> = counts.into_iter().map(|(w, n)| (w.to_string(), n)).collect();
+    all.sort_by(|a, b| b.1.cmp(&a.1).then_with(|| a.0.cmp(&b.0)));
+    all
+}
+
 /// `git add .` -> `git add`; `cd src` -> `cd`; `cargo test -p x` -> `cargo test`: the part of a line that says what
 /// kind of command it is, so that "what follows `git add`" does not depend on its arguments.
 pub fn command_key(line: &str) -> String {
@@ -368,6 +384,12 @@ impl RunsCache {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn programs_are_counted_from_the_first_word_of_each_line() {
+        let record = "1\t/a\tgit status\n2\t/a\tFOO=1 jq . x\n3\t/a\tgit add .\n4\t/a\t./run.sh\n5\t/a\tjq -r .a\n6\t/a\tzz\nbroken line\n";
+        assert_eq!(programs(record), vec![("git".into(), 2), ("jq".into(), 2), ("zz".into(), 1)]);
+    }
+
     use super::*;
 
     const NOW: u64 = 10_000_000;

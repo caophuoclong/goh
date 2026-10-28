@@ -6,6 +6,7 @@ pub mod config;
 pub mod control;
 pub mod doctor;
 pub mod helpgen;
+pub mod log;
 mod packages;
 pub mod paths;
 pub mod probe;

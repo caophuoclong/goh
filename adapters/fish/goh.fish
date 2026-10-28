@@ -11,6 +11,8 @@
 
 set -q GOH_CTL; or set -g GOH_CTL goh
 set -g _goh_session fish-$fish_pid-(random)
+# Lets `goh doctor` tell whether this very shell loaded the adapter (it compares the pid with its parent's).
+set -gx GOH_ADAPTER fish:$fish_pid
 
 function __goh_complete
     set -l buffer (commandline -cp)

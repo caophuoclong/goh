@@ -55,6 +55,15 @@ pub fn complete(sock: &Path, session: &str, cwd: &str, buffer: &str, cursor_byte
     Ok((s, generation, reply))
 }
 
+/// The daemon's version and pid. A daemon from before `Hello` closes the connection, which is an `Err` here.
+pub fn hello(sock: &Path) -> io::Result<(String, u32)> {
+    let mut s = connect(sock)?;
+    match round_trip(&mut s, &Request::Hello { v: 1 })? {
+        Reply::Hello { version, pid, .. } => Ok((version, pid)),
+        _ => Err(io::Error::other("unexpected reply")),
+    }
+}
+
 /// Tell the daemon what this shell knows. Frames are small, so the lists are cut to fit.
 pub fn context(sock: &Path, session: &str, aliases: Vec<[String; 2]>, functions: Vec<String>, builtins: Vec<String>, path: String, env: Vec<String>) -> io::Result<()> {
     let mut req = Request::Context { v: 1, session_id: session.into(), aliases, functions, builtins, path, env };

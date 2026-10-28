@@ -1,0 +1,1206 @@
+{
+  "schemaVersion": 1,
+  "name": "apt",
+  "description": "Package manager for Debian-based Linux distributions",
+  "options": [
+    {
+      "name": "-h",
+      "description": "Print help message and exit",
+      "takesValue": false
+    },
+    {
+      "name": "--help",
+      "description": "Print help message and exit",
+      "takesValue": false
+    },
+    {
+      "name": "-v",
+      "description": "Print version information and exit",
+      "takesValue": false
+    },
+    {
+      "name": "--version",
+      "description": "Print version information and exit",
+      "takesValue": false
+    }
+  ],
+  "subcommands": [
+    {
+      "name": "update",
+      "description": "Update the package database",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Print help message and exit",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Print help message and exit",
+          "takesValue": false
+        },
+        {
+          "name": "-v",
+          "description": "Print version information and exit",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Print version information and exit",
+          "takesValue": false
+        },
+        {
+          "name": "-y",
+          "description": "Assume yes to all prompts",
+          "takesValue": false
+        },
+        {
+          "name": "--assume-no",
+          "description": "Assume no to all prompts",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "upgrade",
+      "description": "Install all available upgrades",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Print help message and exit",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Print help message and exit",
+          "takesValue": false
+        },
+        {
+          "name": "-v",
+          "description": "Print version information and exit",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Print version information and exit",
+          "takesValue": false
+        },
+        {
+          "name": "-d",
+          "description": "For any operation that would download packages, download them, but do nothing else",
+          "takesValue": false
+        },
+        {
+          "name": "--download-only",
+          "description": "For any operation that would download packages, download them, but do nothing else",
+          "takesValue": false
+        },
+        {
+          "name": "--no-download",
+          "description": "Do not download packages, attempt to use already downloaded packages",
+          "takesValue": false
+        },
+        {
+          "name": "-y",
+          "description": "Assume yes to all prompts",
+          "takesValue": false
+        },
+        {
+          "name": "--assume-no",
+          "description": "Assume no to all prompts",
+          "takesValue": false
+        },
+        {
+          "name": "-s",
+          "description": "Simulate running this command and show it's output, without actually changing anything",
+          "takesValue": false
+        },
+        {
+          "name": "--simulate",
+          "description": "Simulate running this command and show it's output, without actually changing anything",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "package",
+          "description": "Package(s) to upgrade",
+          "isVariadic": true,
+          "isOptional": true
+        }
+      ]
+    },
+    {
+      "name": "full-upgrade",
+      "description": "Install available upgrades, removing currently installed packages if needed to upgrade the system as a whole",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Print help message and exit",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Print help message and exit",
+          "takesValue": false
+        },
+        {
+          "name": "-v",
+          "description": "Print version information and exit",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Print version information and exit",
+          "takesValue": false
+        },
+        {
+          "name": "-d",
+          "description": "For any operation that would download packages, download them, but do nothing else",
+          "takesValue": false
+        },
+        {
+          "name": "--download-only",
+          "description": "For any operation that would download packages, download them, but do nothing else",
+          "takesValue": false
+        },
+        {
+          "name": "--no-download",
+          "description": "Do not download packages, attempt to use already downloaded packages",
+          "takesValue": false
+        },
+        {
+          "name": "-y",
+          "description": "Assume yes to all prompts",
+          "takesValue": false
+        },
+        {
+          "name": "--assume-no",
+          "description": "Assume no to all prompts",
+          "takesValue": false
+        },
+        {
+          "name": "-s",
+          "description": "Simulate running this command and show it's output, without actually changing anything",
+          "takesValue": false
+        },
+        {
+          "name": "--simulate",
+          "description": "Simulate running this command and show it's output, without actually changing anything",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "install",
+      "description": "Install package(s)",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Print help message and exit",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Print help message and exit",
+          "takesValue": false
+        },
+        {
+          "name": "-v",
+          "description": "Print version information and exit",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Print version information and exit",
+          "takesValue": false
+        },
+        {
+          "name": "-d",
+          "description": "For any operation that would download packages, download them, but do nothing else",
+          "takesValue": false
+        },
+        {
+          "name": "--download-only",
+          "description": "For any operation that would download packages, download them, but do nothing else",
+          "takesValue": false
+        },
+        {
+          "name": "--no-download",
+          "description": "Do not download packages, attempt to use already downloaded packages",
+          "takesValue": false
+        },
+        {
+          "name": "-y",
+          "description": "Assume yes to all prompts",
+          "takesValue": false
+        },
+        {
+          "name": "--assume-no",
+          "description": "Assume no to all prompts",
+          "takesValue": false
+        },
+        {
+          "name": "-s",
+          "description": "Simulate running this command and show it's output, without actually changing anything",
+          "takesValue": false
+        },
+        {
+          "name": "--simulate",
+          "description": "Simulate running this command and show it's output, without actually changing anything",
+          "takesValue": false
+        },
+        {
+          "name": "--reinstall",
+          "description": "Reinstall the package if it is already installed",
+          "takesValue": false
+        },
+        {
+          "name": "-f",
+          "description": "Attempt to fix broken packages",
+          "takesValue": false
+        },
+        {
+          "name": "--fix-broken",
+          "description": "Attempt to fix broken packages",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "package",
+          "description": "The package you want to install",
+          "isVariadic": true
+        }
+      ]
+    },
+    {
+      "name": "reinstall",
+      "description": "Reinstall package(s)",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Print help message and exit",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Print help message and exit",
+          "takesValue": false
+        },
+        {
+          "name": "-v",
+          "description": "Print version information and exit",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Print version information and exit",
+          "takesValue": false
+        },
+        {
+          "name": "-y",
+          "description": "Assume yes to all prompts",
+          "takesValue": false
+        },
+        {
+          "name": "--assume-no",
+          "description": "Assume no to all prompts",
+          "takesValue": false
+        },
+        {
+          "name": "-s",
+          "description": "Simulate running this command and show it's output, without actually changing anything",
+          "takesValue": false
+        },
+        {
+          "name": "--simulate",
+          "description": "Simulate running this command and show it's output, without actually changing anything",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "package",
+          "description": "The package you want to reinstall",
+          "isVariadic": true
+        }
+      ]
+    },
+    {
+      "name": "remove",
+      "description": "Remove package(s)",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Print help message and exit",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Print help message and exit",
+          "takesValue": false
+        },
+        {
+          "name": "-v",
+          "description": "Print version information and exit",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Print version information and exit",
+          "takesValue": false
+        },
+        {
+          "name": "-y",
+          "description": "Assume yes to all prompts",
+          "takesValue": false
+        },
+        {
+          "name": "--assume-no",
+          "description": "Assume no to all prompts",
+          "takesValue": false
+        },
+        {
+          "name": "-s",
+          "description": "Simulate running this command and show it's output, without actually changing anything",
+          "takesValue": false
+        },
+        {
+          "name": "--simulate",
+          "description": "Simulate running this command and show it's output, without actually changing anything",
+          "takesValue": false
+        },
+        {
+          "name": "-f",
+          "description": "Attempt to fix broken packages",
+          "takesValue": false
+        },
+        {
+          "name": "--fix-broken",
+          "description": "Attempt to fix broken packages",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "package",
+          "description": "The package you want to remove",
+          "isVariadic": true
+        }
+      ]
+    },
+    {
+      "name": "purge",
+      "description": "Remove package(s) and their configuration files",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Print help message and exit",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Print help message and exit",
+          "takesValue": false
+        },
+        {
+          "name": "-v",
+          "description": "Print version information and exit",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Print version information and exit",
+          "takesValue": false
+        },
+        {
+          "name": "-y",
+          "description": "Assume yes to all prompts",
+          "takesValue": false
+        },
+        {
+          "name": "--assume-no",
+          "description": "Assume no to all prompts",
+          "takesValue": false
+        },
+        {
+          "name": "-s",
+          "description": "Simulate running this command and show it's output, without actually changing anything",
+          "takesValue": false
+        },
+        {
+          "name": "--simulate",
+          "description": "Simulate running this command and show it's output, without actually changing anything",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "package",
+          "description": "The package you want to purge",
+          "isVariadic": true
+        }
+      ]
+    },
+    {
+      "name": "autoremove",
+      "description": "Remove unused packages",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Print help message and exit",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Print help message and exit",
+          "takesValue": false
+        },
+        {
+          "name": "-v",
+          "description": "Print version information and exit",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Print version information and exit",
+          "takesValue": false
+        },
+        {
+          "name": "-y",
+          "description": "Assume yes to all prompts",
+          "takesValue": false
+        },
+        {
+          "name": "--assume-no",
+          "description": "Assume no to all prompts",
+          "takesValue": false
+        },
+        {
+          "name": "-s",
+          "description": "Simulate running this command and show it's output, without actually changing anything",
+          "takesValue": false
+        },
+        {
+          "name": "--simulate",
+          "description": "Simulate running this command and show it's output, without actually changing anything",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "auto-remove",
+      "description": "Remove unused packages",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Print help message and exit",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Print help message and exit",
+          "takesValue": false
+        },
+        {
+          "name": "-v",
+          "description": "Print version information and exit",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Print version information and exit",
+          "takesValue": false
+        },
+        {
+          "name": "-y",
+          "description": "Assume yes to all prompts",
+          "takesValue": false
+        },
+        {
+          "name": "--assume-no",
+          "description": "Assume no to all prompts",
+          "takesValue": false
+        },
+        {
+          "name": "-s",
+          "description": "Simulate running this command and show it's output, without actually changing anything",
+          "takesValue": false
+        },
+        {
+          "name": "--simulate",
+          "description": "Simulate running this command and show it's output, without actually changing anything",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "list",
+      "description": "List packages",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Print help message and exit",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Print help message and exit",
+          "takesValue": false
+        },
+        {
+          "name": "-v",
+          "description": "Print version information and exit",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Print version information and exit",
+          "takesValue": false
+        },
+        {
+          "name": "--installed",
+          "description": "List installed packages",
+          "takesValue": false
+        },
+        {
+          "name": "--upgradable",
+          "description": "List upgradable packages",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "search",
+      "description": "Search for packages",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Print help message and exit",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Print help message and exit",
+          "takesValue": false
+        },
+        {
+          "name": "-v",
+          "description": "Print version information and exit",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Print version information and exit",
+          "takesValue": false
+        },
+        {
+          "name": "-y",
+          "description": "Assume yes to all prompts",
+          "takesValue": false
+        },
+        {
+          "name": "--assume-no",
+          "description": "Assume no to all prompts",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "query",
+          "description": "The query to search for"
+        }
+      ]
+    },
+    {
+      "name": "show",
+      "description": "Show package details",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Print help message and exit",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Print help message and exit",
+          "takesValue": false
+        },
+        {
+          "name": "-v",
+          "description": "Print version information and exit",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Print version information and exit",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "package",
+          "description": "The package you want to show"
+        }
+      ]
+    },
+    {
+      "name": "satisfy",
+      "description": "Satisfy package dependencies",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Print help message and exit",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Print help message and exit",
+          "takesValue": false
+        },
+        {
+          "name": "-v",
+          "description": "Print version information and exit",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Print version information and exit",
+          "takesValue": false
+        },
+        {
+          "name": "-d",
+          "description": "For any operation that would download packages, download them, but do nothing else",
+          "takesValue": false
+        },
+        {
+          "name": "--download-only",
+          "description": "For any operation that would download packages, download them, but do nothing else",
+          "takesValue": false
+        },
+        {
+          "name": "--no-download",
+          "description": "Do not download packages, attempt to use already downloaded packages",
+          "takesValue": false
+        },
+        {
+          "name": "-y",
+          "description": "Assume yes to all prompts",
+          "takesValue": false
+        },
+        {
+          "name": "--assume-no",
+          "description": "Assume no to all prompts",
+          "takesValue": false
+        },
+        {
+          "name": "-s",
+          "description": "Simulate running this command and show it's output, without actually changing anything",
+          "takesValue": false
+        },
+        {
+          "name": "--simulate",
+          "description": "Simulate running this command and show it's output, without actually changing anything",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "package",
+          "description": "The package you want to satisfy",
+          "isVariadic": true
+        }
+      ]
+    },
+    {
+      "name": "clean",
+      "description": "Remove downloaded package files",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Print help message and exit",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Print help message and exit",
+          "takesValue": false
+        },
+        {
+          "name": "-v",
+          "description": "Print version information and exit",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Print version information and exit",
+          "takesValue": false
+        },
+        {
+          "name": "-y",
+          "description": "Assume yes to all prompts",
+          "takesValue": false
+        },
+        {
+          "name": "--assume-no",
+          "description": "Assume no to all prompts",
+          "takesValue": false
+        },
+        {
+          "name": "-s",
+          "description": "Simulate running this command and show it's output, without actually changing anything",
+          "takesValue": false
+        },
+        {
+          "name": "--simulate",
+          "description": "Simulate running this command and show it's output, without actually changing anything",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "edit-sources",
+      "description": "Edit the list of package sources",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Print help message and exit",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Print help message and exit",
+          "takesValue": false
+        },
+        {
+          "name": "-v",
+          "description": "Print version information and exit",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Print version information and exit",
+          "takesValue": false
+        },
+        {
+          "name": "-y",
+          "description": "Assume yes to all prompts",
+          "takesValue": false
+        },
+        {
+          "name": "--assume-no",
+          "description": "Assume no to all prompts",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "source",
+      "description": "Fetch package source files",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Print help message and exit",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Print help message and exit",
+          "takesValue": false
+        },
+        {
+          "name": "-v",
+          "description": "Print version information and exit",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Print version information and exit",
+          "takesValue": false
+        },
+        {
+          "name": "-d",
+          "description": "For any operation that would download packages, download them, but do nothing else",
+          "takesValue": false
+        },
+        {
+          "name": "--download-only",
+          "description": "For any operation that would download packages, download them, but do nothing else",
+          "takesValue": false
+        },
+        {
+          "name": "--no-download",
+          "description": "Do not download packages, attempt to use already downloaded packages",
+          "takesValue": false
+        },
+        {
+          "name": "-y",
+          "description": "Assume yes to all prompts",
+          "takesValue": false
+        },
+        {
+          "name": "--assume-no",
+          "description": "Assume no to all prompts",
+          "takesValue": false
+        },
+        {
+          "name": "-s",
+          "description": "Simulate running this command and show it's output, without actually changing anything",
+          "takesValue": false
+        },
+        {
+          "name": "--simulate",
+          "description": "Simulate running this command and show it's output, without actually changing anything",
+          "takesValue": false
+        },
+        {
+          "name": "--compile",
+          "description": "Compile the package to a binary using dpkg-buildpackage",
+          "takesValue": false
+        },
+        {
+          "name": "--only-source",
+          "takesValue": false
+        },
+        {
+          "name": "--host-architecture",
+          "description": "The architecture to build for",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "architecture",
+              "description": "The architecture to build for"
+            }
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "package",
+          "description": "The package you want to get source files for",
+          "isVariadic": true
+        }
+      ]
+    },
+    {
+      "name": "build-dep",
+      "description": "Install/remove packages in an attempt to satisfy the build dependencies for a source package",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Print help message and exit",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Print help message and exit",
+          "takesValue": false
+        },
+        {
+          "name": "-v",
+          "description": "Print version information and exit",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Print version information and exit",
+          "takesValue": false
+        },
+        {
+          "name": "-d",
+          "description": "For any operation that would download packages, download them, but do nothing else",
+          "takesValue": false
+        },
+        {
+          "name": "--download-only",
+          "description": "For any operation that would download packages, download them, but do nothing else",
+          "takesValue": false
+        },
+        {
+          "name": "--no-download",
+          "description": "Do not download packages, attempt to use already downloaded packages",
+          "takesValue": false
+        },
+        {
+          "name": "-y",
+          "description": "Assume yes to all prompts",
+          "takesValue": false
+        },
+        {
+          "name": "--assume-no",
+          "description": "Assume no to all prompts",
+          "takesValue": false
+        },
+        {
+          "name": "-s",
+          "description": "Simulate running this command and show it's output, without actually changing anything",
+          "takesValue": false
+        },
+        {
+          "name": "--simulate",
+          "description": "Simulate running this command and show it's output, without actually changing anything",
+          "takesValue": false
+        },
+        {
+          "name": "--host-architecture",
+          "description": "The architecture to build for",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "architecture",
+              "description": "The architecture to build for"
+            }
+          ]
+        },
+        {
+          "name": "--only-source",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "package",
+          "description": "The package you want to build dependencies for"
+        }
+      ]
+    },
+    {
+      "name": "download",
+      "description": "Download package binary into the current directory",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Print help message and exit",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Print help message and exit",
+          "takesValue": false
+        },
+        {
+          "name": "-v",
+          "description": "Print version information and exit",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Print version information and exit",
+          "takesValue": false
+        },
+        {
+          "name": "-d",
+          "description": "For any operation that would download packages, download them, but do nothing else",
+          "takesValue": false
+        },
+        {
+          "name": "--download-only",
+          "description": "For any operation that would download packages, download them, but do nothing else",
+          "takesValue": false
+        },
+        {
+          "name": "--no-download",
+          "description": "Do not download packages, attempt to use already downloaded packages",
+          "takesValue": false
+        },
+        {
+          "name": "-y",
+          "description": "Assume yes to all prompts",
+          "takesValue": false
+        },
+        {
+          "name": "--assume-no",
+          "description": "Assume no to all prompts",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "package",
+          "description": "The package you want to download"
+        }
+      ]
+    },
+    {
+      "name": "autoclean",
+      "description": "Like clean, but only removes package files that can no longer be downloaded",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Print help message and exit",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Print help message and exit",
+          "takesValue": false
+        },
+        {
+          "name": "-v",
+          "description": "Print version information and exit",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Print version information and exit",
+          "takesValue": false
+        },
+        {
+          "name": "-d",
+          "description": "For any operation that would download packages, download them, but do nothing else",
+          "takesValue": false
+        },
+        {
+          "name": "--download-only",
+          "description": "For any operation that would download packages, download them, but do nothing else",
+          "takesValue": false
+        },
+        {
+          "name": "--no-download",
+          "description": "Do not download packages, attempt to use already downloaded packages",
+          "takesValue": false
+        },
+        {
+          "name": "-y",
+          "description": "Assume yes to all prompts",
+          "takesValue": false
+        },
+        {
+          "name": "--assume-no",
+          "description": "Assume no to all prompts",
+          "takesValue": false
+        },
+        {
+          "name": "-s",
+          "description": "Simulate running this command and show it's output, without actually changing anything",
+          "takesValue": false
+        },
+        {
+          "name": "--simulate",
+          "description": "Simulate running this command and show it's output, without actually changing anything",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "auto-clean",
+      "description": "Like clean, but only removes package files that can no longer be downloaded",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Print help message and exit",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Print help message and exit",
+          "takesValue": false
+        },
+        {
+          "name": "-v",
+          "description": "Print version information and exit",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Print version information and exit",
+          "takesValue": false
+        },
+        {
+          "name": "-d",
+          "description": "For any operation that would download packages, download them, but do nothing else",
+          "takesValue": false
+        },
+        {
+          "name": "--download-only",
+          "description": "For any operation that would download packages, download them, but do nothing else",
+          "takesValue": false
+        },
+        {
+          "name": "--no-download",
+          "description": "Do not download packages, attempt to use already downloaded packages",
+          "takesValue": false
+        },
+        {
+          "name": "-y",
+          "description": "Assume yes to all prompts",
+          "takesValue": false
+        },
+        {
+          "name": "--assume-no",
+          "description": "Assume no to all prompts",
+          "takesValue": false
+        },
+        {
+          "name": "-s",
+          "description": "Simulate running this command and show it's output, without actually changing anything",
+          "takesValue": false
+        },
+        {
+          "name": "--simulate",
+          "description": "Simulate running this command and show it's output, without actually changing anything",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "changelog",
+      "description": "Show the changelog for a package",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Print help message and exit",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Print help message and exit",
+          "takesValue": false
+        },
+        {
+          "name": "-v",
+          "description": "Print version information and exit",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Print version information and exit",
+          "takesValue": false
+        },
+        {
+          "name": "-d",
+          "description": "For any operation that would download packages, download them, but do nothing else",
+          "takesValue": false
+        },
+        {
+          "name": "--download-only",
+          "description": "For any operation that would download packages, download them, but do nothing else",
+          "takesValue": false
+        },
+        {
+          "name": "--no-download",
+          "description": "Do not download packages, attempt to use already downloaded packages",
+          "takesValue": false
+        },
+        {
+          "name": "-y",
+          "description": "Assume yes to all prompts",
+          "takesValue": false
+        },
+        {
+          "name": "--assume-no",
+          "description": "Assume no to all prompts",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "package",
+          "description": "The package you want to show the changelog for",
+          "isVariadic": true
+        }
+      ]
+    }
+  ]
+}

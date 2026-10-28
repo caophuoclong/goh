@@ -1,5 +1,5 @@
 //! `goh`: the command line for goh. Utility commands (run `goh help`):
-//!   goh start | stop | restart | reload | status | doctor [--fix] | init SHELL | specs | theme | version | help
+//!   goh start | stop | restart | reload | status | logs | doctor [--fix] [--test] [--report] | init SHELL | specs | theme | version | help
 //! The rest is what the shell adapters call.
 //!
 //! Adapter helper.
@@ -16,9 +16,10 @@
 //!          stderr explains that these are not the running daemon's loaded specs
 //!   goh theme [--probe] [--json]
 //!       -> resolved design tokens as `key value` lines (or JSON); --probe asks the terminal for its colours
-//!   goh doctor [--fix]
-//!       -> checks binaries, daemon, specs, terminal and the macOS Accessibility permission;
-//!          --fix starts the daemon and opens System Settings > Accessibility; exit 1 if something is broken
+//!   goh doctor [--fix] [--test] [--report]
+//!       -> checks binaries, daemon (and its version), adapter, specs, terminal and the macOS Accessibility permission;
+//!          --fix starts or restarts the daemon and opens System Settings > Accessibility; --test times a real
+//!          completion; --report prints a paste-able summary; exit 1 if something is broken
 //! Exit 1 with no output on any failure; if the daemon is not running, start it for next time.
 
 use std::io::ErrorKind;
@@ -72,8 +73,11 @@ fn theme(args: Vec<String>) -> Option<()> {
 }
 
 /// Specs on disk for the next daemon start, not the running daemon's startup snapshot.
-fn list_specs() -> Option<()> {
+fn list_specs(args: &[String]) -> Option<()> {
     use goh_daemon::specs::{self, Source};
+    if args.iter().any(|a| a == "--missing") {
+        return missing_specs();
+    }
     let (loaded, _) = specs::load(&specs::default_dir());
     eprintln!("goh: specs for the next daemon start; running daemon may differ. Restart gohd after changes.");
     for l in loaded {
@@ -86,9 +90,70 @@ fn list_specs() -> Option<()> {
     Some(())
 }
 
-fn doctor(fix: bool) -> Option<()> {
-    use goh_daemon::doctor::{evaluate, gather, label, Level};
-    let checks = evaluate(&gather());
+/// Programs you have run that are on your PATH but have no spec, most-run first: what to write or import next.
+/// Reads the opt-in record of commands; without it there is nothing to count.
+fn missing_specs() -> Option<()> {
+    use goh_daemon::{runs, specs};
+    if !runs::enabled() {
+        eprintln!("goh: commands are not recorded, so there is nothing to count. Turn on `privacy.recordCommands` in `goh config` (it stays on this machine).");
+        return None;
+    }
+    let (loaded, _) = specs::load(&specs::default_dir());
+    let known: std::collections::HashSet<&str> = loaded.iter().map(|l| l.spec.name.as_str()).collect();
+    let path = std::env::var("PATH").unwrap_or_default();
+    let record = std::fs::read_to_string(runs::path()).unwrap_or_default();
+    let missing: Vec<_> = runs::programs(&record)
+        .into_iter()
+        .filter(|(name, _)| !known.contains(name.as_str()) && goh_daemon::setup::on_path(&path, name))
+        .collect();
+    if missing.is_empty() {
+        println!("every program you ran has a spec (or is not on your PATH)");
+    }
+    for (name, n) in missing.iter().take(30) {
+        println!("{n:>5}  {name}\t`goh spec gen {name}` writes one from its --help");
+    }
+    Some(())
+}
+
+/// `goh logs [-n N] [--path]`: the daemon's own log, which holds no command text.
+fn logs(rest: &[String]) -> bool {
+    let file = goh_daemon::log::path();
+    if rest.iter().any(|a| a == "--path") {
+        println!("{}", file.display());
+        return true;
+    }
+    let n = rest.iter().position(|a| a == "-n").and_then(|i| rest.get(i + 1)).and_then(|v| v.parse().ok()).unwrap_or(50);
+    match goh_daemon::log::tail(&file, n) {
+        Some(text) if !text.is_empty() => println!("{text}"),
+        _ => println!("no log yet ({}); the daemon writes one when it starts", file.display()),
+    }
+    true
+}
+
+fn doctor(args: &[String]) -> Option<()> {
+    use goh_daemon::doctor::{environment, evaluate, gather, label, report, round_trip, Level};
+    let (mut fix, mut test, mut want_report) = (false, false, false);
+    for a in args {
+        match a.as_str() {
+            "--fix" => fix = true,
+            "--test" => test = true,
+            "--report" => want_report = true,
+            other => {
+                eprintln!("goh: unknown option `{other}`; usage: goh doctor [--fix] [--test] [--report]");
+                return None;
+            }
+        }
+    }
+    let mut inputs = gather();
+    if test {
+        inputs.round_trip = Some(if inputs.daemon_running { round_trip(&paths::socket_path()) } else { goh_daemon::doctor::RoundTrip::Failed("gohd is not running".into()) });
+    }
+    let checks = evaluate(&inputs);
+    if want_report {
+        let home = std::env::var("HOME").ok();
+        print!("{}", report(env!("CARGO_PKG_VERSION"), &environment(), &checks, home.as_deref()));
+        return (!checks.iter().any(|c| c.level == Level::Fail)).then_some(());
+    }
     for c in &checks {
         let hint = if c.fix.is_some() && !fix { "  (fixable: goh doctor --fix)" } else { "" };
         println!("{}  {:<14} {}{hint}", label(c.level), c.name, c.detail);
@@ -110,7 +175,11 @@ usage: goh <command>
   stop              stop the daemon
   restart           stop, then start the daemon
   reload            restart the daemon so it re-reads your specs (~/.config/goh/specs), and the popups so they re-read the font
-  doctor [--fix]    check the setup; --fix starts the daemon and opens the macOS Accessibility settings
+  doctor [--fix] [--test] [--report]
+                    check the setup; --fix starts or restarts the daemon and opens the macOS Accessibility settings;
+                    --test asks the daemon to complete `git chec` and times it; --report prints the result for a bug
+                    report (versions and checks, your home folder shown as ~, no command text)
+  logs [-n N] [--path]   the daemon's log (starts, spec warnings, refused connections, panics; never what you typed)
   setup [--shell S] [--rc FILE] [--dry-run] [--uninstall]
                     add the adapter to your shell's startup file (zsh, bash, fish) in one marked block;
                     --uninstall removes exactly that block
@@ -120,7 +189,8 @@ usage: goh <command>
   spec gen <command> [--print] [--force]   write a spec for a command that has none, read from its --help
   config            open the settings file in your editor (created on first use)
   config path|show|env   where it is, what is in effect, what the shell adapters read
-  specs             list the completion specs (bundled and yours)
+  specs [--missing] list the completion specs (bundled and yours); --missing lists programs you ran that have none
+                    (needs `privacy.recordCommands`)
   theme [--probe] [--json]   show the resolved menu colours
   version           print the version
   help              this text
@@ -382,6 +452,7 @@ fn utility(sub: &str, rest: &[String]) -> Option<bool> {
             true
         }
         "status" => status(),
+        "logs" => logs(rest),
         "spec" => spec(rest),
         "setup" => setup(rest),
         "forget" => {
@@ -467,7 +538,7 @@ fn run() -> Option<()> {
         return theme(args.collect());
     }
     if sub == "doctor" {
-        return doctor(args.any(|a| a == "--fix"));
+        return doctor(&args.collect::<Vec<_>>());
     }
     if sub == "learn" {
         // Adapters call this when you accept a suggestion; nothing is written when learning is off.
@@ -491,7 +562,7 @@ fn run() -> Option<()> {
         return goh_daemon::visits::record(&goh_daemon::visits::path(), &args.next()?, goh_daemon::visits::now()).ok();
     }
     if sub == "specs" {
-        return list_specs();
+        return list_specs(&rest);
     }
     let (mut session, mut cwd, mut cursor, mut buffer, mut limit, mut live) = (None, None, None, None, 8usize, false);
     while let Some(flag) = args.next() {
