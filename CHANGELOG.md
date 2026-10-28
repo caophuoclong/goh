@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/caophuoclong/goh/compare/v1.3.0...v1.4.0) (2026-10-28)
+
+
+### Features
+
+* **zsh:** rework the inline menu with kind glyphs, warnings on every row and a detail line ([a701e4a](https://github.com/caophuoclong/goh/commit/a701e4a35a9f852a5b5f24d775cbebf25bdb1d68))
+
 ## [1.3.0](https://github.com/caophuoclong/goh/compare/v1.2.0...v1.3.0) (2026-10-28)
 
 
