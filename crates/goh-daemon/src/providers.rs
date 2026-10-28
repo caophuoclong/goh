@@ -235,6 +235,19 @@ mod tests {
         let p = dir.join("docker");
         std::fs::write(&p, format!("#!/bin/sh\n{body}\n")).unwrap();
         std::fs::set_permissions(&p, std::fs::Permissions::from_mode(0o700)).unwrap();
+        // Linux refuses to exec a file while any process holds a write descriptor to it, and a sibling test's
+        // fork can briefly hold a copy of the one just closed above. Wait it out here, not in `query`.
+        for _ in 0..200 {
+            match Command::new(&p).stdin(Stdio::null()).stdout(Stdio::null()).stderr(Stdio::null()).spawn() {
+                Err(e) if e.raw_os_error() == Some(libc::ETXTBSY) => std::thread::sleep(Duration::from_millis(10)),
+                Ok(mut child) => {
+                    let _ = child.kill();
+                    let _ = child.wait();
+                    break;
+                }
+                Err(_) => break,
+            }
+        }
         p
     }
 
