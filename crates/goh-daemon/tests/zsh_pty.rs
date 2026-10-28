@@ -767,6 +767,20 @@ fn enter_after_a_menu_redraws_the_complete_multiline_prompt() {
 }
 
 #[test]
+fn accepting_a_directory_redraws_the_line_in_place_under_a_multiline_prompt() {
+    let fx = Fixture::new(require_env!(), false);
+    fs::create_dir_all(fx.path("project/src")).unwrap();
+    let (mut sh, _) = overlay_shell(&fx, fake_popup().to_str().unwrap(), "overlay", "overlay");
+    sh.send("PS1=$'prompt-top\\n❯ '; _GOH_LIVE=on\n", 300);
+    sh.send("cd pro", 500);
+    let output = sh.send("\t", 800);
+    assert!(fx.state(&mut sh).starts_with("BUF[cd project/] CUR=11 on=1"), "the menu reopens for the directory");
+    // The line is one row and the overlay draws nothing in it: moving the cursor up lands on the prompt's first line.
+    assert!(!output.contains("\x1b[A"), "the line was redrawn above itself: {output:?}");
+    kill_socket_holder(&fx.socket);
+}
+
+#[test]
 fn enter_accepts_after_navigation_and_executes_an_untouched_menu() {
     let fx = Fixture::new(require_env!(), true);
     let mut sh = fx.shell(LIVE, true);
