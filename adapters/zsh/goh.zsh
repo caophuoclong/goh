@@ -156,7 +156,7 @@ _goh_on_decision() {
     fi
     _goh_last_decision=$line
     # Once per shell, and only where a popup was expected: the permission is the one thing the user can fix.
-    if (( ! _goh_told_permission )) && [[ $line == *'"display":"inline"'*Accessibility* && -z ${TMUX-}${STY-}${SSH_CONNECTION-} &&
+    if (( ! _goh_told_permission )) && [[ $line == *'"display":"inline"'*'not allowed to use the Accessibility'* && -z ${TMUX-}${STY-}${SSH_CONNECTION-} &&
          $TERM_PROGRAM == (iTerm.app|Apple_Terminal|vscode|claude-desktop) ]]; then
       _goh_told_permission=1
       zle -M "goh: this terminal is not allowed to use Accessibility, so menus are drawn inline. Run: goh doctor --fix"
