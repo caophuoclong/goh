@@ -41,7 +41,7 @@ impl Default for Providers {
 impl Providers {
     pub fn values(&self, provider: Provider, cwd: &Path) -> Vec<Suggestion> {
         let status = matches!(provider, Provider::GitChangedFiles | Provider::GitStagedFiles);
-        let project = status || crate::project::reads_project(provider);
+        let project = status || crate::project::reads_project(provider) || crate::packages::reads_cwd(provider);
         let key = (provider, if project { cwd.to_path_buf() } else { PathBuf::new() });
         // Never queue input behind another refresh; another session may be using a slow Docker host.
         let Ok(mut cache) = self.cache.try_lock() else {
@@ -51,8 +51,14 @@ impl Providers {
             return values.clone();
         }
         let local = matches!(provider, Provider::SshHosts | Provider::SshRemotes | Provider::KubeContexts | Provider::AwsProfiles);
-        if local || (project && !status) {
-            let values = if project { crate::project::values(provider, cwd) } else { crate::sources::values(provider, &self.home) };
+        if local || crate::packages::reads(provider) || (project && !status) {
+            let values = if crate::packages::reads(provider) {
+                crate::packages::values(provider, &self.home, cwd)
+            } else if project {
+                crate::project::values(provider, cwd)
+            } else {
+                crate::sources::values(provider, &self.home)
+            };
             cache.insert(key, (Instant::now(), values.clone()));
             return values;
         }
@@ -303,6 +309,17 @@ mod tests {
         };
         let names: Vec<_> = providers.values(Provider::FrecentDirs, Path::new("/")).into_iter().map(|v| v.name).collect();
         assert_eq!(names, [dir.path().to_str().unwrap()]);
+    }
+
+    #[test]
+    fn pip_packages_are_cached_per_project() {
+        let root = tempfile::tempdir().unwrap();
+        for (project, package) in [("one", "alpha-1.0.dist-info"), ("two", "beta-2.0.dist-info")] {
+            std::fs::create_dir_all(root.path().join(project).join(".venv/lib/python3.12/site-packages").join(package)).unwrap();
+        }
+        let providers = Providers { home: root.path().to_path_buf(), ..Providers::default() };
+        let names = |project: &str| providers.values(Provider::PipPackages, &root.path().join(project)).into_iter().map(|s| s.name).collect::<Vec<_>>();
+        assert_eq!((names("one"), names("two")), (vec!["alpha".to_string()], vec!["beta".to_string()]));
     }
 
     #[test]

@@ -3299,7 +3299,9 @@
       "description": "Uninstall packages",
       "args": [
         {
-          "name": "argument"
+          "name": "argument",
+          "provider": "pip-packages",
+          "isVariadic": true
         }
       ]
     },
@@ -3517,6 +3519,13 @@
         {
           "name": "--files",
           "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "package",
+          "isVariadic": true,
+          "provider": "pip-packages"
         }
       ]
     },

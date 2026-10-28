@@ -236,6 +236,21 @@ index, `git-changed-files` (modified and untracked, for `git add`, `restore`, `d
 cache as Docker; outside a repository or when git is missing they are empty. An argument may name several
 providers (`"providers": [...]`) and files may be narrowed with `"extensions": ["py"]` (directories always stay).
 
+Package managers get names from what they keep on disk, again without starting them (`brew` alone takes longer than a
+keystroke can wait). `brew-installed` lists the folders of the Cellar and Caskroom (`brew uninstall`, `upgrade`,
+`reinstall`, `list`, `pin`, `link`, `services start`); `brew-available` lists the names in Homebrew's own cache
+(`api/formula_names.txt` and `cask_names.txt` under `$HOMEBREW_CACHE`, refreshed by `brew update`) plus the formulae and
+casks of the taps you added (`brew install`, `info`, `home`). The prefix is `$HOMEBREW_PREFIX` or the first of
+`/opt/homebrew`, `/usr/local`, `/home/linuxbrew/.linuxbrew` that has a Cellar or Caskroom. `package-dependencies`
+lists the `dependencies`, `devDependencies` and `optionalDependencies` of the nearest `package.json` (`npm`, `pnpm`,
+`yarn`, `bun`: `uninstall`/`remove`/`rm`, `update`/`upgrade`); `cargo-dependencies` the plain dependency tables of the
+nearest `Cargo.toml` (`cargo remove`); `cargo-installed` the crates in `$CARGO_HOME/.crates2.json` (`cargo uninstall`);
+`pip-packages` the `*.dist-info` folders of the project's `.venv`/`venv`/`env` or, outside one, of the user and system
+`site-packages` (`pip`, `pip3`, `uv pip`: `uninstall`, `show`); `uv-tools` the folders of `uv`'s tool directory
+(`uv tool uninstall`, `upgrade`). Adding packages (`install`, `add`) is free text except for `brew`, which has the list.
+Not covered: `go` (no uninstall; modules come from the network), `gem`, `apt` and `dnf` (no bundled spec), `uv remove`
+(needs a `pyproject.toml` reader), `pip install` (PyPI is not stored locally).
+
 ## Slips, variables, risk notes
 
 - **Slips.** When nothing matches a word of four or more characters, subcommands, options and spec values one slip

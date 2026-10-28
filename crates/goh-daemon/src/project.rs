@@ -33,6 +33,8 @@ pub fn values(provider: Provider, cwd: &Path) -> Vec<Suggestion> {
         Provider::CargoExamples => cargo_examples(cwd),
         Provider::CargoFeatures => cargo_features(cwd),
         Provider::WorkspacePackages => workspace_packages(cwd),
+        Provider::PackageDependencies => package_dependencies(cwd),
+        Provider::CargoDependencies => cargo_dependencies(cwd),
         _ => vec![],
     }
 }
@@ -44,12 +46,19 @@ pub fn reads_project(provider: Provider) -> bool {
         Provider::GitBranches | Provider::GitRemotes | Provider::GitTags | Provider::GitStashes | Provider::PackageScripts
             | Provider::MakeTargets | Provider::JustRecipes | Provider::TaskfileTasks | Provider::ComposeServices
             | Provider::CargoBins | Provider::CargoExamples | Provider::CargoFeatures | Provider::WorkspacePackages
+            | Provider::PackageDependencies | Provider::CargoDependencies
     )
 }
 
 /// A name that is safe to offer as a plain word: no option look-alikes, spaces or control characters.
-fn plain(name: &str) -> bool {
+pub(crate) fn plain(name: &str) -> bool {
     !name.is_empty() && name.len() <= 200 && !name.starts_with('-') && !name.chars().any(|c| c.is_control() || c.is_whitespace())
+}
+
+/// Named things with a description each: only plain words, the first of a repeated name, at most `cap`.
+pub(crate) fn described<D: Into<String>>(list: impl IntoIterator<Item = (String, D)>, cap: usize) -> Vec<Suggestion> {
+    let mut seen = HashSet::new();
+    list.into_iter().filter(|(n, _)| plain(n) && seen.insert(n.clone())).take(cap).map(|(n, d)| suggestion(n, Some(d.into()))).collect()
 }
 
 // ---- git --------------------------------------------------------------------------------------
@@ -343,7 +352,11 @@ pub struct Manifest {
     pub examples: Vec<String>,
     pub features: Vec<String>,
     pub members: Vec<String>,
+    /// Crates under `[dependencies]`, `[dev-dependencies]` and `[build-dependencies]` (plain tables only), with which.
+    pub dependencies: Vec<(String, &'static str)>,
 }
+
+const DEPENDENCY_TABLES: [(&str, &str); 3] = [("dependencies", "dependency"), ("dev-dependencies", "dev dependency"), ("build-dependencies", "build dependency")];
 
 pub fn manifest_of(text: &str) -> Manifest {
     let mut m = Manifest::default();
@@ -355,6 +368,12 @@ pub fn manifest_of(text: &str) -> Manifest {
         if line.starts_with('[') {
             section = line.trim_matches(|c| c == '[' || c == ']').trim().to_string();
             in_members = false;
+            // `[dependencies.serde]` names the crate in the header.
+            for (table, what) in DEPENDENCY_TABLES {
+                if let Some(name) = section.strip_prefix(table).and_then(|n| n.strip_prefix('.')) {
+                    m.dependencies.push((unquote(name), what));
+                }
+            }
             continue;
         }
         if section == "workspace" && (line.starts_with("members") || in_members) {
@@ -370,7 +389,12 @@ pub fn manifest_of(text: &str) -> Manifest {
             "bin" if key == "name" => m.bins.push(unquote(value)),
             "example" if key == "name" => m.examples.push(unquote(value)),
             "features" if plain(key) && key != "default" && !key.contains('.') => m.features.push(key.to_string()),
-            _ => {}
+            // `serde.workspace = true` and `serde = "1"` both name `serde`.
+            s => {
+                if let Some((_, what)) = DEPENDENCY_TABLES.iter().find(|(table, _)| *table == s) {
+                    m.dependencies.push((unquote(key.split('.').next().unwrap_or(key)), what));
+                }
+            }
         }
     }
     m
@@ -428,6 +452,18 @@ fn cargo_features(cwd: &Path) -> Vec<Suggestion> {
     cargo_package(cwd).map_or_else(Vec::new, |(_, m)| names(m.features, "feature"))
 }
 
+fn cargo_dependencies(cwd: &Path) -> Vec<Suggestion> {
+    cargo_package(cwd).map_or_else(Vec::new, |(_, m)| described(m.dependencies, MAX_NAMES))
+}
+
+/// What `npm uninstall` / `pnpm remove` / `yarn remove` / `bun remove` can take out: the nearest `package.json`'s dependencies.
+fn package_dependencies(cwd: &Path) -> Vec<Suggestion> {
+    let Some(json) = cwd.ancestors().find_map(|d| read_small(&d.join("package.json"))).and_then(|t| serde_json::from_str::<serde_json::Value>(&t).ok()) else { return vec![] };
+    let tables = [("dependencies", "dependency"), ("devDependencies", "dev dependency"), ("optionalDependencies", "optional dependency")];
+    let all = tables.iter().flat_map(|(key, what)| json.get(key).and_then(|v| v.as_object()).into_iter().flat_map(move |o| o.keys().map(move |k| (k.clone(), *what))));
+    described(all, MAX_NAMES)
+}
+
 /// Package names for `cargo -p` and `pnpm --filter`: the members of a Cargo workspace and the packages of an npm/pnpm one.
 fn workspace_packages(cwd: &Path) -> Vec<Suggestion> {
     let mut out = Vec::new();
@@ -461,8 +497,7 @@ fn workspace_packages(cwd: &Path) -> Vec<Suggestion> {
             break;
         }
     }
-    let mut seen = HashSet::new();
-    out.into_iter().filter(|(n, _)| plain(n) && seen.insert(n.clone())).take(MAX_NAMES).map(|(n, d)| suggestion(n, Some(d.into()))).collect()
+    described(out, MAX_NAMES)
 }
 
 /// A workspace member pattern: a folder, or `dir/*` for each folder in it. Deeper globs are not expanded.
@@ -662,6 +697,32 @@ mod tests {
         assert_eq!(names(cargo_examples(&app)), ["hello"]);
         assert_eq!(names(cargo_features(&app)), ["tls", "metrics"]);
         assert_eq!(names(workspace_packages(&app)), ["my-core", "my-web", "my-cli"]);
+    }
+
+    #[test]
+    fn dependencies_come_from_the_nearest_manifests_and_fail_open() {
+        let d = tempfile::tempdir().unwrap();
+        let sub = d.path().join("packages/a");
+        std::fs::create_dir_all(&sub).unwrap();
+        let names = |v: Vec<Suggestion>| v.into_iter().map(|s| (s.name, s.description.unwrap())).collect::<Vec<_>>();
+        assert!(package_dependencies(&sub).is_empty() && cargo_dependencies(&sub).is_empty(), "no manifest: nothing");
+
+        std::fs::write(d.path().join("package.json"), r#"{"dependencies":{"react":"^18","@scope/ui":"1"},"devDependencies":{"vite":"5","bad name":"1","-rf":"1"},"optionalDependencies":{"fsevents":"2"}}"#).unwrap();
+        assert_eq!(
+            names(package_dependencies(&sub)),
+            [("@scope/ui", "dependency"), ("react", "dependency"), ("vite", "dev dependency"), ("fsevents", "optional dependency")]
+                .map(|(n, w)| (n.to_string(), w.to_string()))
+        );
+        std::fs::write(d.path().join("package.json"), "{ not json").unwrap();
+        assert!(package_dependencies(&sub).is_empty(), "a broken manifest fails open");
+
+        let manifest = "[package]\nname = \"app\"\n[dependencies]\nserde = { version = \"1\", features = [\"derive\"] }\nanyhow.workspace = true # shared\nlog = \"0.4\"\n[dev-dependencies]\ntempfile = \"3\"\n[build-dependencies.cc]\nversion = \"1\"\n[features]\ntls = []\n";
+        std::fs::write(d.path().join("Cargo.toml"), manifest).unwrap();
+        assert_eq!(
+            names(cargo_dependencies(&sub)),
+            [("serde", "dependency"), ("anyhow", "dependency"), ("log", "dependency"), ("tempfile", "dev dependency"), ("cc", "build dependency")]
+                .map(|(n, w)| (n.to_string(), w.to_string()))
+        );
     }
 
     #[test]

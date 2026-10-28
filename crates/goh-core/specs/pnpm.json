@@ -813,7 +813,8 @@
         {
           "name": "Package",
           "isVariadic": true,
-          "isOptional": true
+          "isOptional": true,
+          "provider": "package-dependencies"
         }
       ]
     },
@@ -956,7 +957,8 @@
         {
           "name": "Package",
           "isVariadic": true,
-          "isOptional": true
+          "isOptional": true,
+          "provider": "package-dependencies"
         }
       ]
     },
@@ -1099,7 +1101,8 @@
         {
           "name": "Package",
           "isVariadic": true,
-          "isOptional": true
+          "isOptional": true,
+          "provider": "package-dependencies"
         }
       ]
     },
@@ -1221,7 +1224,8 @@
       "args": [
         {
           "name": "Package",
-          "isVariadic": true
+          "isVariadic": true,
+          "provider": "package-dependencies"
         }
       ]
     },
@@ -1343,7 +1347,8 @@
       "args": [
         {
           "name": "Package",
-          "isVariadic": true
+          "isVariadic": true,
+          "provider": "package-dependencies"
         }
       ]
     },
@@ -1465,7 +1470,8 @@
       "args": [
         {
           "name": "Package",
-          "isVariadic": true
+          "isVariadic": true,
+          "provider": "package-dependencies"
         }
       ]
     },
@@ -1587,7 +1593,8 @@
       "args": [
         {
           "name": "Package",
-          "isVariadic": true
+          "isVariadic": true,
+          "provider": "package-dependencies"
         }
       ]
     },
