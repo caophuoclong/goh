@@ -557,6 +557,15 @@ fn accepting_a_directory_reopens_the_menu_for_its_contents_but_a_command_does_no
     sh.send("\t", 800);
     let state = fx.state(&mut sh);
     assert!(state.starts_with("BUF[git checkout ] CUR=13 on=0"), "{state}");
+    sh.send(CLEAR, 100);
+
+    // The same with `cd` aliased to zoxide's `z`, a function no spec describes: it still completes as `cd`.
+    sh.send("z() { builtin cd \"$@\" }; alias cd=z\n", 800);
+    sh.send("cd pro", 500);
+    assert!(fx.state(&mut sh).ends_with("post[ject/]"), "the alias opens the menu as `cd` does");
+    sh.send("\t", 800);
+    let state = fx.state(&mut sh);
+    assert!(state.starts_with("BUF[cd project/] CUR=11 on=1"), "{state}");
     kill_socket_holder(&fx.socket);
 }
 

@@ -101,7 +101,9 @@ impl Engine {
         if !buffer.is_char_boundary(cursor_byte) {
             return Err(Error::CursorNotOnCharBoundary);
         }
-        if let Some(e) = shell.expand(buffer, cursor_byte) {
+        // An alias is seen through only towards a command with a spec: `alias cd=z` (zoxide's function) keeps `cd`'s.
+        let has_spec = |line: &str| line.split_whitespace().next().is_some_and(|w| self.specs().iter().any(|s| s.name == w));
+        if let Some(e) = shell.expand(buffer, cursor_byte).filter(|e| has_spec(&e.buffer) || !has_spec(buffer)) {
             let mut c = self.complete_in(&e.buffer, e.cursor, cwd, values, &ShellContext::default())?;
             for cand in &mut c.candidates {
                 // Candidates replace the word being typed, which lies after the alias: shift back.
