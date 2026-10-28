@@ -40,7 +40,10 @@ pub fn values(provider: Provider, home: &Path, cwd: &Path) -> Vec<Suggestion> {
             brew_available(brew_prefix().as_deref(), &cache)
         }
         Provider::CargoInstalled => cargo_installed(&var("CARGO_HOME").unwrap_or_else(|| home.join(".cargo"))),
-        Provider::PipPackages => pip_packages(&site_dirs(home, cwd, brew_prefix().as_deref())),
+        Provider::PipPackages => {
+            let system_libs: Vec<PathBuf> = brew_prefix().map(|p| p.join("lib")).into_iter().chain(["/usr/local/lib", "/usr/lib"].map(PathBuf::from)).collect();
+            pip_packages(&site_dirs(home, cwd, &system_libs))
+        }
         Provider::UvTools => {
             let data = var("XDG_DATA_HOME").unwrap_or_else(|| home.join(".local/share"));
             uv_tools(&var("UV_TOOL_DIR").unwrap_or_else(|| data.join("uv/tools")))
@@ -148,8 +151,8 @@ fn uv_tools(tools: &Path) -> Vec<Suggestion> {
 }
 
 /// The `site-packages` folders `pip` would work on: the virtualenv in this project (or above it) if there is one,
-/// else the user's and the system's.
-fn site_dirs(home: &Path, cwd: &Path, brew: Option<&Path>) -> Vec<PathBuf> {
+/// else the user's and the system's (`system_libs`: the `lib` folders Python is installed under).
+fn site_dirs(home: &Path, cwd: &Path, system_libs: &[PathBuf]) -> Vec<PathBuf> {
     // `lib/python3.12/site-packages`, and `dist-packages` where Debian puts it.
     let in_lib = |lib: &Path| -> Vec<PathBuf> {
         dir_names(lib)
@@ -167,8 +170,7 @@ fn site_dirs(home: &Path, cwd: &Path, brew: Option<&Path>) -> Vec<PathBuf> {
             }
         }
     }
-    let libs = [home.join(".local/lib")].into_iter().chain(brew.map(|p| p.join("lib"))).chain(["/usr/local/lib", "/usr/lib"].map(PathBuf::from));
-    let mut out: Vec<PathBuf> = libs.flat_map(|lib| in_lib(&lib)).collect();
+    let mut out: Vec<PathBuf> = [home.join(".local/lib")].iter().chain(system_libs).flat_map(|lib| in_lib(lib)).collect();
     // macOS user site: `~/Library/Python/3.9/lib/python/site-packages`.
     let user = home.join("Library/Python");
     out.extend(dir_names(&user).into_iter().map(|v| user.join(v).join("lib/python/site-packages")).filter(|p| p.is_dir()));
@@ -301,14 +303,15 @@ mod tests {
             }
         }
         std::fs::create_dir_all(project.join("src/deep")).unwrap();
-        let got = pip_packages(&site_dirs(&home, &project.join("src/deep"), None));
+        // No system folders: what the machine has installed system-wide must not leak into the expectations.
+        let got = pip_packages(&site_dirs(&home, &project.join("src/deep"), &[]));
         assert_eq!(names(&got), ["oldpkg", "requests", "typing_extensions"]);
         assert_eq!((got[0].description.as_deref(), got[1].description.as_deref()), (Some("0.1"), Some("2.31.0")));
 
         // Outside a project: the user site, macOS style included.
         let elsewhere = root.path().join("elsewhere");
         std::fs::create_dir_all(&elsewhere).unwrap();
-        assert_eq!(names(&pip_packages(&site_dirs(&home, &elsewhere, None))), ["attrs", "black", "six"]);
+        assert_eq!(names(&pip_packages(&site_dirs(&home, &elsewhere, &[]))), ["attrs", "black", "six"]);
         assert!(pip_packages(&[PathBuf::from("/nonexistent")]).is_empty());
     }
 
