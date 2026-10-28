@@ -537,6 +537,30 @@ fn bundled_specs_keep_suggesting_after_subcommands_and_positional_arguments() {
 }
 
 #[test]
+fn accepting_a_directory_reopens_the_menu_for_its_contents_but_a_command_does_not() {
+    let fx = Fixture::new(require_env!(), false);
+    fs::create_dir_all(fx.path("project/src")).unwrap();
+    fs::write(fx.path("project/README.md"), "").unwrap();
+    let mut sh = fx.shell(LIVE, true);
+    sh.send("cd pro", 500);
+    assert!(fx.state(&mut sh).contains("on=1") && fx.state(&mut sh).ends_with("post[ject/]"));
+    sh.send("\t", 800);
+    let state = fx.state(&mut sh);
+    assert!(state.starts_with("BUF[cd project/] CUR=11 on=1"), "the directory's contents open without deleting anything: {state}");
+    assert!(state.ends_with("post[src/]") || state.ends_with("post[README.md ]"), "{state}");
+    sh.send("\t", 800);
+    assert!(fx.state(&mut sh).starts_with("BUF[cd project/"), "the next pick goes on from there");
+    sh.send(CLEAR, 100);
+
+    // A command or subcommand is accepted with its space and does not reopen by itself.
+    sh.send("git c", 500);
+    sh.send("\t", 800);
+    let state = fx.state(&mut sh);
+    assert!(state.starts_with("BUF[git checkout ] CUR=13 on=0"), "{state}");
+    kill_socket_holder(&fx.socket);
+}
+
+#[test]
 fn a_short_visible_menu_keeps_more_results_and_scrolls_past_its_last_row() {
     let fx = Fixture::new(require_env!(), false);
     let subcommands: Vec<_> = (0..12).map(|i| serde_json::json!({"name": format!("item-{i:02}")})).collect();

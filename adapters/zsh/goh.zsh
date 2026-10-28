@@ -389,11 +389,17 @@ _goh_up()   { _goh_move -1 up-line-or-history }
 _goh_esc()  { _goh_close; zle -R }   # stays closed: the hook refreshes only when the line changes
 
 # All acceptance keys share the same validated edit and dismissal. No acceptance executes a line.
+# A directory is accepted without a trailing space, so its contents are what comes next: the menu reopens for them
+# (one refresh after the line is redrawn, like after typing). Nothing else reopens by itself after accepting.
+typeset -gi _goh_reopen=0
 _goh_accept() {
   _goh_valid || return 1
+  local dir=0; [[ ${_goh_insert[_goh_sel]} == */ ]] && dir=1
   _goh_apply $_goh_sel || { _goh_close; return 1 }
   _goh_close
   _goh_seen_buf=$BUFFER _goh_seen_cur=$CURSOR   # only a later edit may reopen the menu
+  [[ $_GOH_LIVE == on ]] && _goh_reopen=$dir
+  return 0
 }
 
 # Navigation makes Enter an explicit selection. An untouched menu must not change a command
@@ -571,6 +577,14 @@ _goh_live_refresh() {
 _goh_hook_redraw() {
   (( _goh_busy )) && return 0
   [[ -n $_goh_pred && -n $BUFFER ]] && _goh_drop_pred
+  if (( _goh_reopen )); then
+    _goh_reopen=0
+    if (( ! PENDING )) && [[ $BUFFER == "$_goh_seen_buf" && $CURSOR == "$_goh_seen_cur" ]]; then
+      _goh_live_refresh
+      _goh_seen_buf=$BUFFER _goh_seen_cur=$CURSOR
+      return 0
+    fi
+  fi
   local changed=0
   [[ $BUFFER != "$_goh_seen_buf" || $CURSOR != $_goh_seen_cur ]] && changed=1
   _goh_seen_buf=$BUFFER _goh_seen_cur=$CURSOR
