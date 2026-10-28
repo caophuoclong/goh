@@ -52,17 +52,19 @@ fn peer_pid(stream: &UnixStream) -> Option<i32> {
     (r == 0 && pid > 0).then_some(pid)
 }
 
+/// By process name, not executable path: an upgrade deletes the old binary under a daemon that is still
+/// running, and its path can then no longer be read (macOS) or ends in " (deleted)" (Linux).
 fn is_gohd(pid: i32) -> bool {
     #[cfg(target_os = "macos")]
-    let path = {
-        let mut buf = vec![0u8; 4096];
+    let name = {
+        let mut buf = [0u8; 64];
         // SAFETY: buffer length is passed alongside the pointer.
-        let n = unsafe { libc::proc_pidpath(pid, buf.as_mut_ptr().cast(), buf.len() as u32) };
+        let n = unsafe { libc::proc_name(pid, buf.as_mut_ptr().cast(), buf.len() as u32) };
         (n > 0).then(|| String::from_utf8_lossy(&buf[..n as usize]).into_owned())
     };
     #[cfg(not(target_os = "macos"))]
-    let path = std::fs::read_link(format!("/proc/{pid}/exe")).ok().map(|p| p.to_string_lossy().into_owned());
-    path.is_some_and(|p| Path::new(&p).file_name().is_some_and(|n| n == "gohd"))
+    let name = std::fs::read_to_string(format!("/proc/{pid}/comm")).ok().map(|s| s.trim_end().to_string());
+    name.is_some_and(|n| n == "gohd")
 }
 
 /// pid of the daemon behind `sock`, if one answers there.
