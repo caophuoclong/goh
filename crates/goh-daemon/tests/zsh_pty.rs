@@ -557,6 +557,15 @@ fn accepting_a_directory_reopens_the_menu_for_its_contents_but_a_command_does_no
     sh.send("\t", 800);
     let state = fx.state(&mut sh);
     assert!(state.starts_with("BUF[git checkout ] CUR=13 on=0"), "{state}");
+    sh.send(CLEAR, 100);
+
+    // The same with `cd` aliased to zoxide's `z`, a function no spec describes: it still completes as `cd`.
+    sh.send("z() { builtin cd \"$@\" }; alias cd=z\n", 800);
+    sh.send("cd pro", 500);
+    assert!(fx.state(&mut sh).ends_with("post[ject/]"), "the alias opens the menu as `cd` does");
+    sh.send("\t", 800);
+    let state = fx.state(&mut sh);
+    assert!(state.starts_with("BUF[cd project/] CUR=11 on=1"), "{state}");
     kill_socket_holder(&fx.socket);
 }
 
@@ -755,6 +764,44 @@ fn enter_after_a_menu_redraws_the_complete_multiline_prompt() {
         let output = sh.send("pwd\r", 400);
         assert!(output.contains("prompt-top") && output.contains('❯'), "{display}: subsequent prompts must stay complete: {output:?}");
     }
+}
+
+#[test]
+fn accepting_a_directory_redraws_the_line_in_place_under_a_multiline_prompt() {
+    let fx = Fixture::new(require_env!(), false);
+    fs::create_dir_all(fx.path("project/src")).unwrap();
+    let (mut sh, _) = overlay_shell(&fx, fake_popup().to_str().unwrap(), "overlay", "overlay");
+    sh.send("PS1=$'prompt-top\\n❯ '; _GOH_LIVE=on\n", 300);
+    sh.send("cd pro", 500);
+    let output = sh.send("\t", 800);
+    assert!(fx.state(&mut sh).starts_with("BUF[cd project/] CUR=11 on=1"), "the menu reopens for the directory");
+    // The line is one row and the overlay draws nothing in it: moving the cursor up lands on the prompt's first line.
+    assert!(!output.contains("\x1b[A"), "the line was redrawn above itself: {output:?}");
+    kill_socket_holder(&fx.socket);
+}
+
+#[test]
+fn accepted_text_is_not_left_in_another_plugins_suggestion_highlight() {
+    let fx = Fixture::new(require_env!(), false);
+    fs::create_dir_all(fx.path("project/src")).unwrap();
+    let mut sh = fx.shell(LIVE, true);
+    // As zsh-autosuggestions does: self-insert replaced by a wrapper that shows a suggestion after the line and
+    // highlights it from the end of BUFFER.
+    let rh = fx.path("rh.txt");
+    sh.send(
+        &format!(
+            "_sugg() {{ zle .self-insert; POSTDISPLAY=hint; region_highlight+=(\"$#BUFFER $(( $#BUFFER + 4 )) fg=8\") }}; zle -N self-insert _sugg\n\
+             rh() {{ print -r -- \"${{(j:;:)region_highlight}}\" >> {} }}; zle -N rh; bindkey '^Xh' rh\n",
+            rh.display()
+        ),
+        300,
+    );
+    sh.send("cd pro", 500);
+    sh.send("\t", 800);
+    assert!(fx.state(&mut sh).starts_with("BUF[cd project/] CUR=11"));
+    let highlights = fx.state_file(&mut sh, "\x18h", "rh.txt");
+    assert!(!highlights.contains("fg=8"), "the suggestion's highlight would dim `project/`: {highlights}");
+    kill_socket_holder(&fx.socket);
 }
 
 #[test]

@@ -392,6 +392,19 @@ fn an_alias_is_seen_through_and_spans_stay_in_the_line_as_typed() {
 }
 
 #[test]
+fn an_alias_to_a_command_without_a_spec_keeps_the_spec_of_its_own_name() {
+    use goh_core::shellctx::ShellContext;
+    let engine = Engine::new(goh_core::bundled_specs());
+    let dir = tempfile::tempdir().unwrap();
+    std::fs::create_dir(dir.path().join("src")).unwrap();
+    // `alias cd=z` with zoxide: `z` is a shell function that no spec describes.
+    let ctx = ShellContext { aliases: [("cd".to_string(), "z".to_string())].into_iter().collect(), ..Default::default() };
+    let r = engine.complete_in("cd ", 3, dir.path(), &|_, _| vec![], &ctx).unwrap();
+    assert!(r.valid, "completes as `cd`");
+    assert!(r.candidates.iter().any(|c| c.label == "src/"), "{:?}", r.candidates);
+}
+
+#[test]
 fn a_slip_in_a_subcommand_or_option_is_corrected_only_when_nothing_else_matches() {
     let engine = Engine::new(goh_core::bundled_specs());
     let first = |line: &str| engine.complete_full(line, line.len(), &here()).unwrap().candidates.into_iter().next().map(|c| c.label);

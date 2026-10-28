@@ -263,8 +263,22 @@ _goh_clear_ghost() {
   POSTDISPLAY=
   # ZLE normalises colors and moves ranges when BUFFER changes. Its memo tag survives both;
   # remove only our highlights, leaving syntax-highlighting and other plugins' regions intact.
-  region_highlight=("${(@)region_highlight:#*memo=goh-ghost}")
+  # Also a highlight that starts past the line: it was for the text shown after it (a zsh-autosuggestions
+  # suggestion), which is gone now. Left in place, it would dim the next text accepted there.
+  local h; local -a keep
+  for h in "${region_highlight[@]}"; do
+    [[ $h == *memo=goh-ghost ]] && continue
+    [[ $h == <->' '* ]] && (( ${h%% *} >= ${#BUFFER} )) && continue
+    keep+=("$h")
+  done
+  region_highlight=("${keep[@]}")
 }
+
+# Remove the menu message (zsh < 5.9 only), and only if one is shown: every `zle -M` makes ZLE redraw
+# below the line, and two in one refresh (accepting a directory closes, then reopens) leave it one row too
+# high, so a multiline prompt is overwritten.
+typeset -gi _goh_msg=0
+_goh_clear_msg() { (( _goh_msg )) || return 0; _goh_msg=0; zle -M '' }
 
 _goh_close() {
   [[ -n $_goh_pop_pid ]] && ! _goh_pop_alive && _goh_pop_stop
@@ -273,7 +287,7 @@ _goh_close() {
   _goh_clear_ghost
   # ZLE owns message removal at line-init/line-finish. A -M refresh there leaves its
   # next-prompt display cache stale (the last line of a multiline prompt disappears).
-  [[ ${1-} == no-redisplay ]] || zle -M ''
+  if [[ ${1-} == no-redisplay ]]; then _goh_msg=0; else _goh_clear_msg; fi
   _goh_pop_hide
   _goh_keys_off
 }
@@ -327,10 +341,10 @@ _goh_render() {
   # `zle -M` would print escape codes literally. Needs the memo tag (zsh 5.9+) to remove only our styles.
   local styled=0
   if (( _goh_overlay != 0 )) && _goh_pop_alive; then
-    zle -M ''
+    _goh_clear_msg
   else
     _goh_overlay=0
-    if is-at-least 5.9; then styled=1; zle -M ''; else zle -M "${(F)rows}"; fi
+    if is-at-least 5.9; then styled=1; _goh_clear_msg; else zle -M "${(F)rows}"; _goh_msg=1; fi
   fi
 
   # "P" offsets count from the start of PREDISPLAY+BUFFER+POSTDISPLAY.
