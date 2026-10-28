@@ -72,11 +72,58 @@
     },
     {
       "name": "uninstall",
-      "description": "Remove a package"
+      "description": "Remove a package",
+      "args": [
+        {
+          "name": "package",
+          "isVariadic": true,
+          "provider": "package-dependencies"
+        }
+      ]
+    },
+    {
+      "name": "remove",
+      "description": "Remove a package",
+      "args": [
+        {
+          "name": "package",
+          "isVariadic": true,
+          "provider": "package-dependencies"
+        }
+      ]
+    },
+    {
+      "name": "rm",
+      "description": "Remove a package",
+      "args": [
+        {
+          "name": "package",
+          "isVariadic": true,
+          "provider": "package-dependencies"
+        }
+      ]
+    },
+    {
+      "name": "un",
+      "description": "Remove a package",
+      "args": [
+        {
+          "name": "package",
+          "isVariadic": true,
+          "provider": "package-dependencies"
+        }
+      ]
     },
     {
       "name": "update",
-      "description": "Update packages"
+      "description": "Update packages",
+      "args": [
+        {
+          "name": "package",
+          "isVariadic": true,
+          "provider": "package-dependencies"
+        }
+      ]
     }
   ]
 }

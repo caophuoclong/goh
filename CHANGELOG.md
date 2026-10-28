@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.2.0](https://github.com/caophuoclong/goh/compare/v1.1.3...v1.2.0) (2026-10-28)
+
+
+### Features
+
+* **spec:** suggest package names for brew, npm, pnpm, yarn, bun, cargo, pip and uv ([8246a74](https://github.com/caophuoclong/goh/commit/8246a7427c4efaee3757482bb30fc09199307fc2))
+* **spec:** suggest package names for brew, npm, pnpm, yarn, bun, cargo, pip and uv ([c960b86](https://github.com/caophuoclong/goh/commit/c960b8686dc5999cb617abb10d14876ecc04e2ec))
+
+## [1.1.3](https://github.com/caophuoclong/goh/compare/v1.1.2...v1.1.3) (2026-10-28)
+
+
+### Bug fixes
+
+* **anchor:** fall back to the terminal's host app when Claude hides its accessibility tree ([f022a4b](https://github.com/caophuoclong/goh/commit/f022a4bf2f269b7e5120cb33c053ceecf757e416))
+* zsh cd alias and redraw fixes, daemon upgrade detection, Claude popup anchor ([3d80c4b](https://github.com/caophuoclong/goh/commit/3d80c4bb4055bac5089569182cb893708b671768))
+
 ## [1.1.2](https://github.com/caophuoclong/goh/compare/v1.1.1...v1.1.2) (2026-10-28)
 
 

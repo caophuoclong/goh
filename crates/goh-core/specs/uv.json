@@ -4612,6 +4612,13 @@
               "description": "Upgrade all tools",
               "takesValue": false
             }
+          ],
+          "args": [
+            {
+              "name": "tool",
+              "isVariadic": true,
+              "provider": "uv-tools"
+            }
           ]
         },
         {
@@ -4890,6 +4897,13 @@
               "name": "--all",
               "description": "Uninstall all tools",
               "takesValue": false
+            }
+          ],
+          "args": [
+            {
+              "name": "tool",
+              "isVariadic": true,
+              "provider": "uv-tools"
             }
           ]
         },
@@ -6870,7 +6884,8 @@
             {
               "name": "PACKAGES",
               "description": "Packages to uninstall",
-              "isVariadic": true
+              "isVariadic": true,
+              "provider": "pip-packages"
             }
           ]
         },
@@ -7273,7 +7288,8 @@
             {
               "name": "PACKAGES",
               "description": "Packages to show",
-              "isVariadic": true
+              "isVariadic": true,
+              "provider": "pip-packages"
             }
           ]
         },
