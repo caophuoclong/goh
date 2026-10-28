@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.0](https://github.com/caophuoclong/goh/compare/v1.1.3...v1.2.0) (2026-10-28)
+
+
+### Features
+
+* **spec:** suggest package names for brew, npm, pnpm, yarn, bun, cargo, pip and uv ([8246a74](https://github.com/caophuoclong/goh/commit/8246a7427c4efaee3757482bb30fc09199307fc2))
+* **spec:** suggest package names for brew, npm, pnpm, yarn, bun, cargo, pip and uv ([c960b86](https://github.com/caophuoclong/goh/commit/c960b8686dc5999cb617abb10d14876ecc04e2ec))
+
 ## [1.1.3](https://github.com/caophuoclong/goh/compare/v1.1.2...v1.1.3) (2026-10-28)
 
 
