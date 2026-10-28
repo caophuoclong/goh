@@ -39,6 +39,8 @@ autoload -Uz add-zle-hook-widget is-at-least
 
 typeset -g _GOH_CTL=${GOH_CTL:-goh}
 typeset -g _GOH_SESSION="zsh-$$-$RANDOM"
+# Lets `goh doctor` tell whether this very shell loaded the adapter (it compares the pid with its parent's).
+typeset -gx GOH_ADAPTER="zsh:$$"
 # Settings from the config file (`goh config`); an environment variable you set yourself still wins.
 {
   local _goh_line _goh_name
@@ -53,7 +55,7 @@ typeset -g _GOH_DISPLAY=${GOH_DISPLAY:-auto}   # auto | overlay | inline
 typeset -g _GOH_LIVE=${GOH_LIVE:-on}           # on | off (as-you-type suggestions)
 typeset -gi _GOH_LIVE_MIN=${GOH_LIVE_MIN:-0}   # characters of the current word before the menu may open by itself
 typeset -g _goh_seen_buf
-typeset -gi _goh_seen_cur=-1 _goh_busy=0
+typeset -gi _goh_seen_cur=-1 _goh_busy=0 _goh_told_permission=0
 # Widgets after which an edit counts as the user typing (not history recall, autosuggest accept, ...).
 typeset -ga _goh_typing_widgets=(self-insert magic-space backward-delete-char delete-char vi-backward-delete-char vi-delete-char backward-kill-word kill-word bracketed-paste quoted-insert)
 typeset -g _GOH_POPUP=${GOH_POPUP:-goh-popup}
@@ -153,6 +155,12 @@ _goh_on_decision() {
       continue
     fi
     _goh_last_decision=$line
+    # Once per shell, and only where a popup was expected: the permission is the one thing the user can fix.
+    if (( ! _goh_told_permission )) && [[ $line == *'"display":"inline"'*Accessibility* && -z ${TMUX-}${STY-}${SSH_CONNECTION-} &&
+         $TERM_PROGRAM == (iTerm.app|Apple_Terminal|vscode|claude-desktop) ]]; then
+      _goh_told_permission=1
+      zle -M "goh: this terminal is not allowed to use Accessibility, so menus are drawn inline. Run: goh doctor --fix"
+    fi
     _goh_trace "decision ${line[1,80]}"
     case $line in
       *'"display":"overlay"'*) _goh_overlay=1 ;;

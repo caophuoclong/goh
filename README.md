@@ -8,7 +8,7 @@ It reproduces what Fig was useful for, not its branding, and has no dependency o
 ## What it does
 
 - Suggests subcommands, flags, arguments and paths as you type, with descriptions.
-- Is driven by declarative JSON completion specs (40 bundled: `git`, `docker`, `npm`, `pnpm`, `cargo`, `kubectl`, `just`, `task`, `brew`, `aws`, ...).
+- Is driven by declarative JSON completion specs (80 bundled: `git`, `docker`, `npm`, `pnpm`, `cargo`, `kubectl`, `just`, `task`, `brew`, `aws`, `jq`, `tmux`, `systemctl`, ...; a command with none gets one from its `--help`, see `goh spec gen`).
 - Shows an overlay popup anchored near the cursor, with an inline fallback where the terminal can't support one.
 - Inherits your terminal's colors instead of imposing its own theme.
 - Knows your project: git branches, tags, stashes and changed files, `package.json` scripts, Makefile/justfile/Taskfile
@@ -32,6 +32,22 @@ Everything runs locally. Two things are **off unless you turn them on** in `goh 
   background and saves a spec read from it (the same as `goh spec gen`).
 
 Your snippets go in `~/.config/goh/snippets.json`: `[{"name":"gcm","template":"git commit -m \"{{cursor}}\""}]`.
+
+## Troubleshooting
+
+```bash
+goh doctor            # what works and what does not, with the fix for each
+goh doctor --fix      # start or restart the daemon, open the macOS Accessibility settings
+goh doctor --test     # also ask the daemon to complete `git chec` and time the answer
+goh doctor --report   # a summary to paste into an issue: versions and checks, your home shown as ~, no command text
+goh logs              # the daemon's own log (starts, spec warnings, panics); it never holds what you typed
+goh specs --missing   # programs you ran that have no spec (needs privacy.recordCommands)
+```
+
+`doctor` says whether this shell loaded the adapter, whether your startup file has the block `goh setup` writes, and
+whether the running daemon is the same version as `goh` (an upgrade can leave the old one running: `goh doctor --fix`).
+In an iTerm2, Terminal.app or VS Code terminal that lacks the Accessibility permission, the first menu of a zsh
+session prints a one-line note instead of silently drawing inline.
 
 ## Layout
 

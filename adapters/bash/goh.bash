@@ -16,6 +16,8 @@
 
 _GOH_CTL=${GOH_CTL:-goh}
 _GOH_SESSION="bash-$$-$RANDOM"
+# Lets `goh doctor` tell whether this very shell loaded the adapter (it compares the pid with its parent's).
+export GOH_ADAPTER="bash:$$"
 _GOH_REGISTERED=()
 
 _goh_complete() {

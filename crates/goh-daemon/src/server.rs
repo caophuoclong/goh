@@ -131,6 +131,7 @@ impl Server {
                 );
                 Some(Reply::Results { v: 1, session_id, generation, suggestions: candidates })
             }
+            Request::Hello { v } => (v == 1).then(|| Reply::Hello { v: 1, version: env!("CARGO_PKG_VERSION").to_string(), pid: std::process::id() }),
             Request::Context { v, session_id, aliases, functions, builtins, path, env } => {
                 if v != 1 || !valid_session(&session_id) {
                     return None;
@@ -171,7 +172,10 @@ impl Server {
         let _ = stream.set_read_timeout(Some(IDLE_TIMEOUT));
         let _ = stream.set_write_timeout(Some(IDLE_TIMEOUT));
         while let Ok(Some(req)) = read_message::<Request, _>(&mut stream) {
-            let Some(reply) = self.handle(req) else { return };
+            let Some(reply) = self.handle(req) else {
+                crate::log::throttled("malformed", "dropped a request the daemon could not accept (bad version or session id)");
+                return;
+            };
             if write_frame(&mut stream, &reply).is_err() {
                 return;
             }
@@ -182,6 +186,7 @@ impl Server {
         for stream in listener.incoming().flatten() {
             if self.connections.fetch_add(1, Ordering::SeqCst) >= MAX_CONNECTIONS {
                 self.connections.fetch_sub(1, Ordering::SeqCst);
+                crate::log::throttled("connections", "too many open connections: dropping new ones (clients fail open)");
                 continue; // drop: the client fails open
             }
             let me = Arc::clone(&self);
