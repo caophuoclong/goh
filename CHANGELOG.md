@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.4.1](https://github.com/caophuoclong/goh/compare/v1.4.0...v1.4.1) (2026-10-28)
+
+
+### Bug fixes
+
+* **zsh:** keep the inline menu visible with zsh-autosuggestions, and reload the adapter on goh reload ([3e85a3a](https://github.com/caophuoclong/goh/commit/3e85a3af7a2e52f715e7daa4f2410856ee658719))
+* **zsh:** keep the inline menu visible with zsh-autosuggestions, and reload the adapter on goh reload ([bf54234](https://github.com/caophuoclong/goh/commit/bf542342ed62abcbe7ff0d8f96b2c7e4959043a5))
+
 ## [1.4.0](https://github.com/caophuoclong/goh/compare/v1.3.0...v1.4.0) (2026-10-28)
 
 
