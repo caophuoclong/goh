@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.5.0](https://github.com/caophuoclong/goh/compare/v1.4.1...v1.5.0) (2026-10-29)
+
+
+### Features
+
+* opt-in notice when a newer goh release exists ([bf87f90](https://github.com/caophuoclong/goh/commit/bf87f90e18faba894c90dd22d9dec5207e8a06c9))
+
+
+### Bug fixes
+
+* **daemon:** wait for a just-started daemon to answer before the first request ([1025b9f](https://github.com/caophuoclong/goh/commit/1025b9f44502468d3231fe79c6cd1026ffbef354))
+* wait for a cold-started daemon to answer, and harden the workflows for zizmor ([fa91e10](https://github.com/caophuoclong/goh/commit/fa91e10fcfea0fb4ddbb7e8298ebec0e1d1649b7))
+* **zsh:** hide the popup on Ctrl+C even when a plugin replaces zle-line-init ([033875f](https://github.com/caophuoclong/goh/commit/033875f542001abbd2e64e4bfc4f0c6b17227fd8))
+* **zsh:** hide the popup on Ctrl+C even when a plugin replaces zle-line-init ([710f7f4](https://github.com/caophuoclong/goh/commit/710f7f4ea16e074935a04038f0c7ffd2604fb57a))
+
 ## [1.4.1](https://github.com/caophuoclong/goh/compare/v1.4.0...v1.4.1) (2026-10-28)
 
 
