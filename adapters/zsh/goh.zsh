@@ -758,6 +758,7 @@ _goh_hook_finish() { _goh_close no-redisplay; _goh_drop_pred; _goh_seen_cur=-1; 
 # the hook dispatcher, and then the popup would stay on screen until the next keystroke. Every prompt, before it
 # is drawn, put the hooks back (add-zle-hook-widget keeps the plugin's widget as the first hook) and hide the popup
 # of a menu that was left open.
+typeset -gi _goh_update_told=0
 typeset -ga _goh_zle_hooks=(zle-line-init:_goh_hook_finish zle-line-pre-redraw:_goh_hook_redraw zle-line-finish:_goh_hook_finish)
 _goh_hook_precmd() {
   local h
@@ -765,6 +766,11 @@ _goh_hook_precmd() {
     [[ ${widgets[${h%%:*}]-} == user:azhw:${h%%:*} ]] || add-zle-hook-widget ${h%%:*} ${h#*:}
   done
   (( _goh_on )) && _goh_pop_hide
+  # `updates.check`: one line, at the first prompt only, when a newer release is known (see `goh update`).
+  if (( ! _goh_update_told )); then
+    _goh_update_told=1
+    [[ ${GOH_UPDATE_CHECK-} == on ]] && command $_GOH_CTL update --notice 2>/dev/null
+  fi
   return 0
 }
 

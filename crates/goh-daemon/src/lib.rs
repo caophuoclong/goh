@@ -20,6 +20,7 @@ pub mod server;
 pub mod setup;
 pub mod sources;
 pub mod specs;
+pub mod update;
 pub mod usage;
 pub mod visits;
 pub mod wire;

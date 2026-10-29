@@ -986,6 +986,23 @@ fn ctrl_c_hides_the_overlay_even_when_a_plugin_replaces_zle_line_init() {
 }
 
 #[test]
+fn a_newer_release_is_announced_once_and_only_when_updates_check_is_on() {
+    let fx = Fixture::new(require_env!(), false);
+    let state = fx.path("update-state");
+    let now = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_secs();
+    fs::write(&state, format!(r#"{{"checked":{now},"latest":"99.0.0"}}"#)).unwrap();
+    for (on, expect) in [("on", true), ("off", false)] {
+        let envs = [("GOH_UPDATE_CHECK", on), ("GOH_UPDATE_STATE", state.to_str().unwrap())];
+        let mut sh = fx.shell(&envs, false);
+        let first = sh.send(&format!("source {}\n", adapter().display()), 900);
+        assert_eq!(first.contains("goh 99.0.0 is available"), expect, "updates.check {on}: {first:?}");
+        let second = sh.send("\n", 400);
+        assert!(!second.contains("is available"), "told again at the next prompt: {second:?}");
+        let _ = fs::write(&state, format!(r#"{{"checked":{now},"latest":"99.0.0"}}"#)); // forget that it was told
+    }
+}
+
+#[test]
 fn live_tab_accepts_an_open_menu_but_does_not_open_a_dismissed_one() {
     let fx = Fixture::new(require_env!(), true);
     let mut sh = fx.shell(LIVE, false);

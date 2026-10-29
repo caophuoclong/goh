@@ -44,7 +44,7 @@ pub fn validate(text: &str) -> Result<(), String> {
             return Err(format!("display.live must be true or false, not {live}"));
         }
     }
-    for (path, name) in [("/display/predict", "display.predict"), ("/privacy/recordCommands", "privacy.recordCommands"), ("/completion/autoSpecs", "completion.autoSpecs")] {
+    for (path, name) in [("/display/predict", "display.predict"), ("/privacy/recordCommands", "privacy.recordCommands"), ("/completion/autoSpecs", "completion.autoSpecs"), ("/updates/check", "updates.check")] {
         if let Some(value) = v.pointer(path).filter(|value| !value.is_boolean()) {
             return Err(format!("{name} must be true or false, not {value}"));
         }
@@ -69,7 +69,7 @@ pub fn env_lines(v: &Value) -> Vec<String> {
     if let Some(live) = v.pointer("/display/live").and_then(Value::as_bool) {
         out.push(format!("GOH_LIVE={}", if live { "on" } else { "off" }));
     }
-    for (path, name) in [("/display/predict", "GOH_PREDICT"), ("/privacy/recordCommands", "GOH_RECORD")] {
+    for (path, name) in [("/display/predict", "GOH_PREDICT"), ("/privacy/recordCommands", "GOH_RECORD"), ("/updates/check", "GOH_UPDATE_CHECK")] {
         if let Some(on) = v.pointer(path).and_then(Value::as_bool) {
             out.push(format!("{name}={}", if on { "on" } else { "off" }));
         }
@@ -107,7 +107,7 @@ mod tests {
     fn the_template_is_valid_and_exports_the_adapter_settings() {
         validate(TEMPLATE).unwrap();
         let v: Value = serde_json::from_str(TEMPLATE).unwrap();
-        assert_eq!(env_lines(&v), ["GOH_DISPLAY=auto", "GOH_LIMIT=8", "GOH_LIVE=on", "GOH_PREDICT=on", "GOH_RECORD=off"]);
+        assert_eq!(env_lines(&v), ["GOH_DISPLAY=auto", "GOH_LIMIT=8", "GOH_LIVE=on", "GOH_PREDICT=on", "GOH_RECORD=off", "GOH_UPDATE_CHECK=off"]);
     }
 
     #[test]

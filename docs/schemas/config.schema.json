@@ -157,6 +157,17 @@
           "description": "The first time you type a program that has no spec, run `<program> --help` once in the background and save a spec read from it (like `goh spec gen`)."
         }
       }
+    },
+    "updates": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "check": {
+          "type": "boolean",
+          "default": false,
+          "description": "Once a day, ask GitHub (with curl) for the version number of the latest goh release and print one line when a shell starts if there is a newer one. Nothing else is sent."
+        }
+      }
     }
   },
   "$defs": {

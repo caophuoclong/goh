@@ -74,6 +74,10 @@ pub struct Inputs {
     pub accessibility: Option<bool>,
     pub zoxide: bool,
     pub auto_specs: bool,
+    /// `updates.check` is on.
+    pub update_check: bool,
+    /// The line about a newer release, when the last check found one.
+    pub update: Option<String>,
     /// Panics among the last lines of the daemon's log.
     pub recent_panics: usize,
     /// `Some` only for `--test`.
@@ -162,6 +166,11 @@ pub fn evaluate(i: &Inputs) -> Vec<Check> {
         check(Level::Info, "auto specs", "on: a command with no spec gets one read from its --help", None)
     } else {
         check(Level::Info, "auto specs", "off: a command with no spec gets no suggestions (`goh spec gen <command>` writes one, or set completion.autoSpecs in `goh config`)", None)
+    });
+    out.push(match (&i.update, i.update_check) {
+        (Some(line), _) => check(Level::Warn, "update", line.clone(), None),
+        (None, true) => check(Level::Ok, "update", "checked daily; no newer release known", None),
+        (None, false) => check(Level::Info, "update", "not checked: `goh update` looks once, or set updates.check in `goh config` to be told when a shell starts", None),
     });
     out.push(if i.zoxide {
         check(Level::Info, "zoxide", "found: `cd` suggestions use it, with goh's own history as backup", None)
@@ -280,6 +289,8 @@ pub fn gather() -> Inputs {
         adapter: adapter_state(std::env::var("GOH_ADAPTER").ok().as_deref(), parent),
         rc: shell.as_deref().filter(|s| crate::setup::supported(s)).and_then(startup_file),
         auto_specs: crate::autospec::enabled(),
+        update_check: crate::update::enabled(),
+        update: crate::update::message(env!("CARGO_PKG_VERSION"), &crate::update::load().latest),
         round_trip: None,
         recent_panics: crate::log::tail(&crate::log::path(), 200).map_or(0, |t| t.lines().filter(|l| l.contains(" panic at ")).count()),
         binaries: ["goh", "gohd", "goh-popup"].into_iter().map(|n| (n, find_binary(n, exe_dir.as_deref()))).collect(),
@@ -453,6 +464,14 @@ mod tests {
         assert!(evaluate(&base()).iter().all(|c| c.name != "daemon log"));
         assert!(named(&evaluate(&base()), "auto specs").detail.starts_with("off"));
         assert!(named(&evaluate(&Inputs { auto_specs: true, ..base() }), "auto specs").detail.starts_with("on"));
+    }
+
+    #[test]
+    fn a_newer_release_is_a_warning_and_no_check_is_only_information() {
+        assert_eq!(named(&evaluate(&base()), "update").level, Level::Info);
+        assert_eq!(named(&evaluate(&Inputs { update_check: true, ..base() }), "update").level, Level::Ok);
+        let c = evaluate(&Inputs { update: Some("goh 9.9.9 is available".into()), ..base() });
+        assert_eq!((named(&c, "update").level, named(&c, "update").detail.as_str()), (Level::Warn, "goh 9.9.9 is available"));
     }
 
     #[test]
