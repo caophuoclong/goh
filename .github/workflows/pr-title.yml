@@ -2,8 +2,10 @@ name: PR title
 
 # The release version is worked out from commit messages (Conventional Commits). Pull requests are squash-merged,
 # so the PR title becomes the commit message: it has to follow the format.
+# pull_request_target (not pull_request) so the check also runs, without approval, on fork and bot PRs. It is safe here:
+# the job never checks out or runs code from the pull request, it only reads the title through the API.
 on:
-  pull_request_target:
+  pull_request_target: # zizmor: ignore[dangerous-triggers]
     types: [opened, edited, synchronize, reopened]
 
 permissions:
@@ -13,7 +15,7 @@ jobs:
   conventional-title:
     runs-on: ubuntu-24.04
     steps:
-      - uses: amannn/action-semantic-pull-request@v5
+      - uses: amannn/action-semantic-pull-request@e32d7e603df1aa1ba07e981f2a23455dee596825 # v5
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
