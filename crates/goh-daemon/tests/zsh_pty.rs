@@ -402,7 +402,7 @@ fn a_popup_startup_timeout_does_not_reopen_a_dismissed_menu() {
 fn bare_command_frames_keep_the_whole_name_for_the_logo() {
     let fx = Fixture::new(require_env!(), false);
     let listener = goh_daemon::paths::bind(&fx.socket).unwrap().unwrap();
-    let server = std::sync::Arc::new(goh_daemon::server::Server::new(goh_core::Engine::new(goh_core::bundled_specs())));
+    let server = std::sync::Arc::new(common::isolated_server(goh_core::Engine::new(goh_core::bundled_specs()), fx.dir.path()));
     std::thread::spawn(move || server.serve(listener));
     let (mut sh, log) = overlay_shell(&fx, fake_popup().to_str().unwrap(), "overlay", "auto");
     sh.send("_GOH_LIVE=on\n", 200);

@@ -1,3 +1,5 @@
+mod common;
+
 use std::io::{Read, Write};
 use std::os::unix::fs::PermissionsExt;
 use std::os::unix::net::UnixStream;
@@ -6,7 +8,7 @@ use std::sync::Arc;
 
 use goh_core::{spec::Command, Engine};
 use goh_daemon::wire::{buffer_hash, read_message, write_frame, Reply, Request};
-use goh_daemon::{client, paths, server::Server};
+use goh_daemon::{client, paths};
 
 const GIT: &str = r#"{"schemaVersion":1,"name":"git","subcommands":[{"name":"checkout"},{"name":"cherry-pick"}]}"#;
 const TOOL: &str = r#"{"schemaVersion":1,"name":"tool","subcommands":[{"name":"shell"},{"name":"stash"}]}"#;
@@ -19,7 +21,8 @@ fn start() -> (tempfile::TempDir, PathBuf) {
     // bind() creates the directory itself with mode 0700.
     let listener = paths::bind(&sock).unwrap().unwrap();
     let engine = Engine::new(vec![Command::from_json(GIT).unwrap(), Command::from_json(TOOL).unwrap()]);
-    std::thread::spawn(move || Arc::new(Server::new(engine)).serve(listener));
+    let server = common::isolated_server(engine, dir.path());
+    std::thread::spawn(move || Arc::new(server).serve(listener));
     (dir, sock)
 }
 
