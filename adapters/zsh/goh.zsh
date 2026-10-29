@@ -167,7 +167,7 @@ _goh_on_decision() {
          $TERM_PROGRAM == (iTerm.app|Apple_Terminal|vscode|claude-desktop) ]]; then
       _goh_told_permission=1
       # In the menu, not `zle -M`: that line goes at the next key, which is usually already being typed.
-      if [[ ${GOH_POPUP_OWN_PERMISSION-} == 1 ]]; then
+      if [[ ${GOH_POPUP_OWN_PERMISSION-} == on ]]; then
         _goh_notice="goh: goh-popup is not allowed to use Accessibility, so menus are drawn inline. Switch it on in System Settings > Privacy & Security > Accessibility"
       else
         _goh_notice="goh: this terminal is not allowed to use Accessibility, so menus are drawn inline. Run: goh doctor --fix"
@@ -203,7 +203,8 @@ _goh_pop_start() {
   dir=$(mktemp -d "${TMPDIR:-/tmp}/goh-popup.XXXXXX" 2>/dev/null) || return 1
   mkfifo $dir/in $dir/out 2>/dev/null || { rm -rf -- $dir; return 1 }
   local errf=/dev/null; [[ -n ${GOH_DEBUG-} ]] && errf=$dir/err   # GOH_DEBUG=1 keeps the popup's stderr
-  command $_GOH_POPUP <$dir/in >$dir/out 2>$errf &!
+  # The config sets this as a shell variable, not exported: hand it to the popup, which reads it at start.
+  GOH_POPUP_OWN_PERMISSION=${GOH_POPUP_OWN_PERMISSION-} command $_GOH_POPUP <$dir/in >$dir/out 2>$errf &!
   _goh_pop_pid=$!
   _goh_pop_dir=$dir
   # Read-write opens never block, and keep a reader on `in` so a dead popup cannot raise SIGPIPE.

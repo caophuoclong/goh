@@ -618,9 +618,10 @@ fn install_terminal_font(ctx: &egui::Context) {
     }
 }
 
-/// Opt-in (`GOH_POPUP_OWN_PERMISSION=1`): run the popup as its own "responsible" process, so macOS asks for the
-/// Accessibility permission once, for goh-popup, instead of once per terminal app. A child of the shell is
-/// attributed to the terminal that runs it; a process spawned with responsibility disclaimed answers for itself.
+/// Opt-in (`popup.ownPermission` in the config, `GOH_POPUP_OWN_PERMISSION=on`): run the popup as its own
+/// "responsible" process, so macOS asks for the Accessibility permission once, for goh-popup, instead of once per
+/// terminal app. A child of the shell is attributed to the terminal that runs it; a process spawned with
+/// responsibility disclaimed answers for itself.
 /// The disclaim call is private API (Chromium and LLDB use it); without it the popup runs as before. This process
 /// stays as the one the adapter knows (its pid, its stdin and stdout are shared), waits, and exits as the child does.
 /// macOS ties the permission to the binary: an unsigned build is a new binary after each update and asks again.
@@ -629,7 +630,7 @@ fn run_as_own_responsible_process() {
     use std::ffi::{CString, OsString};
     use std::os::unix::ffi::OsStrExt;
     const MARK: &str = "GOH_POPUP_RESPONSIBLE";
-    if std::env::var_os("GOH_POPUP_OWN_PERMISSION").is_none_or(|v| v != "1") || std::env::var_os(MARK).is_some() {
+    if std::env::var_os("GOH_POPUP_OWN_PERMISSION").is_none_or(|v| v != "on") || std::env::var_os(MARK).is_some() {
         return;
     }
     let cstr = |s: &std::ffi::OsStr| CString::new(s.as_bytes()).ok();

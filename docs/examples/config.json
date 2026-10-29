@@ -8,7 +8,8 @@
   },
   "popup": {
     "font": "",
-    "fontSize": 13
+    "fontSize": 13,
+    "ownPermission": false
   },
   "theme": {
     "mode": "auto"
