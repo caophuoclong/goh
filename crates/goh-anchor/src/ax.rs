@@ -296,8 +296,8 @@ fn system_focused_app(trace: &mut Vec<String>, startup: bool, timeout: f32) -> R
     r
 }
 
-/// The focused application, or failing that the app hosting this terminal while it is frontmost. Claude's
-/// accessibility tree is off until `AXManualAccessibility` is set, and until then the system-wide query
+/// The focused application, or failing that the app hosting this terminal while it is frontmost. The
+/// accessibility tree of Claude and VS Code is off until `AXManualAccessibility` is set, and until then the system-wide query
 /// answers "no value"; the setting is made only once the app is known, so without this fallback the
 /// popup would never start. A hosting app that is not frontmost is not focused, so it stays an error.
 fn focused_app(trace: &mut Vec<String>, startup: bool, timeout: f32) -> Result<(Cf, i32), i32> {
