@@ -206,7 +206,8 @@
           "name": "DIR",
           "template": "folders"
         }
-      ]
+      ],
+      "isRepeatable": true
     },
     {
       "name": "--directory",
@@ -217,7 +218,8 @@
           "name": "DIR",
           "template": "folders"
         }
-      ]
+      ],
+      "isRepeatable": true
     },
     {
       "name": "--newer-mtime",
@@ -249,7 +251,8 @@
     {
       "name": "--no-verbatim-files-from",
       "description": "Treat each line read from a file list as if it were supplied in the command line",
-      "takesValue": false
+      "takesValue": false,
+      "isRepeatable": true
     },
     {
       "name": "-null",
@@ -280,7 +283,8 @@
           "name": "FILE",
           "template": "filepaths"
         }
-      ]
+      ],
+      "isRepeatable": true
     },
     {
       "name": "--files-from",
@@ -291,7 +295,8 @@
           "name": "FILE",
           "template": "filepaths"
         }
-      ]
+      ],
+      "isRepeatable": true
     },
     {
       "name": "--unquote",
@@ -301,7 +306,8 @@
     {
       "name": "--verbatim-files-from",
       "description": "Treat each line obtained from a file list as a file name, even if it starts with a dash",
-      "takesValue": false
+      "takesValue": false,
+      "isRepeatable": true
     },
     {
       "name": "-X",
@@ -312,7 +318,8 @@
           "name": "FILE",
           "template": "filepaths"
         }
-      ]
+      ],
+      "isRepeatable": true
     },
     {
       "name": "--exclude-from",
@@ -323,7 +330,8 @@
           "name": "FILE",
           "template": "filepaths"
         }
-      ]
+      ],
+      "isRepeatable": true
     },
     {
       "name": "--index-file",
@@ -458,12 +466,14 @@
     {
       "name": "-v",
       "description": "Verbosely list files processed",
-      "takesValue": false
+      "takesValue": false,
+      "isRepeatable": true
     },
     {
       "name": "--verbose",
       "description": "Verbosely list files processed",
-      "takesValue": false
+      "takesValue": false,
+      "isRepeatable": true
     },
     {
       "name": "-w",
@@ -689,7 +699,8 @@
               "name": "DIR",
               "template": "folders"
             }
-          ]
+          ],
+          "isRepeatable": true
         },
         {
           "name": "--directory",
@@ -700,7 +711,8 @@
               "name": "DIR",
               "template": "folders"
             }
-          ]
+          ],
+          "isRepeatable": true
         },
         {
           "name": "--newer-mtime",
@@ -732,7 +744,8 @@
         {
           "name": "--no-verbatim-files-from",
           "description": "Treat each line read from a file list as if it were supplied in the command line",
-          "takesValue": false
+          "takesValue": false,
+          "isRepeatable": true
         },
         {
           "name": "-null",
@@ -763,7 +776,8 @@
               "name": "FILE",
               "template": "filepaths"
             }
-          ]
+          ],
+          "isRepeatable": true
         },
         {
           "name": "--files-from",
@@ -774,7 +788,8 @@
               "name": "FILE",
               "template": "filepaths"
             }
-          ]
+          ],
+          "isRepeatable": true
         },
         {
           "name": "--unquote",
@@ -784,7 +799,8 @@
         {
           "name": "--verbatim-files-from",
           "description": "Treat each line obtained from a file list as a file name, even if it starts with a dash",
-          "takesValue": false
+          "takesValue": false,
+          "isRepeatable": true
         },
         {
           "name": "-X",
@@ -795,7 +811,8 @@
               "name": "FILE",
               "template": "filepaths"
             }
-          ]
+          ],
+          "isRepeatable": true
         },
         {
           "name": "--exclude-from",
@@ -806,7 +823,8 @@
               "name": "FILE",
               "template": "filepaths"
             }
-          ]
+          ],
+          "isRepeatable": true
         },
         {
           "name": "--index-file",
@@ -941,12 +959,14 @@
         {
           "name": "-v",
           "description": "Verbosely list files processed",
-          "takesValue": false
+          "takesValue": false,
+          "isRepeatable": true
         },
         {
           "name": "--verbose",
           "description": "Verbosely list files processed",
-          "takesValue": false
+          "takesValue": false,
+          "isRepeatable": true
         }
       ],
       "args": [
@@ -1164,7 +1184,8 @@
               "name": "DIR",
               "template": "folders"
             }
-          ]
+          ],
+          "isRepeatable": true
         },
         {
           "name": "--directory",
@@ -1175,7 +1196,8 @@
               "name": "DIR",
               "template": "folders"
             }
-          ]
+          ],
+          "isRepeatable": true
         },
         {
           "name": "--newer-mtime",
@@ -1207,7 +1229,8 @@
         {
           "name": "--no-verbatim-files-from",
           "description": "Treat each line read from a file list as if it were supplied in the command line",
-          "takesValue": false
+          "takesValue": false,
+          "isRepeatable": true
         },
         {
           "name": "-null",
@@ -1238,7 +1261,8 @@
               "name": "FILE",
               "template": "filepaths"
             }
-          ]
+          ],
+          "isRepeatable": true
         },
         {
           "name": "--files-from",
@@ -1249,7 +1273,8 @@
               "name": "FILE",
               "template": "filepaths"
             }
-          ]
+          ],
+          "isRepeatable": true
         },
         {
           "name": "--unquote",
@@ -1259,7 +1284,8 @@
         {
           "name": "--verbatim-files-from",
           "description": "Treat each line obtained from a file list as a file name, even if it starts with a dash",
-          "takesValue": false
+          "takesValue": false,
+          "isRepeatable": true
         },
         {
           "name": "-X",
@@ -1270,7 +1296,8 @@
               "name": "FILE",
               "template": "filepaths"
             }
-          ]
+          ],
+          "isRepeatable": true
         },
         {
           "name": "--exclude-from",
@@ -1281,7 +1308,8 @@
               "name": "FILE",
               "template": "filepaths"
             }
-          ]
+          ],
+          "isRepeatable": true
         },
         {
           "name": "--index-file",
@@ -1416,12 +1444,14 @@
         {
           "name": "-v",
           "description": "Verbosely list files processed",
-          "takesValue": false
+          "takesValue": false,
+          "isRepeatable": true
         },
         {
           "name": "--verbose",
           "description": "Verbosely list files processed",
-          "takesValue": false
+          "takesValue": false,
+          "isRepeatable": true
         },
         {
           "name": "--check-device",
@@ -2242,7 +2272,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "isRepeatable": true
         },
         {
           "name": "-o",
@@ -2632,7 +2663,8 @@
               "name": "DIR",
               "template": "folders"
             }
-          ]
+          ],
+          "isRepeatable": true
         },
         {
           "name": "--directory",
@@ -2643,7 +2675,8 @@
               "name": "DIR",
               "template": "folders"
             }
-          ]
+          ],
+          "isRepeatable": true
         },
         {
           "name": "--newer-mtime",
@@ -2675,7 +2708,8 @@
         {
           "name": "--no-verbatim-files-from",
           "description": "Treat each line read from a file list as if it were supplied in the command line",
-          "takesValue": false
+          "takesValue": false,
+          "isRepeatable": true
         },
         {
           "name": "-null",
@@ -2706,7 +2740,8 @@
               "name": "FILE",
               "template": "filepaths"
             }
-          ]
+          ],
+          "isRepeatable": true
         },
         {
           "name": "--files-from",
@@ -2717,7 +2752,8 @@
               "name": "FILE",
               "template": "filepaths"
             }
-          ]
+          ],
+          "isRepeatable": true
         },
         {
           "name": "--unquote",
@@ -2727,7 +2763,8 @@
         {
           "name": "--verbatim-files-from",
           "description": "Treat each line obtained from a file list as a file name, even if it starts with a dash",
-          "takesValue": false
+          "takesValue": false,
+          "isRepeatable": true
         },
         {
           "name": "-X",
@@ -2738,7 +2775,8 @@
               "name": "FILE",
               "template": "filepaths"
             }
-          ]
+          ],
+          "isRepeatable": true
         },
         {
           "name": "--exclude-from",
@@ -2749,7 +2787,8 @@
               "name": "FILE",
               "template": "filepaths"
             }
-          ]
+          ],
+          "isRepeatable": true
         },
         {
           "name": "--index-file",
@@ -2884,12 +2923,14 @@
         {
           "name": "-v",
           "description": "Verbosely list files processed",
-          "takesValue": false
+          "takesValue": false,
+          "isRepeatable": true
         },
         {
           "name": "--verbose",
           "description": "Verbosely list files processed",
-          "takesValue": false
+          "takesValue": false,
+          "isRepeatable": true
         },
         {
           "name": "-f",
@@ -3286,7 +3327,8 @@
               "name": "DIR",
               "template": "folders"
             }
-          ]
+          ],
+          "isRepeatable": true
         },
         {
           "name": "--directory",
@@ -3297,7 +3339,8 @@
               "name": "DIR",
               "template": "folders"
             }
-          ]
+          ],
+          "isRepeatable": true
         },
         {
           "name": "--newer-mtime",
@@ -3329,7 +3372,8 @@
         {
           "name": "--no-verbatim-files-from",
           "description": "Treat each line read from a file list as if it were supplied in the command line",
-          "takesValue": false
+          "takesValue": false,
+          "isRepeatable": true
         },
         {
           "name": "-null",
@@ -3360,7 +3404,8 @@
               "name": "FILE",
               "template": "filepaths"
             }
-          ]
+          ],
+          "isRepeatable": true
         },
         {
           "name": "--files-from",
@@ -3371,7 +3416,8 @@
               "name": "FILE",
               "template": "filepaths"
             }
-          ]
+          ],
+          "isRepeatable": true
         },
         {
           "name": "--unquote",
@@ -3381,7 +3427,8 @@
         {
           "name": "--verbatim-files-from",
           "description": "Treat each line obtained from a file list as a file name, even if it starts with a dash",
-          "takesValue": false
+          "takesValue": false,
+          "isRepeatable": true
         },
         {
           "name": "-X",
@@ -3392,7 +3439,8 @@
               "name": "FILE",
               "template": "filepaths"
             }
-          ]
+          ],
+          "isRepeatable": true
         },
         {
           "name": "--exclude-from",
@@ -3403,7 +3451,8 @@
               "name": "FILE",
               "template": "filepaths"
             }
-          ]
+          ],
+          "isRepeatable": true
         },
         {
           "name": "--index-file",
@@ -3538,12 +3587,14 @@
         {
           "name": "-v",
           "description": "Verbosely list files processed",
-          "takesValue": false
+          "takesValue": false,
+          "isRepeatable": true
         },
         {
           "name": "--verbose",
           "description": "Verbosely list files processed",
-          "takesValue": false
+          "takesValue": false,
+          "isRepeatable": true
         },
         {
           "name": "-f",
@@ -4204,7 +4255,8 @@
               "name": "DIR",
               "template": "folders"
             }
-          ]
+          ],
+          "isRepeatable": true
         },
         {
           "name": "--directory",
@@ -4215,7 +4267,8 @@
               "name": "DIR",
               "template": "folders"
             }
-          ]
+          ],
+          "isRepeatable": true
         },
         {
           "name": "--newer-mtime",
@@ -4247,7 +4300,8 @@
         {
           "name": "--no-verbatim-files-from",
           "description": "Treat each line read from a file list as if it were supplied in the command line",
-          "takesValue": false
+          "takesValue": false,
+          "isRepeatable": true
         },
         {
           "name": "-null",
@@ -4278,7 +4332,8 @@
               "name": "FILE",
               "template": "filepaths"
             }
-          ]
+          ],
+          "isRepeatable": true
         },
         {
           "name": "--files-from",
@@ -4289,7 +4344,8 @@
               "name": "FILE",
               "template": "filepaths"
             }
-          ]
+          ],
+          "isRepeatable": true
         },
         {
           "name": "--unquote",
@@ -4299,7 +4355,8 @@
         {
           "name": "--verbatim-files-from",
           "description": "Treat each line obtained from a file list as a file name, even if it starts with a dash",
-          "takesValue": false
+          "takesValue": false,
+          "isRepeatable": true
         },
         {
           "name": "-X",
@@ -4310,7 +4367,8 @@
               "name": "FILE",
               "template": "filepaths"
             }
-          ]
+          ],
+          "isRepeatable": true
         },
         {
           "name": "--exclude-from",
@@ -4321,7 +4379,8 @@
               "name": "FILE",
               "template": "filepaths"
             }
-          ]
+          ],
+          "isRepeatable": true
         },
         {
           "name": "--index-file",
@@ -4456,12 +4515,14 @@
         {
           "name": "-v",
           "description": "Verbosely list files processed",
-          "takesValue": false
+          "takesValue": false,
+          "isRepeatable": true
         },
         {
           "name": "--verbose",
           "description": "Verbosely list files processed",
-          "takesValue": false
+          "takesValue": false,
+          "isRepeatable": true
         },
         {
           "name": "-f",
@@ -5365,7 +5426,8 @@
               "name": "DIR",
               "template": "folders"
             }
-          ]
+          ],
+          "isRepeatable": true
         },
         {
           "name": "--directory",
@@ -5376,7 +5438,8 @@
               "name": "DIR",
               "template": "folders"
             }
-          ]
+          ],
+          "isRepeatable": true
         },
         {
           "name": "--newer-mtime",
@@ -5408,7 +5471,8 @@
         {
           "name": "--no-verbatim-files-from",
           "description": "Treat each line read from a file list as if it were supplied in the command line",
-          "takesValue": false
+          "takesValue": false,
+          "isRepeatable": true
         },
         {
           "name": "-null",
@@ -5439,7 +5503,8 @@
               "name": "FILE",
               "template": "filepaths"
             }
-          ]
+          ],
+          "isRepeatable": true
         },
         {
           "name": "--files-from",
@@ -5450,7 +5515,8 @@
               "name": "FILE",
               "template": "filepaths"
             }
-          ]
+          ],
+          "isRepeatable": true
         },
         {
           "name": "--unquote",
@@ -5460,7 +5526,8 @@
         {
           "name": "--verbatim-files-from",
           "description": "Treat each line obtained from a file list as a file name, even if it starts with a dash",
-          "takesValue": false
+          "takesValue": false,
+          "isRepeatable": true
         },
         {
           "name": "-X",
@@ -5471,7 +5538,8 @@
               "name": "FILE",
               "template": "filepaths"
             }
-          ]
+          ],
+          "isRepeatable": true
         },
         {
           "name": "--exclude-from",
@@ -5482,7 +5550,8 @@
               "name": "FILE",
               "template": "filepaths"
             }
-          ]
+          ],
+          "isRepeatable": true
         },
         {
           "name": "--index-file",
@@ -5617,12 +5686,14 @@
         {
           "name": "-v",
           "description": "Verbosely list files processed",
-          "takesValue": false
+          "takesValue": false,
+          "isRepeatable": true
         },
         {
           "name": "--verbose",
           "description": "Verbosely list files processed",
-          "takesValue": false
+          "takesValue": false,
+          "isRepeatable": true
         },
         {
           "name": "-f",
@@ -6526,7 +6597,8 @@
               "name": "DIR",
               "template": "folders"
             }
-          ]
+          ],
+          "isRepeatable": true
         },
         {
           "name": "--directory",
@@ -6537,7 +6609,8 @@
               "name": "DIR",
               "template": "folders"
             }
-          ]
+          ],
+          "isRepeatable": true
         },
         {
           "name": "--newer-mtime",
@@ -6569,7 +6642,8 @@
         {
           "name": "--no-verbatim-files-from",
           "description": "Treat each line read from a file list as if it were supplied in the command line",
-          "takesValue": false
+          "takesValue": false,
+          "isRepeatable": true
         },
         {
           "name": "-null",
@@ -6600,7 +6674,8 @@
               "name": "FILE",
               "template": "filepaths"
             }
-          ]
+          ],
+          "isRepeatable": true
         },
         {
           "name": "--files-from",
@@ -6611,7 +6686,8 @@
               "name": "FILE",
               "template": "filepaths"
             }
-          ]
+          ],
+          "isRepeatable": true
         },
         {
           "name": "--unquote",
@@ -6621,7 +6697,8 @@
         {
           "name": "--verbatim-files-from",
           "description": "Treat each line obtained from a file list as a file name, even if it starts with a dash",
-          "takesValue": false
+          "takesValue": false,
+          "isRepeatable": true
         },
         {
           "name": "-X",
@@ -6632,7 +6709,8 @@
               "name": "FILE",
               "template": "filepaths"
             }
-          ]
+          ],
+          "isRepeatable": true
         },
         {
           "name": "--exclude-from",
@@ -6643,7 +6721,8 @@
               "name": "FILE",
               "template": "filepaths"
             }
-          ]
+          ],
+          "isRepeatable": true
         },
         {
           "name": "--index-file",
@@ -6778,12 +6857,14 @@
         {
           "name": "-v",
           "description": "Verbosely list files processed",
-          "takesValue": false
+          "takesValue": false,
+          "isRepeatable": true
         },
         {
           "name": "--verbose",
           "description": "Verbosely list files processed",
-          "takesValue": false
+          "takesValue": false,
+          "isRepeatable": true
         },
         {
           "name": "-f",
@@ -7528,7 +7609,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "isRepeatable": true
         },
         {
           "name": "-o",

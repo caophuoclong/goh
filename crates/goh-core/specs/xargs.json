@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "name": "xargs",
+  "description": "Run a command with arguments read from input",
+  "options": [
+    {
+      "name": "-0",
+      "description": "Items are separated by NUL",
+      "takesValue": false
+    },
+    {
+      "name": "-I",
+      "description": "Replace this string in the command",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "replace-str"
+        }
+      ]
+    },
+    {
+      "name": "-n",
+      "description": "At most this many arguments per run",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "max-args"
+        }
+      ]
+    },
+    {
+      "name": "-P",
+      "description": "Run this many at once",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "max-procs"
+        }
+      ]
+    },
+    {
+      "name": "-t",
+      "description": "Print each command before running it",
+      "takesValue": false
+    },
+    {
+      "name": "-p",
+      "description": "Ask before each run",
+      "takesValue": false
+    },
+    {
+      "name": "-r",
+      "description": "Do not run with empty input",
+      "takesValue": false
+    },
+    {
+      "name": "-L",
+      "description": "At most this many lines per run",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "max-lines"
+        }
+      ]
+    }
+  ],
+  "args": [
+    {
+      "name": "command",
+      "description": "The command to run",
+      "isVariadic": true,
+      "runsCommand": true
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "name": "type",
+  "description": "Describe how a name would be run",
+  "options": [
+    {
+      "name": "-a",
+      "description": "Show every way it could run",
+      "takesValue": false
+    },
+    {
+      "name": "-p",
+      "description": "Print the path only",
+      "takesValue": false
+    },
+    {
+      "name": "-t",
+      "description": "Print the kind only",
+      "takesValue": false
+    }
+  ],
+  "args": [
+    {
+      "name": "name",
+      "isVariadic": true,
+      "template": "commands"
+    }
+  ]
+}

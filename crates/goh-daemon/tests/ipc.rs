@@ -1,3 +1,5 @@
+mod common;
+
 use std::io::{Read, Write};
 use std::os::unix::fs::PermissionsExt;
 use std::os::unix::net::UnixStream;
@@ -6,7 +8,7 @@ use std::sync::Arc;
 
 use goh_core::{spec::Command, Engine};
 use goh_daemon::wire::{buffer_hash, read_message, write_frame, Reply, Request};
-use goh_daemon::{client, paths, server::Server};
+use goh_daemon::{client, paths};
 
 const GIT: &str = r#"{"schemaVersion":1,"name":"git","subcommands":[{"name":"checkout"},{"name":"cherry-pick"}]}"#;
 const TOOL: &str = r#"{"schemaVersion":1,"name":"tool","subcommands":[{"name":"shell"},{"name":"stash"}]}"#;
@@ -19,7 +21,8 @@ fn start() -> (tempfile::TempDir, PathBuf) {
     // bind() creates the directory itself with mode 0700.
     let listener = paths::bind(&sock).unwrap().unwrap();
     let engine = Engine::new(vec![Command::from_json(GIT).unwrap(), Command::from_json(TOOL).unwrap()]);
-    std::thread::spawn(move || Arc::new(Server::new(engine)).serve(listener));
+    let server = common::isolated_server(engine, dir.path());
+    std::thread::spawn(move || Arc::new(server).serve(listener));
     (dir, sock)
 }
 
@@ -189,4 +192,17 @@ fn live_requests_drop_fuzzy_matches_when_a_prefix_matches() {
     };
     assert_eq!(labels(false), ["shell", "stash"], "asked for: stash matches s..h in order");
     assert_eq!(labels(true), ["shell"], "unasked: only the prefix match");
+}
+
+#[test]
+fn an_older_shell_context_arriving_late_does_not_replace_a_newer_one() {
+    // At a cold start two sends both wait for the daemon, and the older one can land last.
+    let (_d, sock) = start();
+    let send = |aliases: Vec<[String; 2]>, seq| client::context(&sock, SESSION, aliases, vec![], vec![], String::new(), vec![], String::new(), seq).unwrap();
+    let labels = || -> Vec<String> { client::menu(&sock, SESSION, "/", "gg ch", 5, 8, false).unwrap().into_iter().map(|i| i.label).collect() };
+    send(vec![["gg".into(), "git".into()]], 2);
+    send(vec![], 1);
+    assert_eq!(labels(), ["checkout", "cherry-pick"], "the alias from the newer context stays");
+    send(vec![], 3);
+    assert!(labels().is_empty(), "a newer context still replaces it");
 }

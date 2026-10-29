@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "name": "exec",
+  "description": "Replace the shell with a command",
+  "options": [
+    {
+      "name": "-c",
+      "description": "Start with an empty environment",
+      "takesValue": false
+    },
+    {
+      "name": "-l",
+      "description": "Run as a login shell",
+      "takesValue": false
+    },
+    {
+      "name": "-a",
+      "description": "Pass this as the program's name",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "name"
+        }
+      ]
+    }
+  ],
+  "args": [
+    {
+      "name": "command",
+      "description": "The command to run",
+      "isVariadic": true,
+      "runsCommand": true
+    }
+  ]
+}

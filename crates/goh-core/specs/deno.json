@@ -1,0 +1,1704 @@
+{
+  "schemaVersion": 1,
+  "name": "deno",
+  "description": "A runtime for JavaScript and TypeScript",
+  "options": [
+    {
+      "name": "-h",
+      "description": "Show help",
+      "takesValue": false
+    },
+    {
+      "name": "--help",
+      "description": "Show help",
+      "takesValue": false
+    },
+    {
+      "name": "-V",
+      "description": "Show the version",
+      "takesValue": false
+    },
+    {
+      "name": "--version",
+      "description": "Show the version",
+      "takesValue": false
+    }
+  ],
+  "subcommands": [
+    {
+      "name": "run",
+      "description": "Run a program",
+      "options": [
+        {
+          "name": "-A",
+          "description": "Allow all permissions",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-all",
+          "description": "Allow all permissions",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-read",
+          "description": "Allow file system read access",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-write",
+          "description": "Allow file system write access",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-net",
+          "description": "Allow network access",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-env",
+          "description": "Allow environment access",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-run",
+          "description": "Allow running subprocesses",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-sys",
+          "description": "Allow access to system information",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-ffi",
+          "description": "Allow loading dynamic libraries",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-import",
+          "description": "Allow importing from remote hosts",
+          "takesValue": false
+        },
+        {
+          "name": "--deny-net",
+          "description": "Deny network access",
+          "takesValue": false
+        },
+        {
+          "name": "--deny-read",
+          "description": "Deny file system read access",
+          "takesValue": false
+        },
+        {
+          "name": "--deny-write",
+          "description": "Deny file system write access",
+          "takesValue": false
+        },
+        {
+          "name": "--env-file",
+          "description": "Load environment variables from a file",
+          "takesValue": true,
+          "isRepeatable": true,
+          "args": [
+            {
+              "name": "file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "-c",
+          "description": "Use this configuration file",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "file",
+              "template": "filepaths",
+              "extensions": [
+                "json",
+                "jsonc"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--config",
+          "description": "Use this configuration file",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "file",
+              "template": "filepaths",
+              "extensions": [
+                "json",
+                "jsonc"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--no-check",
+          "description": "Skip type-checking",
+          "takesValue": false
+        },
+        {
+          "name": "--check",
+          "description": "Type-check",
+          "takesValue": false
+        },
+        {
+          "name": "--reload",
+          "description": "Reload the source code cache",
+          "takesValue": false
+        },
+        {
+          "name": "--lock",
+          "description": "Check the lock file",
+          "takesValue": false
+        },
+        {
+          "name": "--frozen",
+          "description": "Fail if the lock file is out of date",
+          "takesValue": false
+        },
+        {
+          "name": "--watch",
+          "description": "Restart when files change",
+          "takesValue": false
+        },
+        {
+          "name": "-q",
+          "description": "Suppress diagnostic output",
+          "takesValue": false
+        },
+        {
+          "name": "--quiet",
+          "description": "Suppress diagnostic output",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "script",
+          "template": "filepaths",
+          "extensions": [
+            "ts",
+            "tsx",
+            "js",
+            "jsx",
+            "mjs",
+            "mts",
+            "cjs",
+            "cts"
+          ]
+        },
+        {
+          "name": "args",
+          "isVariadic": true,
+          "isOptional": true
+        }
+      ]
+    },
+    {
+      "name": "task",
+      "description": "Run a task from deno.json",
+      "options": [
+        {
+          "name": "--cwd",
+          "description": "Run in this directory",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "dir",
+              "template": "folders"
+            }
+          ]
+        },
+        {
+          "name": "-f",
+          "description": "Run the task in this workspace package",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "package"
+            }
+          ]
+        },
+        {
+          "name": "--filter",
+          "description": "Run the task in these workspace packages",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "package"
+            }
+          ]
+        },
+        {
+          "name": "-r",
+          "description": "Run the task in every workspace package",
+          "takesValue": false
+        },
+        {
+          "name": "--recursive",
+          "description": "Run the task in every workspace package",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "task",
+          "provider": "deno-tasks"
+        },
+        {
+          "name": "args",
+          "isVariadic": true,
+          "isOptional": true
+        }
+      ]
+    },
+    {
+      "name": "serve",
+      "description": "Run an HTTP server",
+      "options": [
+        {
+          "name": "-A",
+          "description": "Allow all permissions",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-all",
+          "description": "Allow all permissions",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-read",
+          "description": "Allow file system read access",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-write",
+          "description": "Allow file system write access",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-net",
+          "description": "Allow network access",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-env",
+          "description": "Allow environment access",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-run",
+          "description": "Allow running subprocesses",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-sys",
+          "description": "Allow access to system information",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-ffi",
+          "description": "Allow loading dynamic libraries",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-import",
+          "description": "Allow importing from remote hosts",
+          "takesValue": false
+        },
+        {
+          "name": "--deny-net",
+          "description": "Deny network access",
+          "takesValue": false
+        },
+        {
+          "name": "--deny-read",
+          "description": "Deny file system read access",
+          "takesValue": false
+        },
+        {
+          "name": "--deny-write",
+          "description": "Deny file system write access",
+          "takesValue": false
+        },
+        {
+          "name": "--env-file",
+          "description": "Load environment variables from a file",
+          "takesValue": true,
+          "isRepeatable": true,
+          "args": [
+            {
+              "name": "file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "-c",
+          "description": "Use this configuration file",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "file",
+              "template": "filepaths",
+              "extensions": [
+                "json",
+                "jsonc"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--config",
+          "description": "Use this configuration file",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "file",
+              "template": "filepaths",
+              "extensions": [
+                "json",
+                "jsonc"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--no-check",
+          "description": "Skip type-checking",
+          "takesValue": false
+        },
+        {
+          "name": "--check",
+          "description": "Type-check",
+          "takesValue": false
+        },
+        {
+          "name": "--reload",
+          "description": "Reload the source code cache",
+          "takesValue": false
+        },
+        {
+          "name": "--lock",
+          "description": "Check the lock file",
+          "takesValue": false
+        },
+        {
+          "name": "--frozen",
+          "description": "Fail if the lock file is out of date",
+          "takesValue": false
+        },
+        {
+          "name": "--watch",
+          "description": "Restart when files change",
+          "takesValue": false
+        },
+        {
+          "name": "-q",
+          "description": "Suppress diagnostic output",
+          "takesValue": false
+        },
+        {
+          "name": "--quiet",
+          "description": "Suppress diagnostic output",
+          "takesValue": false
+        },
+        {
+          "name": "--port",
+          "description": "Port to listen on",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "port"
+            }
+          ]
+        },
+        {
+          "name": "--host",
+          "description": "Host to listen on",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "host"
+            }
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "script",
+          "template": "filepaths",
+          "extensions": [
+            "ts",
+            "tsx",
+            "js",
+            "jsx",
+            "mjs",
+            "mts",
+            "cjs",
+            "cts"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "test",
+      "description": "Run tests",
+      "options": [
+        {
+          "name": "-A",
+          "description": "Allow all permissions",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-all",
+          "description": "Allow all permissions",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-read",
+          "description": "Allow file system read access",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-write",
+          "description": "Allow file system write access",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-net",
+          "description": "Allow network access",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-env",
+          "description": "Allow environment access",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-run",
+          "description": "Allow running subprocesses",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-sys",
+          "description": "Allow access to system information",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-ffi",
+          "description": "Allow loading dynamic libraries",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-import",
+          "description": "Allow importing from remote hosts",
+          "takesValue": false
+        },
+        {
+          "name": "--deny-net",
+          "description": "Deny network access",
+          "takesValue": false
+        },
+        {
+          "name": "--deny-read",
+          "description": "Deny file system read access",
+          "takesValue": false
+        },
+        {
+          "name": "--deny-write",
+          "description": "Deny file system write access",
+          "takesValue": false
+        },
+        {
+          "name": "--env-file",
+          "description": "Load environment variables from a file",
+          "takesValue": true,
+          "isRepeatable": true,
+          "args": [
+            {
+              "name": "file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "-c",
+          "description": "Use this configuration file",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "file",
+              "template": "filepaths",
+              "extensions": [
+                "json",
+                "jsonc"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--config",
+          "description": "Use this configuration file",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "file",
+              "template": "filepaths",
+              "extensions": [
+                "json",
+                "jsonc"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--no-check",
+          "description": "Skip type-checking",
+          "takesValue": false
+        },
+        {
+          "name": "--check",
+          "description": "Type-check",
+          "takesValue": false
+        },
+        {
+          "name": "--reload",
+          "description": "Reload the source code cache",
+          "takesValue": false
+        },
+        {
+          "name": "--lock",
+          "description": "Check the lock file",
+          "takesValue": false
+        },
+        {
+          "name": "--frozen",
+          "description": "Fail if the lock file is out of date",
+          "takesValue": false
+        },
+        {
+          "name": "--watch",
+          "description": "Restart when files change",
+          "takesValue": false
+        },
+        {
+          "name": "-q",
+          "description": "Suppress diagnostic output",
+          "takesValue": false
+        },
+        {
+          "name": "--quiet",
+          "description": "Suppress diagnostic output",
+          "takesValue": false
+        },
+        {
+          "name": "--filter",
+          "description": "Run tests whose name matches",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "pattern"
+            }
+          ]
+        },
+        {
+          "name": "--coverage",
+          "description": "Collect coverage into this directory",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "dir",
+              "template": "folders"
+            }
+          ]
+        },
+        {
+          "name": "--parallel",
+          "description": "Run test files in parallel",
+          "takesValue": false
+        },
+        {
+          "name": "--fail-fast",
+          "description": "Stop after the first failure",
+          "takesValue": false
+        },
+        {
+          "name": "--doc",
+          "description": "Type-check code in documentation",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "files",
+          "isVariadic": true,
+          "isOptional": true,
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "bench",
+      "description": "Run benchmarks",
+      "options": [
+        {
+          "name": "-A",
+          "description": "Allow all permissions",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-all",
+          "description": "Allow all permissions",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-read",
+          "description": "Allow file system read access",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-write",
+          "description": "Allow file system write access",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-net",
+          "description": "Allow network access",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-env",
+          "description": "Allow environment access",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-run",
+          "description": "Allow running subprocesses",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-sys",
+          "description": "Allow access to system information",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-ffi",
+          "description": "Allow loading dynamic libraries",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-import",
+          "description": "Allow importing from remote hosts",
+          "takesValue": false
+        },
+        {
+          "name": "--deny-net",
+          "description": "Deny network access",
+          "takesValue": false
+        },
+        {
+          "name": "--deny-read",
+          "description": "Deny file system read access",
+          "takesValue": false
+        },
+        {
+          "name": "--deny-write",
+          "description": "Deny file system write access",
+          "takesValue": false
+        },
+        {
+          "name": "--env-file",
+          "description": "Load environment variables from a file",
+          "takesValue": true,
+          "isRepeatable": true,
+          "args": [
+            {
+              "name": "file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "-c",
+          "description": "Use this configuration file",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "file",
+              "template": "filepaths",
+              "extensions": [
+                "json",
+                "jsonc"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--config",
+          "description": "Use this configuration file",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "file",
+              "template": "filepaths",
+              "extensions": [
+                "json",
+                "jsonc"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--no-check",
+          "description": "Skip type-checking",
+          "takesValue": false
+        },
+        {
+          "name": "--check",
+          "description": "Type-check",
+          "takesValue": false
+        },
+        {
+          "name": "--reload",
+          "description": "Reload the source code cache",
+          "takesValue": false
+        },
+        {
+          "name": "--lock",
+          "description": "Check the lock file",
+          "takesValue": false
+        },
+        {
+          "name": "--frozen",
+          "description": "Fail if the lock file is out of date",
+          "takesValue": false
+        },
+        {
+          "name": "--watch",
+          "description": "Restart when files change",
+          "takesValue": false
+        },
+        {
+          "name": "-q",
+          "description": "Suppress diagnostic output",
+          "takesValue": false
+        },
+        {
+          "name": "--quiet",
+          "description": "Suppress diagnostic output",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "files",
+          "isVariadic": true,
+          "isOptional": true,
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "check",
+      "description": "Type-check without running",
+      "options": [
+        {
+          "name": "--all",
+          "description": "Type-check remote modules too",
+          "takesValue": false
+        },
+        {
+          "name": "--doc",
+          "description": "Type-check code in documentation",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "files",
+          "isVariadic": true,
+          "isOptional": true,
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "fmt",
+      "description": "Format source files",
+      "options": [
+        {
+          "name": "--check",
+          "description": "Check whether files are formatted",
+          "takesValue": false
+        },
+        {
+          "name": "--ignore",
+          "description": "Ignore these files",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "files",
+              "template": "filepaths"
+            }
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "files",
+          "isVariadic": true,
+          "isOptional": true,
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "lint",
+      "description": "Lint source files",
+      "options": [
+        {
+          "name": "--fix",
+          "description": "Fix what can be fixed",
+          "takesValue": false
+        },
+        {
+          "name": "--rules",
+          "description": "List the rules",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "files",
+          "isVariadic": true,
+          "isOptional": true,
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "compile",
+      "description": "Compile a script into a standalone executable",
+      "options": [
+        {
+          "name": "-A",
+          "description": "Allow all permissions",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-all",
+          "description": "Allow all permissions",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-read",
+          "description": "Allow file system read access",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-write",
+          "description": "Allow file system write access",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-net",
+          "description": "Allow network access",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-env",
+          "description": "Allow environment access",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-run",
+          "description": "Allow running subprocesses",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-sys",
+          "description": "Allow access to system information",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-ffi",
+          "description": "Allow loading dynamic libraries",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-import",
+          "description": "Allow importing from remote hosts",
+          "takesValue": false
+        },
+        {
+          "name": "--deny-net",
+          "description": "Deny network access",
+          "takesValue": false
+        },
+        {
+          "name": "--deny-read",
+          "description": "Deny file system read access",
+          "takesValue": false
+        },
+        {
+          "name": "--deny-write",
+          "description": "Deny file system write access",
+          "takesValue": false
+        },
+        {
+          "name": "--env-file",
+          "description": "Load environment variables from a file",
+          "takesValue": true,
+          "isRepeatable": true,
+          "args": [
+            {
+              "name": "file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "-c",
+          "description": "Use this configuration file",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "file",
+              "template": "filepaths",
+              "extensions": [
+                "json",
+                "jsonc"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--config",
+          "description": "Use this configuration file",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "file",
+              "template": "filepaths",
+              "extensions": [
+                "json",
+                "jsonc"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--no-check",
+          "description": "Skip type-checking",
+          "takesValue": false
+        },
+        {
+          "name": "--check",
+          "description": "Type-check",
+          "takesValue": false
+        },
+        {
+          "name": "--reload",
+          "description": "Reload the source code cache",
+          "takesValue": false
+        },
+        {
+          "name": "--lock",
+          "description": "Check the lock file",
+          "takesValue": false
+        },
+        {
+          "name": "--frozen",
+          "description": "Fail if the lock file is out of date",
+          "takesValue": false
+        },
+        {
+          "name": "--watch",
+          "description": "Restart when files change",
+          "takesValue": false
+        },
+        {
+          "name": "-q",
+          "description": "Suppress diagnostic output",
+          "takesValue": false
+        },
+        {
+          "name": "--quiet",
+          "description": "Suppress diagnostic output",
+          "takesValue": false
+        },
+        {
+          "name": "-o",
+          "description": "Output file",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--output",
+          "description": "Output file",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--target",
+          "description": "Target triple",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "target",
+              "suggestions": [
+                {
+                  "name": "x86_64-unknown-linux-gnu"
+                },
+                {
+                  "name": "aarch64-unknown-linux-gnu"
+                },
+                {
+                  "name": "x86_64-pc-windows-msvc"
+                },
+                {
+                  "name": "x86_64-apple-darwin"
+                },
+                {
+                  "name": "aarch64-apple-darwin"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "script",
+          "template": "filepaths",
+          "extensions": [
+            "ts",
+            "tsx",
+            "js",
+            "jsx",
+            "mjs",
+            "mts",
+            "cjs",
+            "cts"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "add",
+      "description": "Add dependencies to deno.json",
+      "options": [
+        {
+          "name": "-D",
+          "description": "Add as a dev dependency",
+          "takesValue": false
+        },
+        {
+          "name": "--dev",
+          "description": "Add as a dev dependency",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "packages",
+          "isVariadic": true
+        }
+      ]
+    },
+    {
+      "name": "remove",
+      "description": "Remove dependencies from deno.json",
+      "args": [
+        {
+          "name": "packages",
+          "isVariadic": true
+        }
+      ]
+    },
+    {
+      "name": "install",
+      "description": "Install dependencies, or a script globally",
+      "options": [
+        {
+          "name": "-g",
+          "description": "Install a script globally",
+          "takesValue": false
+        },
+        {
+          "name": "--global",
+          "description": "Install a script globally",
+          "takesValue": false
+        },
+        {
+          "name": "-n",
+          "description": "Name of the installed executable",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "name"
+            }
+          ]
+        },
+        {
+          "name": "-f",
+          "description": "Overwrite an existing installation",
+          "takesValue": false
+        },
+        {
+          "name": "-D",
+          "description": "Add as a dev dependency",
+          "takesValue": false
+        },
+        {
+          "name": "-A",
+          "description": "Allow all permissions",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-all",
+          "description": "Allow all permissions",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-read",
+          "description": "Allow file system read access",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-write",
+          "description": "Allow file system write access",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-net",
+          "description": "Allow network access",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-env",
+          "description": "Allow environment access",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-run",
+          "description": "Allow running subprocesses",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-sys",
+          "description": "Allow access to system information",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-ffi",
+          "description": "Allow loading dynamic libraries",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-import",
+          "description": "Allow importing from remote hosts",
+          "takesValue": false
+        },
+        {
+          "name": "--deny-net",
+          "description": "Deny network access",
+          "takesValue": false
+        },
+        {
+          "name": "--deny-read",
+          "description": "Deny file system read access",
+          "takesValue": false
+        },
+        {
+          "name": "--deny-write",
+          "description": "Deny file system write access",
+          "takesValue": false
+        },
+        {
+          "name": "--env-file",
+          "description": "Load environment variables from a file",
+          "takesValue": true,
+          "isRepeatable": true,
+          "args": [
+            {
+              "name": "file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "-c",
+          "description": "Use this configuration file",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "file",
+              "template": "filepaths",
+              "extensions": [
+                "json",
+                "jsonc"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--config",
+          "description": "Use this configuration file",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "file",
+              "template": "filepaths",
+              "extensions": [
+                "json",
+                "jsonc"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--no-check",
+          "description": "Skip type-checking",
+          "takesValue": false
+        },
+        {
+          "name": "--check",
+          "description": "Type-check",
+          "takesValue": false
+        },
+        {
+          "name": "--reload",
+          "description": "Reload the source code cache",
+          "takesValue": false
+        },
+        {
+          "name": "--lock",
+          "description": "Check the lock file",
+          "takesValue": false
+        },
+        {
+          "name": "--frozen",
+          "description": "Fail if the lock file is out of date",
+          "takesValue": false
+        },
+        {
+          "name": "--watch",
+          "description": "Restart when files change",
+          "takesValue": false
+        },
+        {
+          "name": "-q",
+          "description": "Suppress diagnostic output",
+          "takesValue": false
+        },
+        {
+          "name": "--quiet",
+          "description": "Suppress diagnostic output",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "packages",
+          "isVariadic": true,
+          "isOptional": true
+        }
+      ]
+    },
+    {
+      "name": "uninstall",
+      "description": "Uninstall a dependency or a global script",
+      "options": [
+        {
+          "name": "-g",
+          "description": "Uninstall a global script",
+          "takesValue": false
+        },
+        {
+          "name": "--global",
+          "description": "Uninstall a global script",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "name"
+        }
+      ]
+    },
+    {
+      "name": "outdated",
+      "description": "Show outdated dependencies",
+      "options": [
+        {
+          "name": "-u",
+          "description": "Update them",
+          "takesValue": false
+        },
+        {
+          "name": "--update",
+          "description": "Update them",
+          "takesValue": false
+        },
+        {
+          "name": "--latest",
+          "description": "Allow major version updates",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "init",
+      "description": "Create a new project",
+      "options": [
+        {
+          "name": "--lib",
+          "description": "Create a library",
+          "takesValue": false
+        },
+        {
+          "name": "--serve",
+          "description": "Create a server",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "dir",
+          "isOptional": true,
+          "template": "folders"
+        }
+      ]
+    },
+    {
+      "name": "info",
+      "description": "Show information about a module or the cache",
+      "args": [
+        {
+          "name": "file",
+          "isOptional": true,
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "doc",
+      "description": "Show documentation for a module",
+      "options": [
+        {
+          "name": "--html",
+          "description": "Write HTML documentation",
+          "takesValue": false
+        },
+        {
+          "name": "--lint",
+          "description": "Check the documentation",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "files",
+          "isVariadic": true,
+          "isOptional": true,
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "eval",
+      "description": "Evaluate code",
+      "options": [
+        {
+          "name": "-p",
+          "description": "Print the result",
+          "takesValue": false
+        },
+        {
+          "name": "--print",
+          "description": "Print the result",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "code"
+        }
+      ]
+    },
+    {
+      "name": "repl",
+      "description": "Start an interactive shell",
+      "options": [
+        {
+          "name": "-A",
+          "description": "Allow all permissions",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-all",
+          "description": "Allow all permissions",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-read",
+          "description": "Allow file system read access",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-write",
+          "description": "Allow file system write access",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-net",
+          "description": "Allow network access",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-env",
+          "description": "Allow environment access",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-run",
+          "description": "Allow running subprocesses",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-sys",
+          "description": "Allow access to system information",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-ffi",
+          "description": "Allow loading dynamic libraries",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-import",
+          "description": "Allow importing from remote hosts",
+          "takesValue": false
+        },
+        {
+          "name": "--deny-net",
+          "description": "Deny network access",
+          "takesValue": false
+        },
+        {
+          "name": "--deny-read",
+          "description": "Deny file system read access",
+          "takesValue": false
+        },
+        {
+          "name": "--deny-write",
+          "description": "Deny file system write access",
+          "takesValue": false
+        },
+        {
+          "name": "--env-file",
+          "description": "Load environment variables from a file",
+          "takesValue": true,
+          "isRepeatable": true,
+          "args": [
+            {
+              "name": "file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "-c",
+          "description": "Use this configuration file",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "file",
+              "template": "filepaths",
+              "extensions": [
+                "json",
+                "jsonc"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--config",
+          "description": "Use this configuration file",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "file",
+              "template": "filepaths",
+              "extensions": [
+                "json",
+                "jsonc"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--no-check",
+          "description": "Skip type-checking",
+          "takesValue": false
+        },
+        {
+          "name": "--check",
+          "description": "Type-check",
+          "takesValue": false
+        },
+        {
+          "name": "--reload",
+          "description": "Reload the source code cache",
+          "takesValue": false
+        },
+        {
+          "name": "--lock",
+          "description": "Check the lock file",
+          "takesValue": false
+        },
+        {
+          "name": "--frozen",
+          "description": "Fail if the lock file is out of date",
+          "takesValue": false
+        },
+        {
+          "name": "--watch",
+          "description": "Restart when files change",
+          "takesValue": false
+        },
+        {
+          "name": "-q",
+          "description": "Suppress diagnostic output",
+          "takesValue": false
+        },
+        {
+          "name": "--quiet",
+          "description": "Suppress diagnostic output",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "cache",
+      "description": "Cache dependencies",
+      "args": [
+        {
+          "name": "files",
+          "isVariadic": true,
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "clean",
+      "description": "Remove the cache directory"
+    },
+    {
+      "name": "publish",
+      "description": "Publish the package to JSR",
+      "options": [
+        {
+          "name": "--dry-run",
+          "description": "Check without publishing",
+          "takesValue": false
+        },
+        {
+          "name": "--allow-dirty",
+          "description": "Allow uncommitted changes",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "upgrade",
+      "description": "Upgrade deno itself",
+      "options": [
+        {
+          "name": "--dry-run",
+          "description": "Check without replacing",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "version",
+          "isOptional": true,
+          "suggestions": [
+            {
+              "name": "stable"
+            },
+            {
+              "name": "rc"
+            },
+            {
+              "name": "canary"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "jupyter",
+      "description": "Deno kernel for Jupyter",
+      "options": [
+        {
+          "name": "--install",
+          "description": "Install the kernelspec",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "lsp",
+      "description": "Start the language server"
+    },
+    {
+      "name": "types",
+      "description": "Print runtime TypeScript declarations"
+    },
+    {
+      "name": "completions",
+      "description": "Generate shell completions",
+      "args": [
+        {
+          "name": "shell",
+          "suggestions": [
+            {
+              "name": "bash"
+            },
+            {
+              "name": "zsh"
+            },
+            {
+              "name": "fish"
+            },
+            {
+              "name": "powershell"
+            },
+            {
+              "name": "fig"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -444,7 +444,10 @@
       ],
       "args": [
         {
-          "name": "command"
+          "name": "command",
+          "isVariadic": true,
+          "runsCommand": true,
+          "provider": "python-scripts"
         }
       ]
     },

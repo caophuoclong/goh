@@ -3520,7 +3520,15 @@
     },
     {
       "name": "x",
-      "description": "Run an npx command"
+      "description": "Run an npx command",
+      "args": [
+        {
+          "name": "command",
+          "isVariadic": true,
+          "runsCommand": true,
+          "provider": "node-bins"
+        }
+      ]
     },
     {
       "name": "repl",

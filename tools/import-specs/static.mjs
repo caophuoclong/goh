@@ -225,6 +225,7 @@ export function convertSpec(raw, command, report) {
       metadata(option, out);
       if (option.args !== undefined && option.args !== null) { out.takesValue = true; out.args = args(option.args, where); }
       else out.takesValue = false;
+      if (option.isRepeatable === true || (typeof option.isRepeatable === 'number' && option.isRepeatable > 1)) out.isRepeatable = true;
       return { spec: out, persistent: option.isPersistent === true };
     });
   });

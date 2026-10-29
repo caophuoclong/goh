@@ -1652,6 +1652,14 @@
           "description": "Output usage information",
           "takesValue": false
         }
+      ],
+      "args": [
+        {
+          "name": "command",
+          "isVariadic": true,
+          "runsCommand": true,
+          "provider": "node-bins"
+        }
       ]
     },
     {
@@ -5482,7 +5490,10 @@
           "description": "Script to run from your package.json",
           "isVariadic": true,
           "isCommand": false,
-          "provider": "package-scripts"
+          "provider": "package-scripts",
+          "providers": [
+            "node-bins"
+          ]
         },
         {
           "name": "env",

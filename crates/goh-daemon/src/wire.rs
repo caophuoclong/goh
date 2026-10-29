@@ -45,6 +45,14 @@ pub enum Request {
         /// Names of the exported variables (never their values).
         #[serde(default)]
         env: Vec<String>,
+        /// `$CDPATH`, where `cd name` also looks.
+        #[serde(default)]
+        cdpath: String,
+        /// Counts up with each context a session sends. Sends can arrive out of order (two of them waiting for the
+        /// daemon to start), so the daemon keeps the context with the highest one; equal counts replace each
+        /// other, so a sender that leaves it out (0) always replaces.
+        #[serde(default)]
+        seq: u64,
     },
 }
 

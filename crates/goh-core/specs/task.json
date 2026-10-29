@@ -148,5 +148,13 @@
       "isVariadic": true,
       "isOptional": true
     }
+  ],
+  "requiresFiles": [
+    "Taskfile.yml",
+    "Taskfile.yaml",
+    "taskfile.yml",
+    "taskfile.yaml",
+    "Taskfile.dist.yml",
+    "Taskfile.dist.yaml"
   ]
 }

@@ -1,0 +1,879 @@
+{
+  "schemaVersion": 1,
+  "name": "bundle",
+  "description": "Ruby Dependency Management",
+  "options": [
+    {
+      "name": "--no-color",
+      "description": "Print all output without color",
+      "takesValue": false
+    },
+    {
+      "name": "--retry",
+      "description": "Specify the number of times you wish to attempt network commands",
+      "takesValue": false
+    },
+    {
+      "name": "-r",
+      "description": "Specify the number of times you wish to attempt network commands",
+      "takesValue": false
+    },
+    {
+      "name": "--verbose",
+      "description": "Print out additional logging information",
+      "takesValue": false
+    },
+    {
+      "name": "-V",
+      "description": "Print out additional logging information",
+      "takesValue": false
+    }
+  ],
+  "subcommands": [
+    {
+      "name": "install",
+      "description": "Install the gems specified by the Gemfile or Gemfile.lock",
+      "options": [
+        {
+          "name": "--binstubs",
+          "description": "Create binstubs in dir",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument",
+              "template": "folders"
+            }
+          ]
+        },
+        {
+          "name": "--clean",
+          "description": "Remove unused gems after install",
+          "takesValue": false
+        },
+        {
+          "name": "--deployment",
+          "description": "For Production and CI use",
+          "takesValue": false
+        },
+        {
+          "name": "--force",
+          "description": "Redownload all gems",
+          "takesValue": false
+        },
+        {
+          "name": "--redownload",
+          "description": "Redownload all gems",
+          "takesValue": false
+        },
+        {
+          "name": "--frozen",
+          "description": "Do not allow lock file to update",
+          "takesValue": false
+        },
+        {
+          "name": "--full-index",
+          "description": "Cache the full index locally",
+          "takesValue": false
+        },
+        {
+          "name": "--gemfile",
+          "description": "The gemfile to use",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--jobs",
+          "description": "Maximum number of parallel installs",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--local",
+          "description": "Use only gems already downloaded or cached",
+          "takesValue": false
+        },
+        {
+          "name": "--no-cache",
+          "description": "Do not use vendor/cache",
+          "takesValue": false
+        },
+        {
+          "name": "--no-prune",
+          "description": "Do not remove stale gems",
+          "takesValue": false
+        },
+        {
+          "name": "--path",
+          "description": "Path the install gems too",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument",
+              "template": "folders"
+            }
+          ]
+        },
+        {
+          "name": "--quiet",
+          "description": "Do not print to stdout",
+          "takesValue": false
+        },
+        {
+          "name": "--retry",
+          "description": "Retry failed network requests N times",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--shebang",
+          "description": "Uses the specified ruby executable for binstubs",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--standalone",
+          "description": "Makes a bundle that can work without depending on Rubygems or Bundler at runtime",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--system",
+          "description": "Use system Rubygems location",
+          "takesValue": false
+        },
+        {
+          "name": "--trust-policy",
+          "description": "Apply the Rubygems security policy",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--with",
+          "description": "Groups to install",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--without",
+          "description": "Groups to NOT install",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "update",
+      "description": "Update dependencies to their latest versions",
+      "options": [
+        {
+          "name": "--all",
+          "description": "Update all gems specified in Gemfile",
+          "takesValue": false
+        },
+        {
+          "name": "--group",
+          "description": "Only update the gems in the specified group",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "-g",
+          "description": "Only update the gems in the specified group",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--source",
+          "description": "The name of a :git or :path source used in the Gemfile",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--local",
+          "description": "Use only gems already downloaded or cached",
+          "takesValue": false
+        },
+        {
+          "name": "--ruby",
+          "description": "Update the locked version of Ruby to the current version of Ruby",
+          "takesValue": false
+        },
+        {
+          "name": "--bundler",
+          "description": "Update the locked version of bundler to the invoked bundler version",
+          "takesValue": false
+        },
+        {
+          "name": "--full-index",
+          "description": "Fall back to using the single-file index of all gems",
+          "takesValue": false
+        },
+        {
+          "name": "--jobs",
+          "description": "Specify the number of jobs to run in parallel. The default is 1",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "-j",
+          "description": "Specify the number of jobs to run in parallel. The default is 1",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--retry",
+          "description": "Retry failed network or git requests for number times",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--quiet",
+          "description": "Only output warnings and errors",
+          "takesValue": false
+        },
+        {
+          "name": "--force",
+          "description": "Force downloading every gem",
+          "takesValue": false
+        },
+        {
+          "name": "--redownload",
+          "description": "Force downloading every gem",
+          "takesValue": false
+        },
+        {
+          "name": "--patch",
+          "description": "Prefer updating only to next patch version",
+          "takesValue": false
+        },
+        {
+          "name": "--minor",
+          "description": "Prefer updating only to next minor version",
+          "takesValue": false
+        },
+        {
+          "name": "--major",
+          "description": "Prefer updating to next major version (default)",
+          "takesValue": false
+        },
+        {
+          "name": "--strict",
+          "description": "Do not allow any gem to be updated past latest --patch | --minor | --major",
+          "takesValue": false
+        },
+        {
+          "name": "--conservative",
+          "description": "Do not allow shared dependencies to be updated",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "gem",
+          "isOptional": true
+        }
+      ]
+    },
+    {
+      "name": "package",
+      "description": "Package the .gem files required by your application into the vendor/cache directory"
+    },
+    {
+      "name": "exec",
+      "description": "Execute a command in the context of the bundle",
+      "options": [
+        {
+          "name": "--keep-file-descriptors",
+          "description": "Pass all file descriptors to the new process",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "argument",
+          "isVariadic": true,
+          "isCommand": true
+        }
+      ]
+    },
+    {
+      "name": "config",
+      "args": [
+        {
+          "name": "argument"
+        }
+      ]
+    },
+    {
+      "name": "help"
+    },
+    {
+      "name": "add",
+      "description": "Add gem to the Gemfile and run bundle install",
+      "options": [
+        {
+          "name": "--version",
+          "description": "Specify version requirements",
+          "takesValue": false
+        },
+        {
+          "name": "-v",
+          "description": "Specify version requirements",
+          "takesValue": false
+        },
+        {
+          "name": "--group",
+          "description": "Specify the group(s) for the added gem",
+          "takesValue": false
+        },
+        {
+          "name": "-g",
+          "description": "Specify the group(s) for the added gem",
+          "takesValue": false
+        },
+        {
+          "name": "--source",
+          "description": "Specify the source",
+          "takesValue": false
+        },
+        {
+          "name": "-s",
+          "description": "Specify the source",
+          "takesValue": false
+        },
+        {
+          "name": "--skip-install",
+          "description": "Adds the gem to the Gemfile but does not install it",
+          "takesValue": false
+        },
+        {
+          "name": "--optimistic",
+          "description": "Adds optimistic declaration of version",
+          "takesValue": false
+        },
+        {
+          "name": "--strict",
+          "description": "Adds strict declaration of version",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "argument"
+        }
+      ]
+    },
+    {
+      "name": "binstubs",
+      "description": "Install the binstubs of the listed gems",
+      "options": [
+        {
+          "name": "--force",
+          "description": "Overwrite existing binstubs",
+          "takesValue": false
+        },
+        {
+          "name": "--path",
+          "description": "The location to install the specified binstubs to",
+          "takesValue": false
+        },
+        {
+          "name": "--standalone",
+          "description": "Makes binstubs that can work without depending on Rubygems or Bundler at runtime",
+          "takesValue": false
+        },
+        {
+          "name": "--shebang",
+          "description": "Specify a different shebang executable name than the default",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "argument"
+        }
+      ]
+    },
+    {
+      "name": "check",
+      "description": "Determine whether the requirements for your application are installed and available to Bundler",
+      "options": [
+        {
+          "name": "--dry-run",
+          "description": "Locks the Gemfile before running the command",
+          "takesValue": false
+        },
+        {
+          "name": "--gemfile",
+          "description": "Use the specified gemfile instead of the Gemfile",
+          "takesValue": false
+        },
+        {
+          "name": "--path",
+          "description": "Specify a different path than the system default",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "show",
+      "description": "Show the source location of a particular gem in the bundle",
+      "options": [
+        {
+          "name": "--paths",
+          "description": "List the paths of all gems that are required by your Gemfile",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "gem",
+          "isOptional": true
+        }
+      ]
+    },
+    {
+      "name": "outdated",
+      "description": "Show all of the outdated gems in the current bundle",
+      "options": [
+        {
+          "name": "--local",
+          "description": "Do not attempt to fetch gems remotely and use the gem cache instead",
+          "takesValue": false
+        },
+        {
+          "name": "--pre",
+          "description": "Check for newer pre-release gems",
+          "takesValue": false
+        },
+        {
+          "name": "--source",
+          "description": "Check against a specific source",
+          "takesValue": false
+        },
+        {
+          "name": "--strict",
+          "description": "Only list newer versions allowed by your Gemfile requirements",
+          "takesValue": false
+        },
+        {
+          "name": "--parseable",
+          "description": "Use minimal formatting for more parseable output",
+          "takesValue": false
+        },
+        {
+          "name": "--porcelain",
+          "description": "Use minimal formatting for more parseable output",
+          "takesValue": false
+        },
+        {
+          "name": "--group",
+          "description": "List gems from a specific group",
+          "takesValue": false
+        },
+        {
+          "name": "--groups",
+          "description": "List gems organized by groups",
+          "takesValue": false
+        },
+        {
+          "name": "--update-strict",
+          "description": "Strict conservative resolution, do not allow any gem to be updated past latest --patch | --minor| --major",
+          "takesValue": false
+        },
+        {
+          "name": "--minor",
+          "description": "Prefer updating only to next minor version",
+          "takesValue": false
+        },
+        {
+          "name": "--major",
+          "description": "Prefer updating to next major version (default)",
+          "takesValue": false
+        },
+        {
+          "name": "--patch",
+          "description": "Prefer updating only to next patch version",
+          "takesValue": false
+        },
+        {
+          "name": "--filter-major",
+          "description": "Only list major newer versions",
+          "takesValue": false
+        },
+        {
+          "name": "--filter-minor",
+          "description": "Only list minor newer versions",
+          "takesValue": false
+        },
+        {
+          "name": "--filter-patch",
+          "description": "Only list patch newer versions",
+          "takesValue": false
+        },
+        {
+          "name": "--only-explicit",
+          "description": "Only list gems specified in your Gemfile, not their dependencies",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "console",
+      "description": "Start an IRB session in the current bundle"
+    },
+    {
+      "name": "open",
+      "description": "Open an installed gem in the editor",
+      "args": [
+        {
+          "name": "gem"
+        }
+      ]
+    },
+    {
+      "name": "lock",
+      "description": "Generate a lockfile for your dependencies",
+      "options": [
+        {
+          "name": "--update",
+          "description": "Ignores the existing lockfile",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--local",
+          "description": "Do not attempt to connect to rubygems.org",
+          "takesValue": false
+        },
+        {
+          "name": "--print",
+          "description": "Prints the lockfile to STDOUT instead of writing to the file  system",
+          "takesValue": false
+        },
+        {
+          "name": "--lockfile",
+          "description": "The path where the lockfile should be written to",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "path"
+            }
+          ]
+        },
+        {
+          "name": "--full-index",
+          "description": "Fall back to using the single-file index of all gems",
+          "takesValue": false
+        },
+        {
+          "name": "--add-platform",
+          "description": "Add a new platform to the lockfile, re-resolving for the addi-  tion of that platform",
+          "takesValue": false
+        },
+        {
+          "name": "--remove-platform",
+          "description": "Remove a platform from the lockfile",
+          "takesValue": false
+        },
+        {
+          "name": "--patch",
+          "description": "If updating, prefer updating only to next patch version",
+          "takesValue": false
+        },
+        {
+          "name": "--minor",
+          "description": "If updating, prefer updating only to next minor version",
+          "takesValue": false
+        },
+        {
+          "name": "--major",
+          "description": "If updating, prefer updating to next major version (default)",
+          "takesValue": false
+        },
+        {
+          "name": "--strict",
+          "description": "If updating, do not allow any gem to be updated past latest --patch | --minor | --major",
+          "takesValue": false
+        },
+        {
+          "name": "--conservative",
+          "description": "If updating, use bundle install conservative update behavior and do not allow shared dependencies to be updated",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "viz",
+      "description": "Generate a visual representation of your dependencies",
+      "options": [
+        {
+          "name": "--file",
+          "description": "The name to use for the generated file. See --format option",
+          "takesValue": false
+        },
+        {
+          "name": "-f",
+          "description": "The name to use for the generated file. See --format option",
+          "takesValue": false
+        },
+        {
+          "name": "--format",
+          "description": "This is output format option",
+          "takesValue": false
+        },
+        {
+          "name": "-F",
+          "description": "This is output format option",
+          "takesValue": false
+        },
+        {
+          "name": "--requirements",
+          "description": "Set to show the version of each required dependency",
+          "takesValue": false
+        },
+        {
+          "name": "-R",
+          "description": "Set to show the version of each required dependency",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Set to show each gem version",
+          "takesValue": false
+        },
+        {
+          "name": "-v",
+          "description": "Set to show each gem version",
+          "takesValue": false
+        },
+        {
+          "name": "--without",
+          "description": "Exclude gems that are part of the specified named group",
+          "takesValue": false
+        },
+        {
+          "name": "-W",
+          "description": "Exclude gems that are part of the specified named group",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "init",
+      "description": "Generate a simple Gemfile, placed in the current directory",
+      "options": [
+        {
+          "name": "--gemspec",
+          "description": "Use the specified .gemspec to create the Gemfile",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "gem",
+      "description": "Create a simple gem, suitable for development with Bundler",
+      "options": [
+        {
+          "name": "--exe",
+          "description": "Specify that Bundler should create a binary executable",
+          "takesValue": false
+        },
+        {
+          "name": "-b",
+          "description": "Specify that Bundler should create a binary executable",
+          "takesValue": false
+        },
+        {
+          "name": "--bin",
+          "description": "Specify that Bundler should create a binary executable",
+          "takesValue": false
+        },
+        {
+          "name": "--no-exe",
+          "description": "Do not create a binary",
+          "takesValue": false
+        },
+        {
+          "name": "--coc",
+          "description": "Add a CODE_OF_CONDUCT.md file to the root of the generated project",
+          "takesValue": false
+        },
+        {
+          "name": "--no-coc",
+          "description": "Do not create a CODE_OF_CONDUCT.md",
+          "takesValue": false
+        },
+        {
+          "name": "--ext",
+          "description": "Add boilerplate for C extension code to the generated project",
+          "takesValue": false
+        },
+        {
+          "name": "--no-ext",
+          "description": "Do not add C extension code",
+          "takesValue": false
+        },
+        {
+          "name": "--mit",
+          "description": "Add an MIT license",
+          "takesValue": false
+        },
+        {
+          "name": "--no-mit",
+          "description": "Do not create a LICENSE.txt",
+          "takesValue": false
+        },
+        {
+          "name": "-t",
+          "description": "Specify the test framework that Bundler should use",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--test",
+          "description": "Specify the test framework that Bundler should use",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "-e",
+          "description": "Open the resulting gemspec in EDITOR",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--edit",
+          "description": "Open the resulting gemspec in EDITOR",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "platform",
+      "description": "Display platform compatibility information",
+      "options": [
+        {
+          "name": "--ruby",
+          "description": "It will display the ruby directive information so you don't have to parse it from the Gemfile",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "clean",
+      "description": "Clean up unused gems in your Bundler directory",
+      "options": [
+        {
+          "name": "--dry-run",
+          "description": "Print the changes, but do not clean the unused gems",
+          "takesValue": false
+        },
+        {
+          "name": "--force",
+          "description": "Force a clean even if --path is not set",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "doctor",
+      "description": "Display warnings about common problems",
+      "options": [
+        {
+          "name": "--quiet",
+          "description": "Only output warnings and errors",
+          "takesValue": false
+        },
+        {
+          "name": "--gemfile",
+          "description": "The location of the Gemfile which Bundler should use",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -487,7 +487,8 @@
           "isOptional": true,
           "template": "folders"
         }
-      ]
+      ],
+      "isRepeatable": true
     },
     {
       "name": "-I",

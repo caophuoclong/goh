@@ -85,6 +85,24 @@
     "df",
     "touch",
     "cat",
-    "ps"
+    "ps",
+    "pipenv",
+    "gradle",
+    "mvn",
+    "dotnet",
+    "bundle",
+    "gem",
+    "rake",
+    "flutter",
+    "minikube",
+    "rclone",
+    "ffmpeg",
+    "launchctl",
+    "defaults",
+    "swift",
+    "serverless",
+    "k9s",
+    "ruby",
+    "java"
   ]
 }

@@ -14,6 +14,14 @@ pub struct Command {
     pub options: Vec<Opt>,
     #[serde(default)]
     pub args: Vec<Arg>,
+    /// The spec applies only where one of these files is in the working directory or above it (`task` is
+    /// go-task's only next to a Taskfile; elsewhere it may be Taskwarrior).
+    #[serde(default)]
+    pub requires_files: Vec<String>,
+    /// Where the user's own names for subcommands come from (`git co` from `[alias] co = checkout` in
+    /// git's config): each value's description is what the name stands for.
+    #[serde(default)]
+    pub subcommand_aliases: Option<Provider>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -24,6 +32,9 @@ pub struct Opt {
     pub description: Option<String>,
     #[serde(default)]
     pub takes_value: bool,
+    /// Offered again after it was given (`-v -v`). Options that take a value are always offered again.
+    #[serde(default)]
+    pub is_repeatable: bool,
     #[serde(default)]
     pub args: Vec<Arg>,
 }
@@ -40,6 +51,10 @@ pub struct Arg {
     pub providers: Vec<Provider>,
     #[serde(default)]
     pub is_command: bool,
+    /// The rest of the line is a command this one runs on this machine (`sudo`, `time`, `npx`): its first
+    /// word completes as a command and the words after it by that command's spec.
+    #[serde(default)]
+    pub runs_command: bool,
     #[serde(default)]
     pub template: Option<Template>,
     /// With `filepaths`: only files ending in one of these (without the dot, e.g. `py`, `tar.gz`); directories stay.
@@ -92,6 +107,20 @@ pub enum Provider {
     BrewInstalled,
     /// Every Homebrew formula and cask Homebrew knows of, from its own local cache of the API (`brew install`, `info`).
     BrewAvailable,
+    /// `[alias]` entries of git's config (yours and the repository's), described by what they stand for.
+    GitAliases,
+    /// Recent commits of the current branch, newest first, with their subject.
+    GitCommits,
+    /// Pods of the current kubectl context and namespace.
+    KubePods,
+    /// Namespaces of the current kubectl context.
+    KubeNamespaces,
+    /// Scripts of the nearest `pyproject.toml` (`[project.scripts]`, Poetry, PDM, Rye, Hatch, Poe) and `Pipfile`.
+    PythonScripts,
+    /// Tasks of the nearest `deno.json` / `deno.jsonc`.
+    DenoTasks,
+    /// Programs in the nearest `node_modules/.bin` (`npx`, `pnpm exec`, `yarn run`).
+    NodeBins,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize)]
@@ -99,6 +128,8 @@ pub enum Provider {
 pub enum Template {
     Filepaths,
     Folders,
+    /// Names of commands: those with a spec and what the shell can run (`man`, `which`).
+    Commands,
 }
 
 #[derive(Debug, Clone, Deserialize)]

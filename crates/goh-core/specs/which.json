@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "name": "which",
+  "description": "Show where a command is",
+  "options": [
+    {
+      "name": "-a",
+      "description": "Print every match",
+      "takesValue": false
+    }
+  ],
+  "args": [
+    {
+      "name": "command",
+      "isVariadic": true,
+      "template": "commands"
+    }
+  ]
+}

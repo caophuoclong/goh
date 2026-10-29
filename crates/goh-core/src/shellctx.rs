@@ -18,6 +18,8 @@ pub struct ShellContext {
     pub names: Vec<(String, NameKind)>,
     /// Names (never values) of the exported variables, for `$NA` and `export NA`.
     pub env: Vec<String>,
+    /// The absolute folders of `$CDPATH`, where `cd name` also looks.
+    pub cdpath: Vec<String>,
 }
 
 /// A line with its first word (an alias) replaced by what it stands for.

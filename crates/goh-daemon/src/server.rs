@@ -32,7 +32,8 @@ pub struct Server {
     autospecs: crate::autospec::AutoSpecs,
     sessions: Mutex<HashMap<String, Session>>,
     shells: crate::shell::Shells,
-    contexts: Mutex<HashMap<String, Arc<ShellContext>>>,
+    /// Each session's latest context, with its `seq`.
+    contexts: Mutex<HashMap<String, (u64, Arc<ShellContext>)>>,
     usage: Mutex<(Instant, Arc<crate::usage::Usage>)>,
     usage_file: std::path::PathBuf,
     connections: AtomicUsize,
@@ -109,7 +110,7 @@ impl Server {
                     return None;
                 }
                 let candidates = if editor_state == "editing" {
-                    let shell = self.contexts.lock().ok().and_then(|c| c.get(&session_id).cloned()).unwrap_or_default();
+                    let shell = self.contexts.lock().ok().and_then(|c| c.get(&session_id).map(|(_, ctx)| ctx.clone())).unwrap_or_default();
                     let mut found = match self.engine.complete_in(&buffer, cursor_byte, Path::new(&cwd), &|p, cwd| self.providers.values(p, cwd), &shell) {
                         // As-you-type requests only get suggestions for a recognised command in progress.
                         Ok(c) if live && c.valid => c.prefix_matches_only().candidates,
@@ -141,16 +142,21 @@ impl Server {
                 Some(Reply::Results { v: 1, session_id, generation, suggestions: candidates })
             }
             Request::Hello { v } => (v == 1).then(|| Reply::Hello { v: 1, version: env!("CARGO_PKG_VERSION").to_string(), pid: std::process::id() }),
-            Request::Context { v, session_id, aliases, functions, builtins, path, env } => {
+            Request::Context { v, session_id, aliases, functions, builtins, path, env, cdpath, seq } => {
                 if v != 1 || !valid_session(&session_id) {
                     return None;
                 }
-                let ctx = self.shells.context(&aliases, &functions, &builtins, &path, &env);
+                let mut ctx = self.shells.context(&aliases, &functions, &builtins, &path, &env);
+                ctx.cdpath = crate::shell::cdpath_dirs(&cdpath);
                 let mut contexts = self.contexts.lock().ok()?;
+                if contexts.get(&session_id).is_some_and(|(newest, _)| seq < *newest) {
+                    // An older send that arrived late: the shell already moved on.
+                    return Some(Reply::Ack { v: 1 });
+                }
                 if contexts.len() >= MAX_SESSIONS && !contexts.contains_key(&session_id) {
                     contexts.clear();
                 }
-                contexts.insert(session_id, Arc::new(ctx));
+                contexts.insert(session_id, (seq, Arc::new(ctx)));
                 Some(Reply::Ack { v: 1 })
             }
             Request::Accept { v, session_id, generation, suggestion_id, buffer_hash } => {

@@ -12,6 +12,64 @@
       "name": "--version",
       "description": "Print the version",
       "takesValue": false
+    },
+    {
+      "name": "-C",
+      "description": "Run as if git was started in this directory",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "path",
+          "template": "folders"
+        }
+      ]
+    },
+    {
+      "name": "-c",
+      "description": "Set a configuration value for this command",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "name=value"
+        }
+      ]
+    },
+    {
+      "name": "--no-pager",
+      "description": "Do not pipe output into a pager",
+      "takesValue": false
+    },
+    {
+      "name": "-P",
+      "description": "Do not pipe output into a pager",
+      "takesValue": false
+    },
+    {
+      "name": "--paginate",
+      "description": "Pipe output into a pager",
+      "takesValue": false
+    },
+    {
+      "name": "--git-dir",
+      "description": "Path to the repository",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "path",
+          "template": "folders"
+        }
+      ]
+    },
+    {
+      "name": "--work-tree",
+      "description": "Path to the working tree",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "path",
+          "template": "folders"
+        }
+      ]
     }
   ],
   "subcommands": [
@@ -118,6 +176,12 @@
           "provider": "git-branches",
           "providers": [
             "git-tags"
+          ],
+          "suggestions": [
+            {
+              "name": "-",
+              "description": "previous branch"
+            }
           ]
         }
       ]
@@ -128,7 +192,16 @@
       "args": [
         {
           "name": "commit",
-          "provider": "git-branches"
+          "provider": "git-branches",
+          "providers": [
+            "git-commits"
+          ],
+          "suggestions": [
+            {
+              "name": "-",
+              "description": "last commit of the previous branch"
+            }
+          ]
         }
       ]
     },
@@ -287,7 +360,13 @@
       "args": [
         {
           "name": "branch",
-          "provider": "git-branches"
+          "provider": "git-branches",
+          "suggestions": [
+            {
+              "name": "-",
+              "description": "previous branch"
+            }
+          ]
         }
       ]
     },
@@ -376,7 +455,16 @@
       "args": [
         {
           "name": "branch",
-          "provider": "git-branches"
+          "provider": "git-branches",
+          "providers": [
+            "git-commits"
+          ],
+          "suggestions": [
+            {
+              "name": "-",
+              "description": "previous branch"
+            }
+          ]
         }
       ]
     },
@@ -512,7 +600,8 @@
           "provider": "git-staged-files",
           "providers": [
             "git-branches",
-            "git-tags"
+            "git-tags",
+            "git-commits"
           ],
           "isVariadic": true,
           "isOptional": true
@@ -583,7 +672,10 @@
         {
           "name": "commit",
           "provider": "git-branches",
-          "isVariadic": true
+          "isVariadic": true,
+          "providers": [
+            "git-commits"
+          ]
         }
       ]
     },
@@ -645,7 +737,8 @@
           "name": "object",
           "provider": "git-branches",
           "providers": [
-            "git-tags"
+            "git-tags",
+            "git-commits"
           ],
           "isVariadic": true,
           "isOptional": true
@@ -780,7 +873,13 @@
       "args": [
         {
           "name": "branch",
-          "provider": "git-branches"
+          "provider": "git-branches",
+          "suggestions": [
+            {
+              "name": "-",
+              "description": "previous branch"
+            }
+          ]
         }
       ]
     },
@@ -844,5 +943,6 @@
         }
       ]
     }
-  ]
+  ],
+  "subcommandAliases": "git-aliases"
 }

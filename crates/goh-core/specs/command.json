@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "name": "command",
+  "description": "Run a command, skipping shell functions",
+  "options": [
+    {
+      "name": "-v",
+      "description": "Print how the name would be run",
+      "takesValue": false
+    },
+    {
+      "name": "-V",
+      "description": "Describe how the name would be run",
+      "takesValue": false
+    },
+    {
+      "name": "-p",
+      "description": "Use a default PATH",
+      "takesValue": false
+    }
+  ],
+  "args": [
+    {
+      "name": "command",
+      "description": "The command to run",
+      "isVariadic": true,
+      "runsCommand": true
+    }
+  ]
+}

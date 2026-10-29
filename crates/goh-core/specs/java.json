@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "name": "java",
+  "description": "Launch a Java application",
+  "options": [
+    {
+      "name": "-jar",
+      "description": "To launch the main class in a JAR file",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "JAR file",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "-D",
+      "description": "Set a system property, -D<NAME>=<VALUE>",
+      "takesValue": false
+    },
+    {
+      "name": "--help",
+      "description": "Show help for java",
+      "takesValue": false
+    },
+    {
+      "name": "-h",
+      "description": "Show help for java",
+      "takesValue": false
+    },
+    {
+      "name": "--version",
+      "description": "Print product version to the error stream and exit",
+      "takesValue": false
+    },
+    {
+      "name": "-version",
+      "description": "Print product version to the error stream and exit",
+      "takesValue": false
+    },
+    {
+      "name": "-showversion",
+      "description": "Print product version to the output stream and continue",
+      "takesValue": false
+    },
+    {
+      "name": "--show-version",
+      "description": "Print product version to the output stream and continue",
+      "takesValue": false
+    },
+    {
+      "name": "--dry-run",
+      "description": "Create VM and load main class but do not execute main method",
+      "takesValue": false
+    },
+    {
+      "name": "--classpath",
+      "description": "Class search path of directories and zip/jar files",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "search files",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "-cp",
+      "description": "Class search path of directories and zip/jar files",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "search files",
+          "template": "filepaths"
+        }
+      ]
+    }
+  ],
+  "args": [
+    {
+      "name": "mainclass",
+      "description": "To launch a class file",
+      "template": "filepaths"
+    }
+  ]
+}

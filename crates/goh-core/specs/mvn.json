@@ -1,0 +1,659 @@
+{
+  "schemaVersion": 1,
+  "name": "mvn",
+  "description": "Maven - a Java based project management and comprehension tool",
+  "options": [
+    {
+      "name": "--also-make",
+      "description": "Also build projects required by project list",
+      "takesValue": false
+    },
+    {
+      "name": "-am",
+      "description": "Also build projects required by project list",
+      "takesValue": false
+    },
+    {
+      "name": "--also-make-dependents",
+      "description": "Also build projects that depend on projects in the project list",
+      "takesValue": false
+    },
+    {
+      "name": "-amd",
+      "description": "Also build projects that depend on projects in the project list",
+      "takesValue": false
+    },
+    {
+      "name": "--batch-mode",
+      "description": "Run in non-interactive (batch)",
+      "takesValue": false
+    },
+    {
+      "name": "-B",
+      "description": "Run in non-interactive (batch)",
+      "takesValue": false
+    },
+    {
+      "name": "--builder",
+      "description": "Specify the build strategy to use",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "id of build strategy"
+        }
+      ]
+    },
+    {
+      "name": "-b",
+      "description": "Specify the build strategy to use",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "id of build strategy"
+        }
+      ]
+    },
+    {
+      "name": "--strict-checksums",
+      "description": "Fail if checksums do not match",
+      "takesValue": false
+    },
+    {
+      "name": "-C",
+      "description": "Fail if checksums do not match",
+      "takesValue": false
+    },
+    {
+      "name": "--lax-checksums",
+      "description": "Warn if checksums do not match",
+      "takesValue": false
+    },
+    {
+      "name": "-c",
+      "description": "Warn if checksums do not match",
+      "takesValue": false
+    },
+    {
+      "name": "--color",
+      "description": "Specify the color mode of the output",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "color mode",
+          "suggestions": [
+            {
+              "name": "always"
+            },
+            {
+              "name": "never"
+            },
+            {
+              "name": "auto"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "--check-plugin-updates",
+      "description": "Ineffective. Only kept for backward compatibility",
+      "takesValue": false
+    },
+    {
+      "name": "-cpu",
+      "description": "Ineffective. Only kept for backward compatibility",
+      "takesValue": false
+    },
+    {
+      "name": "--define",
+      "description": "Define a system property",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "system property"
+        }
+      ]
+    },
+    {
+      "name": "-D",
+      "description": "Define a system property",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "system property"
+        }
+      ]
+    },
+    {
+      "name": "--errors",
+      "description": "Produce execution error messages",
+      "takesValue": false
+    },
+    {
+      "name": "-e",
+      "description": "Produce execution error messages",
+      "takesValue": false
+    },
+    {
+      "name": "--encrypt-master-password",
+      "description": "Encrypt the master security password",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "master password"
+        }
+      ]
+    },
+    {
+      "name": "-emp",
+      "description": "Encrypt the master security password",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "master password"
+        }
+      ]
+    },
+    {
+      "name": "--encrypt-password",
+      "description": "Encrypt the server password",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "server password"
+        }
+      ]
+    },
+    {
+      "name": "-ep",
+      "description": "Encrypt the server password",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "server password"
+        }
+      ]
+    },
+    {
+      "name": "--file",
+      "description": "Force the use of an alternate POM file (or directory with pom.xml)",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "path",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "-f",
+      "description": "Force the use of an alternate POM file (or directory with pom.xml)",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "path",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "--fail-at-end",
+      "description": "Only fail the build afterwards; allow all non-impacted builds to continue",
+      "takesValue": false
+    },
+    {
+      "name": "-fae",
+      "description": "Only fail the build afterwards; allow all non-impacted builds to continue",
+      "takesValue": false
+    },
+    {
+      "name": "--fail-fast",
+      "description": "Stop at first failure in reactorized builds",
+      "takesValue": false
+    },
+    {
+      "name": "-ff",
+      "description": "Stop at first failure in reactorized builds",
+      "takesValue": false
+    },
+    {
+      "name": "--fail-never",
+      "description": "Never fail the build, regardless of project result",
+      "takesValue": false
+    },
+    {
+      "name": "-fn",
+      "description": "Never fail the build, regardless of project result",
+      "takesValue": false
+    },
+    {
+      "name": "--global-settings",
+      "description": "Specify the global settings file to use",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "path",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "-gs",
+      "description": "Specify the global settings file to use",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "path",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "--global-toolchains",
+      "description": "Specify the global toolchains file to use",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "path",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "-gt",
+      "description": "Specify the global toolchains file to use",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "path",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "--help",
+      "description": "Display help information",
+      "takesValue": false
+    },
+    {
+      "name": "-h",
+      "description": "Display help information",
+      "takesValue": false
+    },
+    {
+      "name": "--log-file",
+      "description": "Specify the file to log to",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "path",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "-l",
+      "description": "Specify the file to log to",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "path",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "--legacy-local-repository",
+      "description": "Use the Maven2 legacy local repository behaviour",
+      "takesValue": false
+    },
+    {
+      "name": "-llr",
+      "description": "Use the Maven2 legacy local repository behaviour",
+      "takesValue": false
+    },
+    {
+      "name": "--non-recursive",
+      "description": "Do not recurse into sub-projects",
+      "takesValue": false
+    },
+    {
+      "name": "-N",
+      "description": "Do not recurse into sub-projects",
+      "takesValue": false
+    },
+    {
+      "name": "--no-plugin-registry",
+      "description": "Ineffective. Only kept for backward compatibility",
+      "takesValue": false
+    },
+    {
+      "name": "-npr",
+      "description": "Ineffective. Only kept for backward compatibility",
+      "takesValue": false
+    },
+    {
+      "name": "--no-plugin-updates",
+      "description": "Ineffective. Only kept for backward compatibility",
+      "takesValue": false
+    },
+    {
+      "name": "-npu",
+      "description": "Ineffective. Only kept for backward compatibility",
+      "takesValue": false
+    },
+    {
+      "name": "--no-snapshot-updates",
+      "description": "Suppress SNAPSHOT updates",
+      "takesValue": false
+    },
+    {
+      "name": "-nsu",
+      "description": "Suppress SNAPSHOT updates",
+      "takesValue": false
+    },
+    {
+      "name": "--no-transfer-progress",
+      "description": "Do not display transfer progress when downloading or uploading",
+      "takesValue": false
+    },
+    {
+      "name": "-ntp",
+      "description": "Do not display transfer progress when downloading or uploading",
+      "takesValue": false
+    },
+    {
+      "name": "--offline",
+      "description": "Work offline",
+      "takesValue": false
+    },
+    {
+      "name": "-o",
+      "description": "Work offline",
+      "takesValue": false
+    },
+    {
+      "name": "--activate-profiles",
+      "description": "Activate the specified profiles (comma delimited)",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "profiles"
+        }
+      ]
+    },
+    {
+      "name": "-P",
+      "description": "Activate the specified profiles (comma delimited)",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "profiles"
+        }
+      ]
+    },
+    {
+      "name": "--projects",
+      "description": "Specify the projects to build",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "project list"
+        }
+      ]
+    },
+    {
+      "name": "-pl",
+      "description": "Specify the projects to build",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "project list"
+        }
+      ]
+    },
+    {
+      "name": "--quiet",
+      "description": "Quiet output - only shows errors",
+      "takesValue": false
+    },
+    {
+      "name": "-q",
+      "description": "Quiet output - only shows errors",
+      "takesValue": false
+    },
+    {
+      "name": "--resume-from",
+      "description": "Resume from the specified project",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "project"
+        }
+      ]
+    },
+    {
+      "name": "-rf",
+      "description": "Resume from the specified project",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "project"
+        }
+      ]
+    },
+    {
+      "name": "--settings",
+      "description": "Specify the user settings file to use",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "path",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "-s",
+      "description": "Specify the user settings file to use",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "path",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "--toolchains",
+      "description": "Specify the toolchains file to use",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "path",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "-t",
+      "description": "Specify the toolchains file to use",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "path",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "--threads",
+      "description": "Specify the number of threads to use",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "threads"
+        }
+      ]
+    },
+    {
+      "name": "-T",
+      "description": "Specify the number of threads to use",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "threads"
+        }
+      ]
+    },
+    {
+      "name": "--update-snapshots",
+      "description": "Forces a check for missing releases and updated snapshots on remote repositories",
+      "takesValue": false
+    },
+    {
+      "name": "-U",
+      "description": "Forces a check for missing releases and updated snapshots on remote repositories",
+      "takesValue": false
+    },
+    {
+      "name": "--update-plugins",
+      "description": "Ineffective. Only kept for backward compatibility",
+      "takesValue": false
+    },
+    {
+      "name": "-up",
+      "description": "Ineffective. Only kept for backward compatibility",
+      "takesValue": false
+    },
+    {
+      "name": "--version",
+      "description": "Display version information",
+      "takesValue": false
+    },
+    {
+      "name": "-v",
+      "description": "Display version information",
+      "takesValue": false
+    },
+    {
+      "name": "--show-version",
+      "description": "Display version information",
+      "takesValue": false
+    },
+    {
+      "name": "-V",
+      "description": "Display version information",
+      "takesValue": false
+    },
+    {
+      "name": "--debug",
+      "description": "Produce execution debug output",
+      "takesValue": false
+    },
+    {
+      "name": "-X",
+      "description": "Produce execution debug output",
+      "takesValue": false
+    }
+  ],
+  "args": [
+    {
+      "name": "goal/phase",
+      "description": "Goal or phase to execute",
+      "isVariadic": true,
+      "suggestions": [
+        {
+          "name": "pre-clean"
+        },
+        {
+          "name": "clean"
+        },
+        {
+          "name": "post-clean"
+        },
+        {
+          "name": "validate"
+        },
+        {
+          "name": "initialize"
+        },
+        {
+          "name": "generate-sources"
+        },
+        {
+          "name": "process-sources"
+        },
+        {
+          "name": "generate-resources"
+        },
+        {
+          "name": "process-resources"
+        },
+        {
+          "name": "compile"
+        },
+        {
+          "name": "process-classes"
+        },
+        {
+          "name": "generate-test-sources"
+        },
+        {
+          "name": "process-test-sources"
+        },
+        {
+          "name": "generate-test-resources"
+        },
+        {
+          "name": "process-test-resources"
+        },
+        {
+          "name": "test-compile"
+        },
+        {
+          "name": "process-test-classes"
+        },
+        {
+          "name": "test"
+        },
+        {
+          "name": "prepare-package"
+        },
+        {
+          "name": "package"
+        },
+        {
+          "name": "pre-integration-test"
+        },
+        {
+          "name": "integration-test"
+        },
+        {
+          "name": "post-integration-test"
+        },
+        {
+          "name": "verify"
+        },
+        {
+          "name": "install"
+        },
+        {
+          "name": "deploy"
+        },
+        {
+          "name": "pre-site"
+        },
+        {
+          "name": "site"
+        },
+        {
+          "name": "post-site"
+        },
+        {
+          "name": "site-deploy"
+        }
+      ]
+    }
+  ]
+}
