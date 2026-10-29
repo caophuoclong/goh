@@ -190,3 +190,16 @@ fn live_requests_drop_fuzzy_matches_when_a_prefix_matches() {
     assert_eq!(labels(false), ["shell", "stash"], "asked for: stash matches s..h in order");
     assert_eq!(labels(true), ["shell"], "unasked: only the prefix match");
 }
+
+#[test]
+fn an_older_shell_context_arriving_late_does_not_replace_a_newer_one() {
+    // At a cold start two sends both wait for the daemon, and the older one can land last.
+    let (_d, sock) = start();
+    let send = |aliases: Vec<[String; 2]>, seq| client::context(&sock, SESSION, aliases, vec![], vec![], String::new(), vec![], String::new(), seq).unwrap();
+    let labels = || -> Vec<String> { client::menu(&sock, SESSION, "/", "gg ch", 5, 8, false).unwrap().into_iter().map(|i| i.label).collect() };
+    send(vec![["gg".into(), "git".into()]], 2);
+    send(vec![], 1);
+    assert_eq!(labels(), ["checkout", "cherry-pick"], "the alias from the newer context stays");
+    send(vec![], 3);
+    assert!(labels().is_empty(), "a newer context still replaces it");
+}
