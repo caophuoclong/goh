@@ -554,7 +554,11 @@ fn shell_context(args: Vec<String>) -> Option<()> {
     match send() {
         Err(e) if matches!(e.kind(), ErrorKind::NotFound | ErrorKind::ConnectionRefused) => {
             let _ = control::spawn();
-            control::wait_until_up(&sock, Duration::from_millis(500)).then(|| send().ok()).flatten()
+            if !control::wait_until_up(&sock, Duration::from_millis(500)) {
+                return None;
+            }
+            control::wait_until_ready(&sock, Duration::from_millis(1500));
+            send().ok()
         }
         r => r.ok(),
     }
@@ -652,6 +656,7 @@ fn run() -> Option<()> {
     if result.as_ref().is_err_and(not_running) {
         let _ = control::spawn();
         if control::wait_until_up(&sock, Duration::from_millis(500)) {
+            control::wait_until_ready(&sock, Duration::from_millis(1500));
             result = attempt();
         }
     }

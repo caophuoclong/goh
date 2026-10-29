@@ -19,6 +19,12 @@ pub fn wait_until_up(sock: &Path, limit: Duration) -> bool {
     wait(limit, || UnixStream::connect(sock).is_ok())
 }
 
+/// Wait (bounded) until a daemon that was just started answers. It binds the socket before it loads the
+/// specs, so a request sent as soon as the socket is up can outlast the client's timeout on a busy machine.
+pub fn wait_until_ready(sock: &Path, limit: Duration) -> bool {
+    wait(limit, || crate::client::hello(sock).is_ok())
+}
+
 fn wait(limit: Duration, mut done: impl FnMut() -> bool) -> bool {
     let deadline = Instant::now() + limit;
     while Instant::now() < deadline {

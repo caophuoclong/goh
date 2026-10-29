@@ -7,13 +7,14 @@ on:
   push:
     branches: [main]
 
-permissions:
-  contents: write
-  pull-requests: write
+permissions: {}
 
 jobs:
   release-please:
     runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      pull-requests: write
     outputs:
       release_created: ${{ steps.rp.outputs.release_created }}
       tag_name: ${{ steps.rp.outputs.tag_name }}
@@ -21,7 +22,7 @@ jobs:
       pr: ${{ steps.rp.outputs.pr }}
     steps:
       - id: rp
-        uses: googleapis/release-please-action@v4
+        uses: googleapis/release-please-action@5c625bfb5d1ff62eadeeb3772007f7f66fdcf071 # v4.4.1
         with:
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
@@ -31,11 +32,15 @@ jobs:
     needs: release-please
     if: needs.release-please.outputs.prs_created == 'true' || needs.release-please.outputs.pr != ''
     runs-on: ubuntu-24.04
+    permissions:
+      contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           ref: ${{ fromJSON(needs.release-please.outputs.pr).headBranchName }}
-      - uses: dtolnay/rust-toolchain@stable
+          # The job pushes the updated Cargo.lock back to the release PR branch.
+          persist-credentials: true
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
       - run: cargo update --workspace
       - name: Commit Cargo.lock
         run: |
@@ -48,9 +53,11 @@ jobs:
   release:
     needs: release-please
     if: needs.release-please.outputs.release_created == 'true'
-    uses: ./.github/workflows/release.yml
+    # Not the newer `$/` self-repository form: actionlint (run in CI) does not accept it yet.
+    uses: ./.github/workflows/release.yml # zizmor: ignore[self-repository]
     with:
       tag: ${{ needs.release-please.outputs.tag_name }}
-    secrets: inherit
+    secrets:
+      HOMEBREW_TAP_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
     permissions:
       contents: write
