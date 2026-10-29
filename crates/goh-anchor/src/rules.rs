@@ -70,10 +70,10 @@ impl App {
         matches!(self, App::VsCode | App::Claude)
     }
 
-    /// Electron apps that build their accessibility tree only when asked (measured: Claude exposes no
-    /// focused element until `AXManualAccessibility` is set; VS Code does without it).
+    /// Electron apps that build their accessibility tree only when asked (measured: Claude, and VS Code
+    /// since 1.144, expose no focused element until `AXManualAccessibility` is set).
     pub fn needs_manual_accessibility(self) -> bool {
-        self == App::Claude
+        matches!(self, App::VsCode | App::Claude)
     }
 
     pub fn from_exe_path(path: &str) -> Option<App> {
@@ -237,6 +237,13 @@ mod tests {
         assert_eq!(caret_from_rect(App::Claude, claude, None).unwrap(), Caret { x: 936.0, y: 154.0, height: 16.0 });
         let editor = Rect { x: 0.0, y: 33.0, w: 900.0, h: 20.0 }; // e.g. a search box
         assert_eq!(caret_from_rect(App::VsCode, editor, None), Err(Reason::NotTerminalInput));
+    }
+
+    #[test]
+    fn electron_terminals_have_their_accessibility_tree_switched_on() {
+        // Measured with `goh-popup --probe`: VS Code 1.144 answers -25212 for the focused element until it is set.
+        assert!(App::VsCode.needs_manual_accessibility() && App::Claude.needs_manual_accessibility());
+        assert!(!App::ITerm2.needs_manual_accessibility() && !App::Terminal.needs_manual_accessibility());
     }
 
     #[test]
