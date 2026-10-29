@@ -815,6 +815,15 @@ fn an_autosuggest_accept_key_closes_the_menu_instead_of_taking_its_text() {
 }
 
 #[test]
+fn pausing_and_resuming_the_plugin_prints_no_error_into_the_line() {
+    let fx = Fixture::new(require_env!(), true);
+    let mut sh = autosuggest_shell(&fx);
+    let mut out = sh.send("git c", 900); // the menu opens: the plugin is paused
+    out += &sh.send("\x1b", 900); // and closes: it is resumed
+    assert!(!out.contains("parameter not set"), "the plugin's widgets run without goh's no_unset: {:?}", screen(&out));
+}
+
+#[test]
 fn a_plugin_you_turned_off_stays_off_after_the_menu() {
     let fx = Fixture::new(require_env!(), true);
     let mut sh = autosuggest_shell(&fx);

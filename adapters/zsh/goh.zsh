@@ -90,6 +90,11 @@ typeset -gA _goh_menu_keys=(
 zmodload -s zsh/datetime
 _goh_trace() { [[ -n ${GOH_TRACE-} ]] && print -r -- "$EPOCHREALTIME $*" >> $GOH_TRACE; return 0 }
 
+# Run another plugin's (or your own) widget from code that runs with no_unset, as it runs from its key: unset
+# allowed. zsh-autosuggestions unsets POSTDISPLAY and then reads it; under no_unset that is an error printed into the
+# line while it is being drawn, and the display falls apart.
+_goh_zle() { setopt local_options unset; zle "$@" }
+
 # Is INSERT (ending at the replace span's END byte) just what is already typed from START, plus at most
 # a trailing space? Then offering it adds nothing. _goh_same_word BUFFER START END INSERT
 _goh_same_word() {
@@ -283,7 +288,7 @@ _goh_keys_on() {
   done
   if (( ${+widgets[autosuggest-disable]} && ! ${+_ZSH_AUTOSUGGEST_DISABLED} )); then
     _goh_as_paused=1
-    zle autosuggest-disable
+    _goh_zle autosuggest-disable
     # An answer already on its way (async mode) would still land in POSTDISPLAY. Cancel it as the plugin cancels
     # one for a newer request; with another version that keeps no such fd, it can still blink the menu away once.
     if [[ -n ${_ZSH_AUTOSUGGEST_ASYNC_FD-} ]] && { true <&$_ZSH_AUTOSUGGEST_ASYNC_FD } 2>/dev/null; then
@@ -303,7 +308,7 @@ _goh_keys_off() {
   _goh_saved=() _goh_bound=()
   if (( _goh_as_paused )); then
     _goh_as_paused=0
-    zle autosuggest-enable
+    _goh_zle autosuggest-enable
   fi
 }
 
@@ -602,7 +607,7 @@ _goh_tab() {
 
   # In live mode typing owns opening the menu. Tab only accepts an open menu or completes natively.
   if [[ $_GOH_LIVE == on ]]; then
-    zle ${_GOH_ORIG_TAB:-expand-or-complete}
+    _goh_zle ${_GOH_ORIG_TAB:-expand-or-complete}
     return 0
   fi
 
@@ -627,7 +632,7 @@ _goh_tab() {
       fi
     fi
   fi
-  zle ${_GOH_ORIG_TAB:-expand-or-complete}
+  _goh_zle ${_GOH_ORIG_TAB:-expand-or-complete}
 }
 
 # Resolve the theme for this session. With a terminal attached it asks for the default colours
