@@ -964,6 +964,28 @@ fn ctrl_c_hides_the_overlay_and_restores_keys_at_the_next_prompt() {
 }
 
 #[test]
+fn ctrl_c_hides_the_overlay_even_when_a_plugin_replaces_zle_line_init() {
+    let fx = Fixture::new(require_env!(), true);
+    let log = fx.path("popup.log");
+    let popup = fake_popup();
+    let envs = [("GOH_LIVE", "on"), ("GOH_DISPLAY", "auto"), ("GOH_POPUP", popup.to_str().unwrap()), ("FAKE_LOG", log.to_str().unwrap()), ("FAKE_DISPLAY", "overlay")];
+    let mut sh = fx.shell(&envs, true);
+    // Loaded after the adapter, like a plugin sourced later in .zshrc: it takes the hook widget over.
+    sh.send("zle-line-init() { :; }; zle -N zle-line-init zle-line-init\n", 300);
+    let keys = fx.keymap(&mut sh, 0);
+    for _ in 0..2 {
+        sh.send("git c", 400);
+        assert!(fx.state(&mut sh).contains("on=1"));
+        sh.send("\x03", 200);
+        let s = fx.state(&mut sh);
+        assert!(s.starts_with("BUF[] CUR=0 on=0") && s.ends_with("post[]"), "{s}");
+        let f = frames(&log);
+        assert_eq!(f.last().unwrap()["type"], "hide", "Ctrl+C must send hide: {f:?}");
+        assert_eq!(fx.keymap(&mut sh, 1), keys, "interrupt restores temporary bindings");
+    }
+}
+
+#[test]
 fn live_tab_accepts_an_open_menu_but_does_not_open_a_dismissed_one() {
     let fx = Fixture::new(require_env!(), true);
     let mut sh = fx.shell(LIVE, false);

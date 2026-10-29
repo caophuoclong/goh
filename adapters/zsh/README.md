@@ -109,7 +109,8 @@ with the selected word; typing the space yourself continues normal completion. `
 `git foo c`, `zzz c` and `gi` do not (Tab still completes unknown commands as before). Esc hides it until the next
 keystroke. Tab does not open a closed popup in live mode; it uses native completion. Accepting with Tab or
 Right does not reopen it by itself, except for a directory (`cd src/`): its contents are what comes next, so the menu
-reopens for them. Ctrl+C dismisses the old menu at the next prompt without replacing signal traps.
+reopens for them. Ctrl+C dismisses the old menu at the next prompt without replacing signal traps; every prompt also puts the adapter's
+ZLE hooks back if a plugin loaded later replaced `zle-line-init`, so the popup does not linger.
 It reacts to typing and deleting, including Oh My Zsh's `magic-space` binding, not to history recall
 (Up), and when more input is queued (paste, key repeat) it waits and refreshes once. Each refresh is one query (about
 3 ms measured), so it costs nothing you can feel. Rules and limits of "valid": docs/docs/06-completion-engine.md.
