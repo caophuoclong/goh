@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "name": "man",
+  "description": "Show a manual page",
+  "options": [
+    {
+      "name": "-k",
+      "description": "Search the manual page descriptions",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "keyword"
+        }
+      ]
+    },
+    {
+      "name": "-f",
+      "description": "Describe the page in one line",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "page",
+          "template": "commands"
+        }
+      ]
+    },
+    {
+      "name": "-a",
+      "description": "Show every matching page",
+      "takesValue": false
+    },
+    {
+      "name": "-w",
+      "description": "Print where the page is",
+      "takesValue": false
+    }
+  ],
+  "args": [
+    {
+      "name": "page",
+      "isVariadic": true,
+      "template": "commands"
+    }
+  ]
+}

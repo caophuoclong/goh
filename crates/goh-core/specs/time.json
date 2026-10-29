@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "name": "time",
+  "description": "Time a command",
+  "options": [
+    {
+      "name": "-p",
+      "description": "Use the POSIX output format",
+      "takesValue": false
+    }
+  ],
+  "args": [
+    {
+      "name": "command",
+      "description": "The command to run",
+      "isVariadic": true,
+      "runsCommand": true
+    }
+  ]
+}

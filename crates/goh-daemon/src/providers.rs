@@ -1,10 +1,11 @@
-//! Fixed read-only Docker, git (changed files), zoxide and directory-history queries. No shell, spec scripts, or buffer text reaches a subprocess.
+//! Fixed read-only Docker, git (changed files, commits), kubectl (pods, namespaces), zoxide and directory-history
+//! queries. No shell, spec scripts, or buffer text reaches a subprocess.
 use std::collections::HashMap;
 use std::io::{ErrorKind, Read};
 use std::os::fd::AsRawFd;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 
 use goh_core::spec::{Provider, Suggestion};
@@ -12,17 +13,31 @@ use goh_core::spec::{Provider, Suggestion};
 const DEADLINE: Duration = Duration::from_millis(120);
 const TTL: Duration = Duration::from_secs(2);
 const MAX_BYTES: usize = 512 * 1024;
+/// A cluster can take seconds to answer: it is asked in the background, and what it said last is used meanwhile.
+const CLUSTER_DEADLINE: Duration = Duration::from_secs(5);
+const CLUSTER_TTL: Duration = Duration::from_secs(15);
 
 /// Keyed by provider and, for the ones that depend on the project, the working directory.
 type Cache = HashMap<(Provider, PathBuf), (Instant, Vec<Suggestion>)>;
+
+/// What a cluster said, per provider and kubectl context.
+#[derive(Default)]
+struct Answer {
+    at: Option<Instant>,
+    asking: bool,
+    values: Vec<Suggestion>,
+}
+type Cluster = HashMap<(Provider, String), Answer>;
 
 pub(crate) struct Providers {
     docker: PathBuf,
     git: PathBuf,
     zoxide: PathBuf,
+    kubectl: PathBuf,
     visits: PathBuf,
     home: PathBuf,
     cache: Mutex<Cache>,
+    cluster: Arc<Mutex<Cluster>>,
 }
 
 impl Default for Providers {
@@ -31,16 +46,21 @@ impl Default for Providers {
             docker: PathBuf::from("docker"),
             git: PathBuf::from("git"),
             zoxide: PathBuf::from("zoxide"),
+            kubectl: PathBuf::from("kubectl"),
             visits: crate::visits::path(),
             home: std::env::var_os("HOME").map(PathBuf::from).unwrap_or_default(),
             cache: Mutex::new(HashMap::new()),
+            cluster: Arc::default(),
         }
     }
 }
 
 impl Providers {
     pub fn values(&self, provider: Provider, cwd: &Path) -> Vec<Suggestion> {
-        let status = matches!(provider, Provider::GitChangedFiles | Provider::GitStagedFiles);
+        if matches!(provider, Provider::KubePods | Provider::KubeNamespaces) {
+            return self.cluster_values(provider);
+        }
+        let status = matches!(provider, Provider::GitChangedFiles | Provider::GitStagedFiles | Provider::GitCommits);
         let project = status || crate::project::reads_project(provider) || crate::packages::reads_cwd(provider);
         let key = (provider, if project { cwd.to_path_buf() } else { PathBuf::new() });
         // Never queue input behind another refresh; another session may be using a slow Docker host.
@@ -82,6 +102,30 @@ impl Providers {
         cache.insert(key, (Instant::now(), values.clone()));
         values
     }
+
+    /// What the current kubectl context answered last; asks it again in the background when that is old.
+    /// Nothing until the first answer, and nothing once it fails (another context's pods would be wrong).
+    fn cluster_values(&self, provider: Provider) -> Vec<Suggestion> {
+        let context = crate::sources::values(Provider::KubeContexts, &self.home)
+            .into_iter()
+            .find(|s| s.description.as_deref() == Some("current context"))
+            .map(|s| s.name)
+            .unwrap_or_default();
+        let Ok(mut cluster) = self.cluster.lock() else { return vec![] };
+        let key = (provider, context);
+        let answer = cluster.entry(key.clone()).or_default();
+        if !answer.asking && answer.at.is_none_or(|at| at.elapsed() >= CLUSTER_TTL) {
+            answer.asking = true;
+            let (kubectl, store) = (self.kubectl.clone(), Arc::clone(&self.cluster));
+            std::thread::spawn(move || {
+                let values = query(&kubectl, provider, CLUSTER_DEADLINE, Path::new("/")).map(|text| parse(provider, &text)).unwrap_or_default();
+                if let Ok(mut cluster) = store.lock() {
+                    *cluster.entry(key).or_default() = Answer { at: Some(Instant::now()), asking: false, values };
+                }
+            });
+        }
+        answer.values.clone()
+    }
 }
 
 /// Git without anything the repository could make it run: no filesystem monitor hook, no optional locks.
@@ -90,9 +134,13 @@ const GIT_SAFE: [&str; 3] = ["--no-optional-locks", "-c", "core.fsmonitor=false"
 fn query(docker: &Path, provider: Provider, timeout: Duration, dir: &Path) -> Option<String> {
     let git_changed = [GIT_SAFE.as_slice(), &["ls-files", "-m", "-o", "--exclude-standard", "-z"]].concat();
     let git_staged = [GIT_SAFE.as_slice(), &["diff", "--cached", "--name-only", "--relative", "-z"]].concat();
+    let git_commits = [GIT_SAFE.as_slice(), &["log", "-n", "100", "--no-color", "--format=%h%x1f%s"]].concat();
     let args: &[&str] = match provider {
         Provider::GitChangedFiles => &git_changed,
         Provider::GitStagedFiles => &git_staged,
+        Provider::GitCommits => &git_commits,
+        Provider::KubePods => &["get", "pods", "-o", "name", "--request-timeout=4s"],
+        Provider::KubeNamespaces => &["get", "namespaces", "-o", "name", "--request-timeout=4s"],
         Provider::DockerContainers => &["ps", "--format", "{{json .}}"],
         Provider::DockerAllContainers => &["ps", "--all", "--format", "{{json .}}"],
         Provider::DockerImages => &["image", "ls", "--format", "{{json .}}"],
@@ -167,6 +215,35 @@ fn query(docker: &Path, provider: Provider, timeout: Duration, dir: &Path) -> Op
 }
 
 fn parse(provider: Provider, text: &str) -> Vec<Suggestion> {
+    if provider == Provider::GitCommits {
+        // `abc1234<US>subject`, newest first.
+        return text
+            .lines()
+            .take(100)
+            .filter_map(|l| l.split_once('\x1f'))
+            .filter(|(hash, _)| (4..=64).contains(&hash.len()) && hash.bytes().all(|b| b.is_ascii_hexdigit()))
+            .map(|(hash, subject)| Suggestion {
+                name: hash.to_owned(),
+                description: Some(subject.chars().filter(|c| !c.is_control()).take(80).collect()),
+                insert_value: None,
+            })
+            .collect();
+    }
+    if let Some((prefix, what)) = match provider {
+        Provider::KubePods => Some(("pod/", "pod")),
+        Provider::KubeNamespaces => Some(("namespace/", "namespace")),
+        _ => None,
+    } {
+        // `pod/name`, one per line; names are DNS labels.
+        let mut seen = std::collections::HashSet::new();
+        return text
+            .lines()
+            .take(5000)
+            .filter_map(|l| l.trim().strip_prefix(prefix))
+            .filter(|n| !n.is_empty() && n.len() <= 253 && n.bytes().all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || b == b'-' || b == b'.') && !n.starts_with('-') && seen.insert(n.to_string()))
+            .map(|n| Suggestion { name: n.to_owned(), description: Some(what.to_owned()), insert_value: None })
+            .collect();
+    }
     if matches!(provider, Provider::GitChangedFiles | Provider::GitStagedFiles) {
         // Paths relative to the working directory, NUL-separated (no quoting to undo).
         let note = if provider == Provider::GitStagedFiles { "staged" } else { "changed or new" };
@@ -273,12 +350,14 @@ mod tests {
             docker: docker.clone(),
             git: PathBuf::from("git"),
             zoxide: PathBuf::from("zoxide"),
+            kubectl: PathBuf::from("kubectl"),
             visits: dir.path().join("none"),
             home: dir.path().to_path_buf(),
             cache: Mutex::new(HashMap::from([(
                 (Provider::DockerContainers, PathBuf::new()),
                 (Instant::now(), values),
             )])),
+            cluster: Arc::default(),
         };
         std::fs::remove_file(docker).unwrap();
         assert_eq!(
@@ -305,7 +384,7 @@ mod tests {
             zoxide: dir.path().join("no-zoxide"),
             visits,
             home: dir.path().to_path_buf(),
-            cache: Mutex::new(HashMap::new()),
+            ..Providers::default()
         };
         let names: Vec<_> = providers.values(Provider::FrecentDirs, Path::new("/")).into_iter().map(|v| v.name).collect();
         assert_eq!(names, [dir.path().to_str().unwrap()]);
@@ -350,6 +429,30 @@ mod tests {
         // From a subdirectory the paths are relative to it, which is what the command line needs.
         assert_eq!(names(Provider::GitChangedFiles, &d.join("src")), ["a.rs", "new file.rs"]);
         assert!(names(Provider::GitChangedFiles, tempfile::tempdir().unwrap().path()).is_empty(), "outside a repository: nothing");
+    }
+
+    #[test]
+    fn commits_pods_and_namespaces_are_validated() {
+        let commits = parse(Provider::GitCommits, "abc1234\x1ffix: the thing\nnot-hex\x1fbad\nabc\x1ftoo short\ndef5678\x1fbell\x07 here\n");
+        assert_eq!(commits.iter().map(|c| (c.name.as_str(), c.description.as_deref().unwrap())).collect::<Vec<_>>(), [("abc1234", "fix: the thing"), ("def5678", "bell here")]);
+        let pods = parse(Provider::KubePods, "pod/web-1\npod/Bad_Name\nservice/x\npod/web-1\npod/api.v2\n");
+        assert_eq!(pods.iter().map(|p| p.name.as_str()).collect::<Vec<_>>(), ["web-1", "api.v2"]);
+        assert_eq!(parse(Provider::KubeNamespaces, "namespace/default\nnamespace/kube-system\n")[1].name, "kube-system");
+    }
+
+    #[test]
+    fn a_cluster_is_asked_in_the_background_and_its_last_answer_used() {
+        let dir = tempfile::tempdir().unwrap();
+        let kubectl = script(dir.path(), "[ \"$1 $2\" = 'get pods' ] || exit 1\nsleep 0.3\necho pod/web-1");
+        let providers = Providers { kubectl, home: dir.path().to_path_buf(), ..Providers::default() };
+        let at = Instant::now();
+        assert!(providers.values(Provider::KubePods, Path::new("/")).is_empty(), "the first request does not wait for the cluster");
+        assert!(at.elapsed() < Duration::from_millis(200));
+        let deadline = Instant::now() + Duration::from_secs(5);
+        while providers.values(Provider::KubePods, Path::new("/")).is_empty() && Instant::now() < deadline {
+            std::thread::sleep(Duration::from_millis(20));
+        }
+        assert_eq!(providers.values(Provider::KubePods, Path::new("/"))[0].name, "web-1");
     }
 
     #[test]

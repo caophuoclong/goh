@@ -21,6 +21,12 @@ fn usable(name: &str) -> bool {
     !name.is_empty() && name.len() <= 128 && !name.starts_with('-') && !name.chars().any(|c| c.is_control() || c.is_whitespace())
 }
 
+/// The folders of a `CDPATH` string that `cd` can use from anywhere: absolute ones, without duplicates.
+pub fn cdpath_dirs(cdpath: &str) -> Vec<String> {
+    let mut seen = HashSet::new();
+    cdpath.split(':').filter(|d| d.starts_with('/') && d.len() > 1 && !d.chars().any(char::is_control) && seen.insert(*d)).take(32).map(|d| d.trim_end_matches('/').to_string()).collect()
+}
+
 /// Executable files in the directories of a `PATH` string, first directory first, no duplicates.
 pub fn executables(path: &str) -> Vec<String> {
     let mut seen = HashSet::new();

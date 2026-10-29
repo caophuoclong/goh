@@ -10,6 +10,7 @@ pub mod shellctx;
 pub mod spec;
 mod tokenize;
 
+use std::collections::HashSet;
 use std::path::Path;
 use std::sync::RwLock;
 
@@ -120,51 +121,37 @@ impl Engine {
         // Replace the whole word under the cursor, including the part after it.
         let cur = &parsed.current;
         let end = cursor_byte + tokenize::word_tail(&buffer[cursor_byte..]);
-        let mut sink = Sink::new(cur.value.clone(), cur.start, end, cwd, values).recalling(self.recall.as_deref());
         let raw_is_plain = !cur.quoted && cur.value.len() == cursor_byte - cur.start;
+        let env = Env { cwd, values, recall: self.recall.as_deref(), specs: &specs, shell, plain: raw_is_plain, quoted: cur.quoted };
+        let mut sink = Sink::new(cur.value.clone(), cur.start, end, env);
         let mut valid = false;
 
-        match parsed.words.first() {
+        // `FOO=1 git ch`: assignments before the command are its environment; the command comes after them.
+        let words: Vec<&str> = parsed.words.iter().map(|t| t.value.as_str()).skip_while(|w| is_assignment(w)).collect();
+        match words.split_first() {
             None => {
-                if let Some(spec) = specs.iter().find(|s| raw_is_plain && cursor_byte == buffer.len() && s.name == cur.value) {
+                if let Some(spec) = spec_for(&specs, &cur.value, cwd).filter(|_| raw_is_plain && cursor_byte == buffer.len()) {
                     // An exact command at end of line is ready for its next word, even before a
                     // space is typed. Insert after it, including the missing separator in the edit.
-                    sink = Sink::new(String::new(), cursor_byte, cursor_byte, cwd, values).recalling(self.recall.as_deref());
-                    valid = complete_known(&mut sink, spec, &[], true);
-                    for candidate in &mut sink.out {
+                    sink = Sink::new(String::new(), cursor_byte, cursor_byte, env);
+                    valid = complete_known(&mut sink, spec, &[]);
+                    for candidate in sink.out.iter_mut().chain(&mut sink.near) {
                         candidate.insert_text.insert(0, ' ');
                     }
                 } else {
-                    for s in specs.iter() {
-                        sink.push(&s.name, s.description.as_deref(), Kind::Command, format!("{} ", s.name), Source::Bundled, &s.name);
-                    }
-                    if raw_is_plain && cur.value.contains('/') {
-                        sink.files(false, &[]);
-                    } else if raw_is_plain && !cur.value.is_empty() {
-                        // Not every command has a spec: offer what the shell itself can run.
-                        for (name, kind) in &shell.names {
-                            let (desc, scope) = match kind {
-                                NameKind::Alias => (shell.aliases.get(name).map_or("alias".to_string(), |v| format!("alias: {v}")), "alias"),
-                                NameKind::Function => ("shell function".to_string(), "function"),
-                                NameKind::Builtin => ("shell builtin".to_string(), "builtin"),
-                                NameKind::Executable => ("command".to_string(), "path"),
-                            };
-                            sink.push(name, Some(&desc), Kind::Command, format!("{} ", fsys::escape(name)), Source::Generator, scope);
-                        }
-                    }
+                    sink.command_names();
                 }
             }
-            Some(first) => {
-                let argv: Vec<&str> = parsed.words[1..].iter().map(|t| t.value.as_str()).collect();
-                match specs.iter().find(|s| s.name == first.value) {
-                    Some(spec) => valid = complete_known(&mut sink, spec, &argv, raw_is_plain),
+            Some((&first, argv)) => {
+                match spec_for(&specs, first, cwd) {
+                    Some(spec) => valid = complete_known(&mut sink, spec, argv),
                     // Variable names are all `export` and `unset` take; no spec is needed to know that.
-                    None if raw_is_plain && argv.is_empty() && !cur.value.contains('=') && matches!(first.value.as_str(), "export" | "unset" | "printenv") => {
-                        let tail = if first.value == "export" { "=" } else { " " };
-                        sink.env_names(shell, 0, tail);
+                    None if raw_is_plain && argv.is_empty() && !cur.value.contains('=') && matches!(first, "export" | "unset" | "printenv") => {
+                        let tail = if first == "export" { "=" } else { " " };
+                        sink.env_names(0, tail);
                         valid = true;
                     }
-                    None if !cur.quoted => sink.files(first.value == "cd", &[]),
+                    None if !cur.quoted => sink.files(first == "cd", &[]),
                     None => {}
                 }
             }
@@ -175,7 +162,7 @@ impl Engine {
                 let tail = if skip == 2 { "}" } else { "" };
                 sink.out.clear();
                 sink.near.clear();
-                sink.env_names(shell, skip, tail);
+                sink.env_names(skip, tail);
             }
         }
         Ok(Completion { candidates: sink.finish(), valid })
@@ -208,22 +195,26 @@ impl Completion {
     }
 }
 
+/// How many times a word may be replaced by a subcommand alias in one line (an alias can name another).
+const MAX_ALIAS_EXPANSIONS: usize = 5;
+
 /// Walk `argv` through the spec tree to find where the current word sits. Returns whether every word
 /// before the current one is placed by the spec (see [`Completion::valid`]).
-fn complete_known(sink: &mut Sink, root: &Command, argv: &[&str], raw_is_plain: bool) -> bool {
+fn complete_known(sink: &mut Sink, root: &Command, argv: &[&str]) -> bool {
+    let mut argv: Vec<String> = argv.iter().map(|w| w.to_string()).collect();
     let mut valid = true;
-    // Until selector overrides are represented in the provider request, never offer values from
-    // the default Docker context for a command explicitly targeting another host/context/config.
-    sink.providers_enabled = !(root.name == "docker" && argv.iter().any(|w|
-        matches!(*w, "--context" | "--host" | "--config" | "-H" | "-c")
-        || w.starts_with("--context=") || w.starts_with("--host=") || w.starts_with("--config=")
-        || w.starts_with("-H") || w.starts_with("-c")));
     let mut node = root;
     let mut pending: Option<&Opt> = None;
     let mut positional = 0;
     let mut end_options = false;
     let mut command_started = false;
-    for &w in argv {
+    // Options already given to this subcommand: not offered again unless they can be.
+    let mut used: HashSet<&str> = HashSet::new();
+    let mut expansions = 0;
+    let mut i = 0;
+    while i < argv.len() {
+        let w = argv[i].clone();
+        i += 1;
         if pending.take().is_some() {
             continue; // value of the previous option
         }
@@ -232,17 +223,50 @@ fn complete_known(sink: &mut Sink, root: &Command, argv: &[&str], raw_is_plain: 
         let slot = node.args.get(positional).or_else(|| node.args.last().filter(|a| a.is_variadic));
         if slot.is_some_and(|a| a.is_command) { command_started = true; continue; }
         if !end_options && w.len() > 1 && w.starts_with('-') {
-            let (name, inline) = split_eq(w);
+            let (name, inline) = split_eq(&w);
             if let Some(opt) = find_opt(node, name) {
+                used.insert(&opt.name);
                 if opt.takes_value && inline.is_none() {
                     pending = Some(opt);
                 }
+            } else if let Some(bundle) = short_bundle(node, &w) {
+                used.extend(bundle.iter().map(|o| o.name.as_str()));
+                // Its last letter may take a value: `tar -xzf archive.tgz`.
+                pending = bundle.last().copied().filter(|o| o.takes_value);
             }
             continue;
+        }
+        if let Some(slot) = slot.filter(|a| a.runs_command) {
+            // `sudo git ch`, `env FOO=1 git ch`: the rest of the line is another command, completed by its own spec.
+            let rest: Vec<&str> = argv[i - 1..].iter().map(String::as_str).skip_while(|w| is_assignment(w)).collect();
+            return match rest.split_first() {
+                None => {
+                    sink.arg_values(Some(slot), &root.name);
+                    valid
+                }
+                Some((command, rest)) => match spec_for(sink.env.specs, command, sink.env.cwd) {
+                    Some(spec) => complete_known(sink, spec, rest) && valid,
+                    None => {
+                        if !sink.env.quoted {
+                            sink.files(false, &[]);
+                        }
+                        false
+                    }
+                },
+            };
         }
         if positional == 0 {
             if let Some(sub) = node.subcommands.iter().find(|c| c.name == w) {
                 node = sub;
+                used.clear();
+                continue;
+            }
+            // `git co ma` with `co = checkout` in git's config reads on as `git checkout ma`.
+            let expansion = node.subcommand_aliases.filter(|_| expansions < MAX_ALIAS_EXPANSIONS).and_then(|p| sink.alias(p, &w));
+            if let Some(expansion) = expansion {
+                expansions += 1;
+                i -= 1;
+                argv.splice(i..=i, expansion);
                 continue;
             }
         }
@@ -253,6 +277,11 @@ fn complete_known(sink: &mut Sink, root: &Command, argv: &[&str], raw_is_plain: 
         }
         positional += 1;
     }
+
+    // An option still waiting for its value does not yet say where the command acts.
+    let given = if pending.is_some() { &argv[..argv.len() - 1] } else { &argv[..] };
+    sink.providers_enabled = !targets_elsewhere(&root.name, given);
+    sink.cdpath = matches!(root.name.as_str(), "cd" | "pushd");
 
     let typed = sink.typed.clone();
     let scope = root.name.as_str();
@@ -267,26 +296,40 @@ fn complete_known(sink: &mut Sink, root: &Command, argv: &[&str], raw_is_plain: 
     } else if !end_options && typed.starts_with('-') {
         let (name, inline) = split_eq(&typed);
         match (inline, find_opt(node, name)) {
-            (Some(_), Some(opt)) if opt.takes_value && raw_is_plain => {
+            (Some(_), Some(opt)) if opt.takes_value && sink.env.plain => {
                 sink.skip_to_value(name.len() + 1);
                 sink.recalled(scope, &opt.name);
                 sink.arg_values(opt.args.first(), scope);
             }
             (Some(_), _) => {}
-            (None, _) => sink.options(node, scope),
-        }
-    } else {
-        for sub in &node.subcommands {
-            if positional == 0 {
-                sink.push(&sub.name, sub.description.as_deref(), Kind::Subcommand, format!("{} ", sub.name), Source::Bundled, scope);
+            (None, found) => {
+                // `tar -xz` is a group of single-letter options, unless it starts the name of one (`find -na`).
+                let starts_one = node.options.iter().any(|o| o.name.starts_with(typed.as_str()));
+                match short_bundle(node, &typed).filter(|_| found.is_none() && !starts_one) {
+                    Some(bundle) if !bundle.last().is_some_and(|o| o.takes_value) => sink.bundle(node, &bundle, &used, scope),
+                    Some(_) => {} // its last letter waits for a value
+                    None => {
+                        sink.options(node, &used, scope);
+                        // Values that start with a dash: `git checkout -` (the previous branch), `defaults read -g`.
+                        sink.dash_values(arg, scope);
+                    }
+                }
             }
         }
-        let arg = node.args.get(positional).or_else(|| node.args.last().filter(|a| a.is_variadic));
+    } else {
+        if positional == 0 {
+            for sub in &node.subcommands {
+                sink.push(&sub.name, sub.description.as_deref(), Kind::Subcommand, format!("{} ", sub.name), Source::Bundled, scope);
+            }
+            if let Some(provider) = node.subcommand_aliases {
+                sink.aliases(provider, scope);
+            }
+        }
         sink.arg_values(arg, scope);
         // Options are offered for an empty word (to discover them) or one starting with `-` (the branch above),
         // never for a plain word such as a remote name: matching `origin` against `--force-with-lease` is noise.
         if !end_options && node.subcommands.is_empty() && typed.is_empty() {
-            sink.options(node, scope);
+            sink.options(node, &used, scope);
         }
     }
     valid
@@ -294,6 +337,32 @@ fn complete_known(sink: &mut Sink, root: &Command, argv: &[&str], raw_is_plain: 
 
 fn is_identifier(s: &str) -> bool {
     s.chars().next().is_some_and(|c| c.is_ascii_alphabetic() || c == '_') && s.chars().all(|c| c.is_ascii_alphanumeric() || c == '_')
+}
+
+/// `NAME=value`, which sets a variable for the command that follows it.
+fn is_assignment(word: &str) -> bool {
+    word.split_once('=').is_some_and(|(name, _)| is_identifier(name))
+}
+
+/// The spec for `name`, unless it applies only next to a file that is not here.
+fn spec_for<'s>(specs: &'s [Command], name: &str, cwd: &Path) -> Option<&'s Command> {
+    specs.iter().find(|s| s.name == name).filter(|s| {
+        s.requires_files.is_empty() || cwd.ancestors().any(|d| s.requires_files.iter().any(|f| d.join(f).exists()))
+    })
+}
+
+/// Values from the default Docker or kubectl context would be wrong for a command that names another host,
+/// context, config or (kubectl) namespace, so providers are not asked for it.
+fn targets_elsewhere(command: &str, words: &[String]) -> bool {
+    let (long, short): (&[&str], &[&str]) = match command {
+        "docker" => (&["--context", "--host", "--config"], &["-H", "-c"]),
+        "kubectl" => (&["--context", "--kubeconfig", "--cluster", "--server", "--namespace", "--all-namespaces"], &["-n", "-s", "-A"]),
+        _ => return false,
+    };
+    words.iter().any(|w| {
+        long.iter().any(|o| w.strip_prefix(o).is_some_and(|rest| rest.is_empty() || rest.starts_with('=')))
+            || short.iter().any(|o| w.starts_with(o))
+    })
 }
 
 fn split_eq(word: &str) -> (&str, Option<&str>) {
@@ -307,28 +376,49 @@ fn find_opt<'a>(node: &'a Command, name: &str) -> Option<&'a Opt> {
     node.options.iter().find(|o| o.name == name)
 }
 
+/// The letter of a single-letter option (`-x`).
+fn short_letter(name: &str) -> Option<char> {
+    let mut chars = name.strip_prefix('-')?.chars();
+    chars.next().filter(|c| c.is_ascii_alphanumeric() && chars.next().is_none())
+}
+
+/// `-xzf` read as `-x -z -f`: every letter one of `node`'s single-letter options, and only the last may take a value.
+fn short_bundle<'n>(node: &'n Command, word: &str) -> Option<Vec<&'n Opt>> {
+    let letters = word.strip_prefix('-').filter(|l| l.len() >= 2 && !l.starts_with('-'))?;
+    let opts: Vec<&Opt> = letters.chars().map(|c| node.options.iter().find(|o| short_letter(&o.name) == Some(c))).collect::<Option<_>>()?;
+    opts[..opts.len() - 1].iter().all(|o| !o.takes_value).then_some(opts)
+}
+
+/// What the whole line shares: where it is typed, the host's data and what the shell knows.
+#[derive(Clone, Copy)]
+struct Env<'a> {
+    cwd: &'a Path,
+    values: &'a dyn Fn(Provider, &Path) -> Vec<Suggestion>,
+    recall: Option<&'a RecallFn>,
+    specs: &'a [Command],
+    shell: &'a ShellContext,
+    /// The word under the cursor is written as it reads: no quotes or escapes.
+    plain: bool,
+    quoted: bool,
+}
+
 /// Collects matching candidates for the word under the cursor.
 struct Sink<'a> {
     typed: String,
     start: usize,
     end: usize,
-    cwd: &'a Path,
-    values: &'a dyn Fn(Provider, &Path) -> Vec<Suggestion>,
+    env: Env<'a>,
     providers_enabled: bool,
-    recall: Option<&'a RecallFn>,
+    /// Folders also come from `$CDPATH` (`cd`).
+    cdpath: bool,
     out: Vec<Candidate>,
     /// Words one slip away from what was typed; shown only when nothing else matched.
     near: Vec<Candidate>,
 }
 
 impl<'a> Sink<'a> {
-    fn new(typed: String, start: usize, end: usize, cwd: &'a Path, values: &'a dyn Fn(Provider, &Path) -> Vec<Suggestion>) -> Self {
-        Self { typed, start, end, cwd, values, providers_enabled: true, recall: None, out: Vec::new(), near: Vec::new() }
-    }
-
-    fn recalling(mut self, recall: Option<&'a RecallFn>) -> Self {
-        self.recall = recall;
-        self
+    fn new(typed: String, start: usize, end: usize, env: Env<'a>) -> Self {
+        Self { typed, start, end, env, providers_enabled: true, cdpath: false, out: Vec::new(), near: Vec::new() }
     }
 
     /// Complete only the part after `--opt=`.
@@ -347,7 +437,13 @@ impl<'a> Sink<'a> {
             },
             None => return,
         };
-        let candidate = Candidate {
+        let candidate = self.candidate(label, description, kind, insert_text, source, scope, m);
+        if close { self.near.push(candidate) } else { self.out.push(candidate) }
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn candidate(&self, label: &str, description: Option<&str>, kind: Kind, insert_text: String, source: Source, scope: &str, m: matching::Match) -> Candidate {
+        Candidate {
             id: format!("{scope}:{label}"),
             label: label.to_string(),
             description: description.map(str::to_string),
@@ -361,29 +457,71 @@ impl<'a> Sink<'a> {
             cursor_offset: None,
             takes_value: false,
             used: false,
-        };
-        if close { self.near.push(candidate) } else { self.out.push(candidate) }
+        }
+    }
+
+    /// The command word: commands with a spec and, once something is typed, whatever the shell can run.
+    fn command_names(&mut self) {
+        let (specs, shell, plain) = (self.env.specs, self.env.shell, self.env.plain);
+        for s in specs {
+            self.push(&s.name, s.description.as_deref(), Kind::Command, format!("{} ", s.name), Source::Bundled, &s.name);
+        }
+        if plain && self.typed.contains('/') {
+            self.files(false, &[]);
+        } else if plain && !self.typed.is_empty() {
+            // Not every command has a spec: offer what the shell itself can run.
+            for (name, kind) in &shell.names {
+                let (desc, scope) = match kind {
+                    NameKind::Alias => (shell.aliases.get(name).map_or("alias".to_string(), |v| format!("alias: {v}")), "alias"),
+                    NameKind::Function => ("shell function".to_string(), "function"),
+                    NameKind::Builtin => ("shell builtin".to_string(), "builtin"),
+                    NameKind::Executable => ("command".to_string(), "path"),
+                };
+                self.push(name, Some(&desc), Kind::Command, format!("{} ", fsys::escape(name)), Source::Generator, scope);
+            }
+        }
     }
 
     /// Values used before for this option of this command, ahead of everything else the slot offers.
     fn recalled(&mut self, command: &str, option: &str) {
-        let Some(recall) = self.recall else { return };
-        for value in recall(command, option, self.cwd) {
+        let Some(recall) = self.env.recall else { return };
+        for value in recall(command, option, self.env.cwd) {
             let insert = format!("{} ", fsys::escape(&value));
             self.push(&value, Some("used before"), Kind::Argument, insert, Source::Local, command);
         }
     }
 
     /// Names of the shell's exported variables. `skip` bytes of the word (the `$` or `${`) stay as typed.
-    fn env_names(&mut self, shell: &ShellContext, skip: usize, tail: &str) {
+    fn env_names(&mut self, skip: usize, tail: &str) {
         self.skip_to_value(skip);
+        let shell = self.env.shell;
         for name in shell.env.iter().filter(|n| is_identifier(n)) {
             self.push(name, Some("environment variable"), Kind::Argument, format!("{name}{tail}"), Source::Local, "env");
         }
     }
 
-    fn options(&mut self, node: &Command, scope: &str) {
+    /// The user's own names for subcommands, as subcommands.
+    fn aliases(&mut self, provider: Provider, scope: &str) {
+        for a in (self.env.values)(provider, self.env.cwd) {
+            let description = a.description.as_deref().map(|d| format!("alias: {d}"));
+            self.push(&a.name, description.as_deref(), Kind::Subcommand, format!("{} ", fsys::escape(&a.name)), Source::Generator, scope);
+        }
+    }
+
+    /// The words a subcommand alias stands for.
+    fn alias(&self, provider: Provider, word: &str) -> Option<Vec<String>> {
+        let value = (self.env.values)(provider, self.env.cwd).into_iter().find(|a| a.name == word)?.description?;
+        let words: Vec<String> = value.split_whitespace().map(str::to_string).collect();
+        (!words.is_empty()).then_some(words)
+    }
+
+    /// Options given already are left out, unless they can repeat or take a value (`-e A=1 -e B=2`), or are
+    /// exactly what is being typed.
+    fn options(&mut self, node: &Command, used: &HashSet<&str>, scope: &str) {
         for o in &node.options {
+            if used.contains(o.name.as_str()) && !o.is_repeatable && !o.takes_value && self.typed != o.name {
+                continue;
+            }
             let (out, near) = (self.out.len(), self.near.len());
             self.push(&o.name, o.description.as_deref(), Kind::Option, format!("{} ", o.name), Source::Bundled, scope);
             for c in self.out[out..].iter_mut().chain(&mut self.near[near..]) {
@@ -392,36 +530,91 @@ impl<'a> Sink<'a> {
         }
     }
 
-    fn arg_values(&mut self, arg: Option<&Arg>, scope: &str) {
-        let Some(arg) = arg else { return };
-        for s in &arg.suggestions {
+    /// `tar -xz`: the single-letter options that can still join the group, each inserted as part of it.
+    fn bundle(&mut self, node: &Command, bundle: &[&Opt], used: &HashSet<&str>, scope: &str) {
+        for o in &node.options {
+            let Some(letter) = short_letter(&o.name) else { continue };
+            if bundle.iter().any(|b| b.name == o.name) || (used.contains(o.name.as_str()) && !o.is_repeatable && !o.takes_value) {
+                continue;
+            }
+            let m = matching::Match { score: 100.0, ranges: vec![] };
+            let mut c = self.candidate(&o.name, o.description.as_deref(), Kind::Option, format!("{}{letter} ", self.typed), Source::Bundled, scope, m);
+            c.takes_value = o.takes_value;
+            self.out.push(c);
+        }
+    }
+
+    /// Values of the slot that start with a dash (`-` for the previous branch, `-globalDomain`).
+    fn dash_values(&mut self, arg: Option<&Arg>, scope: &str) {
+        for s in arg.into_iter().flat_map(|a| &a.suggestions).filter(|s| s.name.starts_with('-')) {
             let insert = s.insert_value.clone().unwrap_or_else(|| fsys::escape(&s.name));
             self.push(&s.name, s.description.as_deref(), Kind::Argument, format!("{insert} "), Source::Bundled, scope);
         }
+    }
+
+    fn arg_values(&mut self, arg: Option<&Arg>, scope: &str) {
+        let Some(arg) = arg else { return };
+        // A wrapper's own project comes first (`npx` lists `node_modules/.bin` before its well-known packages).
+        if arg.runs_command {
+            self.provided(arg, scope);
+        }
+        // Values written as a dash look like options: they come with the options (`dash_values`).
+        for s in arg.suggestions.iter().filter(|s| !s.name.starts_with('-')) {
+            let insert = s.insert_value.clone().unwrap_or_else(|| fsys::escape(&s.name));
+            self.push(&s.name, s.description.as_deref(), Kind::Argument, format!("{insert} "), Source::Bundled, scope);
+        }
+        if !arg.runs_command {
+            self.provided(arg, scope);
+        }
+        match arg.template {
+            Some(Template::Filepaths) => self.files(false, &arg.extensions),
+            Some(Template::Folders) => self.files(true, &[]),
+            Some(Template::Commands) => self.command_names(),
+            None => {}
+        }
+        // The command a wrapper runs, when the spec names no particular ones (`sudo`, `time`; not `npx`'s programs).
+        let names_none = arg.suggestions.is_empty() && arg.provider.is_none() && arg.providers.is_empty() && arg.template.is_none();
+        if arg.runs_command && names_none {
+            self.command_names();
+        }
+    }
+
+    /// What the slot's providers give.
+    fn provided(&mut self, arg: &Arg, scope: &str) {
         // Frequently used directories only narrow what is typed; listing them all for an empty word would bury the cwd.
         let (enabled, typed_empty) = (self.providers_enabled, self.typed.is_empty());
         let wanted = |p: Provider| enabled && (p != Provider::FrecentDirs || !typed_empty);
         let providers: Vec<Provider> = arg.provider.iter().chain(&arg.providers).copied().filter(|&p| wanted(p)).collect();
         for provider in providers {
             let kind = if provider == Provider::FrecentDirs { Kind::Directory } else { Kind::Argument };
-            for value in (self.values)(provider, self.cwd) {
+            for value in (self.env.values)(provider, self.env.cwd) {
                 // A provider may say what to insert (`scp` wants `host:`, with no space after it).
                 let insert = value.insert_value.clone().unwrap_or_else(|| format!("{} ", fsys::escape(&value.name)));
                 self.push(&value.name, value.description.as_deref(), kind, insert, Source::Generator, scope);
             }
         }
-        match arg.template {
-            Some(Template::Filepaths) => self.files(false, &arg.extensions),
-            Some(Template::Folders) => self.files(true, &[]),
-            None => {}
-        }
     }
 
     /// `extensions` (without the dot) keep only files that end in one of them; directories always stay.
     fn files(&mut self, dirs_only: bool, extensions: &[String]) {
-        let listing = fsys::list(self.cwd, &self.typed, dirs_only);
+        let listing = fsys::list(self.env.cwd, &self.typed, dirs_only);
         // Match against the basename only; the directory part is kept verbatim.
-        let full_typed = std::mem::replace(&mut self.typed, listing.typed_name);
+        let full_typed = std::mem::replace(&mut self.typed, listing.typed_name.clone());
+        self.listed(&listing, extensions, None);
+        self.typed = full_typed;
+        // `cd name` also finds `name` in the folders of `$CDPATH`, as `cd` itself does.
+        if dirs_only && self.cdpath && !self.typed.starts_with(['/', '.', '~']) {
+            let shell = self.env.shell;
+            for base in &shell.cdpath {
+                let listing = fsys::list(Path::new(base), &self.typed, true);
+                let full_typed = std::mem::replace(&mut self.typed, listing.typed_name.clone());
+                self.listed(&listing, &[], Some(&format!("in {base}")));
+                self.typed = full_typed;
+            }
+        }
+    }
+
+    fn listed(&mut self, listing: &fsys::Listing, extensions: &[String], description: Option<&str>) {
         let wanted = |name: &str| {
             let lower = name.to_lowercase();
             extensions.is_empty() || extensions.iter().any(|x| lower.ends_with(&format!(".{}", x.to_lowercase())))
@@ -430,9 +623,8 @@ impl<'a> Sink<'a> {
             let label = if e.is_dir { format!("{}/", e.name) } else { e.name.clone() };
             let (kind, tail) = if e.is_dir { (Kind::Directory, "") } else { (Kind::File, " ") };
             let insert = format!("{}{tail}", fsys::escape(&format!("{}{label}", listing.dir_prefix)));
-            self.push(&label, None, kind, insert, Source::Filesystem, "fs");
+            self.push(&label, description, kind, insert, Source::Filesystem, "fs");
         }
-        self.typed = full_typed;
     }
 
     fn finish(mut self) -> Vec<Candidate> {

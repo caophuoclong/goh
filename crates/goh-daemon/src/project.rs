@@ -1,5 +1,6 @@
-//! Suggestions that depend on the current directory's project: git branches and remotes, `package.json`
-//! scripts, Makefile targets. Plain file reads (no `git`, `npm` or `make` is run), bounded in size.
+//! Suggestions that depend on the current directory's project: git branches, remotes and aliases,
+//! `package.json`, `pyproject.toml` and `deno.json` scripts, Makefile targets. Plain file reads (no `git`,
+//! `npm` or `make` is run), bounded in size.
 
 use std::collections::HashSet;
 use std::path::{Path, PathBuf};
@@ -35,6 +36,10 @@ pub fn values(provider: Provider, cwd: &Path) -> Vec<Suggestion> {
         Provider::WorkspacePackages => workspace_packages(cwd),
         Provider::PackageDependencies => package_dependencies(cwd),
         Provider::CargoDependencies => cargo_dependencies(cwd),
+        Provider::GitAliases => git_aliases(cwd, &std::env::var_os("HOME").map(PathBuf::from).unwrap_or_default()),
+        Provider::PythonScripts => python_scripts(cwd),
+        Provider::DenoTasks => deno_tasks(cwd),
+        Provider::NodeBins => node_bins(cwd),
         _ => vec![],
     }
 }
@@ -46,7 +51,8 @@ pub fn reads_project(provider: Provider) -> bool {
         Provider::GitBranches | Provider::GitRemotes | Provider::GitTags | Provider::GitStashes | Provider::PackageScripts
             | Provider::MakeTargets | Provider::JustRecipes | Provider::TaskfileTasks | Provider::ComposeServices
             | Provider::CargoBins | Provider::CargoExamples | Provider::CargoFeatures | Provider::WorkspacePackages
-            | Provider::PackageDependencies | Provider::CargoDependencies
+            | Provider::PackageDependencies | Provider::CargoDependencies | Provider::GitAliases | Provider::PythonScripts
+            | Provider::DenoTasks | Provider::NodeBins
     )
 }
 
@@ -172,6 +178,35 @@ fn git_remotes(cwd: &Path) -> Vec<Suggestion> {
     let Some(git) = find_git(cwd) else { return vec![] };
     let config = read_small(&git.common.join("config")).unwrap_or_default();
     remotes_in(&config).into_iter().map(|(n, url)| suggestion(n, url)).collect()
+}
+
+/// `[alias]` entries of a git config: `co = checkout -b`. Aliases that run a shell command (`!...`) are not
+/// git subcommands and are left out.
+pub fn aliases_in(config: &str) -> Vec<(String, String)> {
+    let mut out = Vec::new();
+    let mut in_alias = false;
+    for line in config.lines().map(str::trim) {
+        if line.starts_with('[') {
+            in_alias = line.trim_start_matches('[').trim_end_matches(']').trim().eq_ignore_ascii_case("alias");
+            continue;
+        }
+        let Some((name, value)) = line.split_once('=').filter(|_| in_alias && !line.starts_with(['#', ';'])) else { continue };
+        let value = value.trim().trim_matches('"').trim();
+        if !value.is_empty() && !value.starts_with('!') && !value.chars().any(char::is_control) {
+            out.push((name.trim().to_string(), value.to_string()));
+        }
+    }
+    out
+}
+
+/// Your aliases (`~/.gitconfig`, `$XDG_CONFIG_HOME/git/config`) and the repository's, which win.
+fn git_aliases(cwd: &Path, home: &Path) -> Vec<Suggestion> {
+    let xdg = std::env::var_os("XDG_CONFIG_HOME").map_or_else(|| home.join(".config"), PathBuf::from);
+    let mut files = vec![xdg.join("git/config"), home.join(".gitconfig")];
+    if let Some(git) = find_git(cwd) {
+        files.insert(0, git.common.join("config"));
+    }
+    described(files.iter().filter_map(|f| read_small(f)).flat_map(|t| aliases_in(&t)), MAX_NAMES)
 }
 
 /// Digit runs compare as numbers, so `v1.10` sorts after `v1.9`.
@@ -537,6 +572,71 @@ fn package_scripts(cwd: &Path) -> Vec<Suggestion> {
         .collect()
 }
 
+/// Names in a TOML table and its `[table.name]` subtables, with the value of a `name = "..."` line.
+fn toml_keys(text: &str, tables: &[&str]) -> Vec<(String, String)> {
+    let mut out = Vec::new();
+    let mut current: Option<&str> = None;
+    let unquote = |v: &str| v.trim().trim_matches(|c| c == '"' || c == '\'').to_string();
+    for raw in text.lines() {
+        let line = raw.trim();
+        if let Some(header) = line.strip_prefix('[').and_then(|h| h.split(']').next()) {
+            let header = header.trim();
+            current = tables.iter().copied().find(|t| *t == header);
+            // `[tool.pdm.scripts.serve]` names a script in its header.
+            if let Some(name) = tables.iter().find_map(|t| header.strip_prefix(t)?.strip_prefix('.')) {
+                out.push((unquote(name), "script".to_string()));
+            }
+            continue;
+        }
+        let Some((key, value)) = line.split_once('=').filter(|_| current.is_some() && !line.starts_with('#')) else { continue };
+        let key = unquote(key);
+        // A plain command, or a table such as `{ cmd = "..." }`: show the command when it is a string.
+        let value = value.trim();
+        let shown = if value.starts_with('"') || value.starts_with('\'') { unquote(value) } else { "script".to_string() };
+        if !key.contains('.') {
+            out.push((key, shown));
+        }
+    }
+    out
+}
+
+/// What `poetry run`, `uv run`, `pdm run` and `pipenv run` can take from the project: scripts and tasks of the
+/// nearest `pyproject.toml`, and the `[scripts]` of a `Pipfile`.
+fn python_scripts(cwd: &Path) -> Vec<Suggestion> {
+    const TABLES: [&str; 7] = ["project.scripts", "tool.poetry.scripts", "tool.pdm.scripts", "tool.rye.scripts", "tool.poe.tasks", "tool.hatch.envs.default.scripts", "tool.uv.scripts"];
+    let mut all = Vec::new();
+    for dir in cwd.ancestors() {
+        let pyproject = read_small(&dir.join("pyproject.toml"));
+        let pipfile = read_small(&dir.join("Pipfile"));
+        all.extend(pyproject.iter().flat_map(|t| toml_keys(t, &TABLES)));
+        all.extend(pipfile.iter().flat_map(|t| toml_keys(t, &["scripts"])));
+        if pyproject.is_some() || pipfile.is_some() {
+            break;
+        }
+    }
+    described(all.into_iter().map(|(n, d)| (n, d.chars().take(80).collect::<String>())), MAX_NAMES)
+}
+
+/// `tasks` of the nearest `deno.json` or `deno.jsonc` (whole-line `//` comments allowed), with the command each runs.
+fn deno_tasks(cwd: &Path) -> Vec<Suggestion> {
+    let Some(text) = nearest(cwd, &["deno.json", "deno.jsonc"]) else { return vec![] };
+    let json: String = text.lines().filter(|l| !l.trim_start().starts_with("//")).collect::<Vec<_>>().join("\n");
+    let Ok(v) = serde_json::from_str::<serde_json::Value>(&json) else { return vec![] };
+    let tasks = v.get("tasks").and_then(|t| t.as_object()).into_iter().flatten().map(|(name, task)| {
+        let command = task.as_str().or_else(|| task.get("description")?.as_str()).or_else(|| task.get("command")?.as_str()).unwrap_or("task");
+        (name.clone(), command.chars().take(80).collect::<String>())
+    });
+    described(tasks, MAX_NAMES)
+}
+
+/// Programs installed in the nearest `node_modules/.bin`.
+fn node_bins(cwd: &Path) -> Vec<Suggestion> {
+    let Some(bin) = cwd.ancestors().map(|d| d.join("node_modules/.bin")).find(|b| b.is_dir()) else { return vec![] };
+    let mut found: Vec<String> = std::fs::read_dir(&bin).map(|r| r.flatten().filter_map(|e| e.file_name().into_string().ok()).take(MAX_NAMES).collect()).unwrap_or_default();
+    found.sort();
+    names(found, "node_modules/.bin")
+}
+
 /// Rule targets of a Makefile: `name:` at the start of a line (not `:=`, not patterns, not `.PHONY`-style specials).
 pub fn make_targets_in(text: &str) -> Vec<String> {
     let mut out = Vec::new();
@@ -634,6 +734,42 @@ mod tests {
         let s = package_scripts(&sub);
         assert_eq!(s.iter().map(|s| s.name.as_str()).collect::<Vec<_>>(), ["build", "dev"]);
         assert_eq!(s[1].description.as_deref(), Some("vite"));
+    }
+
+    #[test]
+    fn git_aliases_come_from_the_repository_and_your_config_without_shell_ones() {
+        assert_eq!(
+            aliases_in("[core]\n\tbare = false\n[alias]\n\tco = checkout\n\tsw = \"switch -c\"\n\tup = !git pull\n; note = x\n[Alias]\n\tst = status -sb\n[user]\n\tname = me\n"),
+            [("co", "checkout"), ("sw", "switch -c"), ("st", "status -sb")].map(|(a, b)| (a.to_string(), b.to_string()))
+        );
+        let d = repo();
+        let home = tempfile::tempdir().unwrap();
+        std::fs::write(home.path().join(".gitconfig"), "[alias]\n  co = checkout\n  lg = log --graph\n").unwrap();
+        std::fs::write(d.path().join(".git/config"), "[alias]\n  co = commit\n").unwrap();
+        let found: Vec<_> = git_aliases(d.path(), home.path()).into_iter().map(|s| (s.name, s.description.unwrap())).collect();
+        assert_eq!(found, [("co", "commit"), ("lg", "log --graph")].map(|(a, b)| (a.to_string(), b.to_string())), "the repository's own alias wins");
+    }
+
+    #[test]
+    fn python_scripts_deno_tasks_and_node_bins_come_from_the_nearest_project() {
+        let d = tempfile::tempdir().unwrap();
+        let sub = d.path().join("src/app");
+        std::fs::create_dir_all(&sub).unwrap();
+        std::fs::write(d.path().join("pyproject.toml"), "[project]\nname = \"x\"\n[project.scripts]\ncli = \"x.main:run\"\n[tool.pdm.scripts]\nlint = \"ruff check .\"\ntest = { cmd = \"pytest\" }\n[tool.pdm.scripts.serve]\ncmd = \"uvicorn x:app\"\n[tool.ruff]\nline-length = 100\n").unwrap();
+        let found: Vec<_> = python_scripts(&sub).into_iter().map(|s| (s.name, s.description.unwrap())).collect();
+        assert_eq!(found, [("cli", "x.main:run"), ("lint", "ruff check ."), ("test", "script"), ("serve", "script")].map(|(a, b)| (a.to_string(), b.to_string())));
+        std::fs::write(sub.join("Pipfile"), "[packages]\nrequests = \"*\"\n[scripts]\nstart = \"python app.py\"\n").unwrap();
+        assert_eq!(python_scripts(&sub).into_iter().map(|s| s.name).collect::<Vec<_>>(), ["start"], "the nearest project only");
+
+        std::fs::write(d.path().join("deno.jsonc"), "{\n  // tasks\n  \"tasks\": { \"dev\": \"deno run -A main.ts\", \"check\": { \"command\": \"deno check\", \"description\": \"Type-check\" } }\n}\n").unwrap();
+        let tasks: Vec<_> = deno_tasks(&sub).into_iter().map(|s| (s.name, s.description.unwrap())).collect();
+        assert_eq!(tasks, [("check", "Type-check"), ("dev", "deno run -A main.ts")].map(|(a, b)| (a.to_string(), b.to_string())));
+
+        std::fs::create_dir_all(d.path().join("node_modules/.bin")).unwrap();
+        for b in ["vite", "eslint"] {
+            std::fs::write(d.path().join("node_modules/.bin").join(b), "").unwrap();
+        }
+        assert_eq!(node_bins(&sub).into_iter().map(|s| s.name).collect::<Vec<_>>(), ["eslint", "vite"]);
     }
 
     #[test]

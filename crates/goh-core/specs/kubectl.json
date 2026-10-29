@@ -8,7 +8,8 @@
       "takesValue": true,
       "args": [
         {
-          "name": "namespace"
+          "name": "namespace",
+          "provider": "kube-namespaces"
         }
       ]
     },
@@ -18,7 +19,8 @@
       "takesValue": true,
       "args": [
         {
-          "name": "namespace"
+          "name": "namespace",
+          "provider": "kube-namespaces"
         }
       ]
     },
@@ -870,7 +872,8 @@
       ],
       "args": [
         {
-          "name": "Running Pods"
+          "name": "Running Pods",
+          "provider": "kube-pods"
         }
       ]
     },
@@ -2158,7 +2161,8 @@
               "takesValue": true,
               "args": [
                 {
-                  "name": "namespace"
+                  "name": "namespace",
+                  "provider": "kube-namespaces"
                 }
               ]
             }
@@ -6714,7 +6718,121 @@
       ],
       "args": [
         {
-          "name": "TYPE | TYPE/NAME"
+          "name": "TYPE | TYPE/NAME",
+          "suggestions": [
+            {
+              "name": "pods",
+              "description": "short: po"
+            },
+            {
+              "name": "deployments",
+              "description": "short: deploy"
+            },
+            {
+              "name": "services",
+              "description": "short: svc"
+            },
+            {
+              "name": "configmaps",
+              "description": "short: cm"
+            },
+            {
+              "name": "secrets",
+              "description": "resource type"
+            },
+            {
+              "name": "namespaces",
+              "description": "short: ns"
+            },
+            {
+              "name": "nodes",
+              "description": "short: no"
+            },
+            {
+              "name": "ingresses",
+              "description": "short: ing"
+            },
+            {
+              "name": "statefulsets",
+              "description": "short: sts"
+            },
+            {
+              "name": "daemonsets",
+              "description": "short: ds"
+            },
+            {
+              "name": "replicasets",
+              "description": "short: rs"
+            },
+            {
+              "name": "jobs",
+              "description": "resource type"
+            },
+            {
+              "name": "cronjobs",
+              "description": "short: cj"
+            },
+            {
+              "name": "persistentvolumeclaims",
+              "description": "short: pvc"
+            },
+            {
+              "name": "persistentvolumes",
+              "description": "short: pv"
+            },
+            {
+              "name": "serviceaccounts",
+              "description": "short: sa"
+            },
+            {
+              "name": "events",
+              "description": "short: ev"
+            },
+            {
+              "name": "endpoints",
+              "description": "short: ep"
+            },
+            {
+              "name": "horizontalpodautoscalers",
+              "description": "short: hpa"
+            },
+            {
+              "name": "networkpolicies",
+              "description": "short: netpol"
+            },
+            {
+              "name": "storageclasses",
+              "description": "short: sc"
+            },
+            {
+              "name": "roles",
+              "description": "resource type"
+            },
+            {
+              "name": "rolebindings",
+              "description": "resource type"
+            },
+            {
+              "name": "clusterroles",
+              "description": "resource type"
+            },
+            {
+              "name": "clusterrolebindings",
+              "description": "resource type"
+            },
+            {
+              "name": "customresourcedefinitions",
+              "description": "short: crd"
+            },
+            {
+              "name": "poddisruptionbudgets",
+              "description": "short: pdb"
+            },
+            {
+              "name": "all",
+              "description": "resource type"
+            }
+          ]
         },
         {
           "name": "Resource",
@@ -6818,7 +6936,121 @@
       ],
       "args": [
         {
-          "name": "TYPE | TYPE/NAME"
+          "name": "TYPE | TYPE/NAME",
+          "suggestions": [
+            {
+              "name": "pods",
+              "description": "short: po"
+            },
+            {
+              "name": "deployments",
+              "description": "short: deploy"
+            },
+            {
+              "name": "services",
+              "description": "short: svc"
+            },
+            {
+              "name": "configmaps",
+              "description": "short: cm"
+            },
+            {
+              "name": "secrets",
+              "description": "resource type"
+            },
+            {
+              "name": "namespaces",
+              "description": "short: ns"
+            },
+            {
+              "name": "nodes",
+              "description": "short: no"
+            },
+            {
+              "name": "ingresses",
+              "description": "short: ing"
+            },
+            {
+              "name": "statefulsets",
+              "description": "short: sts"
+            },
+            {
+              "name": "daemonsets",
+              "description": "short: ds"
+            },
+            {
+              "name": "replicasets",
+              "description": "short: rs"
+            },
+            {
+              "name": "jobs",
+              "description": "resource type"
+            },
+            {
+              "name": "cronjobs",
+              "description": "short: cj"
+            },
+            {
+              "name": "persistentvolumeclaims",
+              "description": "short: pvc"
+            },
+            {
+              "name": "persistentvolumes",
+              "description": "short: pv"
+            },
+            {
+              "name": "serviceaccounts",
+              "description": "short: sa"
+            },
+            {
+              "name": "events",
+              "description": "short: ev"
+            },
+            {
+              "name": "endpoints",
+              "description": "short: ep"
+            },
+            {
+              "name": "horizontalpodautoscalers",
+              "description": "short: hpa"
+            },
+            {
+              "name": "networkpolicies",
+              "description": "short: netpol"
+            },
+            {
+              "name": "storageclasses",
+              "description": "short: sc"
+            },
+            {
+              "name": "roles",
+              "description": "resource type"
+            },
+            {
+              "name": "rolebindings",
+              "description": "resource type"
+            },
+            {
+              "name": "clusterroles",
+              "description": "resource type"
+            },
+            {
+              "name": "clusterrolebindings",
+              "description": "resource type"
+            },
+            {
+              "name": "customresourcedefinitions",
+              "description": "short: crd"
+            },
+            {
+              "name": "poddisruptionbudgets",
+              "description": "short: pdb"
+            },
+            {
+              "name": "all",
+              "description": "resource type"
+            }
+          ]
         },
         {
           "name": "Resource",
@@ -7202,7 +7434,121 @@
       ],
       "args": [
         {
-          "name": "TYPE | TYPE/NAME"
+          "name": "TYPE | TYPE/NAME",
+          "suggestions": [
+            {
+              "name": "pods",
+              "description": "short: po"
+            },
+            {
+              "name": "deployments",
+              "description": "short: deploy"
+            },
+            {
+              "name": "services",
+              "description": "short: svc"
+            },
+            {
+              "name": "configmaps",
+              "description": "short: cm"
+            },
+            {
+              "name": "secrets",
+              "description": "resource type"
+            },
+            {
+              "name": "namespaces",
+              "description": "short: ns"
+            },
+            {
+              "name": "nodes",
+              "description": "short: no"
+            },
+            {
+              "name": "ingresses",
+              "description": "short: ing"
+            },
+            {
+              "name": "statefulsets",
+              "description": "short: sts"
+            },
+            {
+              "name": "daemonsets",
+              "description": "short: ds"
+            },
+            {
+              "name": "replicasets",
+              "description": "short: rs"
+            },
+            {
+              "name": "jobs",
+              "description": "resource type"
+            },
+            {
+              "name": "cronjobs",
+              "description": "short: cj"
+            },
+            {
+              "name": "persistentvolumeclaims",
+              "description": "short: pvc"
+            },
+            {
+              "name": "persistentvolumes",
+              "description": "short: pv"
+            },
+            {
+              "name": "serviceaccounts",
+              "description": "short: sa"
+            },
+            {
+              "name": "events",
+              "description": "short: ev"
+            },
+            {
+              "name": "endpoints",
+              "description": "short: ep"
+            },
+            {
+              "name": "horizontalpodautoscalers",
+              "description": "short: hpa"
+            },
+            {
+              "name": "networkpolicies",
+              "description": "short: netpol"
+            },
+            {
+              "name": "storageclasses",
+              "description": "short: sc"
+            },
+            {
+              "name": "roles",
+              "description": "resource type"
+            },
+            {
+              "name": "rolebindings",
+              "description": "resource type"
+            },
+            {
+              "name": "clusterroles",
+              "description": "resource type"
+            },
+            {
+              "name": "clusterrolebindings",
+              "description": "resource type"
+            },
+            {
+              "name": "customresourcedefinitions",
+              "description": "short: crd"
+            },
+            {
+              "name": "poddisruptionbudgets",
+              "description": "short: pdb"
+            },
+            {
+              "name": "all",
+              "description": "resource type"
+            }
+          ]
         },
         {
           "name": "Resource",
@@ -7289,7 +7635,8 @@
       ],
       "args": [
         {
-          "name": "Running Pods"
+          "name": "Running Pods",
+          "provider": "kube-pods"
         },
         {
           "name": "COMMAND",
@@ -7966,7 +8313,121 @@
       ],
       "args": [
         {
-          "name": "TYPE | TYPE/NAME"
+          "name": "TYPE | TYPE/NAME",
+          "suggestions": [
+            {
+              "name": "pods",
+              "description": "short: po"
+            },
+            {
+              "name": "deployments",
+              "description": "short: deploy"
+            },
+            {
+              "name": "services",
+              "description": "short: svc"
+            },
+            {
+              "name": "configmaps",
+              "description": "short: cm"
+            },
+            {
+              "name": "secrets",
+              "description": "resource type"
+            },
+            {
+              "name": "namespaces",
+              "description": "short: ns"
+            },
+            {
+              "name": "nodes",
+              "description": "short: no"
+            },
+            {
+              "name": "ingresses",
+              "description": "short: ing"
+            },
+            {
+              "name": "statefulsets",
+              "description": "short: sts"
+            },
+            {
+              "name": "daemonsets",
+              "description": "short: ds"
+            },
+            {
+              "name": "replicasets",
+              "description": "short: rs"
+            },
+            {
+              "name": "jobs",
+              "description": "resource type"
+            },
+            {
+              "name": "cronjobs",
+              "description": "short: cj"
+            },
+            {
+              "name": "persistentvolumeclaims",
+              "description": "short: pvc"
+            },
+            {
+              "name": "persistentvolumes",
+              "description": "short: pv"
+            },
+            {
+              "name": "serviceaccounts",
+              "description": "short: sa"
+            },
+            {
+              "name": "events",
+              "description": "short: ev"
+            },
+            {
+              "name": "endpoints",
+              "description": "short: ep"
+            },
+            {
+              "name": "horizontalpodautoscalers",
+              "description": "short: hpa"
+            },
+            {
+              "name": "networkpolicies",
+              "description": "short: netpol"
+            },
+            {
+              "name": "storageclasses",
+              "description": "short: sc"
+            },
+            {
+              "name": "roles",
+              "description": "resource type"
+            },
+            {
+              "name": "rolebindings",
+              "description": "resource type"
+            },
+            {
+              "name": "clusterroles",
+              "description": "resource type"
+            },
+            {
+              "name": "clusterrolebindings",
+              "description": "resource type"
+            },
+            {
+              "name": "customresourcedefinitions",
+              "description": "short: crd"
+            },
+            {
+              "name": "poddisruptionbudgets",
+              "description": "short: pdb"
+            },
+            {
+              "name": "all",
+              "description": "resource type"
+            }
+          ]
         },
         {
           "name": "Resource",
@@ -8541,7 +9002,8 @@
       ],
       "args": [
         {
-          "name": "TYPE | TYPE/NAME"
+          "name": "TYPE | TYPE/NAME",
+          "provider": "kube-pods"
         },
         {
           "name": "Resource",
@@ -8814,7 +9276,8 @@
       ],
       "args": [
         {
-          "name": "TYPE | TYPE/NAME"
+          "name": "TYPE | TYPE/NAME",
+          "provider": "kube-pods"
         },
         {
           "name": "Resource",

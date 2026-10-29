@@ -124,6 +124,18 @@
           "provider": "package-dependencies"
         }
       ]
+    },
+    {
+      "name": "exec",
+      "description": "Run a command from a local or remote package",
+      "args": [
+        {
+          "name": "command",
+          "isVariadic": true,
+          "runsCommand": true,
+          "provider": "node-bins"
+        }
+      ]
     }
   ]
 }

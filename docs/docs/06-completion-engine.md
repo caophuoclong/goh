@@ -223,17 +223,54 @@ opaque delegated command and variadic following words, preventing parent options
 `docker exec <container> <program> ...`. A `--` separator stops option completion. Metadata for other
 project-specific arguments still needs its own provider; free-form values cannot be inferred from a static spec.
 
+`runsCommand` marks the opposite: a command run on this machine (`sudo`, `doas`, `time`, `env`, `nohup`, `watch`,
+`xargs`, `nice`, `timeout`, `command`, `exec`, `npx`, `pnpm exec`, `yarn exec`, `bun x`, `npm exec`, `uv run`,
+`poetry run`, `pipenv run`). The wrapper's own options are read first; then the slot completes as a command name
+(or from the slot's providers, such as `node-bins`) and the words after it by that command's spec, so `sudo -u root
+git ch` offers `checkout`. `NAME=value` words before a command, at the start of a line or after `env`, are its
+environment and are skipped the same way. The template `commands` completes command names alone (`man`, `which`,
+`type`, `whereis`).
+
+Options already given to the subcommand are not offered again, unless they take a value (`-e A=1 -e B=2`), the spec
+marks them `isRepeatable` (imported from Fig's `isRepeatable`), or they are exactly what is typed. Single-letter options
+can be written as one word: `ls -la` counts as `-l -a`, typing `ls -la` offers the letters that can still join it (`-h`
+inserts `-lah `), and in `ssh -vp 22` the last letter takes the next word as its value. A word that starts the name of
+a real option (`find -na`) is never read as a group.
+
+A suggestion whose name starts with `-` (`-` for the previous branch in `git checkout`/`switch`/`merge`/`rebase`/
+`cherry-pick`, the previous directory in `cd`) is offered with the options when `-` is typed, not among the values.
+
+`subcommandAliases` names a provider of the user's own subcommand names (`git-aliases`): `git co ma` with
+`co = checkout` reads on as `git checkout ma`, up to five expansions, and the aliases are offered with the
+subcommands. `requiresFiles` limits a spec to directories where one of the files is present here or above: `task` is
+go-task's only next to a Taskfile, so a Taskwarrior user gets files instead of go-task's flags.
+
 ## Project values and the rest (read-only)
 
 Besides the Docker/zoxide providers above, the daemon fills argument slots from plain files in the working
 directory (nothing is run): `git-branches`, `git-remotes`, `git-tags` (newest version first), `git-stashes`,
 `package-scripts`, `make-targets`, `just-recipes` (the `#` comment above a recipe is its description),
 `taskfile-tasks`, `compose-services`, `cargo-bins`, `cargo-examples`, `cargo-features` and `workspace-packages`
-(Cargo workspace members and npm/pnpm workspaces; used by `cargo -p` and `pnpm --filter`). The two that need git's
+(Cargo workspace members and npm/pnpm workspaces; used by `cargo -p` and `pnpm --filter`), `git-aliases` (the `[alias]`
+entries of the repository's config, `$XDG_CONFIG_HOME/git/config` and `~/.gitconfig`, the repository's first; `!shell`
+aliases are left out), `python-scripts` (`[project.scripts]`, `[tool.poetry.scripts]`, `[tool.pdm.scripts]`,
+`[tool.rye.scripts]`, `[tool.uv.scripts]`, `[tool.poe.tasks]`, `[tool.hatch.envs.default.scripts]` of the nearest
+`pyproject.toml`, and `[scripts]` of a `Pipfile`), `deno-tasks` (`tasks` of the nearest `deno.json`/`deno.jsonc`) and
+`node-bins` (the nearest `node_modules/.bin`). `cd` and `pushd` also list the folders of `$CDPATH`, which the zsh
+adapter sends with the rest of the shell context. The two that need git's
 index, `git-changed-files` (modified and untracked, for `git add`, `restore`, `diff`) and `git-staged-files` (for
 `git reset`, `restore --staged`), run `git ls-files -m -o --exclude-standard -z` / `git diff --cached --name-only
 --relative -z` with fixed arguments, `core.fsmonitor=false`, no optional locks, a 120 ms deadline and the same
-cache as Docker; outside a repository or when git is missing they are empty. An argument may name several
+cache as Docker; outside a repository or when git is missing they are empty. `git-commits` (the last 100 commits,
+with their subject, for `show`, `revert`, `cherry-pick`, `reset`, `rebase`) runs `git log -n 100 --format=%h%x1f%s`
+the same way.
+
+`kube-pods` (`kubectl logs`, `exec`, `attach`, `port-forward`) and `kube-namespaces` (`-n`, `--namespace`) ask the
+cluster, which can take seconds: `kubectl get pods|namespaces -o name --request-timeout=4s` runs in the background
+(5 s deadline), and a request gets what the current context answered last, never waiting for it. Answers are kept per
+kubectl context for 15 s; a failed query leaves nothing, so another context's pods are never shown. A line naming
+another context, kubeconfig, cluster, server or namespace (`-n`, `-A`) gets no provider values at all, as with Docker.
+`kubectl get`, `describe`, `delete` and `edit` offer the common resource types. An argument may name several
 providers (`"providers": [...]`) and files may be narrowed with `"extensions": ["py"]` (directories always stay).
 
 Package managers get names from what they keep on disk, again without starting them (`brew` alone takes longer than a
@@ -248,8 +285,9 @@ nearest `Cargo.toml` (`cargo remove`); `cargo-installed` the crates in `$CARGO_H
 `pip-packages` the `*.dist-info` folders of the project's `.venv`/`venv`/`env` or, outside one, of the user and system
 `site-packages` (`pip`, `pip3`, `uv pip`: `uninstall`, `show`); `uv-tools` the folders of `uv`'s tool directory
 (`uv tool uninstall`, `upgrade`). Adding packages (`install`, `add`) is free text except for `brew`, which has the list.
-Not covered: `go` (no uninstall; modules come from the network), `gem`, `apt` and `dnf` (no bundled spec), `uv remove`
-(needs a `pyproject.toml` reader), `pip install` (PyPI is not stored locally).
+Not covered: `go` (no uninstall; modules come from the network), installed gems (`gem uninstall`), `apt` packages and
+`dnf` (no bundled spec), `uv remove` (dependencies of `pyproject.toml` are not read yet), `pip install` (PyPI is not
+stored locally).
 
 ## Slips, variables, risk notes
 

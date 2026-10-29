@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "name": "whereis",
+  "description": "Find a command's binary, source and manual page",
+  "options": [
+    {
+      "name": "-b",
+      "description": "Binaries only",
+      "takesValue": false
+    },
+    {
+      "name": "-m",
+      "description": "Manual pages only",
+      "takesValue": false
+    }
+  ],
+  "args": [
+    {
+      "name": "command",
+      "isVariadic": true,
+      "template": "commands"
+    }
+  ]
+}

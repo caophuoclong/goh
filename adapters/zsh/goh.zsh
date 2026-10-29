@@ -808,12 +808,13 @@ typeset -g _goh_ctx_sig
 _goh_sync_context() {
   # Names of exported variables only (for `$NA` and `export NA`), never their values.
   local -a exported=(${(k)parameters[(R)*export*]})
-  local sig="$PATH|${(kv)aliases}|${(k)functions}|${(j: :)exported}"
+  local sig="$PATH|${CDPATH-}|${(kv)aliases}|${(k)functions}|${(j: :)exported}"
   [[ $sig == "$_goh_ctx_sig" ]] && return 0
   _goh_ctx_sig=$sig
   {
     local k T=$'\t'   # a real tab: inside double quotes `\t` would stay two characters
     print -r -- "P$T$PATH"
+    [[ -n ${CDPATH-} ]] && print -r -- "C$T$CDPATH"
     for k in ${(k)aliases}; do [[ ${aliases[$k]} == *[$'\t\n']* ]] || print -r -- "A$T$k$T${aliases[$k]}"; done
     for k in ${(k)functions}; do [[ $k == [_.]* ]] || print -r -- "F$T$k"; done
     for k in ${(k)builtins}; do print -r -- "B$T$k"; done

@@ -141,11 +141,12 @@ impl Server {
                 Some(Reply::Results { v: 1, session_id, generation, suggestions: candidates })
             }
             Request::Hello { v } => (v == 1).then(|| Reply::Hello { v: 1, version: env!("CARGO_PKG_VERSION").to_string(), pid: std::process::id() }),
-            Request::Context { v, session_id, aliases, functions, builtins, path, env } => {
+            Request::Context { v, session_id, aliases, functions, builtins, path, env, cdpath } => {
                 if v != 1 || !valid_session(&session_id) {
                     return None;
                 }
-                let ctx = self.shells.context(&aliases, &functions, &builtins, &path, &env);
+                let mut ctx = self.shells.context(&aliases, &functions, &builtins, &path, &env);
+                ctx.cdpath = crate::shell::cdpath_dirs(&cdpath);
                 let mut contexts = self.contexts.lock().ok()?;
                 if contexts.len() >= MAX_SESSIONS && !contexts.contains_key(&session_id) {
                     contexts.clear();

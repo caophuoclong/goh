@@ -45,6 +45,9 @@ pub enum Request {
         /// Names of the exported variables (never their values).
         #[serde(default)]
         env: Vec<String>,
+        /// `$CDPATH`, where `cd name` also looks.
+        #[serde(default)]
+        cdpath: String,
     },
 }
 

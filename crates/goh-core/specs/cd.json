@@ -6,7 +6,13 @@
     {
       "name": "argument",
       "template": "folders",
-      "provider": "frecent-dirs"
+      "provider": "frecent-dirs",
+      "suggestions": [
+        {
+          "name": "-",
+          "description": "previous directory"
+        }
+      ]
     }
   ]
 }

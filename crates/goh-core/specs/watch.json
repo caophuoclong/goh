@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "name": "watch",
+  "description": "Run a command again and again, showing its output",
+  "options": [
+    {
+      "name": "-n",
+      "description": "Seconds between runs",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "seconds"
+        }
+      ]
+    },
+    {
+      "name": "-d",
+      "description": "Highlight what changed",
+      "takesValue": false
+    },
+    {
+      "name": "-t",
+      "description": "Hide the header",
+      "takesValue": false
+    },
+    {
+      "name": "-g",
+      "description": "Exit when the output changes",
+      "takesValue": false
+    },
+    {
+      "name": "-x",
+      "description": "Run the command with exec instead of sh -c",
+      "takesValue": false
+    }
+  ],
+  "args": [
+    {
+      "name": "command",
+      "description": "The command to run",
+      "isVariadic": true,
+      "runsCommand": true
+    }
+  ]
+}

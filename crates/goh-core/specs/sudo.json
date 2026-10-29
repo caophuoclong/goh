@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "name": "sudo",
+  "description": "Run a command as another user",
+  "options": [
+    {
+      "name": "-u",
+      "description": "Run as this user",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "user"
+        }
+      ]
+    },
+    {
+      "name": "-g",
+      "description": "Run with this group",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "group"
+        }
+      ]
+    },
+    {
+      "name": "-E",
+      "description": "Keep the environment",
+      "takesValue": false
+    },
+    {
+      "name": "-H",
+      "description": "Set HOME to the target user's",
+      "takesValue": false
+    },
+    {
+      "name": "-i",
+      "description": "Run a login shell",
+      "takesValue": false
+    },
+    {
+      "name": "-s",
+      "description": "Run a shell",
+      "takesValue": false
+    },
+    {
+      "name": "-k",
+      "description": "Forget cached credentials",
+      "takesValue": false
+    },
+    {
+      "name": "-v",
+      "description": "Refresh cached credentials",
+      "takesValue": false
+    },
+    {
+      "name": "-l",
+      "description": "List what you may run",
+      "takesValue": false
+    },
+    {
+      "name": "-n",
+      "description": "Never prompt for a password",
+      "takesValue": false
+    },
+    {
+      "name": "-b",
+      "description": "Run in the background",
+      "takesValue": false
+    },
+    {
+      "name": "--preserve-env",
+      "description": "Keep the environment",
+      "takesValue": false
+    }
+  ],
+  "args": [
+    {
+      "name": "command",
+      "description": "The command to run",
+      "isVariadic": true,
+      "runsCommand": true
+    }
+  ]
+}

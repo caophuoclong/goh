@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "name": "nice",
+  "description": "Run a command with a changed priority",
+  "options": [
+    {
+      "name": "-n",
+      "description": "Add this to the niceness",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "adjustment"
+        }
+      ]
+    }
+  ],
+  "args": [
+    {
+      "name": "command",
+      "description": "The command to run",
+      "isVariadic": true,
+      "runsCommand": true
+    }
+  ]
+}

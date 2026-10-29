@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "name": "doas",
+  "description": "Run a command as another user",
+  "options": [
+    {
+      "name": "-u",
+      "description": "Run as this user",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "user"
+        }
+      ]
+    },
+    {
+      "name": "-n",
+      "description": "Never prompt for a password",
+      "takesValue": false
+    },
+    {
+      "name": "-s",
+      "description": "Run a shell",
+      "takesValue": false
+    }
+  ],
+  "args": [
+    {
+      "name": "command",
+      "description": "The command to run",
+      "isVariadic": true,
+      "runsCommand": true
+    }
+  ]
+}

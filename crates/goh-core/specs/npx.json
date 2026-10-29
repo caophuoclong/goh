@@ -214,7 +214,6 @@
     {
       "name": "command",
       "isVariadic": true,
-      "isCommand": true,
       "isOptional": true,
       "suggestions": [
         {
@@ -340,7 +339,9 @@
         {
           "name": "ampx"
         }
-      ]
+      ],
+      "runsCommand": true,
+      "provider": "node-bins"
     }
   ]
 }

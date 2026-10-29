@@ -2391,8 +2391,11 @@
       ],
       "args": [
         {
-          "name": "args",
-          "description": "The command and arguments/options to run"
+          "name": "command",
+          "description": "The command and arguments/options to run",
+          "isVariadic": true,
+          "runsCommand": true,
+          "provider": "python-scripts"
         }
       ]
     },

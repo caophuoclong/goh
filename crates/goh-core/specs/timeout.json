@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "name": "timeout",
+  "description": "Run a command, stopping it after a time",
+  "options": [
+    {
+      "name": "-s",
+      "description": "Send this signal",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "signal"
+        }
+      ]
+    },
+    {
+      "name": "-k",
+      "description": "Kill it this long after the signal",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "duration"
+        }
+      ]
+    },
+    {
+      "name": "--preserve-status",
+      "description": "Exit with the command's status",
+      "takesValue": false
+    },
+    {
+      "name": "--foreground",
+      "description": "Let the command read the terminal",
+      "takesValue": false
+    }
+  ],
+  "args": [
+    {
+      "name": "duration",
+      "description": "How long, e.g. 10s or 5m"
+    },
+    {
+      "name": "command",
+      "description": "The command to run",
+      "isVariadic": true,
+      "runsCommand": true
+    }
+  ]
+}

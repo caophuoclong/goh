@@ -26,10 +26,11 @@
         "isOptional": { "type": "boolean", "default": false },
         "isVariadic": { "type": "boolean", "default": false },
         "isCommand": { "type": "boolean", "default": false },
-        "template": { "type": "string", "enum": ["filepaths", "folders"] },
+        "runsCommand": { "type": "boolean", "default": false, "description": "The rest of the line is a command run on this machine (sudo, time, npx): completed as a command, then by its own spec." },
+        "template": { "type": "string", "enum": ["filepaths", "folders", "commands"] },
         "extensions": { "type": "array", "items": { "type": "string", "pattern": "^[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*$" }, "maxItems": 32 },
-        "provider": { "type": "string", "enum": ["docker-containers", "docker-all-containers", "docker-images", "frecent-dirs", "ssh-hosts", "ssh-remotes", "kube-contexts", "aws-profiles", "git-branches", "git-remotes", "git-tags", "git-stashes", "git-changed-files", "git-staged-files", "package-scripts", "make-targets", "just-recipes", "taskfile-tasks", "compose-services", "cargo-bins", "cargo-examples", "cargo-features", "workspace-packages", "package-dependencies", "cargo-dependencies", "cargo-installed", "pip-packages", "uv-tools", "brew-installed", "brew-available"] },
-        "providers": { "type": "array", "items": { "type": "string", "enum": ["docker-containers", "docker-all-containers", "docker-images", "frecent-dirs", "ssh-hosts", "ssh-remotes", "kube-contexts", "aws-profiles", "git-branches", "git-remotes", "git-tags", "git-stashes", "git-changed-files", "git-staged-files", "package-scripts", "make-targets", "just-recipes", "taskfile-tasks", "compose-services", "cargo-bins", "cargo-examples", "cargo-features", "workspace-packages", "package-dependencies", "cargo-dependencies", "cargo-installed", "pip-packages", "uv-tools", "brew-installed", "brew-available"] }, "maxItems": 8 },
+        "provider": { "type": "string", "enum": ["docker-containers", "docker-all-containers", "docker-images", "frecent-dirs", "ssh-hosts", "ssh-remotes", "kube-contexts", "aws-profiles", "git-branches", "git-remotes", "git-tags", "git-stashes", "git-changed-files", "git-staged-files", "package-scripts", "make-targets", "just-recipes", "taskfile-tasks", "compose-services", "cargo-bins", "cargo-examples", "cargo-features", "workspace-packages", "package-dependencies", "cargo-dependencies", "cargo-installed", "pip-packages", "uv-tools", "brew-installed", "brew-available", "git-aliases", "git-commits", "kube-pods", "kube-namespaces", "python-scripts", "deno-tasks", "node-bins"] },
+        "providers": { "type": "array", "items": { "type": "string", "enum": ["docker-containers", "docker-all-containers", "docker-images", "frecent-dirs", "ssh-hosts", "ssh-remotes", "kube-contexts", "aws-profiles", "git-branches", "git-remotes", "git-tags", "git-stashes", "git-changed-files", "git-staged-files", "package-scripts", "make-targets", "just-recipes", "taskfile-tasks", "compose-services", "cargo-bins", "cargo-examples", "cargo-features", "workspace-packages", "package-dependencies", "cargo-dependencies", "cargo-installed", "pip-packages", "uv-tools", "brew-installed", "brew-available", "git-aliases", "git-commits", "kube-pods", "kube-namespaces", "python-scripts", "deno-tasks", "node-bins"] }, "maxItems": 8 },
         "suggestions": { "type": "array", "maxItems": 1000, "items": { "$ref": "#/$defs/suggestion" } }
       }
     },
@@ -59,7 +60,9 @@
         "subcommands": { "type": "array", "maxItems": 1000, "items": { "$ref": "#/$defs/command" } },
         "options": { "type": "array", "maxItems": 1000, "items": { "$ref": "#/$defs/option" } },
         "args": { "type": "array", "maxItems": 16, "items": { "$ref": "#/$defs/arg" } },
-        "suggestions": { "type": "array", "maxItems": 1000, "items": { "$ref": "#/$defs/suggestion" } }
+        "suggestions": { "type": "array", "maxItems": 1000, "items": { "$ref": "#/$defs/suggestion" } },
+        "requiresFiles": { "type": "array", "maxItems": 16, "items": { "type": "string", "minLength": 1, "maxLength": 256, "pattern": "^[^/]+$" }, "description": "The spec applies only where one of these files is in the working directory or a parent." },
+        "subcommandAliases": { "type": "string", "enum": ["git-aliases"], "description": "Provider of the user's own names for subcommands; each value's description is what it stands for." }
       }
     }
   },

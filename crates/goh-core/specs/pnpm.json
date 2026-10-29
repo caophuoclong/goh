@@ -3308,8 +3308,10 @@
       ],
       "args": [
         {
-          "name": "Scripts",
-          "isVariadic": true
+          "name": "command",
+          "isVariadic": true,
+          "runsCommand": true,
+          "provider": "node-bins"
         }
       ]
     },
