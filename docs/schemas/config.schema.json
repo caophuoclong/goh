@@ -60,6 +60,11 @@
           "type": "number",
           "minimum": 10,
           "maximum": 18
+        },
+        "ownPermission": {
+          "type": "boolean",
+          "default": false,
+          "description": "macOS: ask for the Accessibility permission once, for goh-popup itself, instead of once per terminal app (experimental). Unsigned builds have to be allowed again after each update."
         }
       }
     },

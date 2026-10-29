@@ -1497,6 +1497,7 @@ dependencies = [
  "eframe",
  "goh-anchor",
  "goh-theme",
+ "libc",
  "png",
  "serde",
  "serde_json",

@@ -19,8 +19,9 @@ _fake_as_self_insert() {
   zle -F $_ZSH_AUTOSUGGEST_ASYNC_FD _fake_as_answer
 }
 _fake_as_suggest() { POSTDISPLAY=${1#$BUFFER}; zle -R }   # the plugin's widgets end with a redisplay
-_fake_as_disable() { typeset -g _ZSH_AUTOSUGGEST_DISABLED; POSTDISPLAY= }
-_fake_as_enable() { unset _ZSH_AUTOSUGGEST_DISABLED }
+# Like the plugin's: its clear unsets POSTDISPLAY and its highlighting then reads it, which fails under no_unset.
+_fake_as_disable() { typeset -g _ZSH_AUTOSUGGEST_DISABLED; unset POSTDISPLAY; (( $#POSTDISPLAY )); return 0 }
+_fake_as_enable() { unset _ZSH_AUTOSUGGEST_DISABLED; unset POSTDISPLAY; (( $#POSTDISPLAY )); return 0 }
 _fake_as_accept() { BUFFER+=$POSTDISPLAY; POSTDISPLAY=; CURSOR=$#BUFFER }
 zle -N self-insert _fake_as_self_insert
 zle -N autosuggest-suggest _fake_as_suggest

@@ -320,8 +320,10 @@ fn stop_popups() -> usize {
     use std::process::{Command, Stdio};
     // SAFETY: getuid has no preconditions.
     let uid = unsafe { libc::getuid() }.to_string();
-    let running = |args: &[&str]| Command::new("pgrep").args(args).args(["-U", &uid, "-x", "goh-popup"]).stderr(Stdio::null()).output().map_or(0, |o| String::from_utf8_lossy(&o.stdout).lines().count());
-    let count = running(&[]);
+    let output = |cmd: &str, args: &[&str]| Command::new(cmd).args(args).stderr(Stdio::null()).output().map(|o| String::from_utf8_lossy(&o.stdout).into_owned()).unwrap_or_default();
+    let pids: Vec<String> = output("pgrep", &["-U", &uid, "-x", "goh-popup"]).lines().map(str::to_string).collect();
+    // With popup.ownPermission a popup is two processes, the one the shell started and the one it spawned.
+    let count = pids.iter().filter(|p| !pids.contains(&output("ps", &["-o", "ppid=", "-p", p]).trim().to_string())).count();
     if count > 0 {
         let _ = Command::new("pkill").args(["-U", &uid, "-x", "goh-popup"]).stderr(Stdio::null()).status();
     }
