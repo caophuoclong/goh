@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.7.1](https://github.com/caophuoclong/goh/compare/v1.7.0...v1.7.1) (2026-10-29)
+
+
+### Bug fixes
+
+* **anchor:** switch on VS Code's accessibility tree ([6b345ae](https://github.com/caophuoclong/goh/commit/6b345aef15b90e68a47158a05b056cfc012c25cd))
+* **anchor:** switch on VS Code's accessibility tree ([4df972d](https://github.com/caophuoclong/goh/commit/4df972d76f198e4b35aacfb6219617baaf2f9945))
+
 ## [1.7.0](https://github.com/caophuoclong/goh/compare/v1.6.0...v1.7.0) (2026-10-29)
 
 
