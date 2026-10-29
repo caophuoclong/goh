@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.0](https://github.com/caophuoclong/goh/compare/v1.6.0...v1.7.0) (2026-10-29)
+
+
+### Features
+
+* completion features users asked Fig for (wrappers, git aliases, kubectl, project scripts, 18 specs) ([1f97ace](https://github.com/caophuoclong/goh/commit/1f97ace8b25b754287ff93d2fc499424fed9b933))
+
 ## [1.6.0](https://github.com/caophuoclong/goh/compare/v1.5.0...v1.6.0) (2026-10-29)
 
 
