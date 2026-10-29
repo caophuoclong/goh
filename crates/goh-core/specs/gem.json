@@ -1,0 +1,5524 @@
+{
+  "schemaVersion": 1,
+  "name": "gem",
+  "description": "Ruby package manager",
+  "options": [
+    {
+      "name": "--help",
+      "description": "Show help for gem",
+      "takesValue": false
+    },
+    {
+      "name": "-h",
+      "description": "Show help for gem",
+      "takesValue": false
+    },
+    {
+      "name": "-V",
+      "description": "Set the verbose level of output",
+      "takesValue": false
+    },
+    {
+      "name": "--verbose",
+      "description": "Set the verbose level of output",
+      "takesValue": false
+    },
+    {
+      "name": "--no-verbose",
+      "description": "Do not set the verbose level of output",
+      "takesValue": false
+    },
+    {
+      "name": "-q",
+      "description": "Silence command progress meter",
+      "takesValue": false
+    },
+    {
+      "name": "--quiet",
+      "description": "Silence command progress meter",
+      "takesValue": false
+    },
+    {
+      "name": "--silent",
+      "description": "Silence RubyGems output",
+      "takesValue": false
+    },
+    {
+      "name": "-config-file",
+      "description": "Use this config file instead of default",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "FILE",
+          "description": "The config file",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "--backtrace",
+      "description": "Show stack backtrace on errors",
+      "takesValue": false
+    },
+    {
+      "name": "--debug",
+      "description": "Turn on Ruby debugging",
+      "takesValue": false
+    },
+    {
+      "name": "--norc",
+      "description": "Avoid loading any .gemrc file",
+      "takesValue": false
+    },
+    {
+      "name": "-v",
+      "description": "Show the gem version",
+      "takesValue": false
+    },
+    {
+      "name": "--version",
+      "description": "Show the gem version",
+      "takesValue": false
+    }
+  ],
+  "subcommands": [
+    {
+      "name": "help",
+      "description": "Help about any command",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--verbose",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--no-verbose",
+          "description": "Do not set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "-q",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--quiet",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--silent",
+          "description": "Silence RubyGems output",
+          "takesValue": false
+        },
+        {
+          "name": "-config-file",
+          "description": "Use this config file instead of default",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "FILE",
+              "description": "The config file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--backtrace",
+          "description": "Show stack backtrace on errors",
+          "takesValue": false
+        },
+        {
+          "name": "--debug",
+          "description": "Turn on Ruby debugging",
+          "takesValue": false
+        },
+        {
+          "name": "--norc",
+          "description": "Avoid loading any .gemrc file",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "command",
+          "isOptional": true
+        }
+      ]
+    },
+    {
+      "name": "install",
+      "description": "Install a gem into the local repository",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--verbose",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--no-verbose",
+          "description": "Do not set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "-q",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--quiet",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--silent",
+          "description": "Silence RubyGems output",
+          "takesValue": false
+        },
+        {
+          "name": "-config-file",
+          "description": "Use this config file instead of default",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "FILE",
+              "description": "The config file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--backtrace",
+          "description": "Show stack backtrace on errors",
+          "takesValue": false
+        },
+        {
+          "name": "--debug",
+          "description": "Turn on Ruby debugging",
+          "takesValue": false
+        },
+        {
+          "name": "--norc",
+          "description": "Avoid loading any .gemrc file",
+          "takesValue": false
+        },
+        {
+          "name": "--platform",
+          "description": "Specify the platform of gem to install",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "PLATFORM",
+              "description": "The platform of gem"
+            }
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "GEMNAME"
+        }
+      ]
+    },
+    {
+      "name": "i",
+      "description": "Install a gem into the local repository",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--verbose",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--no-verbose",
+          "description": "Do not set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "-q",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--quiet",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--silent",
+          "description": "Silence RubyGems output",
+          "takesValue": false
+        },
+        {
+          "name": "-config-file",
+          "description": "Use this config file instead of default",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "FILE",
+              "description": "The config file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--backtrace",
+          "description": "Show stack backtrace on errors",
+          "takesValue": false
+        },
+        {
+          "name": "--debug",
+          "description": "Turn on Ruby debugging",
+          "takesValue": false
+        },
+        {
+          "name": "--norc",
+          "description": "Avoid loading any .gemrc file",
+          "takesValue": false
+        },
+        {
+          "name": "--platform",
+          "description": "Specify the platform of gem to install",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "PLATFORM",
+              "description": "The platform of gem"
+            }
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "GEMNAME"
+        }
+      ]
+    },
+    {
+      "name": "cert",
+      "description": "Manage RubyGems certificates and signing settings",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--verbose",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--no-verbose",
+          "description": "Do not set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "-q",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--quiet",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--silent",
+          "description": "Silence RubyGems output",
+          "takesValue": false
+        },
+        {
+          "name": "-config-file",
+          "description": "Use this config file instead of default",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "FILE",
+              "description": "The config file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--backtrace",
+          "description": "Show stack backtrace on errors",
+          "takesValue": false
+        },
+        {
+          "name": "--debug",
+          "description": "Turn on Ruby debugging",
+          "takesValue": false
+        },
+        {
+          "name": "--norc",
+          "description": "Avoid loading any .gemrc file",
+          "takesValue": false
+        },
+        {
+          "name": "-a",
+          "description": "Add a trusted certificate",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "CERT",
+              "description": "The trusted certificate",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--add",
+          "description": "Add a trusted certificate",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "CERT",
+              "description": "The trusted certificate",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "-l",
+          "description": "List trusted certificates where the subject contains FILTER",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "FILTER",
+              "description": "The filter",
+              "isOptional": true
+            }
+          ]
+        },
+        {
+          "name": "--list",
+          "description": "List trusted certificates where the subject contains FILTER",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "FILTER",
+              "description": "The filter",
+              "isOptional": true
+            }
+          ]
+        },
+        {
+          "name": "-r",
+          "description": "Remove trusted certificates where the subject contains FILTER",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "FILTER",
+              "description": "The filter"
+            }
+          ]
+        },
+        {
+          "name": "--remove",
+          "description": "Remove trusted certificates where the subject contains FILTER",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "FILTER",
+              "description": "The filter"
+            }
+          ]
+        },
+        {
+          "name": "-b",
+          "description": "Build private key and self-signed certificate for EMAIL_ADDR",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "EMAIL_ADDR",
+              "description": "The email address"
+            }
+          ]
+        },
+        {
+          "name": "--build",
+          "description": "Build private key and self-signed certificate for EMAIL_ADDR",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "EMAIL_ADDR",
+              "description": "The email address"
+            }
+          ]
+        },
+        {
+          "name": "-C",
+          "description": "Signing certificate for --sign",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "CERT",
+              "description": "The certificate",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--certificate",
+          "description": "Signing certificate for --sign",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "CERT",
+              "description": "The certificate",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "-K",
+          "description": "Key for --sign or --build",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "KEY",
+              "description": "The key",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--private-key",
+          "description": "Key for --sign or --build",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "KEY",
+              "description": "The key",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "-A",
+          "description": "Select which key algorithm to use for --build",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "ALGORITHM",
+              "description": "The algorithm"
+            }
+          ]
+        },
+        {
+          "name": "--key-algorithm",
+          "description": "Select which key algorithm to use for --build",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "ALGORITHM",
+              "description": "The algorithm"
+            }
+          ]
+        },
+        {
+          "name": "-s",
+          "description": "Signs CERT with the key from -K and the certificate from -C",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "CERT",
+              "description": "The certificate",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--sign",
+          "description": "Signs CERT with the key from -K and the certificate from -C",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "CERT",
+              "description": "The certificate",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "-d",
+          "description": "Days before the certificate expires",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "NUMBER_OF_DAYS",
+              "description": "The number of days"
+            }
+          ]
+        },
+        {
+          "name": "--days",
+          "description": "Days before the certificate expires",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "NUMBER_OF_DAYS",
+              "description": "The number of days"
+            }
+          ]
+        },
+        {
+          "name": "-R",
+          "description": "Re-signs the certificate from -C with the key from -K",
+          "takesValue": false
+        },
+        {
+          "name": "--re-sign",
+          "description": "Re-signs the certificate from -C with the key from -K",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "check",
+      "description": "Check a gem repository for added or missing files",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--verbose",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--no-verbose",
+          "description": "Do not set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "-q",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--quiet",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--silent",
+          "description": "Silence RubyGems output",
+          "takesValue": false
+        },
+        {
+          "name": "-config-file",
+          "description": "Use this config file instead of default",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "FILE",
+              "description": "The config file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--backtrace",
+          "description": "Show stack backtrace on errors",
+          "takesValue": false
+        },
+        {
+          "name": "--debug",
+          "description": "Turn on Ruby debugging",
+          "takesValue": false
+        },
+        {
+          "name": "--norc",
+          "description": "Avoid loading any .gemrc file",
+          "takesValue": false
+        },
+        {
+          "name": "-a",
+          "description": "Report 'unmanaged' or rogue files in the gem repository",
+          "takesValue": false
+        },
+        {
+          "name": "--alien",
+          "description": "Report 'unmanaged' or rogue files in the gem repository",
+          "takesValue": false
+        },
+        {
+          "name": "--no-alien",
+          "description": "Report 'managed' or rogue files in the gem repository",
+          "takesValue": false
+        },
+        {
+          "name": "--doctor",
+          "description": "Clean up uninstalled gems and broken specifications",
+          "takesValue": false
+        },
+        {
+          "name": "--no-doctor",
+          "description": "Do not clean up uninstalled gems and broken specifications",
+          "takesValue": false
+        },
+        {
+          "name": "--dry-run",
+          "description": "Do not remove files, only report what would be removed",
+          "takesValue": false
+        },
+        {
+          "name": "--no-dry-run",
+          "description": "Remove files",
+          "takesValue": false
+        },
+        {
+          "name": "--gems",
+          "description": "Check installed gems for problems",
+          "takesValue": false
+        },
+        {
+          "name": "--no-gems",
+          "description": "Check not installed gems for problems",
+          "takesValue": false
+        },
+        {
+          "name": "-v",
+          "description": "Specify version of gem to check",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "VERSION",
+              "description": "The version of the gem"
+            }
+          ]
+        },
+        {
+          "name": "--version",
+          "description": "Specify version of gem to check",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "VERSION",
+              "description": "The version of the gem"
+            }
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "GEMNAME",
+          "isOptional": true
+        }
+      ]
+    },
+    {
+      "name": "cleanup",
+      "description": "Clean up old versions of installed gems",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--verbose",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--no-verbose",
+          "description": "Do not set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "-q",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--quiet",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--silent",
+          "description": "Silence RubyGems output",
+          "takesValue": false
+        },
+        {
+          "name": "-config-file",
+          "description": "Use this config file instead of default",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "FILE",
+              "description": "The config file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--backtrace",
+          "description": "Show stack backtrace on errors",
+          "takesValue": false
+        },
+        {
+          "name": "--debug",
+          "description": "Turn on Ruby debugging",
+          "takesValue": false
+        },
+        {
+          "name": "--norc",
+          "description": "Avoid loading any .gemrc file",
+          "takesValue": false
+        },
+        {
+          "name": "-n",
+          "description": "Do not uninstall gems",
+          "takesValue": false
+        },
+        {
+          "name": "-d",
+          "description": "Do not uninstall gems",
+          "takesValue": false
+        },
+        {
+          "name": "--dry-run",
+          "description": "Do not uninstall gems",
+          "takesValue": false
+        },
+        {
+          "name": "-D",
+          "description": "Check development dependencies while uninstalling (default: true)",
+          "takesValue": false
+        },
+        {
+          "name": "--check-development",
+          "description": "Check development dependencies while uninstalling (default: true)",
+          "takesValue": false
+        },
+        {
+          "name": "--no-check-development",
+          "description": "Do not check development dependencies while uninstalling",
+          "takesValue": false
+        },
+        {
+          "name": "--user-install",
+          "description": "Cleanup in user’s home directory instead of GEM_HOME",
+          "takesValue": false
+        },
+        {
+          "name": "--no-user-install",
+          "description": "Cleanup in GEM_HOME instead of user’s home directory",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "GEMNAME",
+          "description": "Name of gem to cleanup",
+          "isOptional": true
+        }
+      ]
+    },
+    {
+      "name": "contents",
+      "description": "Display the contents of the installed gems",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--verbose",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--no-verbose",
+          "description": "Do not set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "-q",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--quiet",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--silent",
+          "description": "Silence RubyGems output",
+          "takesValue": false
+        },
+        {
+          "name": "-config-file",
+          "description": "Use this config file instead of default",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "FILE",
+              "description": "The config file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--backtrace",
+          "description": "Show stack backtrace on errors",
+          "takesValue": false
+        },
+        {
+          "name": "--debug",
+          "description": "Turn on Ruby debugging",
+          "takesValue": false
+        },
+        {
+          "name": "--norc",
+          "description": "Avoid loading any .gemrc file",
+          "takesValue": false
+        },
+        {
+          "name": "-v",
+          "description": "Specify version of gem to contents",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "VERSION",
+              "description": "The version of the gem"
+            }
+          ]
+        },
+        {
+          "name": "--version",
+          "description": "Specify version of gem to contents",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "VERSION",
+              "description": "The version of the gem"
+            }
+          ]
+        },
+        {
+          "name": "--all",
+          "description": "Contents for all gems",
+          "takesValue": false
+        },
+        {
+          "name": "-s",
+          "description": "Search for gems under specific paths",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "DIR",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--spec-dir",
+          "description": "Search for gems under specific paths",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "DIR",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "-l",
+          "description": "Only return files in the Gem’s lib_dirs",
+          "takesValue": false
+        },
+        {
+          "name": "--lib-only",
+          "description": "Only return files in the Gem’s lib_dirs",
+          "takesValue": false
+        },
+        {
+          "name": "--no-lib-only",
+          "description": "Not only return files in the Gem’s lib_dirs",
+          "takesValue": false
+        },
+        {
+          "name": "--prefix",
+          "description": "Don’t include installed path prefix",
+          "takesValue": false
+        },
+        {
+          "name": "--no-prefix",
+          "description": "Include installed path prefix",
+          "takesValue": false
+        },
+        {
+          "name": "--show-install-dir",
+          "description": "Show only the gem install dir",
+          "takesValue": false
+        },
+        {
+          "name": "--no-show-install-dir",
+          "description": "Do not show only the gem install dir",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "GEMNAME",
+          "description": "Name of gem to list contents for"
+        }
+      ]
+    },
+    {
+      "name": "dependency",
+      "description": "Show the dependencies of an installed gem",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--verbose",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--no-verbose",
+          "description": "Do not set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "-q",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--quiet",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--silent",
+          "description": "Silence RubyGems output",
+          "takesValue": false
+        },
+        {
+          "name": "-config-file",
+          "description": "Use this config file instead of default",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "FILE",
+              "description": "The config file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--backtrace",
+          "description": "Show stack backtrace on errors",
+          "takesValue": false
+        },
+        {
+          "name": "--debug",
+          "description": "Turn on Ruby debugging",
+          "takesValue": false
+        },
+        {
+          "name": "--norc",
+          "description": "Avoid loading any .gemrc file",
+          "takesValue": false
+        },
+        {
+          "name": "-v",
+          "description": "Specify version of gem to dependency",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "VERSION",
+              "description": "The version of gem"
+            }
+          ]
+        },
+        {
+          "name": "--version",
+          "description": "Specify version of gem to dependency",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "VERSION",
+              "description": "The version of gem"
+            }
+          ]
+        },
+        {
+          "name": "--platform",
+          "description": "Specify the platform of gem to dependency",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "PLATFORM",
+              "description": "The platform of gem"
+            }
+          ]
+        },
+        {
+          "name": "--prerelease",
+          "description": "Allow prerelease versions of a gem",
+          "takesValue": false
+        },
+        {
+          "name": "--no-prerelease",
+          "description": "Do not allow prerelease versions of a gem",
+          "takesValue": false
+        },
+        {
+          "name": "-R",
+          "description": "Include reverse dependencies in the output",
+          "takesValue": false
+        },
+        {
+          "name": "--reverse-dependencies",
+          "description": "Include reverse dependencies in the output",
+          "takesValue": false
+        },
+        {
+          "name": "--no-reverse-dependencies",
+          "description": "Do not include reverse dependencies in the output",
+          "takesValue": false
+        },
+        {
+          "name": "--pipe",
+          "description": "Pipe Format (name --version ver)",
+          "takesValue": false
+        },
+        {
+          "name": "-l",
+          "description": "Restrict operations to the LOCAL domain",
+          "takesValue": false
+        },
+        {
+          "name": "--local",
+          "description": "Restrict operations to the LOCAL domain",
+          "takesValue": false
+        },
+        {
+          "name": "-r",
+          "description": "Restrict operations to the REMOTE domain",
+          "takesValue": false
+        },
+        {
+          "name": "--remote",
+          "description": "Restrict operations to the REMOTE domain",
+          "takesValue": false
+        },
+        {
+          "name": "-b",
+          "description": "Allow LOCAL and REMOTE operations",
+          "takesValue": false
+        },
+        {
+          "name": "--both",
+          "description": "Allow LOCAL and REMOTE operations",
+          "takesValue": false
+        },
+        {
+          "name": "-B",
+          "description": "Threshold for switching to bulk synchronization (default 1000)",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "COUNT",
+              "description": "The threshold"
+            }
+          ]
+        },
+        {
+          "name": "--bulk-threshold",
+          "description": "Threshold for switching to bulk synchronization (default 1000)",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "COUNT",
+              "description": "The threshold"
+            }
+          ]
+        },
+        {
+          "name": "--clear-sources",
+          "description": "Clear the gem sources",
+          "takesValue": false
+        },
+        {
+          "name": "-s",
+          "description": "Append URL to list of remote gem sources",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "URL",
+              "description": "The URL"
+            }
+          ]
+        },
+        {
+          "name": "--source",
+          "description": "Append URL to list of remote gem sources",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "URL",
+              "description": "The URL"
+            }
+          ]
+        },
+        {
+          "name": "-p",
+          "description": "Use HTTP proxy for remote operations",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "URL",
+              "description": "The URL",
+              "isOptional": true
+            }
+          ]
+        },
+        {
+          "name": "--http-proxy",
+          "description": "Use HTTP proxy for remote operations",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "URL",
+              "description": "The URL",
+              "isOptional": true
+            }
+          ]
+        },
+        {
+          "name": "--no-http-proxy",
+          "description": "Do not use HTTP proxy for remote operations",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "REGEXP",
+          "description": "Show dependencies for gems whose names start with REGEXP"
+        }
+      ]
+    },
+    {
+      "name": "environment",
+      "description": "Display information about the RubyGems environment",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--verbose",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--no-verbose",
+          "description": "Do not set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "-q",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--quiet",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--silent",
+          "description": "Silence RubyGems output",
+          "takesValue": false
+        },
+        {
+          "name": "-config-file",
+          "description": "Use this config file instead of default",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "FILE",
+              "description": "The config file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--backtrace",
+          "description": "Show stack backtrace on errors",
+          "takesValue": false
+        },
+        {
+          "name": "--debug",
+          "description": "Turn on Ruby debugging",
+          "takesValue": false
+        },
+        {
+          "name": "--norc",
+          "description": "Avoid loading any .gemrc file",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "argument",
+          "isOptional": true,
+          "suggestions": [
+            {
+              "name": "home",
+              "description": "Display the path where gems are installed. Aliases: gemhome, gemdir, GEM_HOME"
+            },
+            {
+              "name": "path",
+              "description": "Display path used to search for gems. Aliases: gempath, GEM_PATH"
+            },
+            {
+              "name": "user_gemhome",
+              "description": "Display the path where gems are installed when --user-install is given. Aliases: user_gemdir"
+            },
+            {
+              "name": "version",
+              "description": "Display the gem format version"
+            },
+            {
+              "name": "remotesources",
+              "description": "Display the remote gem servers"
+            },
+            {
+              "name": "platform",
+              "description": "Display the supported gem platforms"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "fetch",
+      "description": "Download a gem and place it in the current directory",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--verbose",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--no-verbose",
+          "description": "Do not set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "-q",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--quiet",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--silent",
+          "description": "Silence RubyGems output",
+          "takesValue": false
+        },
+        {
+          "name": "-config-file",
+          "description": "Use this config file instead of default",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "FILE",
+              "description": "The config file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--backtrace",
+          "description": "Show stack backtrace on errors",
+          "takesValue": false
+        },
+        {
+          "name": "--debug",
+          "description": "Turn on Ruby debugging",
+          "takesValue": false
+        },
+        {
+          "name": "--norc",
+          "description": "Avoid loading any .gemrc file",
+          "takesValue": false
+        },
+        {
+          "name": "-v",
+          "description": "Specify version of gem to fetch",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "VERSION",
+              "description": "The version of the gem"
+            }
+          ]
+        },
+        {
+          "name": "--version",
+          "description": "Specify version of gem to fetch",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "VERSION",
+              "description": "The version of the gem"
+            }
+          ]
+        },
+        {
+          "name": "--platform",
+          "description": "Specify the platform of gem to fetch",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "PLATFORM",
+              "description": "The platform of gem"
+            }
+          ]
+        },
+        {
+          "name": "--prerelease",
+          "description": "Allow prerelease versions of a gem",
+          "takesValue": false
+        },
+        {
+          "name": "--no-prerelease",
+          "description": "Do not allow prerelease versions of a gem",
+          "takesValue": false
+        },
+        {
+          "name": "--suggestions",
+          "description": "Suggest alternates when gems are not found",
+          "takesValue": false
+        },
+        {
+          "name": "--no-suggestions",
+          "description": "Do not suggest alternates when gems are not found",
+          "takesValue": false
+        },
+        {
+          "name": "-B",
+          "description": "Threshold for switching to bulk synchronization (default 1000)",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "COUNT",
+              "description": "The threshold"
+            }
+          ]
+        },
+        {
+          "name": "--bulk-threshold",
+          "description": "Threshold for switching to bulk synchronization (default 1000)",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "COUNT",
+              "description": "The threshold"
+            }
+          ]
+        },
+        {
+          "name": "-s",
+          "description": "Append URL to list of remote gem sources",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "URL",
+              "description": "The URL"
+            }
+          ]
+        },
+        {
+          "name": "--source",
+          "description": "Append URL to list of remote gem sources",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "URL",
+              "description": "The URL"
+            }
+          ]
+        },
+        {
+          "name": "--clear-sources",
+          "description": "Clear the gem sources",
+          "takesValue": false
+        },
+        {
+          "name": "-p",
+          "description": "Use HTTP proxy for remote operations",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "URL",
+              "description": "The URL",
+              "isOptional": true
+            }
+          ]
+        },
+        {
+          "name": "--http-proxy",
+          "description": "Use HTTP proxy for remote operations",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "URL",
+              "description": "The URL",
+              "isOptional": true
+            }
+          ]
+        },
+        {
+          "name": "--no-http-proxy",
+          "description": "Do not use HTTP proxy for remote operations",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "GEMNAME",
+          "description": "Name of gem to download"
+        }
+      ]
+    },
+    {
+      "name": "generate_index",
+      "description": "Generates the index files for a gem server directory",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--verbose",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--no-verbose",
+          "description": "Do not set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "-q",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--quiet",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--silent",
+          "description": "Silence RubyGems output",
+          "takesValue": false
+        },
+        {
+          "name": "-config-file",
+          "description": "Use this config file instead of default",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "FILE",
+              "description": "The config file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--backtrace",
+          "description": "Show stack backtrace on errors",
+          "takesValue": false
+        },
+        {
+          "name": "--debug",
+          "description": "Turn on Ruby debugging",
+          "takesValue": false
+        },
+        {
+          "name": "--norc",
+          "description": "Avoid loading any .gemrc file",
+          "takesValue": false
+        },
+        {
+          "name": "-d",
+          "description": "Repository base dir containing gems subdir",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "DIRNAME",
+              "template": "folders"
+            }
+          ]
+        },
+        {
+          "name": "--directory",
+          "description": "Repository base dir containing gems subdir",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "DIRNAME",
+              "template": "folders"
+            }
+          ]
+        },
+        {
+          "name": "--modern",
+          "description": "Generate indexes for RubyGems (always true)",
+          "takesValue": false
+        },
+        {
+          "name": "--no-modern",
+          "description": "Do not generate indexes for RubyGems",
+          "takesValue": false
+        },
+        {
+          "name": "--update",
+          "description": "Update modern indexes with gems added since the last update",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "info",
+      "description": "Show information for the given gem",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--verbose",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--no-verbose",
+          "description": "Do not set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "-q",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--quiet",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--silent",
+          "description": "Silence RubyGems output",
+          "takesValue": false
+        },
+        {
+          "name": "-config-file",
+          "description": "Use this config file instead of default",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "FILE",
+              "description": "The config file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--backtrace",
+          "description": "Show stack backtrace on errors",
+          "takesValue": false
+        },
+        {
+          "name": "--debug",
+          "description": "Turn on Ruby debugging",
+          "takesValue": false
+        },
+        {
+          "name": "--norc",
+          "description": "Avoid loading any .gemrc file",
+          "takesValue": false
+        },
+        {
+          "name": "-I",
+          "description": "Check for not installed gem",
+          "takesValue": false
+        },
+        {
+          "name": "-a",
+          "description": "Display all gem versions",
+          "takesValue": false
+        },
+        {
+          "name": "--all",
+          "description": "Display all gem versions",
+          "takesValue": false
+        },
+        {
+          "name": "-e",
+          "description": "Name of gem(s) to query on matches the provided STRING",
+          "takesValue": false
+        },
+        {
+          "name": "--exact",
+          "description": "Name of gem(s) to query on matches the provided STRING",
+          "takesValue": false
+        },
+        {
+          "name": "--prerelease",
+          "description": "Allow prerelease versions of a gem",
+          "takesValue": false
+        },
+        {
+          "name": "--no-prerelease",
+          "description": "Do not allow prerelease versions of a gem",
+          "takesValue": false
+        },
+        {
+          "name": "-i",
+          "description": "Check for installed gem",
+          "takesValue": false
+        },
+        {
+          "name": "--installed",
+          "description": "Check for installed gem",
+          "takesValue": false
+        },
+        {
+          "name": "--no-installed",
+          "description": "Check for not installed gem",
+          "takesValue": false
+        },
+        {
+          "name": "-v",
+          "description": "Specify version of gem to list for use with --installed",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "VERSION",
+              "description": "The version of gem"
+            }
+          ]
+        },
+        {
+          "name": "--version",
+          "description": "Specify version of gem to list for use with --installed",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "VERSION",
+              "description": "The version of gem"
+            }
+          ]
+        },
+        {
+          "name": "--versions",
+          "description": "Display only gem names",
+          "takesValue": false
+        },
+        {
+          "name": "--no-versions",
+          "description": "Display not only gem names",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "GEMNAME",
+          "description": "Name of the gem to print information about"
+        }
+      ]
+    },
+    {
+      "name": "lock",
+      "description": "Generate a lockdown list of gems",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--verbose",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--no-verbose",
+          "description": "Do not set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "-q",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--quiet",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--silent",
+          "description": "Silence RubyGems output",
+          "takesValue": false
+        },
+        {
+          "name": "-config-file",
+          "description": "Use this config file instead of default",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "FILE",
+              "description": "The config file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--backtrace",
+          "description": "Show stack backtrace on errors",
+          "takesValue": false
+        },
+        {
+          "name": "--debug",
+          "description": "Turn on Ruby debugging",
+          "takesValue": false
+        },
+        {
+          "name": "--norc",
+          "description": "Avoid loading any .gemrc file",
+          "takesValue": false
+        },
+        {
+          "name": "-s",
+          "description": "Fail if unable to satisfy a dependency",
+          "takesValue": false
+        },
+        {
+          "name": "--strict",
+          "description": "Fail if unable to satisfy a dependency",
+          "takesValue": false
+        },
+        {
+          "name": "--no-strict",
+          "description": "Do not fail if unable to satisfy a dependency",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "GEMNAME-VERSION",
+          "description": "Name and the version of gem to lock, ex: rails-1.0.0"
+        }
+      ]
+    },
+    {
+      "name": "mirror",
+      "description": "Mirror all gem files (requires rubygems-mirror)",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--verbose",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--no-verbose",
+          "description": "Do not set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "-q",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--quiet",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--silent",
+          "description": "Silence RubyGems output",
+          "takesValue": false
+        },
+        {
+          "name": "-config-file",
+          "description": "Use this config file instead of default",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "FILE",
+              "description": "The config file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--backtrace",
+          "description": "Show stack backtrace on errors",
+          "takesValue": false
+        },
+        {
+          "name": "--debug",
+          "description": "Turn on Ruby debugging",
+          "takesValue": false
+        },
+        {
+          "name": "--norc",
+          "description": "Avoid loading any .gemrc file",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "open",
+      "description": "Open gem sources in editor",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--verbose",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--no-verbose",
+          "description": "Do not set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "-q",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--quiet",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--silent",
+          "description": "Silence RubyGems output",
+          "takesValue": false
+        },
+        {
+          "name": "-config-file",
+          "description": "Use this config file instead of default",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "FILE",
+              "description": "The config file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--backtrace",
+          "description": "Show stack backtrace on errors",
+          "takesValue": false
+        },
+        {
+          "name": "--debug",
+          "description": "Turn on Ruby debugging",
+          "takesValue": false
+        },
+        {
+          "name": "--norc",
+          "description": "Avoid loading any .gemrc file",
+          "takesValue": false
+        },
+        {
+          "name": "-e",
+          "description": "Prepends COMMAND to gem path. Could be used to specify editor",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "COMMAND",
+              "description": "The prepends command to gem path"
+            }
+          ]
+        },
+        {
+          "name": "--editor",
+          "description": "Prepends COMMAND to gem path. Could be used to specify editor",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "COMMAND",
+              "description": "The prepends command to gem path"
+            }
+          ]
+        },
+        {
+          "name": "-v",
+          "description": "Opens specific gem version",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "VERSION",
+              "description": "The specify version of gem"
+            }
+          ]
+        },
+        {
+          "name": "--version",
+          "description": "Opens specific gem version",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "VERSION",
+              "description": "The specify version of gem"
+            }
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "GEMNAME",
+          "description": "Name of the gem to print information about"
+        }
+      ]
+    },
+    {
+      "name": "pristine",
+      "description": "Restores installed gems to pristine condition from files located in the gem cache",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--verbose",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--no-verbose",
+          "description": "Do not set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "-q",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--quiet",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--silent",
+          "description": "Silence RubyGems output",
+          "takesValue": false
+        },
+        {
+          "name": "-config-file",
+          "description": "Use this config file instead of default",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "FILE",
+              "description": "The config file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--backtrace",
+          "description": "Show stack backtrace on errors",
+          "takesValue": false
+        },
+        {
+          "name": "--debug",
+          "description": "Turn on Ruby debugging",
+          "takesValue": false
+        },
+        {
+          "name": "--norc",
+          "description": "Avoid loading any .gemrc file",
+          "takesValue": false
+        },
+        {
+          "name": "--all",
+          "description": "Restore all installed gems to pristine condition",
+          "takesValue": false
+        },
+        {
+          "name": "--skip",
+          "description": "Restore all installed gems to pristine condition",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "GEMNAME",
+              "description": "Name of the gem to print information about"
+            }
+          ]
+        },
+        {
+          "name": "--extensions",
+          "description": "Restore gems with extensions in addition to regular gems",
+          "takesValue": false
+        },
+        {
+          "name": "--no-extensions",
+          "description": "Do not restore gems with extensions in addition to regular gems",
+          "takesValue": false
+        },
+        {
+          "name": "--only-executables",
+          "description": "Only restore executables",
+          "takesValue": false
+        },
+        {
+          "name": "--only-plugins",
+          "description": "Only restore plugins",
+          "takesValue": false
+        },
+        {
+          "name": "-E",
+          "description": "Rewrite executables with a shebang of /usr/bin/env",
+          "takesValue": false
+        },
+        {
+          "name": "--env-shebang",
+          "description": "Rewrite executables with a shebang of /usr/bin/env",
+          "takesValue": false
+        },
+        {
+          "name": "--no-env-shebang",
+          "description": "Do not rewrite executables with a shebang of /usr/bin/env",
+          "takesValue": false
+        },
+        {
+          "name": "-i",
+          "description": "Gem repository to get binstubs and plugins installed",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "DIR",
+              "template": "folders"
+            }
+          ]
+        },
+        {
+          "name": "--install-dir",
+          "description": "Gem repository to get binstubs and plugins installed",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "DIR",
+              "template": "folders"
+            }
+          ]
+        },
+        {
+          "name": "-n",
+          "description": "Directory where executables are located",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "DIR",
+              "template": "folders"
+            }
+          ]
+        },
+        {
+          "name": "--bindir",
+          "description": "Directory where executables are located",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "DIR",
+              "template": "folders"
+            }
+          ]
+        },
+        {
+          "name": "-v",
+          "description": "Specify version of gem to restore to pristine condition",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "VERSION",
+              "description": "The specify version of gem"
+            }
+          ]
+        },
+        {
+          "name": "--version",
+          "description": "Specify version of gem to restore to pristine condition",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "VERSION",
+              "description": "The specify version of gem"
+            }
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "GEMNAME",
+          "description": "Name of the gem to print information about",
+          "isOptional": true
+        }
+      ]
+    },
+    {
+      "name": "query",
+      "description": "Query gem information in local or remote repositories",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--verbose",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--no-verbose",
+          "description": "Do not set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "-q",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--quiet",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--silent",
+          "description": "Silence RubyGems output",
+          "takesValue": false
+        },
+        {
+          "name": "-config-file",
+          "description": "Use this config file instead of default",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "FILE",
+              "description": "The config file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--backtrace",
+          "description": "Show stack backtrace on errors",
+          "takesValue": false
+        },
+        {
+          "name": "--debug",
+          "description": "Turn on Ruby debugging",
+          "takesValue": false
+        },
+        {
+          "name": "--norc",
+          "description": "Avoid loading any .gemrc file",
+          "takesValue": false
+        },
+        {
+          "name": "-n",
+          "description": "Name of gem(s) to query on matches the provided REGEXP",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "REGEXP",
+              "description": "The rule of the regexp"
+            }
+          ]
+        },
+        {
+          "name": "--name-matches",
+          "description": "Name of gem(s) to query on matches the provided REGEXP",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "REGEXP",
+              "description": "The rule of the regexp"
+            }
+          ]
+        },
+        {
+          "name": "-I",
+          "description": "Check for not installed gem",
+          "takesValue": false
+        },
+        {
+          "name": "-d",
+          "description": "Display detailed information of gem(s)",
+          "takesValue": false
+        },
+        {
+          "name": "--details",
+          "description": "Display detailed information of gem(s)",
+          "takesValue": false
+        },
+        {
+          "name": "--no-details",
+          "description": "Do not display detailed information of gem(s)",
+          "takesValue": false
+        },
+        {
+          "name": "-a",
+          "description": "Display all gem versions",
+          "takesValue": false
+        },
+        {
+          "name": "--all",
+          "description": "Display all gem versions",
+          "takesValue": false
+        },
+        {
+          "name": "-e",
+          "description": "Name of gem(s) to query on matches the provided STRING",
+          "takesValue": false
+        },
+        {
+          "name": "--exact",
+          "description": "Name of gem(s) to query on matches the provided STRING",
+          "takesValue": false
+        },
+        {
+          "name": "--prerelease",
+          "description": "Allow prerelease versions of a gem",
+          "takesValue": false
+        },
+        {
+          "name": "--no-prerelease",
+          "description": "Do not allow prerelease versions of a gem",
+          "takesValue": false
+        },
+        {
+          "name": "-i",
+          "description": "Check for installed gem",
+          "takesValue": false
+        },
+        {
+          "name": "--installed",
+          "description": "Check for installed gem",
+          "takesValue": false
+        },
+        {
+          "name": "--no-installed",
+          "description": "Check for not installed gem",
+          "takesValue": false
+        },
+        {
+          "name": "-v",
+          "description": "Specify version of gem to list for use with --installed",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "VERSION",
+              "description": "The version of gem"
+            }
+          ]
+        },
+        {
+          "name": "--version",
+          "description": "Specify version of gem to list for use with --installed",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "VERSION",
+              "description": "The version of gem"
+            }
+          ]
+        },
+        {
+          "name": "--versions",
+          "description": "Display only gem names",
+          "takesValue": false
+        },
+        {
+          "name": "--no-versions",
+          "description": "Display not only gem names",
+          "takesValue": false
+        },
+        {
+          "name": "-l",
+          "description": "Restrict operations to the LOCAL domain",
+          "takesValue": false
+        },
+        {
+          "name": "--local",
+          "description": "Restrict operations to the LOCAL domain",
+          "takesValue": false
+        },
+        {
+          "name": "-r",
+          "description": "Restrict operations to the REMOTE domain",
+          "takesValue": false
+        },
+        {
+          "name": "--remote",
+          "description": "Restrict operations to the REMOTE domain",
+          "takesValue": false
+        },
+        {
+          "name": "-b",
+          "description": "Allow LOCAL and REMOTE operations",
+          "takesValue": false
+        },
+        {
+          "name": "--both",
+          "description": "Allow LOCAL and REMOTE operations",
+          "takesValue": false
+        },
+        {
+          "name": "-B",
+          "description": "Threshold for switching to bulk synchronization (default 1000)",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "COUNT",
+              "description": "The threshold"
+            }
+          ]
+        },
+        {
+          "name": "--bulk-threshold",
+          "description": "Threshold for switching to bulk synchronization (default 1000)",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "COUNT",
+              "description": "The threshold"
+            }
+          ]
+        },
+        {
+          "name": "--clear-sources",
+          "description": "Clear the gem sources",
+          "takesValue": false
+        },
+        {
+          "name": "-s",
+          "description": "Append URL to list of remote gem sources",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "URL",
+              "description": "The URL"
+            }
+          ]
+        },
+        {
+          "name": "--source",
+          "description": "Append URL to list of remote gem sources",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "URL",
+              "description": "The URL"
+            }
+          ]
+        },
+        {
+          "name": "-p",
+          "description": "Use HTTP proxy for remote operations",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "URL",
+              "description": "The URL",
+              "isOptional": true
+            }
+          ]
+        },
+        {
+          "name": "--http-proxy",
+          "description": "Use HTTP proxy for remote operations",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "URL",
+              "description": "The URL",
+              "isOptional": true
+            }
+          ]
+        },
+        {
+          "name": "--no-http-proxy",
+          "description": "Do not use HTTP proxy for remote operations",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "rdoc",
+      "description": "Generates RDoc for pre-installed gems",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--verbose",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--no-verbose",
+          "description": "Do not set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "-q",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--quiet",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--silent",
+          "description": "Silence RubyGems output",
+          "takesValue": false
+        },
+        {
+          "name": "-config-file",
+          "description": "Use this config file instead of default",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "FILE",
+              "description": "The config file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--backtrace",
+          "description": "Show stack backtrace on errors",
+          "takesValue": false
+        },
+        {
+          "name": "--debug",
+          "description": "Turn on Ruby debugging",
+          "takesValue": false
+        },
+        {
+          "name": "--norc",
+          "description": "Avoid loading any .gemrc file",
+          "takesValue": false
+        },
+        {
+          "name": "--all",
+          "description": "Generate RDoc/RI documentation for all installed gems",
+          "takesValue": false
+        },
+        {
+          "name": "--rdoc",
+          "description": "Generate RDoc HTML",
+          "takesValue": false
+        },
+        {
+          "name": "--no-rdoc",
+          "description": "Do not generate RDoc HTML",
+          "takesValue": false
+        },
+        {
+          "name": "--ri",
+          "description": "Generate RI data",
+          "takesValue": false
+        },
+        {
+          "name": "--no-ri",
+          "description": "Do not generate RI data",
+          "takesValue": false
+        },
+        {
+          "name": "--overwrite",
+          "description": "Overwrite installed documents",
+          "takesValue": false
+        },
+        {
+          "name": "--no-overwrite",
+          "description": "Do not overwrite installed documents",
+          "takesValue": false
+        },
+        {
+          "name": "-v",
+          "description": "Specify version of gem to rdoc",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "VERSION",
+              "description": "The specify version of gem"
+            }
+          ]
+        },
+        {
+          "name": "--version",
+          "description": "Specify version of gem to rdoc",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "VERSION",
+              "description": "The specify version of gem"
+            }
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "GEMNAME",
+          "description": "Gem to generate documentation for (unless –all)",
+          "isOptional": true
+        }
+      ]
+    },
+    {
+      "name": "search",
+      "description": "Display remote gems whose name matches REGEXP",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--verbose",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--no-verbose",
+          "description": "Do not set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "-q",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--quiet",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--silent",
+          "description": "Silence RubyGems output",
+          "takesValue": false
+        },
+        {
+          "name": "-config-file",
+          "description": "Use this config file instead of default",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "FILE",
+              "description": "The config file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--backtrace",
+          "description": "Show stack backtrace on errors",
+          "takesValue": false
+        },
+        {
+          "name": "--debug",
+          "description": "Turn on Ruby debugging",
+          "takesValue": false
+        },
+        {
+          "name": "--norc",
+          "description": "Avoid loading any .gemrc file",
+          "takesValue": false
+        },
+        {
+          "name": "-I",
+          "description": "Check for not installed gem",
+          "takesValue": false
+        },
+        {
+          "name": "-d",
+          "description": "Display detailed information of gem(s)",
+          "takesValue": false
+        },
+        {
+          "name": "--details",
+          "description": "Display detailed information of gem(s)",
+          "takesValue": false
+        },
+        {
+          "name": "--no-details",
+          "description": "Do not display detailed information of gem(s)",
+          "takesValue": false
+        },
+        {
+          "name": "-a",
+          "description": "Display all gem versions",
+          "takesValue": false
+        },
+        {
+          "name": "--all",
+          "description": "Display all gem versions",
+          "takesValue": false
+        },
+        {
+          "name": "-e",
+          "description": "Name of gem(s) to query on matches the provided STRING",
+          "takesValue": false
+        },
+        {
+          "name": "--exact",
+          "description": "Name of gem(s) to query on matches the provided STRING",
+          "takesValue": false
+        },
+        {
+          "name": "--prerelease",
+          "description": "Allow prerelease versions of a gem",
+          "takesValue": false
+        },
+        {
+          "name": "--no-prerelease",
+          "description": "Do not allow prerelease versions of a gem",
+          "takesValue": false
+        },
+        {
+          "name": "-i",
+          "description": "Check for installed gem",
+          "takesValue": false
+        },
+        {
+          "name": "--installed",
+          "description": "Check for installed gem",
+          "takesValue": false
+        },
+        {
+          "name": "--no-installed",
+          "description": "Check for not installed gem",
+          "takesValue": false
+        },
+        {
+          "name": "-v",
+          "description": "Specify version of gem to list for use with --installed",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "VERSION",
+              "description": "The version of gem"
+            }
+          ]
+        },
+        {
+          "name": "--version",
+          "description": "Specify version of gem to list for use with --installed",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "VERSION",
+              "description": "The version of gem"
+            }
+          ]
+        },
+        {
+          "name": "--versions",
+          "description": "Display only gem names",
+          "takesValue": false
+        },
+        {
+          "name": "--no-versions",
+          "description": "Display not only gem names",
+          "takesValue": false
+        },
+        {
+          "name": "-l",
+          "description": "Restrict operations to the LOCAL domain",
+          "takesValue": false
+        },
+        {
+          "name": "--local",
+          "description": "Restrict operations to the LOCAL domain",
+          "takesValue": false
+        },
+        {
+          "name": "-r",
+          "description": "Restrict operations to the REMOTE domain",
+          "takesValue": false
+        },
+        {
+          "name": "--remote",
+          "description": "Restrict operations to the REMOTE domain",
+          "takesValue": false
+        },
+        {
+          "name": "-b",
+          "description": "Allow LOCAL and REMOTE operations",
+          "takesValue": false
+        },
+        {
+          "name": "--both",
+          "description": "Allow LOCAL and REMOTE operations",
+          "takesValue": false
+        },
+        {
+          "name": "-B",
+          "description": "Threshold for switching to bulk synchronization (default 1000)",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "COUNT",
+              "description": "The threshold"
+            }
+          ]
+        },
+        {
+          "name": "--bulk-threshold",
+          "description": "Threshold for switching to bulk synchronization (default 1000)",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "COUNT",
+              "description": "The threshold"
+            }
+          ]
+        },
+        {
+          "name": "--clear-sources",
+          "description": "Clear the gem sources",
+          "takesValue": false
+        },
+        {
+          "name": "-s",
+          "description": "Append URL to list of remote gem sources",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "URL",
+              "description": "The URL"
+            }
+          ]
+        },
+        {
+          "name": "--source",
+          "description": "Append URL to list of remote gem sources",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "URL",
+              "description": "The URL"
+            }
+          ]
+        },
+        {
+          "name": "-p",
+          "description": "Use HTTP proxy for remote operations",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "URL",
+              "description": "The URL",
+              "isOptional": true
+            }
+          ]
+        },
+        {
+          "name": "--http-proxy",
+          "description": "Use HTTP proxy for remote operations",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "URL",
+              "description": "The URL",
+              "isOptional": true
+            }
+          ]
+        },
+        {
+          "name": "--no-http-proxy",
+          "description": "Do not use HTTP proxy for remote operations",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "REGEXP",
+          "description": "Regexp to look for in gem name",
+          "isOptional": true
+        }
+      ]
+    },
+    {
+      "name": "signin",
+      "description": "Sign in to any gemcutter-compatible host. It defaults to https://rubygems.org",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--verbose",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--no-verbose",
+          "description": "Do not set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "-q",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--quiet",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--silent",
+          "description": "Silence RubyGems output",
+          "takesValue": false
+        },
+        {
+          "name": "-config-file",
+          "description": "Use this config file instead of default",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "FILE",
+              "description": "The config file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--backtrace",
+          "description": "Show stack backtrace on errors",
+          "takesValue": false
+        },
+        {
+          "name": "--debug",
+          "description": "Turn on Ruby debugging",
+          "takesValue": false
+        },
+        {
+          "name": "--norc",
+          "description": "Avoid loading any .gemrc file",
+          "takesValue": false
+        },
+        {
+          "name": "--host",
+          "description": "Use another gemcutter-compatible host (e.g. https://rubygems.org)",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "HOST",
+              "description": "The host"
+            }
+          ]
+        },
+        {
+          "name": "--otp",
+          "description": "Digit code for multifactor authentication You can also use the environment variable GEM_HOST_OTP_CODE",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "CODE",
+              "description": "The GEM host otp code"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "signout",
+      "description": "Sign out from all the current sessions",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--verbose",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--no-verbose",
+          "description": "Do not set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "-q",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--quiet",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--silent",
+          "description": "Silence RubyGems output",
+          "takesValue": false
+        },
+        {
+          "name": "-config-file",
+          "description": "Use this config file instead of default",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "FILE",
+              "description": "The config file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--backtrace",
+          "description": "Show stack backtrace on errors",
+          "takesValue": false
+        },
+        {
+          "name": "--debug",
+          "description": "Turn on Ruby debugging",
+          "takesValue": false
+        },
+        {
+          "name": "--norc",
+          "description": "Avoid loading any .gemrc file",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "sources",
+      "description": "Manage the sources and cache file RubyGems uses to search for gems",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--verbose",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--no-verbose",
+          "description": "Do not set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "-q",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--quiet",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--silent",
+          "description": "Silence RubyGems output",
+          "takesValue": false
+        },
+        {
+          "name": "-config-file",
+          "description": "Use this config file instead of default",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "FILE",
+              "description": "The config file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--backtrace",
+          "description": "Show stack backtrace on errors",
+          "takesValue": false
+        },
+        {
+          "name": "--debug",
+          "description": "Turn on Ruby debugging",
+          "takesValue": false
+        },
+        {
+          "name": "--norc",
+          "description": "Avoid loading any .gemrc file",
+          "takesValue": false
+        },
+        {
+          "name": "-a",
+          "description": "Add source",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "SOURCE_URI",
+              "description": "The source URI"
+            }
+          ]
+        },
+        {
+          "name": "--add",
+          "description": "Add source",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "SOURCE_URI",
+              "description": "The source URI"
+            }
+          ]
+        },
+        {
+          "name": "-l",
+          "description": "List sources",
+          "takesValue": false
+        },
+        {
+          "name": "--list",
+          "description": "List sources",
+          "takesValue": false
+        },
+        {
+          "name": "-r",
+          "description": "Remove source",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "SOURCE_URI",
+              "description": "The source URI"
+            }
+          ]
+        },
+        {
+          "name": "--remove",
+          "description": "Remove source",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "SOURCE_URI",
+              "description": "The source URI"
+            }
+          ]
+        },
+        {
+          "name": "-c",
+          "description": "Remove all sources (clear the cache)",
+          "takesValue": false
+        },
+        {
+          "name": "--clear-all",
+          "description": "Remove all sources (clear the cache)",
+          "takesValue": false
+        },
+        {
+          "name": "-u",
+          "description": "Update source cache",
+          "takesValue": false
+        },
+        {
+          "name": "--update",
+          "description": "Update source cache",
+          "takesValue": false
+        },
+        {
+          "name": "-f",
+          "description": "Do not show any confirmation prompts and behave as if 'yes' was always answered",
+          "takesValue": false
+        },
+        {
+          "name": "--force",
+          "description": "Do not show any confirmation prompts and behave as if 'yes' was always answered",
+          "takesValue": false
+        },
+        {
+          "name": "--no-force",
+          "description": "Show any confirmation prompts and behave as if 'yes' was always answered",
+          "takesValue": false
+        },
+        {
+          "name": "-p",
+          "description": "Use HTTP proxy for remote operations",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "URL",
+              "description": "The URL",
+              "isOptional": true
+            }
+          ]
+        },
+        {
+          "name": "--http-proxy",
+          "description": "Use HTTP proxy for remote operations",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "URL",
+              "description": "The URL",
+              "isOptional": true
+            }
+          ]
+        },
+        {
+          "name": "--no-http-proxy",
+          "description": "Do not use HTTP proxy for remote operations",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "specification",
+      "description": "Display gem specification (in yaml)",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--verbose",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--no-verbose",
+          "description": "Do not set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "-q",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--quiet",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--silent",
+          "description": "Silence RubyGems output",
+          "takesValue": false
+        },
+        {
+          "name": "-config-file",
+          "description": "Use this config file instead of default",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "FILE",
+              "description": "The config file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--backtrace",
+          "description": "Show stack backtrace on errors",
+          "takesValue": false
+        },
+        {
+          "name": "--debug",
+          "description": "Turn on Ruby debugging",
+          "takesValue": false
+        },
+        {
+          "name": "--norc",
+          "description": "Avoid loading any .gemrc file",
+          "takesValue": false
+        },
+        {
+          "name": "-v",
+          "description": "Specify version of gem to examine",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "VERSION",
+              "description": "The version of gem"
+            }
+          ]
+        },
+        {
+          "name": "--version",
+          "description": "Specify version of gem to examine",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "VERSION",
+              "description": "The version of gem"
+            }
+          ]
+        },
+        {
+          "name": "--platform",
+          "description": "Specify the platform of gem to specification",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "PLATFORM",
+              "description": "The platform of gem"
+            }
+          ]
+        },
+        {
+          "name": "--prerelease",
+          "description": "Allow prerelease versions of a gem",
+          "takesValue": false
+        },
+        {
+          "name": "--no-prerelease",
+          "description": "Do not allow prerelease versions of a gem",
+          "takesValue": false
+        },
+        {
+          "name": "--all",
+          "description": "Output specifications for all versions of the gem",
+          "takesValue": false
+        },
+        {
+          "name": "--ruby",
+          "description": "Output ruby format",
+          "takesValue": false
+        },
+        {
+          "name": "--yaml",
+          "description": "Output YAML format",
+          "takesValue": false
+        },
+        {
+          "name": "--marshal",
+          "description": "Output Marshal format",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "GEMFILE",
+          "description": "Name of gem to show the gemspec for"
+        },
+        {
+          "name": "FIELD",
+          "description": "Name of gemspec field to show"
+        }
+      ]
+    },
+    {
+      "name": "stale",
+      "description": "List gems along with access times",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--verbose",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--no-verbose",
+          "description": "Do not set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "-q",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--quiet",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--silent",
+          "description": "Silence RubyGems output",
+          "takesValue": false
+        },
+        {
+          "name": "-config-file",
+          "description": "Use this config file instead of default",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "FILE",
+              "description": "The config file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--backtrace",
+          "description": "Show stack backtrace on errors",
+          "takesValue": false
+        },
+        {
+          "name": "--debug",
+          "description": "Turn on Ruby debugging",
+          "takesValue": false
+        },
+        {
+          "name": "--norc",
+          "description": "Avoid loading any .gemrc file",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "unpack",
+      "description": "Unpack an installed gem to the current directory",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--verbose",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--no-verbose",
+          "description": "Do not set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "-q",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--quiet",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--silent",
+          "description": "Silence RubyGems output",
+          "takesValue": false
+        },
+        {
+          "name": "-config-file",
+          "description": "Use this config file instead of default",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "FILE",
+              "description": "The config file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--backtrace",
+          "description": "Show stack backtrace on errors",
+          "takesValue": false
+        },
+        {
+          "name": "--debug",
+          "description": "Turn on Ruby debugging",
+          "takesValue": false
+        },
+        {
+          "name": "--norc",
+          "description": "Avoid loading any .gemrc file",
+          "takesValue": false
+        },
+        {
+          "name": "--target",
+          "description": "Target directory for unpacking",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "DIR",
+              "template": "folders"
+            }
+          ]
+        },
+        {
+          "name": "--spec",
+          "description": "Unpack the gem specification",
+          "takesValue": false
+        },
+        {
+          "name": "-v",
+          "description": "Specify version of gem to unpack",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "VERSION",
+              "description": "The specify version of gem"
+            }
+          ]
+        },
+        {
+          "name": "--version",
+          "description": "Specify version of gem to unpack",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "VERSION",
+              "description": "The specify version of gem"
+            }
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "GEMNAME",
+          "description": "Name of gem to unpack"
+        }
+      ]
+    },
+    {
+      "name": "yank",
+      "description": "Remove a pushed gem from the index",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--verbose",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--no-verbose",
+          "description": "Do not set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "-q",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--quiet",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--silent",
+          "description": "Silence RubyGems output",
+          "takesValue": false
+        },
+        {
+          "name": "-config-file",
+          "description": "Use this config file instead of default",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "FILE",
+              "description": "The config file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--backtrace",
+          "description": "Show stack backtrace on errors",
+          "takesValue": false
+        },
+        {
+          "name": "--debug",
+          "description": "Turn on Ruby debugging",
+          "takesValue": false
+        },
+        {
+          "name": "--norc",
+          "description": "Avoid loading any .gemrc file",
+          "takesValue": false
+        },
+        {
+          "name": "-v",
+          "description": "Specify version of gem to dependency",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "VERSION",
+              "description": "The version of gem"
+            }
+          ]
+        },
+        {
+          "name": "--version",
+          "description": "Specify version of gem to dependency",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "VERSION",
+              "description": "The version of gem"
+            }
+          ]
+        },
+        {
+          "name": "--platform",
+          "description": "Specify the platform of gem to dependency",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "PLATFORM",
+              "description": "The platform of gem"
+            }
+          ]
+        },
+        {
+          "name": "--host",
+          "description": "Use another gemcutter-compatible host (e.g. https://rubygems.org)",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "HOST",
+              "description": "The host"
+            }
+          ]
+        },
+        {
+          "name": "-k",
+          "description": "Use the given API key",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "KEYNAME",
+              "description": "The API key"
+            }
+          ]
+        },
+        {
+          "name": "--key",
+          "description": "Use the given API key",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "KEYNAME",
+              "description": "The API key"
+            }
+          ]
+        },
+        {
+          "name": "--otp",
+          "description": "Digit code for multifactor authentication You can also use the environment variable GEM_HOST_OTP_CODE",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "CODE",
+              "description": "The GEM host otp code"
+            }
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "GEM",
+          "description": "Name of gem"
+        }
+      ]
+    },
+    {
+      "name": "uninstall",
+      "description": "Uninstall gems from the local repository",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--verbose",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--no-verbose",
+          "description": "Do not set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "-q",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--quiet",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--silent",
+          "description": "Silence RubyGems output",
+          "takesValue": false
+        },
+        {
+          "name": "-config-file",
+          "description": "Use this config file instead of default",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "FILE",
+              "description": "The config file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--backtrace",
+          "description": "Show stack backtrace on errors",
+          "takesValue": false
+        },
+        {
+          "name": "--debug",
+          "description": "Turn on Ruby debugging",
+          "takesValue": false
+        },
+        {
+          "name": "--norc",
+          "description": "Avoid loading any .gemrc file",
+          "takesValue": false
+        },
+        {
+          "name": "-a",
+          "description": "Uninstall all matching versions",
+          "takesValue": false
+        },
+        {
+          "name": "--all",
+          "description": "Uninstall all matching versions",
+          "takesValue": false
+        },
+        {
+          "name": "-I",
+          "description": "Ignore dependency requirements while uninstalling",
+          "takesValue": false
+        },
+        {
+          "name": "--ignore-dependencies",
+          "description": "Ignore dependency requirements while uninstalling",
+          "takesValue": false
+        },
+        {
+          "name": "-D",
+          "description": "Check development dependencies while uninstalling (default: false)",
+          "takesValue": false
+        },
+        {
+          "name": "--check-development",
+          "description": "Check development dependencies while uninstalling (default: false)",
+          "takesValue": false
+        },
+        {
+          "name": "-x",
+          "description": "Uninstall applicable executables without confirmation",
+          "takesValue": false
+        },
+        {
+          "name": "--executables",
+          "description": "Uninstall applicable executables without confirmation",
+          "takesValue": false
+        },
+        {
+          "name": "-i",
+          "description": "Directory to uninstall gem from",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "DIR",
+              "template": "folders"
+            }
+          ]
+        },
+        {
+          "name": "--install-dir",
+          "description": "Directory to uninstall gem from",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "DIR",
+              "template": "folders"
+            }
+          ]
+        },
+        {
+          "name": "-n",
+          "description": "Directory to remove executables from",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "DIR",
+              "template": "folders"
+            }
+          ]
+        },
+        {
+          "name": "--bindir",
+          "description": "Directory to remove executables from",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "DIR",
+              "template": "folders"
+            }
+          ]
+        },
+        {
+          "name": "--user-install",
+          "description": "Uninstall from user’s home directory in addition to GEM_HOME",
+          "takesValue": false
+        },
+        {
+          "name": "--format-executable",
+          "description": "Assume executable names match Ruby’s prefix and suffix",
+          "takesValue": false
+        },
+        {
+          "name": "--force",
+          "description": "Uninstall all versions of the named gems ignoring dependencies",
+          "takesValue": false
+        },
+        {
+          "name": "--abort-on-dependent",
+          "description": "Prevent uninstalling gems that are depended on by other gems",
+          "takesValue": false
+        },
+        {
+          "name": "-v",
+          "description": "Specify version of gem to uninstall",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "VERSION",
+              "description": "The specify version of gem"
+            }
+          ]
+        },
+        {
+          "name": "--version",
+          "description": "Specify version of gem to uninstall",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "VERSION",
+              "description": "The specify version of gem"
+            }
+          ]
+        },
+        {
+          "name": "--platform",
+          "description": "Specify the platform of gem to uninstall",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "PLATFORM",
+              "description": "The platform of gem"
+            }
+          ]
+        },
+        {
+          "name": "--vendor",
+          "description": "Uninstall gem from the vendor directory. Only for use by gem repackagers",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "GEMNAME"
+        }
+      ]
+    },
+    {
+      "name": "list",
+      "description": "Display local gems whose name matches REGEXP",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--verbose",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--no-verbose",
+          "description": "Do not set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "-q",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--quiet",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--silent",
+          "description": "Silence RubyGems output",
+          "takesValue": false
+        },
+        {
+          "name": "-config-file",
+          "description": "Use this config file instead of default",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "FILE",
+              "description": "The config file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--backtrace",
+          "description": "Show stack backtrace on errors",
+          "takesValue": false
+        },
+        {
+          "name": "--debug",
+          "description": "Turn on Ruby debugging",
+          "takesValue": false
+        },
+        {
+          "name": "--norc",
+          "description": "Avoid loading any .gemrc file",
+          "takesValue": false
+        },
+        {
+          "name": "-d",
+          "description": "Display detailed information of gem(s)",
+          "takesValue": false
+        },
+        {
+          "name": "--details",
+          "description": "Display detailed information of gem(s)",
+          "takesValue": false
+        },
+        {
+          "name": "--no-details",
+          "description": "Do not display detailed information of gem(s)",
+          "takesValue": false
+        },
+        {
+          "name": "-u",
+          "description": "[Deprecated] Update local source cache",
+          "takesValue": false
+        },
+        {
+          "name": "--update-sources",
+          "description": "[Deprecated] Update local source cache",
+          "takesValue": false
+        },
+        {
+          "name": "--no-update-sources",
+          "description": "[Deprecated] Do not update local source cache",
+          "takesValue": false
+        },
+        {
+          "name": "-a",
+          "description": "Display all gem versions",
+          "takesValue": false
+        },
+        {
+          "name": "--all",
+          "description": "Display all gem versions",
+          "takesValue": false
+        },
+        {
+          "name": "-e",
+          "description": "Name of gem(s) to query on matches the provided STRING",
+          "takesValue": false
+        },
+        {
+          "name": "--exact",
+          "description": "Name of gem(s) to query on matches the provided STRING",
+          "takesValue": false
+        },
+        {
+          "name": "--prerelease",
+          "description": "Allow prerelease versions of a gem",
+          "takesValue": false
+        },
+        {
+          "name": "--no-prerelease",
+          "description": "Do not allow prerelease versions of a gem",
+          "takesValue": false
+        },
+        {
+          "name": "-i",
+          "description": "Check for installed gem",
+          "takesValue": false
+        },
+        {
+          "name": "--installed",
+          "description": "Check for installed gem",
+          "takesValue": false
+        },
+        {
+          "name": "-I",
+          "description": "Check for not installed gem",
+          "takesValue": false
+        },
+        {
+          "name": "--no-installed",
+          "description": "Check for not installed gem",
+          "takesValue": false
+        },
+        {
+          "name": "-v",
+          "description": "Specify version of gem to list for use with --installed",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "VERSION",
+              "description": "The version of gem"
+            }
+          ]
+        },
+        {
+          "name": "--version",
+          "description": "Specify version of gem to list for use with --installed",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "VERSION",
+              "description": "The version of gem"
+            }
+          ]
+        },
+        {
+          "name": "--versions",
+          "description": "Display only gem names",
+          "takesValue": false
+        },
+        {
+          "name": "--no-versions",
+          "description": "Display not only gem names",
+          "takesValue": false
+        },
+        {
+          "name": "-l",
+          "description": "Restrict operations to the LOCAL domain",
+          "takesValue": false
+        },
+        {
+          "name": "--local",
+          "description": "Restrict operations to the LOCAL domain",
+          "takesValue": false
+        },
+        {
+          "name": "-r",
+          "description": "Restrict operations to the REMOTE domain",
+          "takesValue": false
+        },
+        {
+          "name": "--remote",
+          "description": "Restrict operations to the REMOTE domain",
+          "takesValue": false
+        },
+        {
+          "name": "-b",
+          "description": "Allow LOCAL and REMOTE operations",
+          "takesValue": false
+        },
+        {
+          "name": "--both",
+          "description": "Allow LOCAL and REMOTE operations",
+          "takesValue": false
+        },
+        {
+          "name": "-B",
+          "description": "Threshold for switching to bulk synchronization (default 1000)",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "COUNT",
+              "description": "The threshold"
+            }
+          ]
+        },
+        {
+          "name": "--bulk-threshold",
+          "description": "Threshold for switching to bulk synchronization (default 1000)",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "COUNT",
+              "description": "The threshold"
+            }
+          ]
+        },
+        {
+          "name": "--clear-sources",
+          "description": "Clear the gem sources",
+          "takesValue": false
+        },
+        {
+          "name": "-s",
+          "description": "Append URL to list of remote gem sources",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "URL",
+              "description": "The URL"
+            }
+          ]
+        },
+        {
+          "name": "--source",
+          "description": "Append URL to list of remote gem sources",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "URL",
+              "description": "The URL"
+            }
+          ]
+        },
+        {
+          "name": "-p",
+          "description": "Use HTTP proxy for remote operations",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "URL",
+              "description": "The URL",
+              "isOptional": true
+            }
+          ]
+        },
+        {
+          "name": "--http-proxy",
+          "description": "Use HTTP proxy for remote operations",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "URL",
+              "description": "The URL",
+              "isOptional": true
+            }
+          ]
+        },
+        {
+          "name": "--no-http-proxy",
+          "description": "Do not use HTTP proxy for remote operations",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "REGEXP",
+          "description": "Regexp to look for in gem name",
+          "isOptional": true
+        }
+      ]
+    },
+    {
+      "name": "build",
+      "description": "Build a gem from a gemspec",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--verbose",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--no-verbose",
+          "description": "Do not set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "-q",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--quiet",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--silent",
+          "description": "Silence RubyGems output",
+          "takesValue": false
+        },
+        {
+          "name": "-config-file",
+          "description": "Use this config file instead of default",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "FILE",
+              "description": "The config file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--backtrace",
+          "description": "Show stack backtrace on errors",
+          "takesValue": false
+        },
+        {
+          "name": "--debug",
+          "description": "Turn on Ruby debugging",
+          "takesValue": false
+        },
+        {
+          "name": "--norc",
+          "description": "Avoid loading any .gemrc file",
+          "takesValue": false
+        },
+        {
+          "name": "--platform",
+          "description": "Specify the platform of gem to build",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "PLATFORM",
+              "description": "The platform of gem"
+            }
+          ]
+        },
+        {
+          "name": "--force",
+          "description": "Skip validation of the spec",
+          "takesValue": false
+        },
+        {
+          "name": "--strict",
+          "description": "Consider warnings as errors when validating the spec",
+          "takesValue": false
+        },
+        {
+          "name": "-o",
+          "description": "Output gem with the given filename",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "FILE",
+              "description": "The filename"
+            }
+          ]
+        },
+        {
+          "name": "--output",
+          "description": "Output gem with the given filename",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "FILE",
+              "description": "The filename"
+            }
+          ]
+        },
+        {
+          "name": "-C",
+          "description": "Run as if gem build was started in <PATH> instead of the current working directory",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "PATH",
+              "description": "The filename",
+              "template": "folders"
+            }
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "GEMSPEC_FILE",
+          "description": "Gemspec file name to build a gem for"
+        }
+      ]
+    },
+    {
+      "name": "push",
+      "description": "Push a gem up to the gem server",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--verbose",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--no-verbose",
+          "description": "Do not set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "-q",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--quiet",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--silent",
+          "description": "Silence RubyGems output",
+          "takesValue": false
+        },
+        {
+          "name": "-config-file",
+          "description": "Use this config file instead of default",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "FILE",
+              "description": "The config file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--backtrace",
+          "description": "Show stack backtrace on errors",
+          "takesValue": false
+        },
+        {
+          "name": "--debug",
+          "description": "Turn on Ruby debugging",
+          "takesValue": false
+        },
+        {
+          "name": "--norc",
+          "description": "Avoid loading any .gemrc file",
+          "takesValue": false
+        },
+        {
+          "name": "--host",
+          "description": "Use another gemcutter-compatible host (e.g. https://rubygems.org)",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "HOST",
+              "description": "The host"
+            }
+          ]
+        },
+        {
+          "name": "-k",
+          "description": "Use the given API key",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "KEYNAME",
+              "description": "The API key"
+            }
+          ]
+        },
+        {
+          "name": "--key",
+          "description": "Use the given API key",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "KEYNAME",
+              "description": "The API key"
+            }
+          ]
+        },
+        {
+          "name": "--otp",
+          "description": "Digit code for multifactor authentication You can also use the environment variable GEM_HOST_OTP_CODE",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "CODE",
+              "description": "The GEM host otp code"
+            }
+          ]
+        },
+        {
+          "name": "-p",
+          "description": "Use HTTP proxy for remote operations",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "URL",
+              "description": "The URL",
+              "isOptional": true
+            }
+          ]
+        },
+        {
+          "name": "--http-proxy",
+          "description": "Use HTTP proxy for remote operations",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "URL",
+              "description": "The URL",
+              "isOptional": true
+            }
+          ]
+        },
+        {
+          "name": "--no-http-proxy",
+          "description": "Do not use HTTP proxy for remote operations",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "GEM",
+          "description": "Built gem to push up"
+        }
+      ]
+    },
+    {
+      "name": "server",
+      "description": "Starts up a web server that hosts the RDoc (requires rubygems-server)",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--verbose",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--no-verbose",
+          "description": "Do not set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "-q",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--quiet",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--silent",
+          "description": "Silence RubyGems output",
+          "takesValue": false
+        },
+        {
+          "name": "-config-file",
+          "description": "Use this config file instead of default",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "FILE",
+              "description": "The config file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--backtrace",
+          "description": "Show stack backtrace on errors",
+          "takesValue": false
+        },
+        {
+          "name": "--debug",
+          "description": "Turn on Ruby debugging",
+          "takesValue": false
+        },
+        {
+          "name": "--norc",
+          "description": "Avoid loading any .gemrc file",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "owner",
+      "description": "Manage gem owners of a gem on the push server",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--verbose",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--no-verbose",
+          "description": "Do not set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "-q",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--quiet",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--silent",
+          "description": "Silence RubyGems output",
+          "takesValue": false
+        },
+        {
+          "name": "-config-file",
+          "description": "Use this config file instead of default",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "FILE",
+              "description": "The config file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--backtrace",
+          "description": "Show stack backtrace on errors",
+          "takesValue": false
+        },
+        {
+          "name": "--debug",
+          "description": "Turn on Ruby debugging",
+          "takesValue": false
+        },
+        {
+          "name": "--norc",
+          "description": "Avoid loading any .gemrc file",
+          "takesValue": false
+        },
+        {
+          "name": "-a",
+          "description": "Add an owner by user identifier",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "NEW_OWNER",
+              "description": "The new owner"
+            }
+          ]
+        },
+        {
+          "name": "--add",
+          "description": "Add an owner by user identifier",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "NEW_OWNER",
+              "description": "The new owner"
+            }
+          ]
+        },
+        {
+          "name": "-r",
+          "description": "Remove an owner by user identifier",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "OLD_OWNER",
+              "description": "The old owner"
+            }
+          ]
+        },
+        {
+          "name": "--remove",
+          "description": "Remove an owner by user identifier",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "OLD_OWNER",
+              "description": "The old owner"
+            }
+          ]
+        },
+        {
+          "name": "--host",
+          "description": "Use another gemcutter-compatible host (e.g. https://rubygems.org)",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "HOST",
+              "description": "The host"
+            }
+          ]
+        },
+        {
+          "name": "-k",
+          "description": "Use the given API key",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "KEYNAME",
+              "description": "The API key"
+            }
+          ]
+        },
+        {
+          "name": "--key",
+          "description": "Use the given API key",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "KEYNAME",
+              "description": "The API key"
+            }
+          ]
+        },
+        {
+          "name": "--otp",
+          "description": "Digit code for multifactor authentication You can also use the environment variable GEM_HOST_OTP_CODE",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "CODE",
+              "description": "The GEM host otp code"
+            }
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "GEMNAME"
+        }
+      ]
+    },
+    {
+      "name": "which",
+      "description": "Find the location of a library file you can require",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--verbose",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--no-verbose",
+          "description": "Do not set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "-q",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--quiet",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--silent",
+          "description": "Silence RubyGems output",
+          "takesValue": false
+        },
+        {
+          "name": "-config-file",
+          "description": "Use this config file instead of default",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "FILE",
+              "description": "The config file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--backtrace",
+          "description": "Show stack backtrace on errors",
+          "takesValue": false
+        },
+        {
+          "name": "--debug",
+          "description": "Turn on Ruby debugging",
+          "takesValue": false
+        },
+        {
+          "name": "--norc",
+          "description": "Avoid loading any .gemrc file",
+          "takesValue": false
+        },
+        {
+          "name": "-a",
+          "description": "Show all matching files",
+          "takesValue": false
+        },
+        {
+          "name": "--all",
+          "description": "Show all matching files",
+          "takesValue": false
+        },
+        {
+          "name": "-g",
+          "description": "Search gems before non-gems",
+          "takesValue": false
+        },
+        {
+          "name": "--gems-first",
+          "description": "Search gems before non-gems",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "FILE",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "outdated",
+      "description": "Display all gems that need updates",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--verbose",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--no-verbose",
+          "description": "Do not set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "-q",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--quiet",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--silent",
+          "description": "Silence RubyGems output",
+          "takesValue": false
+        },
+        {
+          "name": "-config-file",
+          "description": "Use this config file instead of default",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "FILE",
+              "description": "The config file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--backtrace",
+          "description": "Show stack backtrace on errors",
+          "takesValue": false
+        },
+        {
+          "name": "--debug",
+          "description": "Turn on Ruby debugging",
+          "takesValue": false
+        },
+        {
+          "name": "--norc",
+          "description": "Avoid loading any .gemrc file",
+          "takesValue": false
+        },
+        {
+          "name": "--platform",
+          "description": "Specify the platform of gem to outdated",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "PLATFORM",
+              "isVariadic": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "update",
+      "description": "Update installed gems to the latest version",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show help for gem",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--verbose",
+          "description": "Set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "--no-verbose",
+          "description": "Do not set the verbose level of output",
+          "takesValue": false
+        },
+        {
+          "name": "-q",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--quiet",
+          "description": "Silence command progress meter",
+          "takesValue": false
+        },
+        {
+          "name": "--silent",
+          "description": "Silence RubyGems output",
+          "takesValue": false
+        },
+        {
+          "name": "-config-file",
+          "description": "Use this config file instead of default",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "FILE",
+              "description": "The config file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--backtrace",
+          "description": "Show stack backtrace on errors",
+          "takesValue": false
+        },
+        {
+          "name": "--debug",
+          "description": "Turn on Ruby debugging",
+          "takesValue": false
+        },
+        {
+          "name": "--norc",
+          "description": "Avoid loading any .gemrc file",
+          "takesValue": false
+        },
+        {
+          "name": "--system",
+          "description": "Update the RubyGems system software",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "VERSION",
+              "isOptional": true
+            }
+          ]
+        },
+        {
+          "name": "--platform",
+          "description": "Update the RubyGems system software",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "PLATFORM"
+            }
+          ]
+        },
+        {
+          "name": "--prerelease",
+          "description": "Allow prerelease versions of a gem as update targets",
+          "takesValue": false
+        },
+        {
+          "name": "--install-dir",
+          "description": "Gem repository directory to get installed gems",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "DIR",
+              "template": "folders"
+            }
+          ]
+        },
+        {
+          "name": "-i",
+          "description": "Gem repository directory to get installed gems",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "DIR",
+              "template": "folders"
+            }
+          ]
+        },
+        {
+          "name": "--bindir",
+          "description": "Directory where executables will be placed when the gem is installed",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "DIR",
+              "template": "folders"
+            }
+          ]
+        },
+        {
+          "name": "-n",
+          "description": "Directory where executables will be placed when the gem is installed",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "DIR",
+              "template": "folders"
+            }
+          ]
+        },
+        {
+          "name": "--document",
+          "description": "Generate documentation for installed gems",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "TYPES",
+              "suggestions": [
+                {
+                  "name": "rdoc"
+                },
+                {
+                  "name": "ri"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--build-root",
+          "description": "Temporary installation root. Useful for building packages. Do not use this when installing remote gems",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "DIR",
+              "template": "folders"
+            }
+          ]
+        },
+        {
+          "name": "--vendor",
+          "description": "Install gem into the vendor directory. Only for use by gem repackagers",
+          "takesValue": false
+        },
+        {
+          "name": "--no-document",
+          "description": "Disable documentation generation",
+          "takesValue": false
+        },
+        {
+          "name": "-N",
+          "description": "Disable documentation generation",
+          "takesValue": false
+        },
+        {
+          "name": "--env-shebang",
+          "description": "Rewrite the shebang line on installed scripts to use /usr/bin/env",
+          "takesValue": false
+        },
+        {
+          "name": "-E",
+          "description": "Rewrite the shebang line on installed scripts to use /usr/bin/env",
+          "takesValue": false
+        },
+        {
+          "name": "--force",
+          "description": "Force gem to install, bypassing dependency checks",
+          "takesValue": false
+        },
+        {
+          "name": "-f",
+          "description": "Force gem to install, bypassing dependency checks",
+          "takesValue": false
+        },
+        {
+          "name": "--wrappers",
+          "description": "Use bin wrappers for executables. Not available on dosish platforms",
+          "takesValue": false
+        },
+        {
+          "name": "-w",
+          "description": "Use bin wrappers for executables. Not available on dosish platforms",
+          "takesValue": false
+        },
+        {
+          "name": "--trust-policy",
+          "description": "Specify gem trust policy",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "POLICY"
+            }
+          ]
+        },
+        {
+          "name": "-P",
+          "description": "Specify gem trust policy",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "POLICY"
+            }
+          ]
+        },
+        {
+          "name": "--ignore-dependencies",
+          "description": "Do not install any required dependent gems",
+          "takesValue": false
+        },
+        {
+          "name": "--format-executable",
+          "description": "Make installed executable names match Ruby",
+          "takesValue": false
+        },
+        {
+          "name": "--user-install",
+          "description": "Install in user's home directory instead of GEM_HOME",
+          "takesValue": false
+        },
+        {
+          "name": "--development",
+          "description": "Install additional development dependencies",
+          "takesValue": false
+        },
+        {
+          "name": "--development-all",
+          "description": "Install development dependencies for all gems (including dev deps themselves)",
+          "takesValue": false
+        },
+        {
+          "name": "--conservative",
+          "description": "Don't attempt to upgrade gems already meeting version requirement",
+          "takesValue": false
+        },
+        {
+          "name": "--minimal-deps",
+          "description": "Don't upgrade any dependencies that already meet version requirements",
+          "takesValue": false
+        },
+        {
+          "name": "--post-install-message",
+          "description": "Print post install message",
+          "takesValue": false
+        },
+        {
+          "name": "--file",
+          "description": "Read from a gem dependencies API file and install the listed gems",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "FILE",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "-g",
+          "description": "Read from a gem dependencies API file and install the listed gems",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "FILE",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--without",
+          "description": "Omit the named groups (comma separated) when installing from a gem dependencies file",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "GROUPS"
+            }
+          ]
+        },
+        {
+          "name": "--default",
+          "description": "Add the gem's full specification to specifications/default and extract only its bin",
+          "takesValue": false
+        },
+        {
+          "name": "--explain",
+          "description": "Rather than install the gems, indicate which would be installed",
+          "takesValue": false
+        },
+        {
+          "name": "--lock",
+          "description": "Create a lock file (when used with -g/--file)",
+          "takesValue": false
+        },
+        {
+          "name": "--suggestions",
+          "description": "Suggest alternates when gems are not found",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "GEMNAME",
+          "description": "The gem(s) you want to update",
+          "isVariadic": true,
+          "isOptional": true
+        }
+      ]
+    }
+  ]
+}

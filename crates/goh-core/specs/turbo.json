@@ -169,7 +169,8 @@
             {
               "name": "glob"
             }
-          ]
+          ],
+          "isRepeatable": true
         },
         {
           "name": "--since",

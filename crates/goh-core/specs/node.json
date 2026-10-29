@@ -27,7 +27,8 @@
           "name": "path",
           "template": "filepaths"
         }
-      ]
+      ],
+      "isRepeatable": true
     },
     {
       "name": "--watch-preserve-output",
@@ -43,7 +44,8 @@
           "name": "path",
           "template": "filepaths"
         }
-      ]
+      ],
+      "isRepeatable": true
     },
     {
       "name": "-p",

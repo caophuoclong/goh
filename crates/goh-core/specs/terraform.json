@@ -220,7 +220,8 @@
         {
           "name": "-target",
           "description": "A Resource Address to target. This flag can be used multiple times",
-          "takesValue": false
+          "takesValue": false,
+          "isRepeatable": true
         },
         {
           "name": "-var",
@@ -230,7 +231,8 @@
             {
               "name": "foo=bar"
             }
-          ]
+          ],
+          "isRepeatable": true
         },
         {
           "name": "-var-file",

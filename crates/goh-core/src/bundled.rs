@@ -132,6 +132,8 @@ mod tests {
         }
         let (found, _) = labels(&engine, "git checkout ", cwd.path(), &none, &shell);
         assert!(!found.contains(&"-".to_string()), "only with the options: {found:?}");
+        let (found, _) = labels(&engine, "defaults read -g", cwd.path(), &none, &shell);
+        assert_eq!(found.first().map(String::as_str), Some("-globalDomain"), "any value starting with a dash: {found:?}");
     }
 
     #[test]

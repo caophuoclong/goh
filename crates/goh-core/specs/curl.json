@@ -127,7 +127,8 @@
         {
           "name": "data"
         }
-      ]
+      ],
+      "isRepeatable": true
     },
     {
       "name": "--data",
@@ -137,7 +138,8 @@
         {
           "name": "data"
         }
-      ]
+      ],
+      "isRepeatable": true
     },
     {
       "name": "-q",
@@ -189,7 +191,8 @@
         {
           "name": "content"
         }
-      ]
+      ],
+      "isRepeatable": true
     },
     {
       "name": "--form",
@@ -199,7 +202,8 @@
         {
           "name": "content"
         }
-      ]
+      ],
+      "isRepeatable": true
     },
     {
       "name": "-P",

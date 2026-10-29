@@ -145,7 +145,8 @@
         {
           "name": "format"
         }
-      ]
+      ],
+      "isRepeatable": true
     },
     {
       "name": "-o",
@@ -154,7 +155,8 @@
         {
           "name": "format"
         }
-      ]
+      ],
+      "isRepeatable": true
     },
     {
       "name": "-M",

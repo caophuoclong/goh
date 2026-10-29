@@ -14,6 +14,7 @@
     "src/aws/sts.ts": "e168db60b4efe00eb9e415fb75886a64e7ed647b6c61e64eec516746446f4fae",
     "src/brew.ts": "9b766825d599a433319e8b9f1c667a735aba992ddf1f5a92bff14e5496848485",
     "src/bun.ts": "307ce836022e7fefee0ccd8e04eabc9777800687b1bc1a794b6996cb25c2aee4",
+    "src/bundle.ts": "13c60452f125b87141d5bfd7826b458bb74c2189aaea7783e8f0d8d08ac2d901",
     "src/cargo.ts": "141f574fd1613a8608d2c841672d0c281badc3681a2568953e1a1b554b8405b8",
     "src/cat.ts": "3efdb97ca3914bcfeee1a373e265210422d4569e72dd5aec673030d4dc563a87",
     "src/cd.ts": "005dbbe249edd5a387bd41e02b1e32f9e45b98c2beeb2a72c8dcec65f0a9b4dc",
@@ -22,31 +23,42 @@
     "src/code.ts": "3d3a04a87034d638a1f36548c56a5758ed3ef773202fcab306df01e6209b906a",
     "src/cp.ts": "03f3b2ece3c6f45ed09610de3bce5888e6d685318e10d22f663619a759eb4adf",
     "src/curl.ts": "2d8541c325dcaccce3e466bad07f62137750eae994698a28d5d18737b9bda069",
+    "src/defaults.ts": "f9a97a53363da818acdca0b260780576129ccb2c99980992f4dce4f86b5f5e48",
     "src/df.ts": "0a60410c41e6f6f18c1f508ce0f7023a9b8e44c454c18d8ef5f970a190dc96c9",
     "src/diff.ts": "507f6fbaa4a4d1f979149e372a9c3796096214651a63119730bbfee86d59ba4f",
     "src/docker-compose.ts": "a01443cd8897464406eaee4879a9f95c44c4b3644e98a66a8d17338aa1e45735",
     "src/docker.ts": "3529f00f9775ed9005d30750713eb7ff3cf3d65a987d88fb92fad5158c5856b0",
+    "src/dotnet.ts": "8956fd0fbe23973c41505b4f5044a7baa01842147578566c0c8c1d545dda5f25",
     "src/du.ts": "ae73b86ac024904ea76027ab0eeb2c48b287280ffabf98d18577318c2a104159",
     "src/eslint.ts": "fefe6377b4b5ddde5a8aa8b2523ad7debab2278982f96e5a0f15d8c23e62d99d",
+    "src/ffmpeg.ts": "8d6ca57002e5f9aad96888a763c6a5b2b2d416b40a33fa59946c15f9c4fe164a",
     "src/find.ts": "63fa1e298ca2ee3c9b15a456797fce33a5fe9089dc56618cd834dcc0680b7649",
+    "src/flutter.ts": "d80fa8e1f8ad9c4c0e104a51063cd51b41415490a446a705fd270ccab498368c",
     "src/fzf.ts": "165c60a134fbc05cddc1229eaf1aaee72c244b62025156ef9ba85f0954cd7a21",
     "src/gcloud.ts": "3618f7a05b90d7397529b213ddcca7706636e7e5ce17560151e632b8b0b43da3",
     "src/gcloud/auth.ts": "5152632ae306ae405a21757f4d932e939346961c0265b7f0cdfb8c243d599b69",
     "src/gcloud/config.ts": "d326be0ca8c4086e883a7e7eb1ad488f2e94379ec94f3c6a9ba75f55bcdba03b",
     "src/gcloud/run.ts": "a1c9d59c3c08369ad014eab8643883fd82d92d890141a0be5c6762a29bebf150",
+    "src/gem.ts": "0662f06f38693479ec9a57b3ee2ee65b00b5f85e70d2568e720dbba5434c2728",
     "src/gh.ts": "dd74040c9340749174857d07525a18d5d716797b63bfb7f061f307956fae5e85",
     "src/git.ts": "e0977582189a410bcc3ace58554cdb5cb4561e1f40566daa94acb72de1fef009",
     "src/go.ts": "18f11ed7b5a40136750c29b28c2d3ab9a5752b1d8f3b4b0ba5044b6a2ab88028",
     "src/gpg.ts": "f4ee78ca09db8274cc7ea2b1370a754aadad64a576d868410a1a6f93622970b2",
+    "src/gradle.ts": "db3b72f8664d3081e8b823f0072df96646a1a9be85a6740b7361fda36abfbcbc",
     "src/grep.ts": "51c7bd1ae31bf2e872a9f66b0edef9c6cb4bc34af822c18597e59914080c1dab",
     "src/head.ts": "0c834927ef66ca9eabd6fc7045d8af3c2e001178142e7455473091d2d1ab3775",
     "src/helm.ts": "480e52cbc8ad87e546a7b7409e0763bf9fba4b3ac7d83e444cc639c7c1828903",
+    "src/java.ts": "b72111939bdf71ccc0cc663228989c2a81c3cb45b3a368ab1346d5fa77583648",
     "src/jq.ts": "ddd7a961cd792ff3bf1868e320370edc920cd6372207899fe9f8cf97fde67402",
+    "src/k9s.ts": "a8f71c7188ee6736b64e2aa7a5f37a249227e9bce33df83b6aa093c2b475c501",
     "src/kubectl.ts": "ba4c4efdf8725b6e5857f7d4b6b865f1e5904c1ae0089d5e9831e3fce643343b",
+    "src/launchctl.ts": "f692df4ca047823a3ec87fdf2fc6e967b40ea4eaf5d1b1fdd6053830ce4fdd16",
     "src/ln.ts": "2a78ff3707d79545937ff65a8612b565d93c6b5e83400b95afffce3064b2a91c",
     "src/ls.ts": "1d82b0dc3bfbe876acfb3f5f4fdb57c177e81f08ae4b364a7f41aaa0d4e8f395",
+    "src/minikube.ts": "ad854efe9cfd7d36dfb4b59d000c7035a2f95a0508c8cd630b68dfd15f0ea538",
     "src/mkdir.ts": "70342466f6e474859a528c153f128b5520091e8b04a018319f9a0178cd837454",
     "src/mv.ts": "c31bd1f5199c2c6d8090bcbad06a6ab7a3aa154f5b99de2fe95cc1195539772b",
+    "src/mvn.ts": "33bf5f5933e800392098e284f438f6b3b15c5ecb0ce2a9557feb2df9c003ce40",
     "src/next.ts": "a40a0606a50d32b1b79b38b8f1154040c45a679ce263931fc69720a79f681255",
     "src/node.ts": "ab61ad7288f2b76588de0701a3765144e87283b2d9f416cc9df632d82300037f",
     "src/npm.ts": "ac1aaae606b66a925725c0302ed883c21eb7bbb75e8ac97dbcb60e235f44b6b7",
@@ -54,6 +66,7 @@
     "src/nvim.ts": "beebb914c00093df7af2bb25e6201136a6b3c8e7cd2523ba82faa0fabe404d6e",
     "src/pip.ts": "ce0a2ffbdd7c917b5b08172f2a32a816d35f54477dbc3c16c19d84ffee7f3a69",
     "src/pip3.ts": "0dd141ac7c21245e6a6616578bac2d08ea52828f166ef2c35e8b18b34eaf9a8a",
+    "src/pipenv.ts": "bd14b6de3a512c8f417b7a58acc1d23cb3634858da43c5a25435b5ba363a3f96",
     "src/pnpm.ts": "6928e48394fb1b16fe4b4155f22080f1b5cf711574addfd592e7c1624ddbfd57",
     "src/poetry.ts": "ba6eda26065fbf2d6e9af76a99f33578d96f266f9a57efb358b8c6ce3025f894",
     "src/prettier.ts": "2675bf7f252dc636e6ca78bb090a346282069d345901b83e9bc4f08a51153ec4",
@@ -62,17 +75,22 @@
     "src/psql.ts": "1ed89a0d1df02f8e689aeea4e0ed583355187b7dfd2ac748ae3e760628c81e5a",
     "src/python.ts": "67e6735e880ad1d278b16e46db894ced700790f8d29f3aa23afc17caa6695dd0",
     "src/python3.ts": "9d138898b25002d31b39cc8b5dca9215c42ae4645766c5be179e0a2dda0553a8",
+    "src/rake.ts": "49fbaa1c2eb9105f9920fa5f3f8f995331854c69b5915228bf11139920969e55",
+    "src/rclone.ts": "3f3049f51b4d74806ddf12b6c83745f38aa87847ffe4d6ef6cdd612489e867fa",
     "src/rg.ts": "9819666d4bfda5f5402f35dc67c1609d171e8e0bb00eb0db3b1dbeeabbfe628f",
     "src/rm.ts": "7459369b7a8401a2fb16f4699ac11bc37daf77ba3d25f3304ccbe3c9a9c526c3",
     "src/rsync.ts": "143a28d4032942757c3c5dd8581e484f8fc95bc1bee8ef9cd1641509b936ab26",
+    "src/ruby.ts": "be89c1880607de8f6728f9586381750ca092a0c09347aad1013f78a54e37021d",
     "src/rustup.ts": "d7a8382b66f9e7b64a17437e390e2fe645eb6d8fc9052f677754c16005ee809d",
     "src/scp.ts": "b0962a36e58998874ae1df30f9e9febf0d8eabe0c716fc62baa05fd5b21727b1",
     "src/sed.ts": "1edf0b4377181a02cf6f045aeca62cbb881c4536e6965761cc1063ba30c8d67f",
+    "src/serverless.ts": "e8ff9689fb71158151dc53cde23feffbb0898508c120efd12ed14929ef7f20f3",
     "src/sort.ts": "939e44c0ba8f0c98d771d05759463168d17a0a51cb04d64ab86f43bf5f60a08a",
     "src/sqlite3.ts": "94aa5afc84e27be1d716229581064f7c62bdae58cb6d463bb0821c2cb9484222",
     "src/ssh-keygen.ts": "7bb0bfa5411f4faf7f903d1b90c8bff65cf95c3a4c2535d76c8cde0499a37c73",
     "src/ssh.ts": "3030565bd2d2ee59ae3cae066a17813c13579739d79d616b8e4fbc89b3d23b78",
     "src/supabase.ts": "6c55646f914b5eb4861050dd5747c81f6dd2fe5310292fbcf23dad587f140259",
+    "src/swift.ts": "985ed34ad05314e10e8b364b067acc852460e3b37a797ccae9db948bd394a447",
     "src/systemctl.ts": "779ac239fb9200e70c9fca91a69af42c3803b9b967c2982e1f33e60c4bc2b8a9",
     "src/tail.ts": "41faee49dfc0f2bc532ef64aad0d9ac5c733587a611ceda64df3d580fba635c6",
     "src/tar.ts": "5d076d441e633e9c2599ff15c53befea64276886effde7c1bbe60c80907df15f",
@@ -11158,6 +11176,2397 @@
         }
       ],
       "enhancements": []
+    },
+    {
+      "command": "pipenv",
+      "source": "src/pipenv.ts",
+      "subcommands": 12,
+      "options": 21,
+      "omitted": [
+        {
+          "at": "pipenv/install/options/9/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "pipenv/install/options/9/args/0",
+          "feature": "generators"
+        }
+      ],
+      "enhancements": []
+    },
+    {
+      "command": "gradle",
+      "source": "src/gradle.ts",
+      "subcommands": 14,
+      "options": 63,
+      "omitted": [
+        {
+          "at": "gradle/options/0",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gradle/options/7",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/options/8",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/options/9",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/options/10",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/options/12",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/options/13",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/options/17",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/options/18",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/options/19",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/options/20",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/build/options/0",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gradle/build/options/7",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/build/options/8",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/build/options/9",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/build/options/10",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/build/options/12",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/build/options/13",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/build/options/17",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/build/options/18",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/build/options/19",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/build/options/20",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/run/options/0",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gradle/run/options/7",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/run/options/8",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/run/options/9",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/run/options/10",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/run/options/12",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/run/options/13",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/run/options/17",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/run/options/18",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/run/options/19",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/run/options/20",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/check/options/0",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gradle/check/options/7",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/check/options/8",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/check/options/9",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/check/options/10",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/check/options/12",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/check/options/13",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/check/options/17",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/check/options/18",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/check/options/19",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/check/options/20",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/clean/options/0",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gradle/clean/options/7",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/clean/options/8",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/clean/options/9",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/clean/options/10",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/clean/options/12",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/clean/options/13",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/clean/options/17",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/clean/options/18",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/clean/options/19",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/clean/options/20",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/projects/options/0",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gradle/projects/options/7",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/projects/options/8",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/projects/options/9",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/projects/options/10",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/projects/options/12",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/projects/options/13",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/projects/options/17",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/projects/options/18",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/projects/options/19",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/projects/options/20",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/tasks/options/2",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gradle/tasks/options/9",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/tasks/options/10",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/tasks/options/11",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/tasks/options/12",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/tasks/options/14",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/tasks/options/15",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/tasks/options/19",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/tasks/options/20",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/tasks/options/21",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/tasks/options/22",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/help/options/1",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gradle/help/options/8",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/help/options/9",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/help/options/10",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/help/options/11",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/help/options/13",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/help/options/14",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/help/options/18",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/help/options/19",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/help/options/20",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/help/options/21",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/dependencies/options/0",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gradle/dependencies/options/7",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/dependencies/options/8",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/dependencies/options/9",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/dependencies/options/10",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/dependencies/options/12",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/dependencies/options/13",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/dependencies/options/17",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/dependencies/options/18",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/dependencies/options/19",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/dependencies/options/20",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/buildEnvironment/options/0",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gradle/buildEnvironment/options/7",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/buildEnvironment/options/8",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/buildEnvironment/options/9",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/buildEnvironment/options/10",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/buildEnvironment/options/12",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/buildEnvironment/options/13",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/buildEnvironment/options/17",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/buildEnvironment/options/18",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/buildEnvironment/options/19",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/buildEnvironment/options/20",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/dependencyInsight/options/0",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gradle/dependencyInsight/options/7",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/dependencyInsight/options/8",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/dependencyInsight/options/9",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/dependencyInsight/options/10",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/dependencyInsight/options/12",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/dependencyInsight/options/13",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/dependencyInsight/options/17",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/dependencyInsight/options/18",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/dependencyInsight/options/19",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/dependencyInsight/options/20",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/properties/options/0",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gradle/properties/options/7",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/properties/options/8",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/properties/options/9",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/properties/options/10",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/properties/options/12",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/properties/options/13",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/properties/options/17",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/properties/options/18",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/properties/options/19",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/properties/options/20",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gradle",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gradle/init/options/1",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gradle/init/options/8",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/init/options/9",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/init/options/10",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/init/options/11",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/init/options/13",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/init/options/14",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/init/options/18",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/init/options/19",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/init/options/20",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/init/options/21",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/wrapper/options/4",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gradle/wrapper/options/11",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/wrapper/options/12",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/wrapper/options/13",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/wrapper/options/14",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/wrapper/options/16",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/wrapper/options/17",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/wrapper/options/21",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/wrapper/options/22",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/wrapper/options/23",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/wrapper/options/24",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/test/options/3",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "gradle/test/options/10",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/test/options/11",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/test/options/12",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/test/options/13",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/test/options/15",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/test/options/16",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/test/options/20",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/test/options/21",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/test/options/22",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gradle/test/options/23",
+          "feature": "exclusiveOn"
+        }
+      ],
+      "enhancements": []
+    },
+    {
+      "command": "mvn",
+      "source": "src/mvn.ts",
+      "subcommands": 0,
+      "options": 77,
+      "omitted": [],
+      "enhancements": []
+    },
+    {
+      "command": "dotnet",
+      "source": "src/dotnet.ts",
+      "subcommands": 19,
+      "options": 16,
+      "omitted": [
+        {
+          "at": "dotnet",
+          "feature": "generateSpec"
+        },
+        {
+          "at": "dotnet/options/4",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "dotnet/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "dotnet/new",
+          "feature": "loadSpec"
+        },
+        {
+          "at": "dotnet/add",
+          "feature": "loadSpec"
+        },
+        {
+          "at": "dotnet/list",
+          "feature": "loadSpec"
+        },
+        {
+          "at": "dotnet/remove",
+          "feature": "loadSpec"
+        },
+        {
+          "at": "dotnet/build",
+          "feature": "loadSpec"
+        },
+        {
+          "at": "dotnet/build-server",
+          "feature": "loadSpec"
+        },
+        {
+          "at": "dotnet/clean",
+          "feature": "loadSpec"
+        },
+        {
+          "at": "dotnet/format",
+          "feature": "loadSpec"
+        },
+        {
+          "at": "dotnet/migrate",
+          "feature": "loadSpec"
+        },
+        {
+          "at": "dotnet/msbuild",
+          "feature": "loadSpec"
+        },
+        {
+          "at": "dotnet/nuget",
+          "feature": "loadSpec"
+        },
+        {
+          "at": "dotnet/pack",
+          "feature": "loadSpec"
+        },
+        {
+          "at": "dotnet/publish",
+          "feature": "loadSpec"
+        },
+        {
+          "at": "dotnet/restore",
+          "feature": "loadSpec"
+        },
+        {
+          "at": "dotnet/run",
+          "feature": "loadSpec"
+        },
+        {
+          "at": "dotnet/sln",
+          "feature": "loadSpec"
+        },
+        {
+          "at": "dotnet/store",
+          "feature": "loadSpec"
+        },
+        {
+          "at": "dotnet/test",
+          "feature": "loadSpec"
+        },
+        {
+          "at": "dotnet/tool",
+          "feature": "loadSpec"
+        }
+      ],
+      "enhancements": []
+    },
+    {
+      "command": "bundle",
+      "source": "src/bundle.ts",
+      "subcommands": 20,
+      "options": 5,
+      "omitted": [
+        {
+          "at": "bundle/update/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "bundle/show/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "bundle/open/args/0",
+          "feature": "generators"
+        }
+      ],
+      "enhancements": []
+    },
+    {
+      "command": "gem",
+      "source": "src/gem.ts",
+      "subcommands": 35,
+      "options": 14,
+      "omitted": [
+        {
+          "at": "gem/options/1",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/options/2",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/install/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "gem/i/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "gem/check/options/0",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/check/options/1",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/check/options/2",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/check/options/3",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/check/options/4",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/check/options/5",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/check/options/6",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/check/options/7",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/check/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "gem/cleanup/options/1",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/cleanup/options/2",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/cleanup/options/3",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/cleanup/options/4",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/cleanup/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "gem/contents/options/3",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/contents/options/4",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/contents/options/5",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/contents/options/6",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/contents/options/7",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/contents/options/8",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/contents/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "gem/dependency/options/2",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/dependency/options/3",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/dependency/options/4",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/dependency/options/5",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/dependency/options/7",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/dependency/options/8",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/dependency/options/9",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/dependency/options/13",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/dependency/options/14",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/fetch/options/2",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/fetch/options/3",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/fetch/options/4",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/fetch/options/5",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/fetch/options/9",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/fetch/options/10",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/fetch/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "gem/generate_index/options/0",
+          "feature": "requiresSeparator"
+        },
+        {
+          "at": "gem/generate_index/options/1",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/generate_index/options/2",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/info/options/0",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/info/options/3",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/info/options/4",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/info/options/5",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/info/options/6",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/info/options/8",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/info/options/9",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/info/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "gem/lock/options/0",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/lock/options/1",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/open/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "gem/pristine/options/1",
+          "feature": "dependsOn"
+        },
+        {
+          "at": "gem/pristine/options/1",
+          "feature": "requiresSeparator"
+        },
+        {
+          "at": "gem/pristine/options/1/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "gem/pristine/options/2",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/pristine/options/3",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/pristine/options/6",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/pristine/options/7",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/pristine/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "gem/query/options/1",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/query/options/2",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/query/options/3",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/query/options/6",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/query/options/7",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/query/options/8",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/query/options/9",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/query/options/11",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/query/options/12",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/query/options/13",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/query/options/14",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/query/options/15",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/query/options/19",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/query/options/20",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/rdoc/options/1",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/rdoc/options/2",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/rdoc/options/3",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/rdoc/options/4",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/rdoc/options/5",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/rdoc/options/6",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/rdoc/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "gem/search/options/0",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/search/options/1",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/search/options/2",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/search/options/5",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/search/options/6",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/search/options/7",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/search/options/8",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/search/options/10",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/search/options/11",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/search/options/12",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/search/options/13",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/search/options/14",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/search/options/18",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/search/options/19",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/sources/options/5",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/sources/options/6",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/sources/options/7",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/sources/options/8",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/specification/options/2",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/specification/options/3",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/specification/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "gem/unpack/options/0",
+          "feature": "requiresSeparator"
+        },
+        {
+          "at": "gem/unpack/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "gem/yank/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "gem/uninstall/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "gem/list/options/0",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/list/options/1",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/list/options/2",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/list/options/3",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/list/options/6",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/list/options/7",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/list/options/8",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/list/options/9",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/list/options/11",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/list/options/12",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/list/options/13",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/list/options/14",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/list/options/15",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/list/options/19",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/list/options/20",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/push/options/3",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/push/options/4",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "gem/owner/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "gem/update/options/26",
+          "feature": "exclusiveOn"
+        }
+      ],
+      "enhancements": []
+    },
+    {
+      "command": "rake",
+      "source": "src/rake.ts",
+      "subcommands": 0,
+      "options": 25,
+      "omitted": [
+        {
+          "at": "rake/options/2",
+          "feature": "requiresSeparator"
+        },
+        {
+          "at": "rake/options/5",
+          "feature": "requiresSeparator"
+        },
+        {
+          "at": "rake/options/6",
+          "feature": "requiresSeparator"
+        },
+        {
+          "at": "rake/args/0",
+          "feature": "generators"
+        }
+      ],
+      "enhancements": []
+    },
+    {
+      "command": "flutter",
+      "source": "src/flutter.ts",
+      "subcommands": 24,
+      "options": 7,
+      "omitted": [
+        {
+          "at": "flutter/options/2",
+          "feature": "insertValue"
+        },
+        {
+          "at": "flutter/options/2/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "flutter/options/2/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "flutter/analyze/options/2",
+          "feature": "insertValue"
+        },
+        {
+          "at": "flutter/analyze/options/2/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "flutter/analyze/options/2/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "flutter/assemble/options/2",
+          "feature": "insertValue"
+        },
+        {
+          "at": "flutter/assemble/options/2/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "flutter/assemble/options/2/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "flutter/assemble/options/4",
+          "feature": "insertValue"
+        },
+        {
+          "at": "flutter/assemble/options/6",
+          "feature": "insertValue"
+        },
+        {
+          "at": "flutter/assemble/options/10",
+          "feature": "insertValue"
+        },
+        {
+          "at": "flutter/attach/options/2",
+          "feature": "insertValue"
+        },
+        {
+          "at": "flutter/attach/options/2/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "flutter/attach/options/2/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "flutter/attach/options/6",
+          "feature": "insertValue"
+        },
+        {
+          "at": "flutter/bash-completion/options/2",
+          "feature": "insertValue"
+        },
+        {
+          "at": "flutter/bash-completion/options/2/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "flutter/bash-completion/options/2/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "flutter/build/options/2",
+          "feature": "insertValue"
+        },
+        {
+          "at": "flutter/build/options/2/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "flutter/build/options/2/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "flutter/build/options/4",
+          "feature": "insertValue"
+        },
+        {
+          "at": "flutter/build/options/4/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "flutter/build/options/4/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "flutter/channel/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "flutter/clean/options/2",
+          "feature": "insertValue"
+        },
+        {
+          "at": "flutter/clean/options/2/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "flutter/clean/options/2/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "flutter/config/options/2",
+          "feature": "insertValue"
+        },
+        {
+          "at": "flutter/config/options/2/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "flutter/config/options/2/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "flutter/create/options/2",
+          "feature": "insertValue"
+        },
+        {
+          "at": "flutter/create/options/2/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "flutter/create/options/2/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "flutter/create/options/15",
+          "feature": "insertValue"
+        },
+        {
+          "at": "flutter/create/options/15/args/0",
+          "feature": "suggestion-insertValue"
+        },
+        {
+          "at": "flutter/create/options/15/args/0",
+          "feature": "suggestion-insertValue"
+        },
+        {
+          "at": "flutter/create/options/16",
+          "feature": "insertValue"
+        },
+        {
+          "at": "flutter/create/options/16/args/0",
+          "feature": "suggestion-insertValue"
+        },
+        {
+          "at": "flutter/create/options/16/args/0",
+          "feature": "suggestion-insertValue"
+        },
+        {
+          "at": "flutter/create/options/18",
+          "feature": "insertValue"
+        },
+        {
+          "at": "flutter/create/options/18/args/0",
+          "feature": "suggestion-insertValue"
+        },
+        {
+          "at": "flutter/create/options/18/args/0",
+          "feature": "suggestion-insertValue"
+        },
+        {
+          "at": "flutter/create/options/19",
+          "feature": "insertValue"
+        },
+        {
+          "at": "flutter/devices/options/2",
+          "feature": "insertValue"
+        },
+        {
+          "at": "flutter/devices/options/2/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "flutter/devices/options/2/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "flutter/doctor/options/2",
+          "feature": "insertValue"
+        },
+        {
+          "at": "flutter/doctor/options/2/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "flutter/doctor/options/2/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "flutter/downgrade/options/2",
+          "feature": "insertValue"
+        },
+        {
+          "at": "flutter/downgrade/options/2/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "flutter/downgrade/options/2/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "flutter/drive/options/2",
+          "feature": "insertValue"
+        },
+        {
+          "at": "flutter/drive/options/2/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "flutter/drive/options/2/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "flutter/drive/options/21",
+          "feature": "insertValue"
+        },
+        {
+          "at": "flutter/drive/options/22",
+          "feature": "insertValue"
+        },
+        {
+          "at": "flutter/emulators/options/2",
+          "feature": "insertValue"
+        },
+        {
+          "at": "flutter/emulators/options/2/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "flutter/emulators/options/2/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "flutter/emulators/options/4",
+          "feature": "insertValue"
+        },
+        {
+          "at": "flutter/emulators/options/4/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "flutter/format/options/2",
+          "feature": "insertValue"
+        },
+        {
+          "at": "flutter/format/options/2/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "flutter/format/options/2/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "flutter/gen-l10n/options/2",
+          "feature": "insertValue"
+        },
+        {
+          "at": "flutter/gen-l10n/options/2/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "flutter/gen-l10n/options/2/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "flutter/install/options/2",
+          "feature": "insertValue"
+        },
+        {
+          "at": "flutter/install/options/2/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "flutter/install/options/2/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "flutter/logs/options/2",
+          "feature": "insertValue"
+        },
+        {
+          "at": "flutter/logs/options/2/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "flutter/logs/options/2/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "flutter/logs/options/4",
+          "feature": "insertValue"
+        },
+        {
+          "at": "flutter/pub/options/2",
+          "feature": "insertValue"
+        },
+        {
+          "at": "flutter/pub/options/2/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "flutter/pub/options/2/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "flutter/pub/options/4",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "flutter/pub/options/5",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "flutter/pub/options/6",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "flutter/pub/options/7",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "flutter/pub/options/8",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "flutter/pub/options/9",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "flutter/pub/options/10",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "flutter/pub/options/11",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "flutter/pub/options/12",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "flutter/pub/options/13",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "flutter/pub/options/14",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "flutter/pub/options/15",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "flutter/pub/options/16",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "flutter/pub/options/17",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "flutter/pub/options/18",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "flutter/pub/options/19",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "flutter/pub/options/20",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "flutter/run/options/2",
+          "feature": "insertValue"
+        },
+        {
+          "at": "flutter/run/options/2/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "flutter/run/options/2/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "flutter/run/options/21",
+          "feature": "insertValue"
+        },
+        {
+          "at": "flutter/run/options/22",
+          "feature": "insertValue"
+        },
+        {
+          "at": "flutter/screenshot/options/2",
+          "feature": "insertValue"
+        },
+        {
+          "at": "flutter/screenshot/options/2/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "flutter/screenshot/options/2/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "flutter/screenshot/options/4",
+          "feature": "insertValue"
+        },
+        {
+          "at": "flutter/screenshot/options/6/args/0",
+          "feature": "suggestion-insertValue"
+        },
+        {
+          "at": "flutter/symbolize/options/2",
+          "feature": "insertValue"
+        },
+        {
+          "at": "flutter/symbolize/options/2/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "flutter/symbolize/options/2/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "flutter/symbolize/options/4",
+          "feature": "insertValue"
+        },
+        {
+          "at": "flutter/symbolize/options/5",
+          "feature": "insertValue"
+        },
+        {
+          "at": "flutter/symbolize/options/6",
+          "feature": "insertValue"
+        },
+        {
+          "at": "flutter/test/options/2",
+          "feature": "insertValue"
+        },
+        {
+          "at": "flutter/test/options/2/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "flutter/test/options/2/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "flutter/test/options/14",
+          "feature": "insertValue"
+        },
+        {
+          "at": "flutter/test/options/15",
+          "feature": "insertValue"
+        },
+        {
+          "at": "flutter/test/options/21",
+          "feature": "insertValue"
+        },
+        {
+          "at": "flutter/test/options/25",
+          "feature": "insertValue"
+        },
+        {
+          "at": "flutter/test/options/25/args/0",
+          "feature": "suggestion-insertValue"
+        },
+        {
+          "at": "flutter/test/options/25/args/0",
+          "feature": "suggestion-insertValue"
+        },
+        {
+          "at": "flutter/upgrade/options/2",
+          "feature": "insertValue"
+        },
+        {
+          "at": "flutter/upgrade/options/2/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "flutter/upgrade/options/2/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "flutter/upgrade/options/4",
+          "feature": "insertValue"
+        }
+      ],
+      "enhancements": []
+    },
+    {
+      "command": "minikube",
+      "source": "src/minikube.ts",
+      "subcommands": 28,
+      "options": 0,
+      "omitted": [],
+      "enhancements": []
+    },
+    {
+      "command": "rclone",
+      "source": "src/rclone.ts",
+      "subcommands": 49,
+      "options": 3,
+      "omitted": [
+        {
+          "at": "rclone/about/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "rclone/cat/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "rclone/check/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "rclone/check/args/1",
+          "feature": "generators"
+        },
+        {
+          "at": "rclone/cleanup/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "rclone/copy/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "rclone/copy/args/1",
+          "feature": "generators"
+        },
+        {
+          "at": "rclone/copyto/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "rclone/copyto/args/1",
+          "feature": "generators"
+        },
+        {
+          "at": "rclone/copyurl/args/1",
+          "feature": "generators"
+        },
+        {
+          "at": "rclone/cryptcheck/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "rclone/cryptcheck/args/1",
+          "feature": "generators"
+        },
+        {
+          "at": "rclone/cryptdecode/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "rclone/dedupe/options/1/args/0",
+          "feature": "dynamic-suggestions"
+        },
+        {
+          "at": "rclone/dedupe/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "rclone/delete/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "rclone/deletefile/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "rclone/genautocomplete",
+          "feature": "dynamic-subcommands"
+        },
+        {
+          "at": "rclone/hashsum/args/1",
+          "feature": "generators"
+        },
+        {
+          "at": "rclone/link/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "rclone/ls/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "rclone/lsd/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "rclone/lsf/options/6/args/0",
+          "feature": "dynamic-suggestions"
+        },
+        {
+          "at": "rclone/lsf/options/6/args/0",
+          "feature": "dynamic-suggestions"
+        },
+        {
+          "at": "rclone/lsf/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "rclone/lsjson/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "rclone/lsl/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "rclone/md5sum/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "rclone/mkdir/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "rclone/mount/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "rclone/sync/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "rclone/sync/args/1",
+          "feature": "generators"
+        }
+      ],
+      "enhancements": []
+    },
+    {
+      "command": "ffmpeg",
+      "source": "src/ffmpeg.ts",
+      "subcommands": 0,
+      "options": 181,
+      "omitted": [
+        {
+          "at": "ffmpeg",
+          "feature": "parserDirectives"
+        },
+        {
+          "at": "ffmpeg/options/3",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "ffmpeg/options/23/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "ffmpeg/options/24/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "ffmpeg/options/74/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "ffmpeg/options/76/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "ffmpeg/options/77/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "ffmpeg/options/131/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "ffmpeg/options/138/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "ffmpeg/options/167/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "ffmpeg/options/177/args/0",
+          "feature": "generators"
+        }
+      ],
+      "enhancements": []
+    },
+    {
+      "command": "launchctl",
+      "source": "src/launchctl.ts",
+      "subcommands": 42,
+      "options": 0,
+      "omitted": [
+        {
+          "at": "launchctl/limit/options/0",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "launchctl/limit/options/1",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "launchctl/limit/options/2",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "launchctl/limit/options/3",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "launchctl/limit/options/4",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "launchctl/limit/options/5",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "launchctl/limit/options/6",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "launchctl/limit/options/7",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "launchctl/limit/options/8",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "launchctl/reboot/options/0",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "launchctl/reboot/options/1",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "launchctl/reboot/options/2",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "launchctl/reboot/options/3",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "launchctl/reboot/options/4",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "launchctl/remove/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "launchctl/list/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "launchctl/start/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "launchctl/stop/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "launchctl/submit/args/1",
+          "feature": "generators"
+        }
+      ],
+      "enhancements": []
+    },
+    {
+      "command": "defaults",
+      "source": "src/defaults.ts",
+      "subcommands": 8,
+      "options": 0,
+      "omitted": [
+        {
+          "at": "defaults/read/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "defaults/read/args/0",
+          "feature": "suggestion-insertValue"
+        },
+        {
+          "at": "defaults/write/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "defaults/write/args/0",
+          "feature": "suggestion-insertValue"
+        },
+        {
+          "at": "defaults/delete/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "defaults/delete/args/0",
+          "feature": "suggestion-insertValue"
+        },
+        {
+          "at": "defaults/rename/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "defaults/rename/args/0",
+          "feature": "suggestion-insertValue"
+        },
+        {
+          "at": "defaults/read-type/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "defaults/read-type/args/0",
+          "feature": "suggestion-insertValue"
+        }
+      ],
+      "enhancements": []
+    },
+    {
+      "command": "swift",
+      "source": "src/swift.ts",
+      "subcommands": 4,
+      "options": 109,
+      "omitted": [
+        {
+          "at": "swift",
+          "feature": "parserDirectives"
+        },
+        {
+          "at": "swift/options/8/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "swift/options/9",
+          "feature": "dependsOn"
+        },
+        {
+          "at": "swift/options/9",
+          "feature": "requiresSeparator"
+        },
+        {
+          "at": "swift/options/11/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "swift/options/32",
+          "feature": "requiresSeparator"
+        },
+        {
+          "at": "swift/options/35/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "swift/options/54/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "swift/options/72",
+          "feature": "requiresSeparator"
+        },
+        {
+          "at": "swift/options/73",
+          "feature": "requiresSeparator"
+        },
+        {
+          "at": "swift/options/74",
+          "feature": "requiresSeparator"
+        },
+        {
+          "at": "swift/options/76",
+          "feature": "requiresSeparator"
+        },
+        {
+          "at": "swift/options/77",
+          "feature": "requiresSeparator"
+        },
+        {
+          "at": "swift/options/81",
+          "feature": "requiresSeparator"
+        },
+        {
+          "at": "swift/options/87",
+          "feature": "requiresSeparator"
+        },
+        {
+          "at": "swift/options/96",
+          "feature": "requiresSeparator"
+        },
+        {
+          "at": "swift/package/options/8",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "swift/package/options/9",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "swift/package/options/13",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "swift/package/options/14",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "swift/package/options/22",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "swift/package/options/23",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "swift/package/options/26",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "swift/package/options/27",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "swift/package/options/29",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "swift/package/options/30",
+          "feature": "exclusiveOn"
+        },
+        {
+          "at": "swift/package/options/31",
+          "feature": "exclusiveOn"
+        }
+      ],
+      "enhancements": []
+    },
+    {
+      "command": "serverless",
+      "source": "src/serverless.ts",
+      "subcommands": 21,
+      "options": 1,
+      "omitted": [
+        {
+          "at": "serverless",
+          "feature": "generateSpec"
+        }
+      ],
+      "enhancements": []
+    },
+    {
+      "command": "k9s",
+      "source": "src/k9s.ts",
+      "subcommands": 3,
+      "options": 29,
+      "omitted": [
+        {
+          "at": "k9s/options/15/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "k9s/options/15/args/0",
+          "feature": "generators"
+        }
+      ],
+      "enhancements": []
+    },
+    {
+      "command": "ruby",
+      "source": "src/ruby.ts",
+      "subcommands": 0,
+      "options": 28,
+      "omitted": [],
+      "enhancements": []
+    },
+    {
+      "command": "java",
+      "source": "src/java.ts",
+      "subcommands": 0,
+      "options": 11,
+      "omitted": [
+        {
+          "at": "java",
+          "feature": "parserDirectives"
+        },
+        {
+          "at": "java/options/0/args/0",
+          "feature": "generators"
+        },
+        {
+          "at": "java/options/2",
+          "feature": "nonliteral-or-unsupported-name"
+        },
+        {
+          "at": "java/args/0",
+          "feature": "generators"
+        }
+      ],
+      "enhancements": []
     }
   ],
   "parserOmissions": [
@@ -11192,13 +13601,38 @@
       "feature": "dynamic-array-spread"
     },
     {
+      "source": "src/dotnet.ts",
+      "line": 111,
+      "feature": "file-extension-filter-not-supported"
+    },
+    {
+      "source": "src/flutter.ts",
+      "line": 21,
+      "feature": "file-extension-filter-not-supported"
+    },
+    {
       "source": "src/gh.ts",
       "line": 2470,
       "feature": "file-extension-filter-not-supported"
     },
     {
+      "source": "src/java.ts",
+      "line": 11,
+      "feature": "file-extension-filter-not-supported"
+    },
+    {
+      "source": "src/java.ts",
+      "line": 20,
+      "feature": "file-extension-filter-not-supported"
+    },
+    {
       "source": "src/node.ts",
       "line": 9,
+      "feature": "file-extension-filter-not-supported"
+    },
+    {
+      "source": "src/pipenv.ts",
+      "line": 211,
       "feature": "file-extension-filter-not-supported"
     },
     {
@@ -11210,6 +13644,21 @@
       "source": "src/python3.ts",
       "line": 26,
       "feature": "file-extension-filter-not-supported"
+    },
+    {
+      "source": "src/rclone.ts",
+      "line": 278,
+      "feature": "dynamic-array-spread"
+    },
+    {
+      "source": "src/rclone.ts",
+      "line": 312,
+      "feature": "dynamic-array-spread"
+    },
+    {
+      "source": "src/rclone.ts",
+      "line": 442,
+      "feature": "dynamic-array-spread"
     },
     {
       "source": "src/sqlite3.ts",

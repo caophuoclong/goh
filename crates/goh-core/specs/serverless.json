@@ -1,0 +1,2315 @@
+{
+  "schemaVersion": 1,
+  "name": "serverless",
+  "description": "Zero-friction serverless development",
+  "options": [
+    {
+      "name": "--help",
+      "description": "Show help",
+      "takesValue": false
+    }
+  ],
+  "subcommands": [
+    {
+      "name": "deploy",
+      "description": "Deploy a Serverless service",
+      "options": [
+        {
+          "name": "--conceal",
+          "description": "Hide secrets from the output (e.g. API Gateway key values)",
+          "takesValue": false
+        },
+        {
+          "name": "--package",
+          "description": "Path of the deployment package",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "package",
+              "template": "folders"
+            }
+          ]
+        },
+        {
+          "name": "-p",
+          "description": "Path of the deployment package",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "package",
+              "template": "folders"
+            }
+          ]
+        },
+        {
+          "name": "--verbose",
+          "description": "Show all stack events during deployment",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "production"
+            }
+          ]
+        },
+        {
+          "name": "-v",
+          "description": "Show all stack events during deployment",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "production"
+            }
+          ]
+        },
+        {
+          "name": "--force",
+          "description": "Forces a deployment to take place",
+          "takesValue": false
+        },
+        {
+          "name": "--function",
+          "description": "Name of the function",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "function"
+            }
+          ]
+        },
+        {
+          "name": "-f",
+          "description": "Name of the function",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "function"
+            }
+          ]
+        },
+        {
+          "name": "--aws-s3-accelerate",
+          "description": "Enables S3 Transfer Acceleration making uploading artifacts much faster",
+          "takesValue": false
+        },
+        {
+          "name": "--region",
+          "description": "Region of the service",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "region",
+              "suggestions": [
+                {
+                  "name": "us-east-2"
+                },
+                {
+                  "name": "us-east-1"
+                },
+                {
+                  "name": "us-west-1"
+                },
+                {
+                  "name": "us-west-2"
+                },
+                {
+                  "name": "af-south-1"
+                },
+                {
+                  "name": "ap-east-1"
+                },
+                {
+                  "name": "ap-south-1"
+                },
+                {
+                  "name": "ap-northeast-3"
+                },
+                {
+                  "name": "ap-northeast-2"
+                },
+                {
+                  "name": "ap-southeast-1"
+                },
+                {
+                  "name": "ap-southeast-2"
+                },
+                {
+                  "name": "ap-northeast-1"
+                },
+                {
+                  "name": "ca-central-1"
+                },
+                {
+                  "name": "cn-north-1"
+                },
+                {
+                  "name": "cn-northwest-1"
+                },
+                {
+                  "name": "eu-central-1"
+                },
+                {
+                  "name": "eu-west-1"
+                },
+                {
+                  "name": "eu-west-2"
+                },
+                {
+                  "name": "eu-south-1"
+                },
+                {
+                  "name": "eu-west-3"
+                },
+                {
+                  "name": "eu-north-1"
+                },
+                {
+                  "name": "me-south-1"
+                },
+                {
+                  "name": "sa-east-1"
+                },
+                {
+                  "name": "us-gov-east-1"
+                },
+                {
+                  "name": "us-gov-west-1"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "-r",
+          "description": "Region of the service",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "region",
+              "suggestions": [
+                {
+                  "name": "us-east-2"
+                },
+                {
+                  "name": "us-east-1"
+                },
+                {
+                  "name": "us-west-1"
+                },
+                {
+                  "name": "us-west-2"
+                },
+                {
+                  "name": "af-south-1"
+                },
+                {
+                  "name": "ap-east-1"
+                },
+                {
+                  "name": "ap-south-1"
+                },
+                {
+                  "name": "ap-northeast-3"
+                },
+                {
+                  "name": "ap-northeast-2"
+                },
+                {
+                  "name": "ap-southeast-1"
+                },
+                {
+                  "name": "ap-southeast-2"
+                },
+                {
+                  "name": "ap-northeast-1"
+                },
+                {
+                  "name": "ca-central-1"
+                },
+                {
+                  "name": "cn-north-1"
+                },
+                {
+                  "name": "cn-northwest-1"
+                },
+                {
+                  "name": "eu-central-1"
+                },
+                {
+                  "name": "eu-west-1"
+                },
+                {
+                  "name": "eu-west-2"
+                },
+                {
+                  "name": "eu-south-1"
+                },
+                {
+                  "name": "eu-west-3"
+                },
+                {
+                  "name": "eu-north-1"
+                },
+                {
+                  "name": "me-south-1"
+                },
+                {
+                  "name": "sa-east-1"
+                },
+                {
+                  "name": "us-gov-east-1"
+                },
+                {
+                  "name": "us-gov-west-1"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--aws-profile",
+          "description": "AWS profile to use with the command",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "profile name"
+            }
+          ]
+        },
+        {
+          "name": "--app",
+          "description": "Dashboard app",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "app"
+            }
+          ]
+        },
+        {
+          "name": "--org",
+          "description": "Dashboard org",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "org"
+            }
+          ]
+        },
+        {
+          "name": "--use-local-credentials",
+          "description": "Rely on locally resolved AWS credentials instead of loading them from Dashboard provider settings (applies only to services integrated with Dashboard)",
+          "takesValue": false
+        },
+        {
+          "name": "--config",
+          "description": "Path to serverless config file",
+          "takesValue": true,
+          "args": [
+            {
+              "name": ".yml file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "-c",
+          "description": "Path to serverless config file",
+          "takesValue": true,
+          "args": [
+            {
+              "name": ".yml file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--stage",
+          "description": "Stage of the service",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "stage"
+            }
+          ]
+        },
+        {
+          "name": "-s",
+          "description": "Stage of the service",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "stage"
+            }
+          ]
+        },
+        {
+          "name": "--help",
+          "description": "Show help",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show help",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Show version info",
+          "takesValue": false
+        }
+      ],
+      "subcommands": [
+        {
+          "name": "function",
+          "options": [
+            {
+              "name": "--app",
+              "description": "Dashboard app",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "app"
+                }
+              ]
+            },
+            {
+              "name": "--aws-profile",
+              "description": "AWS profile to use with the command",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "profile name"
+                }
+              ]
+            },
+            {
+              "name": "--config",
+              "description": "Path to serverless config file",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": ".yml file",
+                  "template": "filepaths"
+                }
+              ]
+            },
+            {
+              "name": "-c",
+              "description": "Path to serverless config file",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": ".yml file",
+                  "template": "filepaths"
+                }
+              ]
+            },
+            {
+              "name": "--function",
+              "description": "Name of the function",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "function"
+                }
+              ]
+            },
+            {
+              "name": "-f",
+              "description": "Name of the function",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "function"
+                }
+              ]
+            },
+            {
+              "name": "--help",
+              "description": "Show help",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Show help",
+              "takesValue": false
+            },
+            {
+              "name": "--org",
+              "description": "Dashboard org",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "org"
+                }
+              ]
+            },
+            {
+              "name": "--region",
+              "description": "Region of the service",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "region",
+                  "suggestions": [
+                    {
+                      "name": "us-east-2"
+                    },
+                    {
+                      "name": "us-east-1"
+                    },
+                    {
+                      "name": "us-west-1"
+                    },
+                    {
+                      "name": "us-west-2"
+                    },
+                    {
+                      "name": "af-south-1"
+                    },
+                    {
+                      "name": "ap-east-1"
+                    },
+                    {
+                      "name": "ap-south-1"
+                    },
+                    {
+                      "name": "ap-northeast-3"
+                    },
+                    {
+                      "name": "ap-northeast-2"
+                    },
+                    {
+                      "name": "ap-southeast-1"
+                    },
+                    {
+                      "name": "ap-southeast-2"
+                    },
+                    {
+                      "name": "ap-northeast-1"
+                    },
+                    {
+                      "name": "ca-central-1"
+                    },
+                    {
+                      "name": "cn-north-1"
+                    },
+                    {
+                      "name": "cn-northwest-1"
+                    },
+                    {
+                      "name": "eu-central-1"
+                    },
+                    {
+                      "name": "eu-west-1"
+                    },
+                    {
+                      "name": "eu-west-2"
+                    },
+                    {
+                      "name": "eu-south-1"
+                    },
+                    {
+                      "name": "eu-west-3"
+                    },
+                    {
+                      "name": "eu-north-1"
+                    },
+                    {
+                      "name": "me-south-1"
+                    },
+                    {
+                      "name": "sa-east-1"
+                    },
+                    {
+                      "name": "us-gov-east-1"
+                    },
+                    {
+                      "name": "us-gov-west-1"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "-r",
+              "description": "Region of the service",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "region",
+                  "suggestions": [
+                    {
+                      "name": "us-east-2"
+                    },
+                    {
+                      "name": "us-east-1"
+                    },
+                    {
+                      "name": "us-west-1"
+                    },
+                    {
+                      "name": "us-west-2"
+                    },
+                    {
+                      "name": "af-south-1"
+                    },
+                    {
+                      "name": "ap-east-1"
+                    },
+                    {
+                      "name": "ap-south-1"
+                    },
+                    {
+                      "name": "ap-northeast-3"
+                    },
+                    {
+                      "name": "ap-northeast-2"
+                    },
+                    {
+                      "name": "ap-southeast-1"
+                    },
+                    {
+                      "name": "ap-southeast-2"
+                    },
+                    {
+                      "name": "ap-northeast-1"
+                    },
+                    {
+                      "name": "ca-central-1"
+                    },
+                    {
+                      "name": "cn-north-1"
+                    },
+                    {
+                      "name": "cn-northwest-1"
+                    },
+                    {
+                      "name": "eu-central-1"
+                    },
+                    {
+                      "name": "eu-west-1"
+                    },
+                    {
+                      "name": "eu-west-2"
+                    },
+                    {
+                      "name": "eu-south-1"
+                    },
+                    {
+                      "name": "eu-west-3"
+                    },
+                    {
+                      "name": "eu-north-1"
+                    },
+                    {
+                      "name": "me-south-1"
+                    },
+                    {
+                      "name": "sa-east-1"
+                    },
+                    {
+                      "name": "us-gov-east-1"
+                    },
+                    {
+                      "name": "us-gov-west-1"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "--stage",
+              "description": "Stage of the service",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "stage"
+                }
+              ]
+            },
+            {
+              "name": "-s",
+              "description": "Stage of the service",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "stage"
+                }
+              ]
+            },
+            {
+              "name": "--use-local-credentials",
+              "description": "Rely on locally resolved AWS credentials instead of loading them from Dashboard provider settings (applies only to services integrated with Dashboard)",
+              "takesValue": false
+            },
+            {
+              "name": "--version",
+              "description": "Show version info",
+              "takesValue": false
+            },
+            {
+              "name": "--force",
+              "description": "Forces a deployment to take place",
+              "takesValue": false
+            },
+            {
+              "name": "--update-config",
+              "description": "Updates function configuration, e.g. Timeout or Memory Size without deploying code",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "config"
+                }
+              ]
+            },
+            {
+              "name": "-u",
+              "description": "Updates function configuration, e.g. Timeout or Memory Size without deploying code",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "config"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "list",
+          "options": [
+            {
+              "name": "--region",
+              "description": "Region of the service",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "region",
+                  "suggestions": [
+                    {
+                      "name": "us-east-2"
+                    },
+                    {
+                      "name": "us-east-1"
+                    },
+                    {
+                      "name": "us-west-1"
+                    },
+                    {
+                      "name": "us-west-2"
+                    },
+                    {
+                      "name": "af-south-1"
+                    },
+                    {
+                      "name": "ap-east-1"
+                    },
+                    {
+                      "name": "ap-south-1"
+                    },
+                    {
+                      "name": "ap-northeast-3"
+                    },
+                    {
+                      "name": "ap-northeast-2"
+                    },
+                    {
+                      "name": "ap-southeast-1"
+                    },
+                    {
+                      "name": "ap-southeast-2"
+                    },
+                    {
+                      "name": "ap-northeast-1"
+                    },
+                    {
+                      "name": "ca-central-1"
+                    },
+                    {
+                      "name": "cn-north-1"
+                    },
+                    {
+                      "name": "cn-northwest-1"
+                    },
+                    {
+                      "name": "eu-central-1"
+                    },
+                    {
+                      "name": "eu-west-1"
+                    },
+                    {
+                      "name": "eu-west-2"
+                    },
+                    {
+                      "name": "eu-south-1"
+                    },
+                    {
+                      "name": "eu-west-3"
+                    },
+                    {
+                      "name": "eu-north-1"
+                    },
+                    {
+                      "name": "me-south-1"
+                    },
+                    {
+                      "name": "sa-east-1"
+                    },
+                    {
+                      "name": "us-gov-east-1"
+                    },
+                    {
+                      "name": "us-gov-west-1"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "-r",
+              "description": "Region of the service",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "region",
+                  "suggestions": [
+                    {
+                      "name": "us-east-2"
+                    },
+                    {
+                      "name": "us-east-1"
+                    },
+                    {
+                      "name": "us-west-1"
+                    },
+                    {
+                      "name": "us-west-2"
+                    },
+                    {
+                      "name": "af-south-1"
+                    },
+                    {
+                      "name": "ap-east-1"
+                    },
+                    {
+                      "name": "ap-south-1"
+                    },
+                    {
+                      "name": "ap-northeast-3"
+                    },
+                    {
+                      "name": "ap-northeast-2"
+                    },
+                    {
+                      "name": "ap-southeast-1"
+                    },
+                    {
+                      "name": "ap-southeast-2"
+                    },
+                    {
+                      "name": "ap-northeast-1"
+                    },
+                    {
+                      "name": "ca-central-1"
+                    },
+                    {
+                      "name": "cn-north-1"
+                    },
+                    {
+                      "name": "cn-northwest-1"
+                    },
+                    {
+                      "name": "eu-central-1"
+                    },
+                    {
+                      "name": "eu-west-1"
+                    },
+                    {
+                      "name": "eu-west-2"
+                    },
+                    {
+                      "name": "eu-south-1"
+                    },
+                    {
+                      "name": "eu-west-3"
+                    },
+                    {
+                      "name": "eu-north-1"
+                    },
+                    {
+                      "name": "me-south-1"
+                    },
+                    {
+                      "name": "sa-east-1"
+                    },
+                    {
+                      "name": "us-gov-east-1"
+                    },
+                    {
+                      "name": "us-gov-west-1"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "--aws-profile",
+              "description": "AWS profile to use with the command",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "profile name"
+                }
+              ]
+            },
+            {
+              "name": "--app",
+              "description": "Dashboard app",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "app"
+                }
+              ]
+            },
+            {
+              "name": "--org",
+              "description": "Dashboard org",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "org"
+                }
+              ]
+            },
+            {
+              "name": "--use-local-credentials",
+              "description": "Rely on locally resolved AWS credentials instead of loading them from Dashboard provider settings (applies only to services integrated with Dashboard)",
+              "takesValue": false
+            },
+            {
+              "name": "--config",
+              "description": "Path to serverless config file",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": ".yml file",
+                  "template": "filepaths"
+                }
+              ]
+            },
+            {
+              "name": "-c",
+              "description": "Path to serverless config file",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": ".yml file",
+                  "template": "filepaths"
+                }
+              ]
+            },
+            {
+              "name": "--stage",
+              "description": "Stage of the service",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "stage"
+                }
+              ]
+            },
+            {
+              "name": "-s",
+              "description": "Stage of the service",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "stage"
+                }
+              ]
+            },
+            {
+              "name": "--help",
+              "description": "Show help",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Show help",
+              "takesValue": false
+            },
+            {
+              "name": "--version",
+              "description": "Show version info",
+              "takesValue": false
+            }
+          ],
+          "subcommands": [
+            {
+              "name": "functions",
+              "options": [
+                {
+                  "name": "--region",
+                  "description": "Region of the service",
+                  "takesValue": true,
+                  "args": [
+                    {
+                      "name": "region",
+                      "suggestions": [
+                        {
+                          "name": "us-east-2"
+                        },
+                        {
+                          "name": "us-east-1"
+                        },
+                        {
+                          "name": "us-west-1"
+                        },
+                        {
+                          "name": "us-west-2"
+                        },
+                        {
+                          "name": "af-south-1"
+                        },
+                        {
+                          "name": "ap-east-1"
+                        },
+                        {
+                          "name": "ap-south-1"
+                        },
+                        {
+                          "name": "ap-northeast-3"
+                        },
+                        {
+                          "name": "ap-northeast-2"
+                        },
+                        {
+                          "name": "ap-southeast-1"
+                        },
+                        {
+                          "name": "ap-southeast-2"
+                        },
+                        {
+                          "name": "ap-northeast-1"
+                        },
+                        {
+                          "name": "ca-central-1"
+                        },
+                        {
+                          "name": "cn-north-1"
+                        },
+                        {
+                          "name": "cn-northwest-1"
+                        },
+                        {
+                          "name": "eu-central-1"
+                        },
+                        {
+                          "name": "eu-west-1"
+                        },
+                        {
+                          "name": "eu-west-2"
+                        },
+                        {
+                          "name": "eu-south-1"
+                        },
+                        {
+                          "name": "eu-west-3"
+                        },
+                        {
+                          "name": "eu-north-1"
+                        },
+                        {
+                          "name": "me-south-1"
+                        },
+                        {
+                          "name": "sa-east-1"
+                        },
+                        {
+                          "name": "us-gov-east-1"
+                        },
+                        {
+                          "name": "us-gov-west-1"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "-r",
+                  "description": "Region of the service",
+                  "takesValue": true,
+                  "args": [
+                    {
+                      "name": "region",
+                      "suggestions": [
+                        {
+                          "name": "us-east-2"
+                        },
+                        {
+                          "name": "us-east-1"
+                        },
+                        {
+                          "name": "us-west-1"
+                        },
+                        {
+                          "name": "us-west-2"
+                        },
+                        {
+                          "name": "af-south-1"
+                        },
+                        {
+                          "name": "ap-east-1"
+                        },
+                        {
+                          "name": "ap-south-1"
+                        },
+                        {
+                          "name": "ap-northeast-3"
+                        },
+                        {
+                          "name": "ap-northeast-2"
+                        },
+                        {
+                          "name": "ap-southeast-1"
+                        },
+                        {
+                          "name": "ap-southeast-2"
+                        },
+                        {
+                          "name": "ap-northeast-1"
+                        },
+                        {
+                          "name": "ca-central-1"
+                        },
+                        {
+                          "name": "cn-north-1"
+                        },
+                        {
+                          "name": "cn-northwest-1"
+                        },
+                        {
+                          "name": "eu-central-1"
+                        },
+                        {
+                          "name": "eu-west-1"
+                        },
+                        {
+                          "name": "eu-west-2"
+                        },
+                        {
+                          "name": "eu-south-1"
+                        },
+                        {
+                          "name": "eu-west-3"
+                        },
+                        {
+                          "name": "eu-north-1"
+                        },
+                        {
+                          "name": "me-south-1"
+                        },
+                        {
+                          "name": "sa-east-1"
+                        },
+                        {
+                          "name": "us-gov-east-1"
+                        },
+                        {
+                          "name": "us-gov-west-1"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "--aws-profile",
+                  "description": "AWS profile to use with the command",
+                  "takesValue": true,
+                  "args": [
+                    {
+                      "name": "profile name"
+                    }
+                  ]
+                },
+                {
+                  "name": "--app",
+                  "description": "Dashboard app",
+                  "takesValue": true,
+                  "args": [
+                    {
+                      "name": "app"
+                    }
+                  ]
+                },
+                {
+                  "name": "--org",
+                  "description": "Dashboard org",
+                  "takesValue": true,
+                  "args": [
+                    {
+                      "name": "org"
+                    }
+                  ]
+                },
+                {
+                  "name": "--use-local-credentials",
+                  "description": "Rely on locally resolved AWS credentials instead of loading them from Dashboard provider settings (applies only to services integrated with Dashboard)",
+                  "takesValue": false
+                },
+                {
+                  "name": "--config",
+                  "description": "Path to serverless config file",
+                  "takesValue": true,
+                  "args": [
+                    {
+                      "name": ".yml file",
+                      "template": "filepaths"
+                    }
+                  ]
+                },
+                {
+                  "name": "-c",
+                  "description": "Path to serverless config file",
+                  "takesValue": true,
+                  "args": [
+                    {
+                      "name": ".yml file",
+                      "template": "filepaths"
+                    }
+                  ]
+                },
+                {
+                  "name": "--stage",
+                  "description": "Stage of the service",
+                  "takesValue": true,
+                  "args": [
+                    {
+                      "name": "stage"
+                    }
+                  ]
+                },
+                {
+                  "name": "-s",
+                  "description": "Stage of the service",
+                  "takesValue": true,
+                  "args": [
+                    {
+                      "name": "stage"
+                    }
+                  ]
+                },
+                {
+                  "name": "--help",
+                  "description": "Show help",
+                  "takesValue": false
+                },
+                {
+                  "name": "-h",
+                  "description": "Show help",
+                  "takesValue": false
+                },
+                {
+                  "name": "--version",
+                  "description": "Show version info",
+                  "takesValue": false
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "info",
+      "description": "Display information about the service",
+      "options": [
+        {
+          "name": "--conceal",
+          "description": "Hide secrets from the output (e.g. API Gateway key values)",
+          "takesValue": false
+        },
+        {
+          "name": "--region",
+          "description": "Region of the service",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "region",
+              "suggestions": [
+                {
+                  "name": "us-east-2"
+                },
+                {
+                  "name": "us-east-1"
+                },
+                {
+                  "name": "us-west-1"
+                },
+                {
+                  "name": "us-west-2"
+                },
+                {
+                  "name": "af-south-1"
+                },
+                {
+                  "name": "ap-east-1"
+                },
+                {
+                  "name": "ap-south-1"
+                },
+                {
+                  "name": "ap-northeast-3"
+                },
+                {
+                  "name": "ap-northeast-2"
+                },
+                {
+                  "name": "ap-southeast-1"
+                },
+                {
+                  "name": "ap-southeast-2"
+                },
+                {
+                  "name": "ap-northeast-1"
+                },
+                {
+                  "name": "ca-central-1"
+                },
+                {
+                  "name": "cn-north-1"
+                },
+                {
+                  "name": "cn-northwest-1"
+                },
+                {
+                  "name": "eu-central-1"
+                },
+                {
+                  "name": "eu-west-1"
+                },
+                {
+                  "name": "eu-west-2"
+                },
+                {
+                  "name": "eu-south-1"
+                },
+                {
+                  "name": "eu-west-3"
+                },
+                {
+                  "name": "eu-north-1"
+                },
+                {
+                  "name": "me-south-1"
+                },
+                {
+                  "name": "sa-east-1"
+                },
+                {
+                  "name": "us-gov-east-1"
+                },
+                {
+                  "name": "us-gov-west-1"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "-r",
+          "description": "Region of the service",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "region",
+              "suggestions": [
+                {
+                  "name": "us-east-2"
+                },
+                {
+                  "name": "us-east-1"
+                },
+                {
+                  "name": "us-west-1"
+                },
+                {
+                  "name": "us-west-2"
+                },
+                {
+                  "name": "af-south-1"
+                },
+                {
+                  "name": "ap-east-1"
+                },
+                {
+                  "name": "ap-south-1"
+                },
+                {
+                  "name": "ap-northeast-3"
+                },
+                {
+                  "name": "ap-northeast-2"
+                },
+                {
+                  "name": "ap-southeast-1"
+                },
+                {
+                  "name": "ap-southeast-2"
+                },
+                {
+                  "name": "ap-northeast-1"
+                },
+                {
+                  "name": "ca-central-1"
+                },
+                {
+                  "name": "cn-north-1"
+                },
+                {
+                  "name": "cn-northwest-1"
+                },
+                {
+                  "name": "eu-central-1"
+                },
+                {
+                  "name": "eu-west-1"
+                },
+                {
+                  "name": "eu-west-2"
+                },
+                {
+                  "name": "eu-south-1"
+                },
+                {
+                  "name": "eu-west-3"
+                },
+                {
+                  "name": "eu-north-1"
+                },
+                {
+                  "name": "me-south-1"
+                },
+                {
+                  "name": "sa-east-1"
+                },
+                {
+                  "name": "us-gov-east-1"
+                },
+                {
+                  "name": "us-gov-west-1"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--aws-profile",
+          "description": "AWS profile to use with the command",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "profile name"
+            }
+          ]
+        },
+        {
+          "name": "--app",
+          "description": "Dashboard app",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "app"
+            }
+          ]
+        },
+        {
+          "name": "--org",
+          "description": "Dashboard org",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "org"
+            }
+          ]
+        },
+        {
+          "name": "--use-local-credentials",
+          "description": "Rely on locally resolved AWS credentials instead of loading them from Dashboard provider settings (applies only to services integrated with Dashboard)",
+          "takesValue": false
+        },
+        {
+          "name": "--config",
+          "description": "Path to serverless config file",
+          "takesValue": true,
+          "args": [
+            {
+              "name": ".yml file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "-c",
+          "description": "Path to serverless config file",
+          "takesValue": true,
+          "args": [
+            {
+              "name": ".yml file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--stage",
+          "description": "Stage of the service",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "stage"
+            }
+          ]
+        },
+        {
+          "name": "-s",
+          "description": "Stage of the service",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "stage"
+            }
+          ]
+        },
+        {
+          "name": "--help",
+          "description": "Show help",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show help",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Show version info",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "invoke",
+      "description": "Invoke a deployed function",
+      "options": [
+        {
+          "name": "--function",
+          "description": "Name of the function",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "function"
+            }
+          ]
+        },
+        {
+          "name": "-f",
+          "description": "Name of the function",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "function"
+            }
+          ]
+        },
+        {
+          "name": "--path",
+          "description": "Path to JSON or YAML file holding input data",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "path",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "-p",
+          "description": "Path to JSON or YAML file holding input data",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "path",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--data",
+          "description": "Input data",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "input"
+            }
+          ]
+        },
+        {
+          "name": "-d",
+          "description": "Input data",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "input"
+            }
+          ]
+        },
+        {
+          "name": "--raw",
+          "description": "Flag to pass input data as a raw string",
+          "takesValue": false
+        },
+        {
+          "name": "--context",
+          "description": "Context of the service",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "package"
+            }
+          ]
+        },
+        {
+          "name": "--contextPath",
+          "description": "Path to JSON or YAML file holding context data",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "path",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--region",
+          "description": "Region of the service",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "region",
+              "suggestions": [
+                {
+                  "name": "us-east-2"
+                },
+                {
+                  "name": "us-east-1"
+                },
+                {
+                  "name": "us-west-1"
+                },
+                {
+                  "name": "us-west-2"
+                },
+                {
+                  "name": "af-south-1"
+                },
+                {
+                  "name": "ap-east-1"
+                },
+                {
+                  "name": "ap-south-1"
+                },
+                {
+                  "name": "ap-northeast-3"
+                },
+                {
+                  "name": "ap-northeast-2"
+                },
+                {
+                  "name": "ap-southeast-1"
+                },
+                {
+                  "name": "ap-southeast-2"
+                },
+                {
+                  "name": "ap-northeast-1"
+                },
+                {
+                  "name": "ca-central-1"
+                },
+                {
+                  "name": "cn-north-1"
+                },
+                {
+                  "name": "cn-northwest-1"
+                },
+                {
+                  "name": "eu-central-1"
+                },
+                {
+                  "name": "eu-west-1"
+                },
+                {
+                  "name": "eu-west-2"
+                },
+                {
+                  "name": "eu-south-1"
+                },
+                {
+                  "name": "eu-west-3"
+                },
+                {
+                  "name": "eu-north-1"
+                },
+                {
+                  "name": "me-south-1"
+                },
+                {
+                  "name": "sa-east-1"
+                },
+                {
+                  "name": "us-gov-east-1"
+                },
+                {
+                  "name": "us-gov-west-1"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "-r",
+          "description": "Region of the service",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "region",
+              "suggestions": [
+                {
+                  "name": "us-east-2"
+                },
+                {
+                  "name": "us-east-1"
+                },
+                {
+                  "name": "us-west-1"
+                },
+                {
+                  "name": "us-west-2"
+                },
+                {
+                  "name": "af-south-1"
+                },
+                {
+                  "name": "ap-east-1"
+                },
+                {
+                  "name": "ap-south-1"
+                },
+                {
+                  "name": "ap-northeast-3"
+                },
+                {
+                  "name": "ap-northeast-2"
+                },
+                {
+                  "name": "ap-southeast-1"
+                },
+                {
+                  "name": "ap-southeast-2"
+                },
+                {
+                  "name": "ap-northeast-1"
+                },
+                {
+                  "name": "ca-central-1"
+                },
+                {
+                  "name": "cn-north-1"
+                },
+                {
+                  "name": "cn-northwest-1"
+                },
+                {
+                  "name": "eu-central-1"
+                },
+                {
+                  "name": "eu-west-1"
+                },
+                {
+                  "name": "eu-west-2"
+                },
+                {
+                  "name": "eu-south-1"
+                },
+                {
+                  "name": "eu-west-3"
+                },
+                {
+                  "name": "eu-north-1"
+                },
+                {
+                  "name": "me-south-1"
+                },
+                {
+                  "name": "sa-east-1"
+                },
+                {
+                  "name": "us-gov-east-1"
+                },
+                {
+                  "name": "us-gov-west-1"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--aws-profile",
+          "description": "AWS profile to use with the command",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "profile name"
+            }
+          ]
+        },
+        {
+          "name": "--app",
+          "description": "Dashboard app",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "app"
+            }
+          ]
+        },
+        {
+          "name": "--org",
+          "description": "Dashboard org",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "org"
+            }
+          ]
+        },
+        {
+          "name": "--use-local-credentials",
+          "description": "Rely on locally resolved AWS credentials instead of loading them from Dashboard provider settings (applies only to services integrated with Dashboard)",
+          "takesValue": false
+        },
+        {
+          "name": "--config",
+          "description": "Path to serverless config file",
+          "takesValue": true,
+          "args": [
+            {
+              "name": ".yml file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "-c",
+          "description": "Path to serverless config file",
+          "takesValue": true,
+          "args": [
+            {
+              "name": ".yml file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--stage",
+          "description": "Stage of the service",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "stage"
+            }
+          ]
+        },
+        {
+          "name": "-s",
+          "description": "Stage of the service",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "stage"
+            }
+          ]
+        },
+        {
+          "name": "--help",
+          "description": "Show help",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show help",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Show version info",
+          "takesValue": false
+        }
+      ],
+      "subcommands": [
+        {
+          "name": "local",
+          "options": [
+            {
+              "name": "--function",
+              "description": "Name of the function",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "function"
+                }
+              ]
+            },
+            {
+              "name": "-f",
+              "description": "Name of the function",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "function"
+                }
+              ]
+            },
+            {
+              "name": "--path",
+              "description": "Path to JSON or YAML file holding input data",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "path",
+                  "template": "filepaths"
+                }
+              ]
+            },
+            {
+              "name": "-p",
+              "description": "Path to JSON or YAML file holding input data",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "path",
+                  "template": "filepaths"
+                }
+              ]
+            },
+            {
+              "name": "--data",
+              "description": "Input data",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "input"
+                }
+              ]
+            },
+            {
+              "name": "-d",
+              "description": "Input data",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "input"
+                }
+              ]
+            },
+            {
+              "name": "--raw",
+              "description": "Flag to pass input data as a raw string",
+              "takesValue": false
+            },
+            {
+              "name": "--context",
+              "description": "Context of the service",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "package"
+                }
+              ]
+            },
+            {
+              "name": "--contextPath",
+              "description": "Path to JSON or YAML file holding context data",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "path",
+                  "template": "filepaths"
+                }
+              ]
+            },
+            {
+              "name": "--env",
+              "description": "Override environment variables. e.g. --env VAR1=val1 --env VAR2=val2",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "--env VAR1=val1 --env VAR2=val2"
+                }
+              ]
+            },
+            {
+              "name": "-e",
+              "description": "Override environment variables. e.g. --env VAR1=val1 --env VAR2=val2",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "--env VAR1=val1 --env VAR2=val2"
+                }
+              ]
+            },
+            {
+              "name": "--region",
+              "description": "Region of the service",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "region",
+                  "suggestions": [
+                    {
+                      "name": "us-east-2"
+                    },
+                    {
+                      "name": "us-east-1"
+                    },
+                    {
+                      "name": "us-west-1"
+                    },
+                    {
+                      "name": "us-west-2"
+                    },
+                    {
+                      "name": "af-south-1"
+                    },
+                    {
+                      "name": "ap-east-1"
+                    },
+                    {
+                      "name": "ap-south-1"
+                    },
+                    {
+                      "name": "ap-northeast-3"
+                    },
+                    {
+                      "name": "ap-northeast-2"
+                    },
+                    {
+                      "name": "ap-southeast-1"
+                    },
+                    {
+                      "name": "ap-southeast-2"
+                    },
+                    {
+                      "name": "ap-northeast-1"
+                    },
+                    {
+                      "name": "ca-central-1"
+                    },
+                    {
+                      "name": "cn-north-1"
+                    },
+                    {
+                      "name": "cn-northwest-1"
+                    },
+                    {
+                      "name": "eu-central-1"
+                    },
+                    {
+                      "name": "eu-west-1"
+                    },
+                    {
+                      "name": "eu-west-2"
+                    },
+                    {
+                      "name": "eu-south-1"
+                    },
+                    {
+                      "name": "eu-west-3"
+                    },
+                    {
+                      "name": "eu-north-1"
+                    },
+                    {
+                      "name": "me-south-1"
+                    },
+                    {
+                      "name": "sa-east-1"
+                    },
+                    {
+                      "name": "us-gov-east-1"
+                    },
+                    {
+                      "name": "us-gov-west-1"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "-r",
+              "description": "Region of the service",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "region",
+                  "suggestions": [
+                    {
+                      "name": "us-east-2"
+                    },
+                    {
+                      "name": "us-east-1"
+                    },
+                    {
+                      "name": "us-west-1"
+                    },
+                    {
+                      "name": "us-west-2"
+                    },
+                    {
+                      "name": "af-south-1"
+                    },
+                    {
+                      "name": "ap-east-1"
+                    },
+                    {
+                      "name": "ap-south-1"
+                    },
+                    {
+                      "name": "ap-northeast-3"
+                    },
+                    {
+                      "name": "ap-northeast-2"
+                    },
+                    {
+                      "name": "ap-southeast-1"
+                    },
+                    {
+                      "name": "ap-southeast-2"
+                    },
+                    {
+                      "name": "ap-northeast-1"
+                    },
+                    {
+                      "name": "ca-central-1"
+                    },
+                    {
+                      "name": "cn-north-1"
+                    },
+                    {
+                      "name": "cn-northwest-1"
+                    },
+                    {
+                      "name": "eu-central-1"
+                    },
+                    {
+                      "name": "eu-west-1"
+                    },
+                    {
+                      "name": "eu-west-2"
+                    },
+                    {
+                      "name": "eu-south-1"
+                    },
+                    {
+                      "name": "eu-west-3"
+                    },
+                    {
+                      "name": "eu-north-1"
+                    },
+                    {
+                      "name": "me-south-1"
+                    },
+                    {
+                      "name": "sa-east-1"
+                    },
+                    {
+                      "name": "us-gov-east-1"
+                    },
+                    {
+                      "name": "us-gov-west-1"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "--aws-profile",
+              "description": "AWS profile to use with the command",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "profile name"
+                }
+              ]
+            },
+            {
+              "name": "--app",
+              "description": "Dashboard app",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "app"
+                }
+              ]
+            },
+            {
+              "name": "--org",
+              "description": "Dashboard org",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "org"
+                }
+              ]
+            },
+            {
+              "name": "--use-local-credentials",
+              "description": "Rely on locally resolved AWS credentials instead of loading them from Dashboard provider settings (applies only to services integrated with Dashboard)",
+              "takesValue": false
+            },
+            {
+              "name": "--config",
+              "description": "Path to serverless config file",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": ".yml file",
+                  "template": "filepaths"
+                }
+              ]
+            },
+            {
+              "name": "-c",
+              "description": "Path to serverless config file",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": ".yml file",
+                  "template": "filepaths"
+                }
+              ]
+            },
+            {
+              "name": "--stage",
+              "description": "Stage of the service",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "stage"
+                }
+              ]
+            },
+            {
+              "name": "-s",
+              "description": "Stage of the service",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "stage"
+                }
+              ]
+            },
+            {
+              "name": "--help",
+              "description": "Show help",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Show help",
+              "takesValue": false
+            },
+            {
+              "name": "--version",
+              "description": "Show version info",
+              "takesValue": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "logs",
+      "description": "Output the logs of a deployed function"
+    },
+    {
+      "name": "metrics",
+      "description": "Show metrics for a specific function"
+    },
+    {
+      "name": "remove",
+      "description": "Remove Serverless service and all resources"
+    },
+    {
+      "name": "rollback",
+      "description": "Rollback the Serverless service to a specific deployment"
+    },
+    {
+      "name": "studio",
+      "description": "Develop a Serverless application in the cloud"
+    },
+    {
+      "name": "test",
+      "description": "Run HTTP tests"
+    },
+    {
+      "name": "package",
+      "description": "Package a Serverless service"
+    },
+    {
+      "name": "plugin",
+      "description": "Handle plugins"
+    },
+    {
+      "name": "print",
+      "description": "Print your compiled and resolved config file"
+    },
+    {
+      "name": "create",
+      "description": "Create new Serverless service"
+    },
+    {
+      "name": "dashboard",
+      "description": "Open the Serverless dashboard"
+    },
+    {
+      "name": "generate-event",
+      "description": "Generate event"
+    },
+    {
+      "name": "install",
+      "description": "Install a Serverless service from GitHub or a plugin from the Serverless registry"
+    },
+    {
+      "name": "login",
+      "description": "Login or sign up for Serverless"
+    },
+    {
+      "name": "logout",
+      "description": "Logout from Serverless"
+    },
+    {
+      "name": "output",
+      "description": "Get/list value of dashboard deployment profile parameter"
+    },
+    {
+      "name": "param",
+      "description": "Get/list value of dashboard service output"
+    },
+    {
+      "name": "slstats",
+      "description": "Enable or disable stats"
+    }
+  ]
+}

@@ -233,7 +233,8 @@
           "name": "option",
           "description": "Value for option"
         }
-      ]
+      ],
+      "isRepeatable": true
     },
     {
       "name": "-P",
@@ -345,7 +346,8 @@
     {
       "name": "-v",
       "description": "Verbose mode",
-      "takesValue": false
+      "takesValue": false,
+      "isRepeatable": true
     },
     {
       "name": "-w",
