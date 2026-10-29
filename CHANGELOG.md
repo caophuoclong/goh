@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.6.0](https://github.com/caophuoclong/goh/compare/v1.5.0...v1.6.0) (2026-10-29)
+
+
+### Features
+
+* **config:** popup.ownPermission turns on goh-popup's own permission ([3ea080e](https://github.com/caophuoclong/goh/commit/3ea080e68971e93ac6aaaa34d10252905bb4bbeb))
+* history ghost text from the zsh history, smarter history lines, and goh-popup's own permission ([a378b9a](https://github.com/caophuoclong/goh/commit/a378b9adab113bd7aa602036edd3bd879de02732))
+* **history:** do not offer again a line that did its job once ([e4b7399](https://github.com/caophuoclong/goh/commit/e4b73991b4f717293029cfeaef2ac5f27279943a))
+* **history:** read the zsh history and show its best line as ghost text ([df56c3c](https://github.com/caophuoclong/goh/commit/df56c3c56314fdc5cd540b0adaf82a51171cd988))
+* **popup:** opt-in Accessibility permission for goh-popup itself ([32db3f6](https://github.com/caophuoclong/goh/commit/32db3f6e327c75feb79e23d4fe402c7fc929279f))
+
+
+### Bug fixes
+
+* **zsh:** run other plugins' widgets without goh's no_unset ([d719461](https://github.com/caophuoclong/goh/commit/d71946138b89c6e4def775495ed21930f6ab14f0))
+
 ## [1.5.0](https://github.com/caophuoclong/goh/compare/v1.4.1...v1.5.0) (2026-10-29)
 
 
