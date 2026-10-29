@@ -183,6 +183,40 @@ fn words_of(line: &str) -> Vec<String> {
     out
 }
 
+/// Commands that do their job once for what they name: install or remove a package, create a branch, a tag, a
+/// clone. Each is the words it starts with; it is done once only when it names a target after them.
+const DONE_ONCE: &[&[&str]] = &[
+    &["brew", "install"], &["brew", "reinstall"], &["brew", "uninstall"], &["brew", "remove"], &["brew", "rm"], &["brew", "tap"], &["brew", "untap"],
+    &["npm", "install"], &["npm", "i"], &["npm", "add"], &["npm", "uninstall"], &["npm", "remove"], &["npm", "rm"], &["npm", "un"], &["npm", "create"], &["npm", "init"],
+    &["pnpm", "add"], &["pnpm", "install"], &["pnpm", "i"], &["pnpm", "remove"], &["pnpm", "rm"], &["pnpm", "create"],
+    &["yarn", "add"], &["yarn", "remove"], &["yarn", "create"], &["yarn", "global", "add"], &["yarn", "global", "remove"],
+    &["bun", "add"], &["bun", "install"], &["bun", "i"], &["bun", "remove"], &["bun", "rm"], &["bun", "create"],
+    &["pip", "install"], &["pip", "uninstall"], &["pip3", "install"], &["pip3", "uninstall"], &["pipx", "install"], &["pipx", "uninstall"],
+    &["uv", "add"], &["uv", "remove"], &["uv", "pip", "install"], &["uv", "pip", "uninstall"], &["uv", "tool", "install"], &["uv", "tool", "uninstall"],
+    &["cargo", "install"], &["cargo", "uninstall"], &["cargo", "add"], &["cargo", "remove"], &["cargo", "new"], &["cargo", "init"],
+    &["gem", "install"], &["gem", "uninstall"], &["go", "install"], &["go", "get"],
+    &["apt", "install"], &["apt", "remove"], &["apt", "purge"], &["apt-get", "install"], &["apt-get", "remove"], &["apt-get", "purge"],
+    &["dnf", "install"], &["dnf", "remove"], &["yum", "install"], &["yum", "remove"], &["apk", "add"], &["apk", "del"],
+    &["port", "install"], &["port", "uninstall"], &["mas", "install"], &["nvm", "install"], &["nvm", "uninstall"],
+    &["pyenv", "install"], &["pyenv", "uninstall"], &["asdf", "install"], &["asdf", "plugin", "add"],
+    &["rustup", "toolchain", "install"], &["rustup", "target", "add"], &["rustup", "component", "add"],
+    &["git", "clone"], &["git", "checkout", "-b"], &["git", "checkout", "-B"], &["git", "switch", "-c"], &["git", "switch", "-C"],
+    &["git", "branch"], &["git", "tag"], &["git", "remote", "add"], &["git", "remote", "remove"], &["git", "remote", "rm"], &["git", "worktree", "add"],
+    &["docker", "volume", "create"], &["docker", "network", "create"], &["kubectl", "create"],
+];
+
+/// A line that did its job the one time it ran (`brew install jq`, `git checkout -b fix`): running it again does
+/// nothing or fails, so it is not offered again. What is reinstalled from here (`pip install -r requirements.txt`,
+/// `cargo install --path .`, a bare `npm install`) is repeatable, and so is any command not in [`DONE_ONCE`].
+pub fn done_once(line: &str) -> bool {
+    let words = words_of(line);
+    let words: Vec<&str> = words.iter().map(String::as_str).skip_while(|w| w.contains('=') || *w == "sudo").collect();
+    let Some(prefix) = DONE_ONCE.iter().filter(|p| words.starts_with(p)).max_by_key(|p| p.len()) else { return false };
+    let rest = &words[prefix.len()..];
+    let local = |w: &&str| w.starts_with(['.', '/', '~']) || matches!(*w, "-r" | "--requirement" | "-e" | "--editable" | "--path");
+    rest.iter().any(|w| !w.starts_with('-')) && !rest.iter().any(local)
+}
+
 fn secret_name(option: &str) -> bool {
     let lower = option.to_lowercase();
     ["token", "pass", "secret", "key", "auth", "cred", "cookie"].iter().any(|w| lower.contains(w))
@@ -232,13 +266,14 @@ impl Runs {
         self.runs.is_empty()
     }
 
-    /// Lines that begin with `typed` and go on, best first: used more, more recently, and in this folder.
+    /// Lines that begin with `typed` and go on, best first: used more, more recently, and in this folder. Lines
+    /// that did their job once ([`done_once`]) are left out.
     pub fn lines_starting(&self, typed: &str, cwd: &str, now: u64, limit: usize) -> Vec<Seen> {
         if typed.chars().count() < 3 {
             return vec![];
         }
         let mut found: HashMap<&str, Seen> = HashMap::new();
-        for r in self.runs.iter().filter(|r| r.line.len() > typed.len() && r.line.starts_with(typed)) {
+        for r in self.runs.iter().filter(|r| r.line.len() > typed.len() && r.line.starts_with(typed) && !done_once(&r.line)) {
             let here = r.cwd == cwd;
             let w = weight(now.saturating_sub(r.at));
             let seen = found.entry(&r.line).or_insert_with(|| Seen { line: r.line.clone(), count: 0, here: false, score: 0.0 });
@@ -276,7 +311,7 @@ impl Runs {
         }
         let mut lines: Vec<Seen> = by_line
             .into_iter()
-            .filter(|(_, (n, _))| *n >= MIN_REPEATS)
+            .filter(|(l, (n, _))| *n >= MIN_REPEATS && !done_once(l))
             .map(|(l, (count, score))| Seen { line: l.to_string(), count, here: true, score })
             .collect();
         lines.sort_by(|a, b| b.score.total_cmp(&a.score).then_with(|| a.line.cmp(&b.line)));
@@ -499,6 +534,58 @@ mod tests {
         assert!(at("cargo t", 3).is_empty(), "only at the end of the line");
         assert!(at("", 0).is_empty(), "nothing is predicted from a record this thin");
         assert!(candidates(&Runs::default(), "cargo t", 7, "/a", NOW).is_empty());
+    }
+
+    #[test]
+    fn lines_that_did_their_job_once_are_not_offered_again() {
+        for once in [
+            "brew install jq",
+            "sudo apt-get install -y ripgrep",
+            "npm install -D vitest",
+            "HOMEBREW_NO_AUTO_UPDATE=1 brew install --cask iterm2",
+            "pip install requests",
+            "uv pip install ruff",
+            "cargo install ripgrep",
+            "git clone https://github.com/a/b.git",
+            "git checkout -b fix/login",
+            "git branch -d old",
+            "git tag v1.2.0",
+        ] {
+            assert!(done_once(once), "{once:?}");
+        }
+        for again in [
+            "brew update",
+            "brew upgrade",
+            "npm install",
+            "npm i --legacy-peer-deps",
+            "pip install -r requirements.txt",
+            "pip install -e .",
+            "cargo install --path crates/goh-daemon",
+            "go install ./...",
+            "git checkout main",
+            "git branch -a",
+            "git tag -l",
+            "rm -rf node_modules",
+            "brew",
+        ] {
+            assert!(!done_once(again), "{again:?}");
+        }
+        let r = runs(&[(NOW - 90, "/a", "brew install jq"), (NOW - 80, "/a", "brew install --cask iterm2"), (NOW - 70, "/a", "brew upgrade")]);
+        let found = r.lines_starting("brew ", "/a", NOW, 3);
+        assert_eq!(found.iter().map(|s| s.line.as_str()).collect::<Vec<_>>(), ["brew upgrade"]);
+    }
+
+    #[test]
+    fn a_prediction_is_never_a_line_that_did_its_job_once() {
+        let mut lines = Vec::new();
+        for i in 0..3 {
+            let t = NOW - 100_000 + i * 1000;
+            lines.extend([(t, "/p", "git pull"), (t + 5, "/p", "npm install left-pad")]);
+        }
+        lines.push((NOW - 60, "/p", "git pull"));
+        let next = runs(&lines).next_after("/p", NOW, 3);
+        // The same install followed each time; only the command is offered, not the package installed already.
+        assert_eq!(next.iter().map(|s| s.line.as_str()).collect::<Vec<_>>(), ["npm install "], "{next:?}");
     }
 
     #[test]

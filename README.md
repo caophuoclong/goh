@@ -15,8 +15,10 @@ It reproduces what Fig was useful for, not its branding, and has no dependency o
   targets, compose services, Cargo bins/examples/features and workspace packages, `$VARIABLES`.
 - Corrects a slip (`git chekcout` finds `checkout`), narrows files by type (`python <TAB>` lists `.py`), flags risky
   options (`⚠ overwrites the remote branch`) and says which kubectl context or Terraform workspace they act on.
-- Expands your own snippets (`snippets.json`) and, if you opt in, finishes lines from your history, shows the command
-  that usually comes next, and remembers the values you gave an option (see [Privacy](#privacy)).
+- Expands your own snippets (`snippets.json`) and, if you opt in, finishes lines from your history (the three you ran
+  most, most recently and in this folder; not a line that did its job once, such as `brew install jq` or
+  `git checkout -b fix`), shows the command that usually comes next, and remembers the values you gave an option (see
+  [Privacy](#privacy)).
 - Never executes anything for you: it only inserts the candidate you pick.
 - Runs fully local. Command text is not sent over the network (the one optional request is the update check, see [Privacy](#privacy)).
 
