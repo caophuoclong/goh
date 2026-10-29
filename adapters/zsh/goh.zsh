@@ -753,6 +753,27 @@ _goh_hook_redraw() {
 }
 _goh_hook_finish() { _goh_close no-redisplay; _goh_drop_pred; _goh_seen_cur=-1; return 0 }
 
+# Ctrl+C ends the line without zle-line-finish, so the zle-line-init hook is what closes the menu at the next
+# prompt. A plugin that defines its own zle-line-init (or -finish, -pre-redraw) after this adapter loaded replaces
+# the hook dispatcher, and then the popup would stay on screen until the next keystroke. Every prompt, before it
+# is drawn, put the hooks back (add-zle-hook-widget keeps the plugin's widget as the first hook) and hide the popup
+# of a menu that was left open.
+typeset -gi _goh_update_told=0
+typeset -ga _goh_zle_hooks=(zle-line-init:_goh_hook_finish zle-line-pre-redraw:_goh_hook_redraw zle-line-finish:_goh_hook_finish)
+_goh_hook_precmd() {
+  local h
+  for h in $_goh_zle_hooks; do
+    [[ ${widgets[${h%%:*}]-} == user:azhw:${h%%:*} ]] || add-zle-hook-widget ${h%%:*} ${h#*:}
+  done
+  (( _goh_on )) && _goh_pop_hide
+  # `updates.check`: one line, at the first prompt only, when a newer release is known (see `goh update`).
+  if (( ! _goh_update_told )); then
+    _goh_update_told=1
+    [[ ${GOH_UPDATE_CHECK-} == on ]] && command $_GOH_CTL update --notice 2>/dev/null
+  fi
+  return 0
+}
+
 # What the shell knows (aliases, functions, builtins, PATH), so `g checkout ` completes as `git checkout ` and
 # the command word completes from what is installed. Sent after a command changed any of it, never per keystroke.
 typeset -g _goh_ctx_sig
@@ -862,6 +883,7 @@ goh-load() {
   add-zsh-hook zshexit _goh_pop_stop
   add-zsh-hook chpwd _goh_visit
   add-zsh-hook precmd _goh_sync_context
+  add-zsh-hook precmd _goh_hook_precmd
   if [[ ${GOH_RECORD-} == on ]]; then
     add-zsh-hook preexec _goh_run_start
     # Ahead of every other precmd: it needs the status of the command that just ended.
@@ -885,6 +907,7 @@ goh-unload() {
   add-zsh-hook -d zshexit _goh_pop_stop 2>/dev/null
   add-zsh-hook -d chpwd _goh_visit 2>/dev/null
   add-zsh-hook -d precmd _goh_sync_context 2>/dev/null
+  add-zsh-hook -d precmd _goh_hook_precmd 2>/dev/null
   zle -D _goh_tab _goh_up _goh_down _goh_esc _goh_accept_key _goh_enter _goh_left _goh_right _goh_on_decision 2>/dev/null
   unset _GOH_ORIG_TAB
 }

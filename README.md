@@ -18,11 +18,11 @@ It reproduces what Fig was useful for, not its branding, and has no dependency o
 - Expands your own snippets (`snippets.json`) and, if you opt in, finishes lines from your history, shows the command
   that usually comes next, and remembers the values you gave an option (see [Privacy](#privacy)).
 - Never executes anything for you: it only inserts the candidate you pick.
-- Runs fully local. Command text is not sent over the network.
+- Runs fully local. Command text is not sent over the network (the one optional request is the update check, see [Privacy](#privacy)).
 
 ## Privacy
 
-Everything runs locally. Two things are **off unless you turn them on** in `goh config`:
+Everything runs locally. Three things are **off unless you turn them on** in `goh config`:
 
 - `privacy.recordCommands`: keeps the successful lines you run in a private file (`~/.local/share/goh/runs`, mode
   0600) to finish a started line, predict the next command at an empty prompt and remember option values. Lines that
@@ -30,6 +30,11 @@ Everything runs locally. Two things are **off unless you turn them on** in `goh 
   space are never written. `goh forget` deletes it.
 - `completion.autoSpecs`: the first time you type a program with no spec, runs `<program> --help` once in the
   background and saves a spec read from it (the same as `goh spec gen`).
+
+- `updates.check`: once a day goh runs `curl` to read the version number of the latest release from GitHub's public
+  release page, and prints one line when a shell starts if a newer one exists (`goh update` does the same once,
+  whenever you ask). It is the only network request goh makes. Nothing about you, your machine or your commands is
+  sent beyond what any web request carries (your IP address and a `goh/<version>` user agent).
 
 Your snippets go in `~/.config/goh/snippets.json`: `[{"name":"gcm","template":"git commit -m \"{{cursor}}\""}]`.
 

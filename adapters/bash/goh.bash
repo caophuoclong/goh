@@ -71,8 +71,11 @@ _goh_visit() {
 }
 
 goh-load() {
-  local record=0
-  [[ $(command "$_GOH_CTL" config env 2>/dev/null) == *GOH_RECORD=on* ]] && record=1
+  local record=0 cfg
+  cfg=$(command "$_GOH_CTL" config env 2>/dev/null)
+  [[ $cfg == *GOH_RECORD=on* ]] && record=1
+  # `updates.check`: one line, when the shell starts, if a newer release is known (see `goh update`).
+  [[ $cfg == *GOH_UPDATE_CHECK=on* ]] && command "$_GOH_CTL" update --notice 2>/dev/null
   _GOH_LAST_NUM=$HISTCMD   # what was in history when the shell started is not a command to record
   if [[ $(declare -p PROMPT_COMMAND 2>/dev/null) == "declare -a"* ]]; then
     # `_goh_record` goes first: it needs the status of the command that just ended.

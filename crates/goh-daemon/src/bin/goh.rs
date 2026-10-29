@@ -187,6 +187,8 @@ usage: goh <command>
                     --uninstall removes exactly that block
   init <shell>      print the adapter for zsh, bash, fish, pwsh, nu, elvish or xonsh, e.g.
                       eval \"$(goh init zsh)\"          # in ~/.zshrc
+  update            check once for a newer release and say how to get it (needs curl; the only network request goh makes)
+                    `updates.check` in `goh config` does this by itself once a day and prints one line when a shell starts
   forget            delete what goh has learned from your choices and the commands it recorded (`~/.local/share/goh/usage`, `runs`)
   spec gen <command> [--print] [--force]   write a spec for a command that has none, read from its --help
   config            open the settings file in your editor (created on first use)
@@ -431,6 +433,41 @@ fn config(sub: Option<&str>) -> bool {
     }
 }
 
+/// `goh update`: look for a newer release now. `--notice` (what the adapters call when a shell starts) prints the
+/// one line for a new version if `updates.check` is on; `--refresh` is the background check it starts.
+fn update(arg: Option<&str>) -> bool {
+    use goh_daemon::update;
+    let fail = |m: String| {
+        eprintln!("goh: {m}");
+        false
+    };
+    let (current, now) = (env!("CARGO_PKG_VERSION"), goh_daemon::visits::now());
+    match arg {
+        Some("--notice") => {
+            if let Some(line) = update::notice(current, now) {
+                println!("{line}");
+            }
+            true
+        }
+        Some("--refresh") => {
+            update::refresh(now);
+            true
+        }
+        None | Some("check") => {
+            let (state, fetched) = update::refresh(now);
+            if !fetched {
+                return fail("could not read the latest release (is curl installed and github.com reachable?)".into());
+            }
+            match update::message(current, &state.latest) {
+                Some(line) => println!("{line}"),
+                None => println!("goh {current} is the latest release"),
+            }
+            true
+        }
+        Some(other) => fail(format!("unknown update option `{other}`; see `goh help`")),
+    }
+}
+
 /// Utility commands. `None`: not one of them (the adapter commands follow).
 fn utility(sub: &str, rest: &[String]) -> Option<bool> {
     let sock = paths::socket_path();
@@ -466,6 +503,7 @@ fn utility(sub: &str, rest: &[String]) -> Option<bool> {
             }
         }
         "config" => config(rest.first().map(String::as_str)),
+        "update" => update(rest.first().map(String::as_str)),
         "start" => report(start(&sock), "gohd is running"),
         "stop" => match control::stop(&sock) {
             Ok(Some(pid)) => report(Ok(()), &format!("stopped gohd (pid {pid})")),
