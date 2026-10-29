@@ -11,7 +11,7 @@ use std::sync::Arc;
 use std::time::{Duration, Instant};
 
 use goh_core::{spec::Command as Spec, Engine};
-use goh_daemon::{paths, server::Server};
+use goh_daemon::{paths, runs::RunsCache, server::Server};
 
 pub const GIT: &str = r#"{"schemaVersion":1,"name":"git","subcommands":[
   {"name":"checkout","description":"Switch branches"},
@@ -114,6 +114,13 @@ impl Drop for Pty {
     }
 }
 
+/// A daemon for this process that ignores the developer's own data: it runs here, so it would otherwise read this
+/// process's HOME. It learns nothing (`goh learn` writes under HOME) and keeps no record of commands, so neither
+/// `~/.local/share/goh` nor the zsh history (`$HISTFILE`, `~/.zsh_history`) adds candidates.
+pub fn isolated_server(engine: Engine, dir: &Path) -> Server {
+    Server::with_runs(engine, Arc::new(RunsCache::forced(dir.join("no-runs"), false, None))).with_usage(dir.join("no-usage"))
+}
+
 pub struct Fixture {
     pub dir: tempfile::TempDir,
     pub socket: PathBuf,
@@ -129,10 +136,8 @@ impl Fixture {
         let socket = dir.path().join("run/s");
         if daemon {
             let listener = paths::bind(&socket).unwrap().unwrap();
-            let engine = Engine::new(vec![Spec::from_json(GIT).unwrap()]);
-            // Learns nothing: neither the developer's own picks nor the ones a test makes (`goh learn` writes under HOME).
-            let usage = dir.path().join("no-usage");
-            std::thread::spawn(move || Arc::new(Server::new(engine).with_usage(usage)).serve(listener));
+            let server = isolated_server(Engine::new(vec![Spec::from_json(GIT).unwrap()]), dir.path());
+            std::thread::spawn(move || Arc::new(server).serve(listener));
         }
         Fixture { dir, socket, locale }
     }
