@@ -16,4 +16,5 @@ unicode-segmentation = "1"
 unicode-width = "0.2"
 
 [target.'cfg(target_os = "macos")'.dependencies]
+libc = "0.2"
 winit = "0.30"

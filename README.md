@@ -54,6 +54,12 @@ whether the running daemon is the same version as `goh` (an upgrade can leave th
 In an iTerm2, Terminal.app or VS Code terminal that lacks the Accessibility permission, the first menu of a zsh
 session prints a one-line note instead of silently drawing inline.
 
+macOS gives the permission to the terminal app the popup runs in, so each terminal is allowed on its own. To allow
+goh once instead, for every terminal (experimental), put `export GOH_POPUP_OWN_PERMISSION=1` in `~/.zshrc` and open
+a new shell: at its first menu macOS asks for **goh-popup** itself. The builds are not signed, so after each goh update
+macOS treats goh-popup as a new program: switch it off and on again under Privacy & Security > Accessibility.
+`goh doctor` still reports the terminal's own permission.
+
 ## Layout
 
 | Path | Purpose |

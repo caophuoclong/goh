@@ -618,7 +618,81 @@ fn install_terminal_font(ctx: &egui::Context) {
     }
 }
 
+/// Opt-in (`GOH_POPUP_OWN_PERMISSION=1`): run the popup as its own "responsible" process, so macOS asks for the
+/// Accessibility permission once, for goh-popup, instead of once per terminal app. A child of the shell is
+/// attributed to the terminal that runs it; a process spawned with responsibility disclaimed answers for itself.
+/// The disclaim call is private API (Chromium and LLDB use it); without it the popup runs as before. This process
+/// stays as the one the adapter knows (its pid, its stdin and stdout are shared), waits, and exits as the child does.
+/// macOS ties the permission to the binary: an unsigned build is a new binary after each update and asks again.
+#[cfg(target_os = "macos")]
+fn run_as_own_responsible_process() {
+    use std::ffi::{CString, OsString};
+    use std::os::unix::ffi::OsStrExt;
+    const MARK: &str = "GOH_POPUP_RESPONSIBLE";
+    if std::env::var_os("GOH_POPUP_OWN_PERMISSION").is_none_or(|v| v != "1") || std::env::var_os(MARK).is_some() {
+        return;
+    }
+    let cstr = |s: &std::ffi::OsStr| CString::new(s.as_bytes()).ok();
+    let Some(exe) = std::env::current_exe().ok().and_then(|p| cstr(p.as_os_str())) else { return };
+    let Some(args) = std::env::args_os().map(|a| cstr(&a)).collect::<Option<Vec<_>>>() else { return };
+    let mut vars: Vec<OsString> = std::env::vars_os()
+        .filter(|(k, _)| k != MARK)
+        .map(|(mut k, v)| {
+            k.push("=");
+            k.push(v);
+            k
+        })
+        .collect();
+    vars.push(format!("{MARK}=1").into());
+    let Some(env) = vars.iter().map(|e| cstr(e)).collect::<Option<Vec<CString>>>() else { return };
+    let ptrs = |v: &[CString]| v.iter().map(|s| s.as_ptr().cast_mut()).chain(std::iter::once(std::ptr::null_mut())).collect::<Vec<_>>();
+    let (argv, envp) = (ptrs(&args), ptrs(&env));
+    // SAFETY: the symbol, when present, has this signature (<spawn_private.h>). `attr` is initialised before use
+    // and destroyed after; every pointer handed to posix_spawn outlives the call and the arrays end in null.
+    let pid = unsafe {
+        let sym = libc::dlsym(libc::RTLD_DEFAULT, c"responsibility_spawnattrs_setdisclaim".as_ptr());
+        if sym.is_null() {
+            return;
+        }
+        let disclaim: unsafe extern "C" fn(*mut libc::posix_spawnattr_t, bool) -> libc::c_int = std::mem::transmute(sym);
+        let mut attr: libc::posix_spawnattr_t = std::ptr::null_mut();
+        if libc::posix_spawnattr_init(&mut attr) != 0 {
+            return;
+        }
+        let mut pid = 0;
+        let spawned = disclaim(&mut attr, true) == 0 && libc::posix_spawn(&mut pid, exe.as_ptr(), std::ptr::null(), &attr, argv.as_ptr(), envp.as_ptr()) == 0;
+        libc::posix_spawnattr_destroy(&mut attr);
+        if !spawned {
+            return;
+        }
+        pid
+    };
+    let mut status = 0;
+    // SAFETY: waits for our own child; `status` is a valid out pointer.
+    while unsafe { libc::waitpid(pid, &mut status, 0) } == -1 {
+        if std::io::Error::last_os_error().kind() != std::io::ErrorKind::Interrupted {
+            std::process::exit(1);
+        }
+    }
+    let code = if libc::WIFEXITED(status) { libc::WEXITSTATUS(status) } else if libc::WIFSIGNALED(status) { 128 + libc::WTERMSIG(status) } else { 1 };
+    std::process::exit(code)
+}
+
+/// In the popup that answers for itself: ask macOS to list it under Accessibility (with its prompt) while it
+/// is not allowed yet. The terminal's own permission no longer counts for it.
+#[cfg(target_os = "macos")]
+fn ask_for_own_permission() {
+    if std::env::var_os("GOH_POPUP_RESPONSIBLE").is_some() && goh_anchor::accessibility_trusted() == Some(false) {
+        goh_anchor::request_accessibility();
+    }
+}
+
 fn main() -> eframe::Result {
+    #[cfg(target_os = "macos")]
+    {
+        run_as_own_responsible_process();
+        ask_for_own_permission();
+    }
     if std::env::args().any(|a| a == "--probe") {
         // Run from the terminal you want to test; the delay leaves time to focus it again if needed.
         std::thread::sleep(std::time::Duration::from_secs(2));
