@@ -5,6 +5,8 @@ use std::os::unix::net::UnixStream;
 use std::path::Path;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
+use goh_core::protocol::Candidate;
+
 use crate::wire::{read_message, write_frame, Reply, Request};
 
 const TIMEOUT: Duration = Duration::from_millis(200);
@@ -119,11 +121,29 @@ fn valid_edit(buffer: &str, e: &Edit) -> bool {
 }
 
 /// Candidates for the menu, best first, with invalid insertions dropped. The adapter applies them
-/// locally while the buffer is unchanged, so no `accept` round trip is needed.
+/// locally while the buffer is unchanged, so no `accept` round trip is needed. Whole lines from history come last
+/// but are kept past `limit` (there are at most three): the adapter shows the best one as ghost text.
 pub fn menu(sock: &Path, session: &str, cwd: &str, buffer: &str, cursor_byte: usize, limit: usize, live: bool) -> io::Result<Vec<Item>> {
     let (_, _, reply) = complete(sock, session, cwd, buffer, cursor_byte, live)?;
     let Reply::Results { suggestions, .. } = reply else { return Ok(vec![]) };
-    Ok(suggestions
+    Ok(keep_history(items(suggestions, buffer), limit))
+}
+
+/// The first `limit` items, except that the whole lines from history (last in the list) replace the last of the
+/// others rather than fall off the end.
+fn keep_history(mut items: Vec<Item>, limit: usize) -> Vec<Item> {
+    let history = items.iter().filter(|i| i.kind == "history").count().min(limit);
+    let mut kept = 0;
+    items.retain(|i| {
+        kept += usize::from(i.kind != "history");
+        i.kind == "history" || kept <= limit - history
+    });
+    items.truncate(limit);
+    items
+}
+
+fn items(suggestions: Vec<Candidate>, buffer: &str) -> Vec<Item> {
+    suggestions
         .into_iter()
         .filter_map(|c| {
             let edit = Edit {
@@ -142,6 +162,25 @@ pub fn menu(sock: &Path, session: &str, cwd: &str, buffer: &str, cursor_byte: us
                 used: c.used,
             })
         })
-        .take(limit)
-        .collect())
+        .collect()
+}
+
+#[cfg(test)]
+mod menu_limit_tests {
+    use super::*;
+
+    fn item(label: &str, kind: &str) -> Item {
+        let edit = Edit { start: 0, end: 0, cursor: 0, insert: label.into() };
+        Item { edit, label: label.into(), description: String::new(), kind: kind.into(), matches: vec![], takes_value: false, used: false }
+    }
+
+    #[test]
+    fn whole_lines_from_history_survive_the_limit() {
+        let mut all: Vec<Item> = (0..5).map(|i| item(&format!("dir{i}/"), "folder")).collect();
+        all.extend([item("cd /tmp", "history"), item("cd /opt", "history")]);
+        let kept = keep_history(all, 4);
+        assert_eq!(kept.iter().map(|i| i.label.as_str()).collect::<Vec<_>>(), ["dir0/", "dir1/", "cd /tmp", "cd /opt"]);
+        let short = keep_history(vec![item("a", "command"), item("git status", "history")], 8);
+        assert_eq!(short.len(), 2, "nothing is dropped under the limit");
+    }
 }

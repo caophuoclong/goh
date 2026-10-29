@@ -748,6 +748,29 @@ fn menu(fx: &Fixture, sh: &mut Pty) -> (Vec<String>, String) {
 }
 
 #[test]
+fn the_best_line_from_the_zsh_history_is_ghost_text_that_right_arrow_takes() {
+    let fx = Fixture::new(require_env!(), false);
+    let now = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_secs();
+    fs::write(fx.path(".zsh_history"), format!(": {}:0;git commit -m wip\n: {}:0;git checkout -b done-once\n", now - 300, now - 200)).unwrap();
+    let mut sh = fx.shell(&[("GOH_LIVE", "on"), ("GOH_RECORD", "on")], true);
+    menu_dump(&fx, &mut sh);
+    sh.send("git c", 1500);
+    let (rows, _) = menu(&fx, &mut sh);
+    assert_eq!(rows[0], "ommit -m wip", "the ghost is the history line, not the selected `checkout`: {rows:?}");
+    assert!(rows.iter().any(|r| r.contains("→ line · Tab insert")), "{rows:?}");
+    assert!(!rows.iter().any(|r| r.contains("done-once")), "a branch created once is not offered again: {rows:?}");
+    sh.send("\x1b[C", 800);
+    let s = fx.state(&mut sh);
+    assert!(s.starts_with("BUF[git commit -m wip]"), "→ takes the whole line: {s}");
+    sh.send(CLEAR, 300);
+    sh.send("git c", 1500);
+    sh.send("\t", 800);
+    let s = fx.state(&mut sh);
+    assert!(s.starts_with("BUF[git checkout"), "Tab still takes the selected suggestion: {s}");
+    kill_socket_holder(&fx.socket);
+}
+
+#[test]
 fn rows_show_kind_glyphs_learned_badges_and_every_rows_warning() {
     let fx = Fixture::new(require_env!(), false);
     let push = serde_json::json!({"schemaVersion":1,"name":"git","subcommands":[{"name":"push","options":[

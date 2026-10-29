@@ -68,6 +68,8 @@ typeset -gi _goh_pin=-1 _goh_pout=-1 _goh_overlay=0 _goh_win=1 _goh_menu_id=0
 typeset -ga _goh_ranges
 typeset -g _goh_new _goh_pre _goh_tail_out
 typeset -gi _goh_on=0 _goh_sel=1 _goh_buf_cur=0 _goh_navigated=0
+# The history line shown as ghost text (its index in the menu), which → takes; 0 = none.
+typeset -gi _goh_ghost_line=0
 typeset -g _goh_buf
 typeset -ga _goh_start _goh_end _goh_cursor _goh_kind _goh_label _goh_insert _goh_desc _goh_value _goh_used
 typeset -gA _goh_theme   # resolved design tokens (see goh-theme-refresh)
@@ -344,7 +346,7 @@ _goh_clear_msg() { (( _goh_msg )) || return 0; _goh_msg=0; zle -M '' }
 _goh_close() {
   [[ -n $_goh_pop_pid ]] && ! _goh_pop_alive && _goh_pop_stop
   (( _goh_on )) || return 0
-  _goh_on=0 _goh_navigated=0
+  _goh_on=0 _goh_navigated=0 _goh_ghost_line=0
   (( _goh_notice_shown )) && _goh_notice= _goh_notice_shown=0
   _goh_clear_ghost
   # ZLE owns message removal at line-init/line-finish. A -M refresh there leaves its
@@ -456,7 +458,20 @@ _goh_render() {
   rows+=("$desc")
   hl+=("$#rows 0 ${#desc} $muted")
 
+  # Until you move in the menu, the best whole line from history shows as ghost text, as with zsh-autosuggestions:
+  # → takes that line, Tab the selected suggestion.
+  _goh_ghost_line=0
+  if (( ! _goh_navigated && CURSOR == ${#BUFFER} )); then
+    _goh_bytes "$BUFFER"
+    for (( i = 1; i <= $#_goh_kind; i++ )); do
+      if [[ ${_goh_kind[i]} == history && ${_goh_start[i]} == 0 && ${_goh_end[i]} == $REPLY && ${_goh_insert[i]} == "$BUFFER"?* ]]; then
+        _goh_ghost_line=$i
+        break
+      fi
+    done
+  fi
   local pos="$_goh_sel/$#_goh_label" accept_hint="Tab/→"
+  (( _goh_ghost_line && _goh_ghost_line != _goh_sel )) && accept_hint="→ line · Tab"
   (( $#_goh_label >= 50 )) && pos+='+'   # menus ask for 50: there may be more
   (( _goh_navigated )) && accept_hint="Tab/Enter/→"
   row="  $pos · $accept_hint insert · ↑↓ move · Esc/← close"
@@ -478,12 +493,13 @@ _goh_render() {
 
   # Ghost text only where it is honest: cursor at the end and the insertion extends what is typed.
   _goh_clear_ghost
-  local ghost=
-  _goh_bytes "$BUFFER"
-  if (( _goh_end[_goh_sel] == REPLY && CURSOR == ${#BUFFER} )); then
+  local ghost= buflen
+  _goh_bytes "$BUFFER"; buflen=$REPLY
+  if (( _goh_end[_goh_sel] == buflen && CURSOR == ${#BUFFER} )); then
     _goh_tail "$BUFFER" ${_goh_start[_goh_sel]} "${_goh_insert[_goh_sel]}"
     ghost=$_goh_tail_out
   fi
+  (( _goh_ghost_line )) && ghost=${_goh_insert[_goh_ghost_line]#"$BUFFER"}
 
   # Inline menu: drawn as part of the line (POSTDISPLAY, below the cursor) with real styles, so it looks the
   # same in any terminal, including the ones that cannot host the overlay (VS Code, JetBrains, Claude).
@@ -576,6 +592,8 @@ _goh_enter() {
 _goh_accept_key() {
   local key=${(V)KEYS}
   local original=${_goh_saved[$key]:-undefined-key}
+  # → takes what the ghost text shows: the history line, while one is shown.
+  (( _goh_ghost_line && ! _goh_navigated )) && _goh_valid && _goh_sel=$_goh_ghost_line
   _goh_accept || { _goh_close; zle $original }
 }
 

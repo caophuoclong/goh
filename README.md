@@ -18,7 +18,8 @@ It reproduces what Fig was useful for, not its branding, and has no dependency o
 - Expands your own snippets (`snippets.json`) and, if you opt in, finishes lines from your history (the three you ran
   most, most recently and in this folder; not a line that did its job once, such as `brew install jq` or
   `git checkout -b fix`), shows the command that usually comes next, and remembers the values you gave an option (see
-  [Privacy](#privacy)).
+  [Privacy](#privacy)). The best of those lines is shown as ghost text after the cursor, as zsh-autosuggestions does:
+  → takes the whole line, Tab the selected suggestion.
 - Never executes anything for you: it only inserts the candidate you pick.
 - Runs fully local. Command text is not sent over the network (the one optional request is the update check, see [Privacy](#privacy)).
 
@@ -27,7 +28,9 @@ It reproduces what Fig was useful for, not its branding, and has no dependency o
 Everything runs locally. Three things are **off unless you turn them on** in `goh config`:
 
 - `privacy.recordCommands`: keeps the successful lines you run in a private file (`~/.local/share/goh/runs`, mode
-  0600) to finish a started line, predict the next command at an empty prompt and remember option values. Lines that
+  0600) to finish a started line, predict the next command at an empty prompt and remember option values. It also
+  reads your zsh history (`$HISTFILE` if exported, else `~/.zsh_history`) for what you ran before, with the same
+  filters; that file is only read, never changed. Lines that
   look like they hold a secret (`password`, `token`, `user:pass@host`, long opaque keys) and lines starting with a
   space are never written. `goh forget` deletes it.
 - `completion.autoSpecs`: the first time you type a program with no spec, runs `<program> --help` once in the

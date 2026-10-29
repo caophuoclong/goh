@@ -49,7 +49,7 @@ fn local_data_reaches_the_menu() {
     assert!(!std::fs::read_to_string(&file).unwrap().contains("pw@host"));
 
     let engine = Engine::new(goh_core::bundled_specs());
-    let mut d = Daemon { server: Server::with_runs(engine, Arc::new(RunsCache::forced(file.clone(), true))), generation: 0 };
+    let mut d = Daemon { server: Server::with_runs(engine, Arc::new(RunsCache::forced(file.clone(), true, None))), generation: 0 };
 
     // Snippets lead, and accepting one puts the cursor at its marker.
     let found = d.ask("gc", true);
@@ -88,7 +88,7 @@ fn local_data_reaches_the_menu() {
     assert_eq!(d.ask("git chekcout", false).first().map(|c| c.label.as_str()), Some("checkout"));
 
     // With recording off none of the record is used.
-    let mut off = Daemon { server: Server::with_runs(Engine::new(goh_core::bundled_specs()), Arc::new(RunsCache::forced(file, false))), generation: 0 };
+    let mut off = Daemon { server: Server::with_runs(Engine::new(goh_core::bundled_specs()), Arc::new(RunsCache::forced(file, false, None))), generation: 0 };
     assert!(off.ask("git commit -m s", true).iter().all(|c| c.kind != Kind::History));
     assert!(off.ask("", true).is_empty());
     assert!(off.ask("kubectl -n ", false).iter().all(|c| c.description.as_deref() != Some("used before")));

@@ -2,6 +2,9 @@
 //! three things: finishing a line you have started from one you ran before, guessing the command that
 //! usually follows the last one in this folder, and remembering the values you gave an option.
 //!
+//! The shell's own history (`~/.zsh_history`) counts too while recording is on, for what was run before goh kept its
+//! record: the same filters apply, and its lines are never "this folder" (it does not say where they ran).
+//!
 //! One appended line per successful command: `epoch TAB cwd TAB command`. The file is private to you (0600), local,
 //! bounded, and lines that look like they carry a secret are never written (see [`looks_secret`]), nor are lines that
 //! start with a space (the usual way to say "keep this out of my history"). `goh forget` deletes it.
@@ -12,7 +15,7 @@ use std::io::Write;
 use std::os::unix::fs::OpenOptionsExt;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
-use std::time::{Duration, Instant};
+use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 
 use goh_core::protocol::{Candidate, Kind, Source};
 
@@ -27,6 +30,8 @@ const SEQUENCE_GAP: u64 = 6 * 3600;
 const PREDICT_WITHIN: u64 = 30 * 60;
 const TTL: Duration = Duration::from_secs(2);
 const MIN_REPEATS: usize = 2;
+/// The newest commands kept from the shell's history.
+const SHELL_HISTORY_LINES: usize = 10_000;
 
 pub fn path() -> PathBuf {
     if let Some(p) = std::env::var_os("GOH_RUNS") {
@@ -37,6 +42,57 @@ pub fn path() -> PathBuf {
         None => PathBuf::from(std::env::var_os("HOME").unwrap_or_default()).join(".local/share"),
     };
     base.join("goh/runs")
+}
+
+/// The zsh history file: `$GOH_SHELL_HISTORY`, `$HISTFILE` when exported, else `.zsh_history` in `$ZDOTDIR` or home.
+pub fn shell_history_path() -> Option<PathBuf> {
+    for var in ["GOH_SHELL_HISTORY", "HISTFILE"] {
+        if let Some(p) = std::env::var_os(var).filter(|p| !p.is_empty()) {
+            return Some(p.into());
+        }
+    }
+    let dir = std::env::var_os("ZDOTDIR").filter(|d| !d.is_empty()).or_else(|| std::env::var_os("HOME"))?;
+    Some(PathBuf::from(dir).join(".zsh_history"))
+}
+
+/// zsh writes bytes it treats specially as 0x83 followed by the byte XOR 0x20 ("metafied"), non-ASCII text included.
+fn unmetafy(bytes: &[u8]) -> Vec<u8> {
+    let mut out = Vec::with_capacity(bytes.len());
+    let mut it = bytes.iter();
+    while let Some(&b) = it.next() {
+        out.push(if b == 0x83 { it.next().map_or(b, |n| n ^ 0x20) } else { b });
+    }
+    out
+}
+
+/// Commands from a zsh history file, oldest first, with no folder. Extended lines (`: epoch:secs;command`) keep their
+/// time; plain ones are spread over the seconds before `modified`, in order. A command over several lines is left
+/// out, and so is every line [`accept`] would not keep.
+fn parse_shell_history(bytes: &[u8], modified: u64) -> Vec<Run> {
+    let text = String::from_utf8_lossy(&unmetafy(bytes)).into_owned();
+    let mut entries: Vec<(Option<u64>, String)> = Vec::new();
+    let mut continued = false;
+    for line in text.lines() {
+        let was_continued = std::mem::replace(&mut continued, line.ends_with('\\'));
+        if was_continued || continued {
+            continue;
+        }
+        let (at, command) = match line.strip_prefix(": ").and_then(|r| r.split_once(';')) {
+            Some((stamp, command)) => (stamp.split(':').next().and_then(|t| t.parse().ok()), command),
+            None => (None, line),
+        };
+        if let Some(command) = accept(command) {
+            entries.push((at, command));
+        }
+    }
+    let skip = entries.len().saturating_sub(SHELL_HISTORY_LINES);
+    let n = entries.len() as u64;
+    entries
+        .into_iter()
+        .enumerate()
+        .skip(skip)
+        .map(|(i, (at, line))| Run { at: at.unwrap_or_else(|| modified.saturating_sub(n - i as u64)), cwd: String::new(), line })
+        .collect()
 }
 
 /// `GOH_RECORD` (`on` / `off`) if set, else `privacy.recordCommands` in the config file: off unless it says `true`.
@@ -266,6 +322,15 @@ impl Runs {
         self.runs.is_empty()
     }
 
+    /// Put the shell's history before goh's own record, keeping only what is older than the record's first line:
+    /// from then on goh has the same commands, with their folders.
+    fn with_shell_history(mut self, shell: &[Run]) -> Runs {
+        let since = self.runs.first().map_or(u64::MAX, |r| r.at);
+        let mut all: Vec<Run> = shell.iter().filter(|r| r.at < since).cloned().collect();
+        all.append(&mut self.runs);
+        Runs { runs: all }
+    }
+
     /// Lines that begin with `typed` and go on, best first: used more, more recently, and in this folder. Lines
     /// that did their job once ([`done_once`]) are left out.
     pub fn lines_starting(&self, typed: &str, cwd: &str, now: u64, limit: usize) -> Vec<Seen> {
@@ -299,7 +364,8 @@ impl Runs {
         let mut by_line: HashMap<&str, Tally> = HashMap::new();
         let mut by_key: HashMap<String, Tally> = HashMap::new();
         let mut last_in_folder: HashMap<&str, &Run> = HashMap::new();
-        for r in &self.runs {
+        // The shell's history says nothing about folders, so it says nothing about what follows what here.
+        for r in self.runs.iter().filter(|r| !r.cwd.is_empty()) {
             if last_in_folder.get(r.cwd.as_str()).is_some_and(|p| r.at.saturating_sub(p.at) <= SEQUENCE_GAP && command_key(&p.line) == key) {
                 let w = weight(now.saturating_sub(r.at));
                 let line = by_line.entry(&r.line).or_default();
@@ -392,27 +458,48 @@ pub fn candidates(runs: &Runs, buffer: &str, cursor: usize, cwd: &str, now: u64)
         .collect()
 }
 
-/// The record, re-read at most every couple of seconds, and empty while recording is off.
+/// The shell's history as last parsed, and the file's size and time then: parsed again only when they change.
+type ShellHistory = Option<((PathBuf, u64, u64), Arc<Vec<Run>>)>;
+
+/// The record (with the shell's history before it), re-read at most every couple of seconds, and empty while
+/// recording is off.
 pub struct RunsCache {
     file: PathBuf,
+    shell_history: Option<PathBuf>,
     /// Fixed on or off, ignoring the setting (tests); `None` asks [`enabled`] each time the file is re-read.
     forced: Option<bool>,
     inner: Mutex<(Instant, Arc<Runs>)>,
+    shell: Mutex<ShellHistory>,
 }
 
 impl RunsCache {
     pub fn new(file: PathBuf) -> Self {
-        Self { file, forced: None, inner: Mutex::new((Instant::now() - TTL, Arc::default())) }
+        Self { file, shell_history: shell_history_path(), forced: None, inner: Mutex::new((Instant::now() - TTL, Arc::default())), shell: Mutex::new(None) }
     }
 
-    pub fn forced(file: PathBuf, on: bool) -> Self {
-        Self { forced: Some(on), ..Self::new(file) }
+    /// Fixed on or off, reading `shell_history` (if any) instead of the user's own.
+    pub fn forced(file: PathBuf, on: bool, shell_history: Option<PathBuf>) -> Self {
+        Self { forced: Some(on), shell_history, ..Self::new(file) }
+    }
+
+    fn shell_runs(&self) -> Arc<Vec<Run>> {
+        let Some(path) = &self.shell_history else { return Arc::default() };
+        let Ok(meta) = fs::metadata(path) else { return Arc::default() };
+        let modified = meta.modified().ok().and_then(|t| t.duration_since(UNIX_EPOCH).ok()).map_or(0, |d| d.as_secs());
+        let stamp = (path.clone(), meta.len(), modified);
+        let Ok(mut cached) = self.shell.lock() else { return Arc::default() };
+        if let Some((_, runs)) = cached.as_ref().filter(|(s, _)| *s == stamp) {
+            return Arc::clone(runs);
+        }
+        let runs = Arc::new(fs::read(path).map(|b| parse_shell_history(&b, modified)).unwrap_or_default());
+        *cached = Some((stamp, Arc::clone(&runs)));
+        runs
     }
 
     pub fn get(&self) -> Arc<Runs> {
         let Ok(mut cached) = self.inner.lock() else { return Arc::default() };
         if cached.0.elapsed() >= TTL {
-            let loaded = if self.forced.unwrap_or_else(enabled) { Runs::load(&self.file) } else { Runs::default() };
+            let loaded = if self.forced.unwrap_or_else(enabled) { Runs::load(&self.file).with_shell_history(&self.shell_runs()) } else { Runs::default() };
             *cached = (Instant::now(), Arc::new(loaded));
         }
         Arc::clone(&cached.1)
@@ -586,6 +673,29 @@ mod tests {
         let next = runs(&lines).next_after("/p", NOW, 3);
         // The same install followed each time; only the command is offered, not the package installed already.
         assert_eq!(next.iter().map(|s| s.line.as_str()).collect::<Vec<_>>(), ["npm install "], "{next:?}");
+    }
+
+    #[test]
+    fn the_zsh_history_is_read_with_the_same_filters_and_no_folder() {
+        let mut file = b": 1700000000:0;git status\n: 1700000100:2;brew install jq\n".to_vec();
+        file.extend(b": 1700000200:0;echo \xe1\xba\x83\x81\n"); // `ạ` (E1 BA A1): zsh writes A1 as 0x83, A1 ^ 0x20
+        file.extend(b": 1700000300:0;export API_KEY=abc\n: 1700000400:0;for f in *; do \\\n  echo $f\\\ndone\n");
+        file.extend(b"git log --oneline\n");
+        let runs = parse_shell_history(&file, 1_800_000_000);
+        let lines: Vec<(u64, &str, &str)> = runs.iter().map(|r| (r.at, r.cwd.as_str(), r.line.as_str())).collect();
+        assert_eq!(lines[..2], [(1_700_000_000, "", "git status"), (1_700_000_100, "", "brew install jq")]);
+        assert_eq!(lines[2].2, "echo ạ", "unmetafied back to UTF-8");
+        assert_eq!(lines[3], (1_799_999_999, "", "git log --oneline"), "a plain line is dated just before the file's time");
+        assert_eq!(lines.len(), 4, "secrets and commands over several lines are left out: {lines:?}");
+    }
+
+    #[test]
+    fn the_shell_history_counts_until_goh_keeps_its_own_record() {
+        let shell = parse_shell_history(b": 100:0;cargo build --release\n: 300:0;cargo test -p goh-core\n", 0);
+        let own = runs(&[(200, "/a", "cargo test -p goh-core")]).with_shell_history(&shell);
+        let found = own.lines_starting("cargo ", "/a", 400, 3);
+        assert_eq!(found.iter().map(|s| (s.line.as_str(), s.count, s.here)).collect::<Vec<_>>(), [("cargo test -p goh-core", 1, true), ("cargo build --release", 1, false)], "the shell's line from after the record began is not counted twice");
+        assert!(runs(&[]).with_shell_history(&shell).next_after("/a", 400, 3).is_empty(), "no folder, so no prediction from it");
     }
 
     #[test]
