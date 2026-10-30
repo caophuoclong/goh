@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.9.0](https://github.com/caophuoclong/goh/compare/v1.8.0...v1.9.0) (2026-10-30)
+
+
+### Features
+
+* enhance command prediction and history suggestions in zsh adapt… ([4e02064](https://github.com/caophuoclong/goh/commit/4e0206422db50f64e7ad36d4c81384cd6c72703d))
+* enhance command prediction and history suggestions in zsh adapter and config ([c74a052](https://github.com/caophuoclong/goh/commit/c74a05218579b9ae32778b85b19b0eeabc04ac92))
+
 ## [1.8.0](https://github.com/caophuoclong/goh/compare/v1.7.1...v1.8.0) (2026-10-30)
 
 
