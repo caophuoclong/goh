@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.8.0](https://github.com/caophuoclong/goh/compare/v1.7.1...v1.8.0) (2026-10-30)
+
+
+### Features
+
+* **anchor:** add capability-driven Linux X11 and AT-SPI caret provider ([fe86e04](https://github.com/caophuoclong/goh/commit/fe86e04f5ff00b242772867eb7ae8f3b271a628a))
+* **popup:** add focus-preserving X11 surfaces and Linux font lookup ([b8422fa](https://github.com/caophuoclong/goh/commit/b8422faeff6211eaa3548e8482b0e12a35cb3f0c))
+
+
+### Bug fixes
+
+* **anchor:** reject ambiguous Linux terminal panes and cover fallback ([430ea94](https://github.com/caophuoclong/goh/commit/430ea944e40eb439ccccfcb9b2137e89971ff116))
+* **install:** include popup in Linux source installations ([6e035a0](https://github.com/caophuoclong/goh/commit/6e035a00bcf64a4163557ad8cd174926c3d1aec7))
+
+
+### Performance
+
+* **anchor:** reuse Linux X11 and AT-SPI connections across caret checks ([f021ad8](https://github.com/caophuoclong/goh/commit/f021ad8b5766774e1b1dc40e3bcbcdd5fa6bc50f))
+
 ## [1.7.1](https://github.com/caophuoclong/goh/compare/v1.7.0...v1.7.1) (2026-10-29)
 
 
