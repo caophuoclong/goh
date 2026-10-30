@@ -93,8 +93,8 @@ Pick one. None needs the source.
 | By hand | download `goh-<version>-<target>.tar.gz` from the [releases](https://github.com/caophuoclong/goh/releases), check it against `SHA256SUMS`, put `bin/*` on your `PATH` |
 | From source | `cargo install --git https://github.com/caophuoclong/goh goh-daemon goh-popup`, or `./install.sh --from-source` |
 
-Packages exist for macOS (Apple silicon and Intel) and Linux (x86-64 and ARM). The macOS ones include the overlay popup;
-the Linux ones use the inline menu.
+Packages exist for macOS (Apple silicon and Intel) and Linux (x86-64 and ARM). Both include `goh-popup`. Linux can use a verified X11/AT-SPI caret path;
+unsupported terminals and native Wayland use inline. See [Linux popup support](docs/linux-popup.md).
 
 The install script downloads the package for your system, checks its SHA-256, puts `goh`, `gohd` and `goh-popup` in
 `~/.local/bin` (`GOH_BIN` changes it) and adds one marked block to your `~/.zshrc`, `~/.bashrc` or fish `config.fish`
@@ -134,7 +134,7 @@ bindings and options, and [docs/docs/](docs/docs/00-vision.md) for design and st
 
 ## Status
 
-Version 1.0. Verified on macOS with zsh and bash; Linux terminals (inline menu only, no overlay) and PowerShell are not verified yet.
+Version 1.0. Verified on macOS with zsh and bash; Linux X11 has automated VTE coverage; other Linux terminal configurations and PowerShell need further verification.
 
 ```bash
 cargo test

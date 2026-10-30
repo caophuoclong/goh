@@ -10,8 +10,9 @@ push to main ──► release PR opened/updated (version + CHANGELOG, from the 
 ```
 
 Packages (`goh-X.Y.Z-<target>.tar.gz`, with one `SHA256SUMS` file for all): `aarch64-apple-darwin`, `x86_64-apple-darwin`,
-`aarch64-unknown-linux-gnu`, `x86_64-unknown-linux-gnu`. macOS ones contain `goh`, `gohd`, `goh-popup`; the Linux ones
-leave out the popup (verified on macOS only). `install.sh` and the Homebrew formula use exactly these files.
+`aarch64-unknown-linux-gnu`, `x86_64-unknown-linux-gnu`. All contain `goh`, `gohd`, `goh-popup`. Linux uses the verified X11/AT-SPI popup path or inline fallback;
+native Wayland floating surfaces are not implemented. See [Linux popup backends](docs/linux-popup.md).
+Linux popup runtime libraries include libX11, libxkbcommon-x11, EGL/OpenGL and the desktop accessibility D-Bus service. `install.sh` and the Homebrew formula use exactly these files.
 
 ## One-time setup
 
