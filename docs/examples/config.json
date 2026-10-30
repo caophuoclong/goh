@@ -9,7 +9,8 @@
   "popup": {
     "font": "",
     "fontSize": 13,
-    "ownPermission": false
+    "ownPermission": false,
+    "overSsh": true
   },
   "theme": {
     "mode": "auto"

@@ -43,8 +43,11 @@ Everything runs locally. Three things are **off unless you turn them on** in `go
 
 - `updates.check`: once a day goh runs `curl` to read the version number of the latest release from GitHub's public
   release page, and prints one line when a shell starts if a newer one exists (`goh update` does the same once,
-  whenever you ask). It is the only network request goh makes. Nothing about you, your machine or your commands is
-  sent beyond what any web request carries (your IP address and a `goh/<version>` user agent).
+  whenever you ask). Nothing about you, your machine or your commands is sent beyond what any web request carries
+  (your IP address and a `goh/<version>` user agent).
+
+The only other request is the one you answer yes to in `ssh` (below): downloading this version's package for the
+host's system from the same release page, once, checked against its `SHA256SUMS`.
 
 Your snippets go in `~/.config/goh/snippets.json`: `[{"name":"gcm","template":"git commit -m \"{{cursor}}\""}]`.
 
@@ -127,11 +130,17 @@ the floating popup at the cursor needs X11 or XWayland, a terminal that exports 
 accessibility over D-Bus, and the `libxkbcommon-x11` and EGL/OpenGL libraries. Native Wayland, SSH, tmux and screen
 use the inline menu. `goh-popup --probe` explains the choice; see [Linux popup support](docs/linux-popup.md).
 
-Over SSH, `goh ssh HOST` (any `ssh` arguments) gets the popup back: the remote zsh's menus are drawn on the machine
-you connect from, at the caret of the terminal you ran it in. Both ends need this goh, the remote shell zsh, and the
-remote sshd must accept `LC_*` variables (Debian and Ubuntu do; the path of the forwarded socket travels in
-`LC_GOH_POPUP`). Inside tmux or screen on the remote host the menu stays inline. `alias ssh='goh ssh'` makes it the
-default.
+Over SSH the popup works too: in a shell with the zsh adapter, `ssh` runs through `goh ssh` (`popup.overSsh` in
+`goh config` turns that off; your own `ssh` alias or function always wins), and the remote zsh's menus are drawn
+here, at the caret of the terminal you typed it in. One connection does everything, so you sign in once:
+- A host with goh uses its own; it needs this version or newer, and its sshd must accept `LC_*` variables (Debian
+  and Ubuntu do; the forwarded socket's path travels in `LC_GOH_POPUP`).
+- A host whose login shell is zsh and that has no goh is offered a copy, asked once per destination (the answer is
+  kept in `~/.local/share/goh/ssh-hosts`). It goes to `~/.local/share/goh/ssh/<version>` there and is loaded for
+  that session only: your startup files on the host are read as usual and none of them is changed. The package is
+  downloaded once for the host's system and kept in `~/.cache/goh/ssh`.
+- `ssh host command`, `-N`, `-f` and the like are plain ssh, as are hosts with another login shell (bash only
+  completes on Tab). Inside tmux or screen on the host the menu stays inline.
 
 Homebrew and manual installs do not edit your shell files (Homebrew never does). Run once, then open a new terminal:
 

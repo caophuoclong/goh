@@ -1,8 +1,8 @@
-//! The popup over ssh. `goh ssh HOST` runs ssh with a Unix socket forwarded back to this machine and names the
-//! remote end in `LC_GOH_POPUP` (macOS ssh sends `LC_*`, Debian and Ubuntu sshd accept it). The adapter on the
-//! remote side then talks to `goh popup-bridge $LC_GOH_POPUP` instead of starting a popup there, and each
-//! connection here gets its own local `goh-popup`, which finds the caret in the terminal you typed `goh ssh` in.
-//! Frames and answers are the same newline-delimited JSON a local popup reads and writes.
+//! The popup over ssh (`goh ssh`, see ssh.rs). A Unix socket here is forwarded to the remote host, whose path the
+//! adapter there reads from `LC_GOH_POPUP` (macOS ssh sends `LC_*`, Debian and Ubuntu sshd accept it). That adapter
+//! talks to `goh popup-bridge $LC_GOH_POPUP` instead of starting a popup itself, and each connection here gets its
+//! own local `goh-popup`, which finds the caret in the terminal `goh ssh` runs in. Frames and answers are the same
+//! newline-delimited JSON a local popup reads and writes.
 
 use std::io::{self, BufRead, BufReader, Read, Write};
 use std::net::Shutdown;
@@ -14,25 +14,38 @@ use std::process::{Command, Stdio};
 /// The variable that carries the remote socket path to the adapter.
 pub const VAR: &str = "LC_GOH_POPUP";
 
-/// `goh ssh ARGS...`: ssh with the popup forwarded. Returns ssh's exit code.
-pub fn ssh(args: &[String]) -> i32 {
+/// A listening relay. Its private folder (the socket, and room for ssh's control socket) goes when it is dropped.
+pub struct Relay {
+    pub dir: PathBuf,
+    pub local: PathBuf,
+    /// Where the socket is forwarded to on the remote host.
+    pub remote: String,
+}
+
+impl Drop for Relay {
+    fn drop(&mut self) {
+        let _ = std::fs::remove_dir_all(&self.dir);
+    }
+}
+
+/// Listen for remote adapters. `None` (and a line saying why) when there is no popup to hand them to.
+pub fn start() -> Option<Relay> {
     let Some(popup) = popup_binary() else {
-        eprintln!("goh: goh-popup not found next to goh or on PATH; running plain ssh");
-        return run_ssh(Command::new("ssh").args(args));
+        eprintln!("goh: goh-popup not found next to goh or on PATH; menus over ssh stay inline");
+        return None;
     };
     let dir = std::env::temp_dir().join(format!("goh-ssh-{}", std::process::id()));
     let _ = std::fs::remove_dir_all(&dir);
     if let Err(e) = std::fs::DirBuilder::new().mode(0o700).create(&dir) {
         eprintln!("goh: {}: {e}", dir.display());
-        return 1;
+        return None;
     }
-    let local = dir.join("popup.sock");
-    let listener = match UnixListener::bind(&local) {
+    let relay = Relay { local: dir.join("popup.sock"), remote: format!("/tmp/goh-popup-{}.sock", random_hex()), dir };
+    let listener = match UnixListener::bind(&relay.local) {
         Ok(l) => l,
         Err(e) => {
-            eprintln!("goh: {}: {e}", local.display());
-            let _ = std::fs::remove_dir_all(&dir);
-            return 1;
+            eprintln!("goh: {}: {e}", relay.local.display());
+            return None;
         }
     };
     // Asked here, while nothing else reads the terminal: the remote shell cannot ask it for this machine's popup.
@@ -49,37 +62,7 @@ pub fn ssh(args: &[String]) -> i32 {
             std::thread::spawn(move || serve(conn, &popup, cell_height, own_permission.as_deref()));
         }
     });
-    let remote = format!("/tmp/goh-popup-{}.sock", random_hex());
-    let code = run_ssh(
-        Command::new("ssh")
-            .arg("-R")
-            .arg(format!("{remote}:{}", local.display()))
-            .args(["-o", &format!("SendEnv={VAR}")])
-            .args(args)
-            .env(VAR, &remote),
-    );
-    let _ = std::fs::remove_dir_all(&dir);
-    code
-}
-
-/// Runs ssh in the foreground. While it does, Ctrl+C and Ctrl+\ are ssh's to handle, not this process's.
-fn run_ssh(cmd: &mut Command) -> i32 {
-    let mut child = match cmd.spawn() {
-        Ok(c) => c,
-        Err(e) => {
-            eprintln!("goh: ssh: {e}");
-            return 127;
-        }
-    };
-    // SAFETY: setting a signal disposition to SIG_IGN has no preconditions; the child was spawned before.
-    unsafe {
-        libc::signal(libc::SIGINT, libc::SIG_IGN);
-        libc::signal(libc::SIGQUIT, libc::SIG_IGN);
-    }
-    match child.wait() {
-        Ok(s) => s.code().unwrap_or(255),
-        Err(_) => 255,
-    }
+    Some(relay)
 }
 
 /// One remote adapter's popup: frames in, answers out, until either side closes.

@@ -21,6 +21,7 @@ pub mod server;
 pub mod setup;
 pub mod sources;
 pub mod specs;
+pub mod ssh;
 pub mod update;
 pub mod usage;
 pub mod visits;

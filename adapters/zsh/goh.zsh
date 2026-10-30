@@ -57,7 +57,7 @@ typeset -g _GOH_DISPLAY=${GOH_DISPLAY:-auto}   # auto | overlay | inline
 typeset -g _GOH_LIVE=${GOH_LIVE:-on}           # on | off (as-you-type suggestions)
 typeset -gi _GOH_LIVE_MIN=${GOH_LIVE_MIN:-0}   # characters of the current word before the menu may open by itself
 typeset -g _goh_seen_buf
-typeset -gi _goh_seen_cur=-1 _goh_busy=0 _goh_told_permission=0
+typeset -gi _goh_seen_cur=-1 _goh_busy=0 _goh_told_permission=0 _goh_ssh_wrapped=0
 # Widgets after which an edit counts as the user typing (not history recall, autosuggest accept, ...).
 typeset -ga _goh_typing_widgets=(self-insert magic-space backward-delete-char delete-char vi-backward-delete-char vi-delete-char backward-kill-word kill-word bracketed-paste quoted-insert)
 typeset -g _GOH_POPUP=${GOH_POPUP:-goh-popup}
@@ -937,6 +937,13 @@ goh-load() {
     precmd_functions=(_goh_run_done ${precmd_functions:#_goh_run_done})
   fi
   _goh_sync_context
+  # `ssh` through `goh ssh` (popup.overSsh, on unless set off): a zsh host's menus are drawn by the popup here. Not
+  # where no popup can draw them (over ssh, in a multiplexer, inline only), and never over your own `ssh`.
+  if [[ ${GOH_POPUP_SSH:-on} == on && $_GOH_DISPLAY != inline && -z ${SSH_CONNECTION-}${SSH_TTY-}${TMUX-}${STY-} ]] &&
+     (( ! ${+aliases[ssh]} && ! ${+functions[ssh]} )); then
+    ssh() { command $_GOH_CTL ssh "$@" }
+    _goh_ssh_wrapped=1
+  fi
 }
 
 goh-unload() {
@@ -954,6 +961,7 @@ goh-unload() {
   add-zsh-hook -d chpwd _goh_visit 2>/dev/null
   add-zsh-hook -d precmd _goh_sync_context 2>/dev/null
   add-zsh-hook -d precmd _goh_hook_precmd 2>/dev/null
+  (( _goh_ssh_wrapped )) && { unfunction ssh 2>/dev/null; _goh_ssh_wrapped=0 }
   zle -D _goh_tab _goh_up _goh_down _goh_esc _goh_accept_key _goh_enter _goh_left _goh_right _goh_on_decision 2>/dev/null
   unset _GOH_ORIG_TAB
 }

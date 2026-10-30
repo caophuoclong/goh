@@ -187,8 +187,9 @@ usage: goh <command>
   setup [--shell S] [--rc FILE] [--dry-run] [--uninstall]
                     add the adapter to your shell's startup file (zsh, bash, fish) in one marked block;
                     --uninstall removes exactly that block
-  ssh <ssh args>    ssh with the popup: menus of the remote shell are drawn here, at this terminal's caret
-                    (the remote host needs goh; its sshd must accept LC_* variables, as Debian and Ubuntu do)
+  ssh <ssh args>    ssh with the popup: menus of the remote shell are drawn here, at this terminal's caret; a zsh host
+                    without goh is offered a copy, loaded for the session only (its sshd must accept LC_* variables, as
+                    Debian and Ubuntu do). The zsh adapter runs `ssh` through it unless `popup.overSsh` is off
   init <shell>      print the adapter for zsh, bash, fish, pwsh, nu, elvish or xonsh, e.g.
                       eval \"$(goh init zsh)\"          # in ~/.zshrc
   update            check once for a newer release and say how to get it (needs curl; the only network request goh makes)
@@ -524,7 +525,7 @@ fn utility(sub: &str, rest: &[String]) -> Option<bool> {
             let note = if popups > 0 { format!("; restarted {popups} popup(s), so the font and size are re-read at the next menu") } else { String::new() };
             report(result, &format!("reloaded: gohd now serves {count} commands{note} (open shells keep their adapter; `exec $SHELL` reloads it)"))
         }
-        "ssh" => std::process::exit(goh_daemon::relay::ssh(rest)),
+        "ssh" => std::process::exit(goh_daemon::ssh::run(rest)),
         "popup-bridge" => match rest.first() {
             Some(sock) => goh_daemon::relay::bridge(sock),
             None => {
