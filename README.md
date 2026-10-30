@@ -67,8 +67,12 @@ session prints a one-line note instead of silently drawing inline.
 macOS gives the permission to the terminal app the popup runs in, so each terminal is allowed on its own. To allow
 goh once instead, for every terminal (experimental), set `"popup": { "ownPermission": true }` with `goh config` and open
 a new shell: at its first menu macOS asks for **goh-popup** itself. The macOS packages ship it as `goh-popup.app`, signed
-with goh's own certificate, so the permission stays through updates. A build from source is a new program to macOS
-after each rebuild: remove its old **goh-popup** entries under Privacy & Security > Accessibility (−) and allow it again.
+with goh's own certificate, so the permission stays through updates. A build from source keeps it too when it is
+signed with that certificate: `./install.sh --from-source` and `scripts/package.sh` use it by themselves when
+`../macos-sign/goh-signing.p12` sits beside the checkout (or `GOH_MACOS_SIGN_P12` names it), and after a plain
+`cargo build` run `scripts/macos-sign.sh target/debug/goh-popup`. Otherwise it is signed ad hoc and is a new program
+to macOS after each rebuild: remove its old **goh-popup** entries under Privacy & Security > Accessibility (−) and
+allow it again.
 `goh doctor` still reports the terminal's own permission.
 
 ## Layout
