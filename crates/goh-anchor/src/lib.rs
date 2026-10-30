@@ -1,9 +1,9 @@
 //! Where is the caret on screen? (docs/docs/18, S-04)
 //!
-//! The only source is the macOS Accessibility API in apps whose behaviour was **measured**
-//! (iTerm2, Terminal.app). Everything else is `Unverified`, and an overlay must not be drawn for an
-//! unverified anchor. Coordinates are global screen points with a top-left origin, the same space as
-//! window frames and winit's outer positions.
+//! Sources are macOS Accessibility and, on Linux, AT-SPI terminal text plus X11 window identity.
+//! Everything else is `Unverified`; overlays must never be drawn for an unverified anchor.
+//! macOS coordinates are global screen points. Linux coordinates are X11 physical pixels;
+//! popup surfaces must use the same scale and top-left origin.
 
 pub mod linux;
 mod gate;
@@ -105,9 +105,15 @@ pub fn probe() -> Vec<String> {
     {
         ax::probe()
     }
-    #[cfg(not(target_os = "macos"))]
+    #[cfg(target_os = "linux")]
     {
-        vec!["only available on macOS".to_string()]
+        let (outcome, mut trace) = linux::locate();
+        trace.push(format!("{outcome:?}"));
+        trace
+    }
+    #[cfg(not(any(target_os = "macos", target_os = "linux")))]
+    {
+        vec!["unsupported platform".to_string()]
     }
 }
 
