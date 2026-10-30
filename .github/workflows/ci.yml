@@ -44,7 +44,7 @@ jobs:
           LIBGL_ALWAYS_SOFTWARE: "1"
           NO_AT_BRIDGE: "0"
         run: |
-          dbus-run-session -- xvfb-run -a sh -c 'openbox >/tmp/openbox.log 2>&1 & python3 crates/goh-popup/tools/linux-x11-test.py target/debug/goh-popup'
+          dbus-run-session -- xvfb-run -a sh -c 'openbox >/tmp/openbox.log 2>&1 & python3 crates/goh-popup/tools/linux-x11-test.py target/debug/goh-popup && GOH_TEST_SPLIT=1 python3 crates/goh-popup/tools/linux-x11-test.py target/debug/goh-popup'
 
       - name: Verify XWayland in a headless Wayland compositor
         env:

@@ -1,10 +1,12 @@
 #!/bin/sh
 # Run inside dbus-run-session as a non-root user with Sway and XWayland installed.
 set -eu
+# Linux dash/bash support disabling core dumps; this fixture is Linux-only.
+# shellcheck disable=SC3045
 ulimit -c 0
 [ -d /tmp/.X11-unix ] || mkdir -m 1777 /tmp/.X11-unix
 runtime=$(mktemp -d)
-export XDG_RUNTIME_DIR=$runtime
+export XDG_RUNTIME_DIR="$runtime"
 export WLR_BACKENDS=headless WLR_RENDERER=pixman WLR_LIBINPUT_NO_DEVICES=1
 chmod 700 "$runtime"
 binary=$(realpath "$1")

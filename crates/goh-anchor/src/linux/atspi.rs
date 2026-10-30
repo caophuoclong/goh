@@ -26,6 +26,8 @@ async fn read(pid: u32) -> Result<(Caret, String, String), Reason> {
         if dbus.get_connection_unix_process_id(bus_name).await.map_err(failure)? != pid { continue; }
         let mut stack = vec![(app, 0)];
         let mut visited = 0;
+        let mut visible_terminals = 0;
+        let mut found = None;
         while let Some((object, depth)) = stack.pop() {
             visited += 1;
             if visited > 512 { return Err(failure("terminal accessibility tree exceeds traversal limit")); }
@@ -35,8 +37,15 @@ async fn read(pid: u32) -> Result<(Caret, String, String), Reason> {
                 .cache_properties(CacheProperties::No).build().await.map_err(failure)?;
             let state = accessible.get_state().await.map_err(failure)?;
             if state.contains(State::Defunct) { continue; }
+            let role = accessible.get_role().await.map_err(failure)?;
+            if role == Role::Terminal && state.contains(State::Showing) {
+                visible_terminals += 1;
+                if visible_terminals > 1 {
+                    return Err(failure("multiple visible terminal panes require a shell-to-pane identity provider"));
+                }
+            }
             if state.contains(State::Focused) {
-                if accessible.get_role().await.map_err(failure)? != Role::Terminal || !state.contains(State::Showing) {
+                if role != Role::Terminal || !state.contains(State::Showing) {
                     return Err(Reason::NotTerminalInput);
                 }
                 let text = TextProxy::builder(&conn).destination(name).map_err(failure)?.path(path).map_err(failure)?
@@ -53,7 +62,7 @@ async fn read(pid: u32) -> Result<(Caret, String, String), Reason> {
                 let (x, y, w, h) = first;
                 // A zero/negative or implausibly large rectangle is not a character cell.
                 if w <= 0 || w > 200 || h <= 0 || h > 200 { return Err(Reason::EmptyRect); }
-                return Ok((Caret { x: x.into(), y: y.into(), height: h.into() }, name.into(), path.into()));
+                found = Some((Caret { x: x.into(), y: y.into(), height: h.into() }, name.into(), path.into()));
             }
             if depth < 24 {
                 for child in accessible.get_children().await.map_err(failure)?.into_iter().take(128).rev() {
@@ -61,6 +70,7 @@ async fn read(pid: u32) -> Result<(Caret, String, String), Reason> {
                 }
             }
         }
+        if let Some(result) = found { return Ok(result); }
     }
     Err(Reason::NoFocusedElement { code: None })
 }

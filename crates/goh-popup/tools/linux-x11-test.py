@@ -25,6 +25,12 @@ def resolve(binary, stage="initial"):
 def child(binary, result_file):
     try:
         time.sleep(2)  # allow the terminal accessibility tree to register
+        if os.environ.get("GOH_TEST_SPLIT"):
+            result = subprocess.run([binary, "--resolve"], capture_output=True, text=True, timeout=5)
+            data = json.loads(result.stdout)
+            assert data["display"] == "inline" and "multiple visible terminal panes" in data["reason"], data
+            pathlib.Path(result_file).write_text("ok")
+            return
         initial = resolve(binary)
         def geometry():
             return dict(line.split("=", 1) for line in command("xdotool", "getwindowgeometry", "--shell", os.environ["WINDOWID"]).splitlines())
@@ -90,7 +96,13 @@ def desktop(binary):
     result = tempfile.mktemp(prefix="goh-x11-result-")
     window = Gtk.Window(title="Goh X11 test terminal")
     terminal = Vte.Terminal()
-    window.add(terminal)
+    if os.environ.get("GOH_TEST_SPLIT"):
+        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        box.pack_start(terminal, True, True, 0)
+        box.pack_start(Vte.Terminal(), True, True, 0)
+        window.add(box)
+    else:
+        window.add(terminal)
     window.set_default_size(900, 600)
     window.show_all()
     window.present()
@@ -117,6 +129,9 @@ def desktop(binary):
     message = pathlib.Path(result).read_text()
     pathlib.Path(result).unlink()
     assert message == "ok", message
+    if os.environ.get("GOH_TEST_SPLIT"):
+        print("X11: ambiguous split panes use inline: PASS")
+        return
     print("X11: verified caret, movement verified, focus preserved, popup visible, unmap dismissal, Wayland fallback: PASS")
 
 

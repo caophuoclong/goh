@@ -12,6 +12,8 @@ X11 and XWayland terminals can use the same X11 surface backend. Requirements:
 - Its AT-SPI application has that same process ID and exposes a focused, showing `Terminal` role
   with a stable character rectangle at its caret. Screen coordinates must lie in the terminal
   client area and a RandR monitor. End-of-buffer positions without a rectangle are rejected.
+- Only one visible AT-SPI terminal widget in the terminal process. Multiple panes/windows in that
+  process fall back until shell-to-pane identity can be verified.
 - No SSH, tmux or screen session. These need an independent pane/remote identity provider.
 
 An X11 connection alone does not establish any of these facts. In particular, `DISPLAY` inside a
