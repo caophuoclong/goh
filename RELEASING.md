@@ -10,7 +10,8 @@ push to main ──► release PR opened/updated (version + CHANGELOG, from the 
 ```
 
 Packages (`goh-X.Y.Z-<target>.tar.gz`, with one `SHA256SUMS` file for all): `aarch64-apple-darwin`, `x86_64-apple-darwin`,
-`aarch64-unknown-linux-gnu`, `x86_64-unknown-linux-gnu`. All contain `goh`, `gohd`, `goh-popup`. Linux uses the verified X11/AT-SPI popup path or inline fallback;
+`aarch64-unknown-linux-gnu`, `x86_64-unknown-linux-gnu`. All contain `goh`, `gohd`, `goh-popup`; on macOS `bin/goh-popup`
+links to `libexec/goh-popup.app`. Linux uses the verified X11/AT-SPI popup path or inline fallback;
 native Wayland floating surfaces are not implemented. See [Linux popup backends](docs/linux-popup.md).
 Linux popup runtime libraries include libX11, libxkbcommon-x11, EGL/OpenGL and the desktop accessibility D-Bus service. `install.sh` and the Homebrew formula use exactly these files.
 
@@ -32,6 +33,11 @@ Linux popup runtime libraries include libX11, libxkbcommon-x11, EGL/OpenGL and t
    repository as the secret `HOMEBREW_TAP_TOKEN`. Without it the release still works and only the tap is skipped (the
    run summary says so). To use another tap, set the repository variable `HOMEBREW_TAP_REPO`.
    Users then run `brew install caophuoclong/goh/goh`.
+4. **macOS signing certificate.** Run `scripts/macos-signing-cert.sh <safe folder>` once and store the two files it
+   writes as the secrets `MACOS_SIGN_P12` and `MACOS_SIGN_P12_PASSWORD` (it prints the `gh secret set` commands). The
+   macOS packages sign `goh-popup.app` with it, so macOS keeps goh-popup's own Accessibility permission
+   (`popup.ownPermission`) through updates. Keep the files: a new certificate makes every user allow goh-popup again.
+   Without the secrets the bundle is signed ad hoc and the run summary says so.
 
 ## Every release
 

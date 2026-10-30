@@ -26,7 +26,7 @@
     // Font size for the popup, in points (8-32).
     "fontSize": 13,
     // macOS: ask for the Accessibility permission once, for goh-popup itself, instead of once per terminal app.
-    // Experimental; an unsigned build has to be allowed again after each update.
+    // Experimental; the release packages keep it through updates, a build from source must be allowed again.
     "ownPermission": false
   },
 

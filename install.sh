@@ -6,11 +6,12 @@
 #
 #   ./install.sh --version 1.2.3       a given release instead of the latest
 #   ./install.sh --from-source         build with cargo instead of downloading (this is also the fallback)
-#   ./install.sh --no-rc               install the binaries only; do not touch any shell startup file
+#   ./install.sh --no-rc               install (or uninstall) the binaries only; do not touch any shell startup file
 #   ./install.sh --uninstall           remove the binaries and the block this script added to your shell file
 #
 # It downloads the release package for your system (macOS or Linux, Intel or ARM), checks its SHA-256, and puts goh,
-# gohd and (on macOS/Linux) goh-popup in $GOH_BIN (default ~/.local/bin). Then it adds one marked block to ~/.zshrc,
+# gohd and (on macOS/Linux) goh-popup in $GOH_BIN (default ~/.local/bin); on macOS goh-popup links to goh-popup.app
+# in $GOH_LIB (default ~/.local/lib/goh). Then it adds one marked block to ~/.zshrc,
 # ~/.bashrc or fish's config.fish ($GOH_RC names another file); --uninstall removes exactly that block.
 # Re-running updates the binaries and leaves the block as it is. Building from source needs Rust (https://rustup.rs).
 
@@ -20,6 +21,7 @@ SLUG=${GOH_SLUG:-caophuoclong/goh}
 REPO=${GOH_REPO:-https://github.com/$SLUG.git}
 RELEASES=${GOH_RELEASES:-https://github.com/$SLUG/releases}
 BIN=${GOH_BIN:-$HOME/.local/bin}
+LIB=${GOH_LIB:-$HOME/.local/lib/goh}
 BEGIN='# >>> goh >>>'
 END='# <<< goh <<<'
 
@@ -67,7 +69,9 @@ if [ "$action" = uninstall ]; then
   if command -v goh >/dev/null 2>&1; then goh stop >/dev/null 2>&1 || true; fi
   pkill -U "$(id -u)" -x goh-popup 2>/dev/null || true
   for f in goh gohd goh-popup; do rm -f "$BIN/$f"; done
-  remove_block
+  rm -rf "$LIB/goh-popup.app"
+  rmdir "$LIB" 2>/dev/null || true
+  [ "$touch_rc" = 0 ] || remove_block
   say "uninstalled. Open shells keep the adapter until you run: exec \$SHELL"
   say "your specs, settings and learned data stay (~/.config/goh, ~/.local/share/goh); \`rm -r\` them if you want them gone"
   exit 0
@@ -109,9 +113,22 @@ install_release() {
     tar -xzf "$name.tar.gz" ) || { say "download or checksum failed for $name"; return 1; }
   for f in "$work/$name"/bin/*; do
     b=$(basename "$f")
+    [ -L "$f" ] && continue  # macOS goh-popup: a link into its app bundle, installed below
     # Replace through a rename: a running copy keeps working until it exits.
     cp "$f" "$BIN/.$b.new" && mv -f "$BIN/.$b.new" "$BIN/$b"
   done
+  # The app bundle keeps macOS's Accessibility permission for goh-popup itself across updates.
+  if [ -d "$work/$name/libexec/goh-popup.app" ]; then
+    mkdir -p "$LIB"
+    rm -rf "$LIB/.goh-popup.app.new"
+    if ! { cp -R "$work/$name/libexec/goh-popup.app" "$LIB/.goh-popup.app.new" &&
+           rm -rf "$LIB/goh-popup.app" && mv "$LIB/.goh-popup.app.new" "$LIB/goh-popup.app" &&
+           ln -sf "$LIB/goh-popup.app/Contents/MacOS/goh-popup" "$BIN/.goh-popup.new" &&
+           mv -f "$BIN/.goh-popup.new" "$BIN/goh-popup"; }; then
+      say "could not install goh-popup.app in $LIB"
+      return 1
+    fi
+  fi
   # A popup left from an earlier version (older/minimal packages may have none) would be stale.
   [ -x "$work/$name/bin/goh-popup" ] || rm -f "$BIN/goh-popup"
   say "installed goh $ver in $BIN"
