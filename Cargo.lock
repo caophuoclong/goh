@@ -364,6 +364,7 @@ checksum = "c77886257be21c9cd89a4ae7e64860c6f0eefca799bb79127913052bd0eefb3d"
 dependencies = [
  "atspi-common",
  "atspi-proxies",
+ "zbus",
 ]
 
 [[package]]
@@ -1461,8 +1462,12 @@ dependencies = [
 name = "goh-anchor"
 version = "1.7.1"
 dependencies = [
+ "async-io",
+ "atspi",
+ "futures-lite",
  "libc",
  "serde_json",
+ "x11rb",
 ]
 
 [[package]]

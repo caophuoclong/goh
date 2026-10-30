@@ -5,6 +5,7 @@
 //! unverified anchor. Coordinates are global screen points with a top-left origin, the same space as
 //! window frames and winit's outer positions.
 
+pub mod linux;
 mod gate;
 mod retry;
 mod rules;
@@ -20,6 +21,8 @@ pub use rules::{caret_from_rect, App, Caret, Rect, Reason};
 pub struct Focus {
     #[cfg(target_os = "macos")]
     pub(crate) inner: ax::Focus,
+    #[cfg(target_os = "linux")]
+    pub(crate) inner: linux::Focus,
 }
 
 /// A caret position tied to the particular terminal window and text element that owns it.
@@ -63,7 +66,12 @@ pub fn locate_with(opts: &Options) -> (Outcome, Vec<String>) {
     {
         ax::locate_traced(opts)
     }
-    #[cfg(not(target_os = "macos"))]
+    #[cfg(target_os = "linux")]
+    {
+        let _ = opts;
+        linux::locate()
+    }
+    #[cfg(not(any(target_os = "macos", target_os = "linux")))]
     {
         let _ = opts;
         (Outcome::Unverified(Reason::UnsupportedPlatform), Vec::new())
