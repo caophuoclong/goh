@@ -243,7 +243,7 @@ _goh_pop_show() {
   [[ $_GOH_DISPLAY == inline ]] && return 1
   _goh_pop_alive || _goh_pop_start || return 1
   _goh_window
-  local enter=false; (( _goh_navigated )) && enter=true
+  local enter=false; _goh_enter_takes && enter=true
   local theme= k ctx cell=
   for k in surface-base surface-selected border-subtle text-primary text-muted accent text-match; do
     [[ ${_goh_theme[$k]-} =~ '^#[0-9a-f]{6}$' ]] && theme+="${theme:+,}\"$k\":\"${_goh_theme[$k]}\""
@@ -473,7 +473,7 @@ _goh_render() {
   local pos="$_goh_sel/$#_goh_label" accept_hint="Tab/→"
   (( _goh_ghost_line && _goh_ghost_line != _goh_sel )) && accept_hint="→ line · Tab"
   (( $#_goh_label >= 50 )) && pos+='+'   # menus ask for 50: there may be more
-  (( _goh_navigated )) && accept_hint="Tab/Enter/→"
+  _goh_enter_takes && accept_hint="Tab/Enter/→"
   row="  $pos · $accept_hint insert · ↑↓ move · Esc/← close"
   (( ${#row} > width )) && row="  $pos · ↑↓ $accept_hint Esc"
   (( ${#row} > width )) && row="  $pos"
@@ -579,12 +579,22 @@ _goh_accept() {
   return 0
 }
 
-# Navigation makes Enter an explicit selection. An untouched menu must not change a command
-# being submitted; delegate to the user's saved widget, including plugin wrappers.
+# Enter takes the highlighted candidate after navigation, or the only one, unless taking it would
+# change no more than a trailing space (the line is already complete: run it).
+_goh_enter_takes() {
+  (( _goh_navigated )) && return 0
+  (( $#_goh_label == 1 )) || return 1
+  local _goh_new _goh_pre
+  _goh_splice "$BUFFER" ${_goh_start[1]} ${_goh_end[1]} "${_goh_insert[1]}" ${_goh_cursor[1]}
+  [[ ${_goh_new% } != "${BUFFER% }" ]]
+}
+
+# An untouched menu with several choices must not change a command being submitted; delegate to
+# the user's saved widget, including plugin wrappers.
 _goh_enter() {
   local key=${(V)KEYS}
   local original=${_goh_saved[$key]:-accept-line}
-  if (( _goh_navigated )) && _goh_accept; then return 0; fi
+  if _goh_valid && _goh_enter_takes && _goh_accept; then return 0; fi
   # Line-finish owns cleanup when the original widget submits; do not force a refresh here.
   zle $original
 }

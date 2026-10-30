@@ -23,6 +23,8 @@ It reproduces what Fig was useful for, not its branding, and has no dependency o
   `git checkout -b fix`), shows the command that usually comes next, and remembers the values you gave an option (see
   [Privacy](#privacy)). The best of those lines is shown as ghost text after the cursor, as zsh-autosuggestions does:
   → takes the whole line, Tab the selected suggestion.
+- Enter inserts the highlighted suggestion once you have moved in the menu (↑↓), or the only one when the menu shows
+  just one; press Enter again to run. With several untouched suggestions, Enter runs the line as typed.
 - Never executes anything for you: it only inserts the candidate you pick.
 - Runs fully local. Command text is not sent over the network (the one optional request is the update check, see [Privacy](#privacy)).
 
@@ -100,6 +102,25 @@ The install script downloads the package for your system, checks its SHA-256, pu
 `~/.local/bin` (`GOH_BIN` changes it) and adds one marked block to your `~/.zshrc`, `~/.bashrc` or fish `config.fish`
 that puts that folder on `PATH` and loads the adapter. `--version 1.2.3` picks a release; re-running updates;
 `--uninstall` removes the binaries and exactly that block; `--no-rc` leaves your shell files alone.
+
+### Linux
+
+The install script picks the x86-64 or ARM package by itself:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/caophuoclong/goh/main/install.sh | sh
+```
+
+Then open a new terminal. Pass options after `sh -s --`, for example a fixed release:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/caophuoclong/goh/main/install.sh | sh -s -- --version 1.8.0
+```
+
+Homebrew on Linux works too (`brew install caophuoclong/goh/goh && goh setup`). Suggestions work in any terminal;
+the floating popup at the cursor needs X11 or XWayland, a terminal that exports `WINDOWID` and exposes AT-SPI
+accessibility over D-Bus, and the `libxkbcommon-x11` and EGL/OpenGL libraries. Native Wayland, SSH, tmux and screen
+use the inline menu. `goh-popup --probe` explains the choice; see [Linux popup support](docs/linux-popup.md).
 
 Homebrew and manual installs do not edit your shell files (Homebrew never does). Run once, then open a new terminal:
 

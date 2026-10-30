@@ -1115,7 +1115,7 @@ fn accepted_text_is_not_left_in_another_plugins_suggestion_highlight() {
 }
 
 #[test]
-fn enter_accepts_after_navigation_and_executes_an_untouched_menu() {
+fn enter_accepts_after_navigation_or_a_lone_candidate_and_executes_an_untouched_menu() {
     let fx = Fixture::new(require_env!(), true);
     let mut sh = fx.shell(LIVE, true);
     let ran = fx.path("ran.txt");
@@ -1156,7 +1156,14 @@ fn enter_accepts_after_navigation_and_executes_an_untouched_menu() {
     sh.send("h", 300);
     sh.send("\r", 400);
     assert!(fx.state(&mut sh).starts_with("BUF[] CUR=0 on=0"));
-    assert_eq!(fs::read_to_string(ran).unwrap(), "c\ncherry-pick\nc\ncherry-pick\nch\n");
+    // A lone candidate needs no navigation: Enter inserts it without running, and the next Enter runs.
+    sh.send("git chec", 400);
+    assert_eq!(fx.state(&mut sh), "BUF[git chec] CUR=8 on=1 sel=1 post[kout ]");
+    sh.send("\r", 400);
+    assert!(fx.state(&mut sh).starts_with("BUF[git checkout ] CUR=13 on=0"), "Enter takes the only candidate");
+    sh.send("\r", 400);
+    assert!(fx.state(&mut sh).starts_with("BUF[] CUR=0 on=0"));
+    assert_eq!(fs::read_to_string(ran).unwrap(), "c\ncherry-pick\nc\ncherry-pick\nch\ncheckout\n");
 }
 
 #[test]

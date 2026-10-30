@@ -7,7 +7,7 @@ uses an overlay when the terminal supports it, with an inline fallback.
 |---|---|
 | Tab (menu closed) | Native completion in live mode. With `GOH_LIVE=off`: insert a lone candidate or open the menu for several. |
 | Tab / Right (menu open) | Insert the highlighted candidate, then close. Never runs the command. |
-| Enter | After ↑↓/Shift+Tab or wheel navigation: insert the highlighted candidate without executing. Before navigation or with no menu: original shell binding, run the typed line. Editing resets navigation intent. |
+| Enter | After ↑↓/Shift+Tab or wheel navigation, or when the menu holds a single candidate: insert it without executing (a lone candidate that would only add a trailing space runs the line instead). Otherwise, or with no menu: original shell binding, run the typed line. Editing resets navigation intent. |
 | Wheel / trackpad over popup (macOS) | Move the highlight and scroll the list; stops at either end. Keyboard focus stays in the terminal. |
 | Up / Down, Shift+Tab | Move the highlight, wrapping. Bound **only while the menu is open**. |
 | Esc | Close the menu. Bound only while it is open. |
