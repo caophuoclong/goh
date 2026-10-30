@@ -191,7 +191,8 @@ usage: goh <command>
                     `updates.check` in `goh config` does this by itself once a day and prints one line when a shell starts
   forget            delete what goh has learned from your choices and the commands it recorded (`~/.local/share/goh/usage`, `runs`)
   spec gen <command> [--print] [--force]   write a spec for a command that has none, read from its --help
-  config            open the settings file in your editor (created on first use)
+  config            edit the settings file in this terminal with $EDITOR (created on first use, with a comment
+                    on every setting; an older file without comments gets them, the old one kept as .bak)
   config path|show|env   where it is, what is in effect, what the shell adapters read
   specs [--missing] list the completion specs (bundled and yours); --missing lists programs you ran that have none
                     (needs `privacy.recordCommands`)
@@ -386,22 +387,21 @@ fn config(sub: Option<&str>) -> bool {
                 Ok(p) => p,
                 Err(e) => return fail(format!("{e}")),
             };
-            match config::open_in_editor(&path) {
-                Ok(done) => {
-                    // A terminal editor has exited, so what was saved can be checked right away.
-                    match (done, std::fs::read_to_string(&path).map_err(|e| e.to_string()).and_then(|t| config::validate(&t))) {
-                        (true, Err(e)) => fail(format!("{}: {e}", path.display())),
-                        (true, Ok(())) => {
-                            println!("saved {} (open shells pick it up after `exec $SHELL`; the daemon needs nothing)", path.display());
-                            true
-                        }
-                        (false, _) => {
-                            println!("opened {} in your default editor; `goh doctor` checks it afterwards", path.display());
-                            true
-                        }
-                    }
+            match config::add_comments(&path) {
+                Ok(Some(copy)) => println!("added a comment on every setting to {} (your settings are unchanged; the old file is {})", path.display(), copy.display()),
+                Ok(None) => {}
+                Err(e) => eprintln!("goh: could not add comments to {}: {e}", path.display()),
+            }
+            if let Err(e) = config::open_in_editor(&path) {
+                return fail(format!("{e}"));
+            }
+            // The editor has exited, so what was saved can be checked right away.
+            match std::fs::read_to_string(&path).map_err(|e| e.to_string()).and_then(|t| config::validate(&t)) {
+                Err(e) => fail(format!("{}: {e}", path.display())),
+                Ok(()) => {
+                    println!("saved {} (open shells pick it up after `exec $SHELL`; the daemon needs nothing)", path.display());
+                    true
                 }
-                Err(e) => fail(format!("{e}")),
             }
         }
         Some("path") => match config::path() {

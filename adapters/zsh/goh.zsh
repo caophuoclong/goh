@@ -843,15 +843,15 @@ _goh_run_done() {
 }
 
 # At an empty prompt, the command that usually follows the last one run in this folder, as ghost text:
-# Right or Tab takes it, typing anything else drops it. Needs the command record (GOH_RECORD=on); GOH_PREDICT=off
-# turns it off.
+# Right or Tab takes it, typing anything else drops it. Off by default, so nothing shows until you type: needs
+# GOH_PREDICT=on (display.predict) and the command record (GOH_RECORD=on).
 typeset -g _goh_pred _goh_orig_right_csi _goh_orig_right_ss3
 _goh_drop_pred() { [[ -n $_goh_pred ]] || return 0; _goh_pred=; _goh_clear_ghost }
 _goh_hook_predict() {
   emulate -L zsh
   setopt no_unset
   _goh_pred=
-  [[ ${GOH_RECORD-} == on && ${GOH_PREDICT-on} != off && $_GOH_LIVE == on && -z $BUFFER ]] || return 0
+  [[ ${GOH_RECORD-} == on && ${GOH_PREDICT-off} == on && $_GOH_LIVE == on && -z $BUFFER ]] || return 0
   (( _goh_busy )) && return 0
   local out
   out=$(command $_GOH_CTL menu --live --session $_GOH_SESSION --cwd $PWD --limit 1 --cursor-byte 0 --buffer '' 2>/dev/null) || return 0
@@ -882,7 +882,8 @@ _goh_right() {
 # `goh reload` restarts gohd; in this shell it also loads the adapter again, from the goh now installed and with the
 # config read again, so no `exec $SHELL` is needed here. Other open shells keep theirs until they do the same.
 goh() {
-  command $_GOH_CTL "$@" || return
+  # `goh config` runs $EDITOR: hand it over even when it is set in this shell but not exported.
+  EDITOR=${EDITOR-} VISUAL=${VISUAL-} command $_GOH_CTL "$@" || return
   [[ ${1-} == reload && -n $_GOH_ORIG_TAB ]] || return 0   # after `goh-unload`, stays unloaded
   goh-unload
   (( $#_goh_from_config )) && unset $_goh_from_config   # values you set yourself stay

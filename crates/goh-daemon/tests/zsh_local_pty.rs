@@ -1,5 +1,5 @@
 //! zsh adapter + the opt-in command record, in a real zsh on a pseudo-terminal: lines that ran are recorded,
-//! the usual next command shows as ghost text at an empty prompt (Right takes it), `$NA` completes from the
+//! the usual next command shows as ghost text at an empty prompt when prediction is on (Right takes it), `$NA` completes from the
 //! shell's exported variables. The daemon runs in this process, so the process-wide settings are set once here.
 
 mod common;
@@ -17,9 +17,9 @@ fn adapter() -> PathBuf {
 }
 
 impl Fixture {
-    /// zsh with the adapter loaded, the record on, and a `^Xd` widget that dumps the line state.
+    /// zsh with the adapter loaded, the record and prediction on, and a `^Xd` widget that dumps the line state.
     fn recording_shell(&self, runs: &Path) -> Pty {
-        let env = [("GOH_RECORD", "on"), ("GOH_LIVE", "on"), ("GOH_RUNS", runs.to_str().unwrap())];
+        let env = [("GOH_RECORD", "on"), ("GOH_PREDICT", "on"), ("GOH_LIVE", "on"), ("GOH_RUNS", runs.to_str().unwrap())];
         let mut pty = Pty::spawn(self.command("zsh", &["-f", "-i"], &env));
         pty.drain(Duration::from_millis(500), Duration::from_secs(3));
         let dump = self.path("dump.txt");

@@ -140,9 +140,11 @@ Off by default. With `privacy.recordCommands` set in `goh config` (open shells p
 adapter notes each line when it starts and hands a **successful** one to `goh record`, which leaves out anything
 that looks secret and lines starting with a space. Then:
 
-- typing the start of a line you ran before adds it to the menu (and as ghost text when it is the top row);
-- at an empty prompt the command that usually follows the last one run in this folder shows as ghost text; **Right**
-  or **Tab** puts it in the line, any other key drops it (`display.predict` / `GOH_PREDICT=off` turns it off);
+- from the first key you type, lines you ran before that start with it are in the menu (and the top one as ghost
+  text), even before the line is a recognised command; once it is, the command's own suggestions come first;
+- with `display.predict` on (off by default, so nothing shows until you type), at an empty prompt the command that
+  usually follows the last one run in this folder shows as ghost text; **Right** or **Tab** puts it in the line, any
+  other key drops it;
 - `kubectl -n <TAB>` lists the values you gave `-n` before.
 
 `goh forget` deletes the record. The Right arrow is rebound only while this is on, and passes through to your own

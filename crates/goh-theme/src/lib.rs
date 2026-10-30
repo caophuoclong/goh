@@ -172,7 +172,57 @@ pub fn config_path() -> Option<PathBuf> {
 
 /// The config file as JSON; a missing or unparsable file is `None` (every setting then has its default).
 pub fn read_config() -> Option<Value> {
-    serde_json::from_str(&std::fs::read_to_string(config_path()?).ok()?).ok()
+    parse_config(&std::fs::read_to_string(config_path()?).ok()?).ok()
+}
+
+/// The config file's text as JSON. `//` and `/* */` comments are allowed, so the file can say what each setting does.
+pub fn parse_config(text: &str) -> serde_json::Result<Value> {
+    serde_json::from_str(&strip_comments(text))
+}
+
+/// `text` without its `//` and `/* */` comments; inside strings they are left alone. Line breaks stay, so a syntax
+/// error still names the right line.
+pub fn strip_comments(text: &str) -> String {
+    let mut out = String::with_capacity(text.len());
+    let mut chars = text.chars().peekable();
+    let (mut in_string, mut escaped) = (false, false);
+    while let Some(c) = chars.next() {
+        if in_string {
+            out.push(c);
+            if escaped {
+                escaped = false;
+            } else if c == '\\' {
+                escaped = true;
+            } else if c == '"' {
+                in_string = false;
+            }
+            continue;
+        }
+        match (c, chars.peek()) {
+            ('"', _) => {
+                in_string = true;
+                out.push(c);
+            }
+            ('/', Some('/')) => {
+                while chars.next_if(|&n| n != '\n').is_some() {}
+            }
+            ('/', Some('*')) => {
+                chars.next();
+                let mut prev = ' ';
+                for n in chars.by_ref() {
+                    if n == '\n' {
+                        out.push(n);
+                    }
+                    if prev == '*' && n == '/' {
+                        break;
+                    }
+                    prev = n;
+                }
+            }
+            _ => out.push(c),
+        }
+    }
+    out
 }
 
 pub fn parse_colorfgbg(s: &str) -> Option<u8> {
@@ -314,6 +364,14 @@ impl Resolved {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn the_config_may_carry_comments_but_strings_are_kept_whole() {
+        let text = "{\n  // what it does\n  \"a\": \"http://x/*y*/\", /* inline */ \"b\": 1,\n  /* two\n     lines */ \"c\": \"q\\\"//\"\n}";
+        assert_eq!(parse_config(text).unwrap(), json!({ "a": "http://x/*y*/", "b": 1, "c": "q\"//" }));
+        let err = parse_config("{\n/* a\n b */\n \"a\": }").unwrap_err();
+        assert_eq!(err.line(), 4, "line numbers still match the file");
+    }
 
     fn rgb(h: &str) -> Rgb {
         Rgb::from_hex(h).unwrap()

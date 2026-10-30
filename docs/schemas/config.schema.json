@@ -43,8 +43,8 @@
         },
         "predict": {
           "type": "boolean",
-          "default": true,
-          "description": "At an empty prompt, offer the command that usually follows the last one run in this folder. Needs privacy.recordCommands."
+          "default": false,
+          "description": "At an empty prompt, before any key is pressed, offer the command that usually follows the last one run in this folder. Off: nothing is suggested until you type. Needs privacy.recordCommands."
         }
       }
     },

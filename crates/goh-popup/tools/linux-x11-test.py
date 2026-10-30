@@ -22,6 +22,21 @@ def resolve(binary, stage="initial"):
     return data
 
 
+def popup_windows():
+    found = subprocess.run(["xdotool", "search", "--onlyvisible", "--name", "^goh-popup$"], capture_output=True, text=True)
+    return found.stdout.split()
+
+
+def wait_until(condition, timeout):
+    """Poll instead of sleeping a fixed time: a debug build with software GL is slow on CI runners."""
+    deadline = time.monotonic() + timeout
+    while not condition():
+        if time.monotonic() > deadline:
+            return False
+        time.sleep(0.1)
+    return True
+
+
 def child(binary, result_file):
     try:
         time.sleep(2)  # allow the terminal accessibility tree to register
@@ -54,17 +69,16 @@ def child(binary, result_file):
             assert selector.select(5), "no popup decision"
             decision = json.loads(popup.stdout.readline())
             assert decision["display"] == "overlay", decision
-            time.sleep(0.5)
+            if not wait_until(popup_windows, 15):
+                stderr_log.seek(0)
+                raise AssertionError(f"popup did not become visible: {stderr_log.read()}")
+            # Focus is checked once the popup is mapped, which is when a window manager would move it.
             assert command("xdotool", "getwindowfocus") == terminal_focus, "popup stole keyboard focus"
-            windows = command("xdotool", "search", "--onlyvisible", "--name", "^goh-popup$")
-            assert windows, "popup did not become visible"
             # This checks actual window policy, independently of the JSON decision.
-            info = command("xwininfo", "-id", windows.splitlines()[0])
+            info = command("xwininfo", "-id", popup_windows()[0])
             assert "Override Redirect State: yes" in info, info
             subprocess.check_call(["xdotool", "windowunmap", os.environ["WINDOWID"]])
-            time.sleep(0.8)
-            visible = subprocess.run(["xdotool", "search", "--onlyvisible", "--name", "^goh-popup$"], capture_output=True)
-            assert visible.returncode == 1, "popup remained visible after terminal unmapped"
+            assert wait_until(lambda: not popup_windows(), 5), "popup remained visible after terminal unmapped"
         finally:
             if popup.poll() is None:
                 popup.stdin.write('{"type":"quit"}\n')
@@ -120,7 +134,7 @@ def desktop(binary):
     started = time.monotonic()
 
     def check():
-        if pathlib.Path(result).exists() or time.monotonic() - started > 30:
+        if pathlib.Path(result).exists() or time.monotonic() - started > 60:
             Gtk.main_quit()
             return False
         return True
