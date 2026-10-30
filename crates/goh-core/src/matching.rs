@@ -39,26 +39,51 @@ pub fn match_label(typed: &str, label: &str) -> Option<Match> {
     if want.len() < 2 {
         return None;
     }
-    let mut ranges: Vec<[usize; 2]> = Vec::new();
-    let mut next = 0;
-    let mut first = None;
-    let mut last = 0;
-    for (idx, (start, c, end)) in have.iter().enumerate() {
-        if next < want.len() && *c == want[next] {
-            match ranges.last_mut() {
-                Some(r) if r[1] == *start => r[1] = *end,
-                _ => ranges.push([*start, *end]),
+    // The tightest in-order run wins: `goh` in `phuoclong/personal/goh` is its last three letters, not `g…o…h`
+    // spread out from the first `g`.
+    let mut best: Option<(usize, Vec<[usize; 2]>)> = None;
+    for first in (0..have.len()).filter(|&i| have[i].1 == want[0]) {
+        let mut ranges: Vec<[usize; 2]> = Vec::new();
+        let mut next = 0;
+        let mut last = first;
+        for (idx, (start, c, end)) in have.iter().enumerate().skip(first) {
+            if *c == want[next] {
+                match ranges.last_mut() {
+                    Some(r) if r[1] == *start => r[1] = *end,
+                    _ => ranges.push([*start, *end]),
+                }
+                last = idx;
+                next += 1;
+                if next == want.len() {
+                    break;
+                }
             }
-            first.get_or_insert(idx);
-            last = idx;
-            next += 1;
+        }
+        if next < want.len() {
+            break; // a later start cannot fit it either
+        }
+        let gaps = last - first + 1 - want.len();
+        if !matches!(best, Some((b, _)) if b <= gaps) {
+            best = Some((gaps, ranges));
         }
     }
-    if next < want.len() {
-        return None;
-    }
-    let gaps = last - first.unwrap_or(0) + 1 - want.len();
+    let (gaps, ranges) = best?;
     Some(Match { score: 50.0 - gaps.min(40) as f64, ranges })
+}
+
+/// A path is matched by its last component first: `goh` finds `~/personal/goh` before `~/.oh-my-zsh`, whose full
+/// path only spells it across `phuoclong/.oh`. The whole path still matches when the last component does not,
+/// ranked below every match on a last component (those score at least 10). Typing a `/` matches the whole path.
+pub fn match_path(typed: &str, label: &str) -> Option<Match> {
+    let base = label.trim_end_matches('/').rfind('/').map_or(0, |i| i + 1);
+    if base == 0 || typed.contains('/') {
+        return match_label(typed, label);
+    }
+    if let Some(m) = match_label(typed, &label[base..]) {
+        let ranges = m.ranges.iter().map(|r| [r[0] + base, r[1] + base]).collect();
+        return Some(Match { score: m.score, ranges });
+    }
+    match_label(typed, label).map(|m| Match { score: m.score / 5.0, ..m })
 }
 
 /// A near miss for a word that was almost typed right: one slip (a letter swapped, dropped, added or wrong) in
@@ -140,6 +165,25 @@ mod tests {
         assert!(near("xyzw", "status").is_none());
         assert!(near("chkot", "checkout").is_none(), "too far for a short word");
         assert!(near("checkout", "checkout").is_none(), "a right word is not a slip");
+    }
+
+    #[test]
+    fn subsequence_takes_the_tightest_run() {
+        let m = match_label("goh", "phuoclong/personal/goh").unwrap();
+        assert_eq!(m.score, 50.0);
+        assert_eq!(m.ranges, vec![[19, 22]]);
+    }
+
+    #[test]
+    fn a_path_matches_by_its_last_component_first() {
+        let own = match_path("goh", "/Users/me/personal/goh").unwrap();
+        let spread = match_path("goh", "/Users/phuoclong/.oh-my-zsh").unwrap();
+        let nested = match_path("goh", "/Users/phuoclong/.oh-my-zsh/lib").unwrap();
+        assert_eq!(own.ranges, vec![[19, 22]]);
+        assert!(own.score > spread.score && own.score > nested.score);
+        assert!(match_path("lib", "/Users/phuoclong/.oh-my-zsh/lib/").unwrap().score == 100.0, "trailing slash");
+        assert_eq!(match_path("my/l", "/Users/x/.oh-my-zsh/lib").unwrap().ranges, vec![[13, 15], [19, 21]]);
+        assert!(match_path("zz", "/Users/x/goh").is_none());
     }
 
     #[test]

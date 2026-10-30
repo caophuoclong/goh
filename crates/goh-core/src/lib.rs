@@ -428,7 +428,8 @@ impl<'a> Sink<'a> {
     }
 
     fn push(&mut self, label: &str, description: Option<&str>, kind: Kind, insert_text: String, source: Source, scope: &str) {
-        let (m, close) = match matching::match_label(&self.typed, label) {
+        let found = if kind == Kind::Directory { matching::match_path(&self.typed, label) } else { matching::match_label(&self.typed, label) };
+        let (m, close) = match found {
             Some(m) => (m, false),
             // Typing `chekcout` finds `checkout`, but a file name is not a word to correct.
             None if !matches!(kind, Kind::File | Kind::Directory) => match matching::near(&self.typed, label) {
