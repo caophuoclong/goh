@@ -21,7 +21,7 @@ sway -c "$runtime/config" > "$runtime/sway.log" 2>&1 &
 sway_pid=$!
 trap 'kill "$sway_pid" 2>/dev/null || true' EXIT INT TERM
 attempt=0
-while [ ! -f "$runtime/status" ] && [ "$attempt" -lt 400 ]; do
+while [ ! -f "$runtime/status" ] && [ "$attempt" -lt 900 ]; do
   kill -0 "$sway_pid" 2>/dev/null || { cat "$runtime/sway.log"; exit 1; }
   sleep 0.1
   attempt=$((attempt + 1))

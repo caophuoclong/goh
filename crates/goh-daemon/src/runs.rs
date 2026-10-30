@@ -332,9 +332,10 @@ impl Runs {
     }
 
     /// Lines that begin with `typed` and go on, best first: used more, more recently, and in this folder. Lines
-    /// that did their job once ([`done_once`]) are left out.
+    /// that did their job once ([`done_once`]) are left out. From the first key, so history is offered while the
+    /// command is still being typed, before a spec recognises it.
     pub fn lines_starting(&self, typed: &str, cwd: &str, now: u64, limit: usize) -> Vec<Seen> {
-        if typed.chars().count() < 3 {
+        if typed.trim().is_empty() {
             return vec![];
         }
         let mut found: HashMap<&str, Seen> = HashMap::new();
@@ -568,7 +569,9 @@ mod tests {
         let found = r.lines_starting("docker compose ", "/b", NOW, 3);
         assert_eq!(found.iter().map(|s| s.line.as_str()).collect::<Vec<_>>(), ["docker compose logs -f web", "docker compose up -d --build", "docker compose up -d"]);
         assert_eq!((found[0].count, found[0].here, found[1].here), (2, true, false));
-        assert!(r.lines_starting("do", "/b", NOW, 3).is_empty(), "two characters are too few to guess from");
+        let first_key = r.lines_starting("d", "/b", NOW, 3);
+        assert_eq!(first_key[0].line, "docker compose logs -f web", "history is offered from the first key");
+        assert!(r.lines_starting(" ", "/b", NOW, 3).is_empty(), "nothing typed yet");
         assert!(r.lines_starting("docker compose up -d --build", "/b", NOW, 3).is_empty(), "a finished line adds nothing");
     }
 

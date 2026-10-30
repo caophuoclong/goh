@@ -310,11 +310,12 @@ which appends `epoch TAB cwd TAB line` to `~/.local/share/goh/runs` (`GOH_RUNS`;
 kept). `runs::looks_secret` leaves out a line containing a secret-like word, a `user:pass@host` URL or a long
 opaque token; a line starting with a space is also never recorded. From it the daemon offers:
 
-- **History lines**: at the end of a line of three or more characters, the lines you ran that start with it, by use,
-  recency and folder (`Kind::History`, after the spec's suggestions; at most three).
+- **History lines**: at the end of a line, from its first character, the lines you ran that start with it, by use,
+  recency and folder (`Kind::History`, after the spec's suggestions; at most three). They are offered whether or
+  not the line is a recognised command yet, so history fills the menu until a spec takes over alongside it.
 - **Prediction**: at an empty prompt, what followed the last command run in this folder (within 30 minutes) at
   least twice before, as the full line when the same line repeated, else just the command (`git commit `). The zsh
-  adapter shows it as ghost text; Right or Tab takes it (`display.predict` / `GOH_PREDICT=off` turns it off).
+  adapter shows it as ghost text; Right or Tab takes it (off by default: `display.predict` / `GOH_PREDICT=on` turns it on).
 - **Option values**: `kubectl -n <TAB>` lists the values earlier runs gave `-n`, first. Options named like a
   secret (`token`, `pass`, `key`, ...) and values that look like one are never recalled.
 

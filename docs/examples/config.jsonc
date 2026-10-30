@@ -1,0 +1,66 @@
+// goh settings. `goh config` opens this file in $EDITOR; `goh config show` prints it and checks it.
+// Comments (// and /* */) are allowed. An environment variable you set yourself (GOH_LIVE=off, ...) wins over this
+// file. Shells read it when they start: after a change run `exec $SHELL` (or `goh reload`); the daemon needs nothing.
+{
+  "configVersion": 1,
+
+  "display": {
+    // Where the suggestion menu is drawn.
+    //   "auto":    a popup at the cursor where goh can find it (iTerm2, Terminal.app, ...), else in the terminal
+    //   "overlay": always try the popup
+    //   "inline":  always in the terminal, under the line (no popup, no Accessibility permission)
+    "mode": "auto",
+    // How many suggestions the menu shows at once (1-50); more are reached with Up/Down.
+    "maxSuggestions": 8,
+    // true: the menu opens by itself as you type. false: only when you press Tab.
+    "live": true,
+    // At an empty prompt, before you press any key, show the command that usually comes next in this folder as
+    // grey ghost text (Right or Tab takes it). Learned from privacy.recordCommands, so it needs that on too.
+    // false: nothing is suggested until you type.
+    "predict": false
+  },
+
+  "popup": {
+    // Font for the popup. "" = the terminal's own font where goh can read it (iTerm2, VS Code), else a monospace.
+    "font": "",
+    // Font size for the popup, in points (8-32).
+    "fontSize": 13,
+    // macOS: ask for the Accessibility permission once, for goh-popup itself, instead of once per terminal app.
+    // Experimental; an unsigned build has to be allowed again after each update.
+    "ownPermission": false
+  },
+
+  "theme": {
+    // Menu colours: "auto" (follow the terminal's background), "light", "dark", or "custom" with
+    // "foreground" and "background" (and optionally "accent") as "#rrggbb".
+    "mode": "auto"
+  },
+
+  "privacy": {
+    // Reserved for later; goh does not read these yet and never sends anything anywhere.
+    "telemetry": false,
+    "networkSpecs": false,
+    "dynamicGenerators": false,
+    "retainCommandHistory": false,
+    // Remember which suggestions you pick (the command and the chosen word only) and rank them first next time.
+    // `goh forget` deletes it.
+    "learnChoices": true,
+    // Keep the command lines you run successfully in a private local file (never ones that look like they hold a
+    // password or token, nor ones starting with a space). Turns on: history in the menu as you type, the next-
+    // command guess (display.predict), and option values you used before (`kubectl -n <Tab>`). Also reads your
+    // ~/.zsh_history for what ran before. `goh forget` deletes it.
+    "recordCommands": false
+  },
+
+  "completion": {
+    // The first time you type a program goh has no suggestions for, read its `--help` once in the background and
+    // save suggestions from it (the same as `goh spec gen <program>`).
+    "autoSpecs": false
+  },
+
+  "updates": {
+    // Once a day, ask GitHub (with curl) for the latest goh version number and print one line when a shell starts if
+    // there is a newer one. Nothing else is sent.
+    "check": false
+  }
+}
