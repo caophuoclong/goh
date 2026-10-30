@@ -55,7 +55,7 @@ checks X input focus before/after showing, inspects override-redirect policy, ve
 hide-on-unmap, and checks native Wayland-without-WINDOWID fallback. The XWayland run checks a real
 Wayland compositor session, rather than merely setting `XDG_SESSION_TYPE`.
 
-Run on a Linux desktop or VM with the dependencies from `.github/workflows/ci.yml`:
+Run on a Linux desktop or VM with the dependencies from `.github/workflows/linux-x11.yml`:
 
 ```sh
 cargo build --locked -p goh-popup

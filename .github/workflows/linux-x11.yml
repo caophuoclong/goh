@@ -1,0 +1,63 @@
+name: Linux X11 Tests
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: linux-x11-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  x11:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+      - name: Install X11 dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            xvfb openbox xterm xdotool x11-utils libgl1-mesa-dri \
+            zsh libxkbcommon-dev libxkbcommon-x11-0 libwayland-dev \
+            libgl1-mesa-dev libegl1-mesa-dev dbus-x11 python3-gi \
+            gir1.2-vte-2.91 at-spi2-core sway xwayland
+      - name: Run Rust tests
+        run: cargo test --workspace --locked
+      - name: Verify virtual X11 desktop
+        env:
+          LIBGL_ALWAYS_SOFTWARE: "1"
+        run: |
+          xvfb-run -a \
+            -s "-screen 0 1600x900x24" \
+            bash -euc '
+              openbox >/tmp/goh-openbox.log 2>&1 &
+              xterm -title goh-x11-test &
+              sleep 2
+              xwininfo -root -tree |
+                grep goh-x11-test
+            '
+
+      - run: cargo build --locked -p goh-popup
+      - name: Verify X11 caret, focus, visibility and fallback
+        env:
+          LIBGL_ALWAYS_SOFTWARE: "1"
+          NO_AT_BRIDGE: "0"
+        run: |
+          dbus-run-session -- xvfb-run -a sh -c 'openbox >/tmp/openbox.log 2>&1 & python3 crates/goh-popup/tools/linux-x11-test.py target/debug/goh-popup && GOH_TEST_SPLIT=1 python3 crates/goh-popup/tools/linux-x11-test.py target/debug/goh-popup'
+
+      - name: Verify XWayland in a headless Wayland compositor
+        env:
+          LIBGL_ALWAYS_SOFTWARE: "1"
+          NO_AT_BRIDGE: "0"
+        run: dbus-run-session -- sh crates/goh-popup/tools/linux-xwayland-test.sh target/debug/goh-popup
+

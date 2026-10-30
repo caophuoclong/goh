@@ -27,31 +27,6 @@ jobs:
       - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
       - run: cargo test --workspace --locked
 
-  test-linux:
-    name: Test (Linux, whole workspace + X11)
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
-        with:
-          persist-credentials: false
-      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
-      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
-      - run: sudo apt-get update && sudo apt-get install -y zsh libxkbcommon-dev libxkbcommon-x11-0 libwayland-dev libgl1-mesa-dev libegl1-mesa-dev xvfb openbox xdotool x11-utils dbus-x11 python3-gi gir1.2-vte-2.91 at-spi2-core sway xwayland
-      - run: cargo test --workspace --locked
-      - run: cargo build --locked -p goh-popup
-      - name: Verify X11 caret, focus, visibility and fallback
-        env:
-          LIBGL_ALWAYS_SOFTWARE: "1"
-          NO_AT_BRIDGE: "0"
-        run: |
-          dbus-run-session -- xvfb-run -a sh -c 'openbox >/tmp/openbox.log 2>&1 & python3 crates/goh-popup/tools/linux-x11-test.py target/debug/goh-popup && GOH_TEST_SPLIT=1 python3 crates/goh-popup/tools/linux-x11-test.py target/debug/goh-popup'
-
-      - name: Verify XWayland in a headless Wayland compositor
-        env:
-          LIBGL_ALWAYS_SOFTWARE: "1"
-          NO_AT_BRIDGE: "0"
-        run: dbus-run-session -- sh crates/goh-popup/tools/linux-xwayland-test.sh target/debug/goh-popup
-
   scripts:
     name: Lint scripts and workflows
     runs-on: ubuntu-24.04
