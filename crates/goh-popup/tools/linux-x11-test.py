@@ -93,7 +93,8 @@ def desktop(binary):
     gi.require_version("Vte", "2.91")
     from gi.repository import Gtk, Vte, GLib, GdkX11
     _ = GdkX11
-    result = tempfile.mktemp(prefix="goh-x11-result-")
+    result_dir = tempfile.mkdtemp(prefix="goh-x11-result-")
+    result = os.path.join(result_dir, "result")
     window = Gtk.Window(title="Goh X11 test terminal")
     terminal = Vte.Terminal()
     if os.environ.get("GOH_TEST_SPLIT"):
@@ -128,6 +129,7 @@ def desktop(binary):
     assert pathlib.Path(result).exists(), "terminal test timed out"
     message = pathlib.Path(result).read_text()
     pathlib.Path(result).unlink()
+    os.rmdir(result_dir)
     assert message == "ok", message
     if os.environ.get("GOH_TEST_SPLIT"):
         print("X11: ambiguous split panes use inline: PASS")

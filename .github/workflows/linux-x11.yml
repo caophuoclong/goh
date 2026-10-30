@@ -2,6 +2,7 @@ name: Linux X11 Tests
 
 on:
   push:
+    branches: [main]
   pull_request:
 
 permissions:
@@ -27,26 +28,12 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y \
-            xvfb openbox xterm xdotool x11-utils libgl1-mesa-dri \
+            xvfb openbox xdotool x11-utils libgl1-mesa-dri \
             zsh libxkbcommon-dev libxkbcommon-x11-0 libwayland-dev \
             libgl1-mesa-dev libegl1-mesa-dev dbus-x11 python3-gi \
             gir1.2-vte-2.91 at-spi2-core sway xwayland
       - name: Run Rust tests
         run: cargo test --workspace --locked
-      - name: Verify virtual X11 desktop
-        env:
-          LIBGL_ALWAYS_SOFTWARE: "1"
-        run: |
-          xvfb-run -a \
-            -s "-screen 0 1600x900x24" \
-            bash -euc '
-              openbox >/tmp/goh-openbox.log 2>&1 &
-              xterm -title goh-x11-test &
-              sleep 2
-              xwininfo -root -tree |
-                grep goh-x11-test
-            '
-
       - run: cargo build --locked -p goh-popup
       - name: Verify X11 caret, focus, visibility and fallback
         env:
