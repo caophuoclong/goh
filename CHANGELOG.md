@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.0](https://github.com/caophuoclong/goh/compare/v1.9.0...v1.10.0) (2026-10-30)
+
+
+### Features
+
+* **zsh:** Enter accepts a lone suggestion; document Linux install ([7bb7422](https://github.com/caophuoclong/goh/commit/7bb7422c20d602d24344b5e4ce33a08fc216e52c))
+
 ## [1.9.0](https://github.com/caophuoclong/goh/compare/v1.8.0...v1.9.0) (2026-10-30)
 
 
