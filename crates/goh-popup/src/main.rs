@@ -309,8 +309,8 @@ fn resolve_show(
     };
     let caps = Capabilities {
         anchor: if verified { AnchorState::Verified } else { AnchorState::Unverified },
-        // The no-focus-steal check passed on macOS (docs/18); nowhere else.
-        focus_safe: cfg!(target_os = "macos"),
+        // Surface backend must preserve focus independently of caret verification.
+        focus_safe: goh_popup::platform::focus_safe(),
         available_width: width as f32,
     };
     let decision = display::resolve(mode, &caps);
@@ -333,7 +333,7 @@ fn resolve_only() -> i32 {
         Outcome::Verified(a) => {
             let caps = Capabilities {
                 anchor: AnchorState::Verified,
-                focus_safe: cfg!(target_os = "macos"),
+                focus_safe: goh_popup::platform::focus_safe(),
                 available_width: placement::available_width(a.display) as f32,
             };
             let d = display::resolve(DisplayMode::Auto, &caps);
@@ -603,7 +603,25 @@ fn load_terminal_font() -> Option<TerminalFont> {
     None
 }
 
-#[cfg(not(target_os = "macos"))]
+#[cfg(target_os = "linux")]
+fn load_terminal_font() -> Option<TerminalFont> {
+    let wanted = configured_font()?;
+    for family in &wanted.families {
+        let output = std::process::Command::new("fc-match").args(["-f", "%{file}", "--", family]).output().ok()?;
+        if !output.status.success() { continue; }
+        let path = String::from_utf8(output.stdout).ok()?;
+        let Ok(metadata) = std::fs::metadata(&path) else { continue; };
+        if metadata.len() > 32 << 20 { continue; }
+        let Ok(bytes) = std::fs::read(&path) else { continue; };
+        let size = wanted.size.unwrap_or(FONT).clamp(FONT_MIN, FONT_MAX);
+        if let Some(cell_width) = font::cell_width(&bytes, size) {
+            return Some(TerminalFont { bytes, size, cell_width });
+        }
+    }
+    None
+}
+
+#[cfg(not(any(target_os = "macos", target_os = "linux")))]
 fn load_terminal_font() -> Option<TerminalFont> {
     None
 }
@@ -716,7 +734,8 @@ fn main() -> eframe::Result {
         .with_mouse_passthrough(true)
         .with_resizable(false)
         .with_inner_size([WIDTH_PLACEHOLDER, 100.0]);
-    let options = eframe::NativeOptions {
+    #[allow(unused_mut)]
+    let mut options = eframe::NativeOptions {
         viewport,
         #[cfg(target_os = "macos")]
         event_loop_builder: Some(Box::new(|b| {
@@ -727,6 +746,22 @@ fn main() -> eframe::Result {
         ..Default::default()
     };
 
+    #[cfg(target_os = "linux")]
+    {
+        if !goh_popup::platform::focus_safe() {
+            // Answer frames without opening an unpositionable Wayland top-level window.
+            for line in std::io::stdin().lock().lines().map_while(Result::ok) {
+                match serde_json::from_str::<Frame>(&line) {
+                    Ok(Frame::Quit) => break,
+                    Ok(Frame::Show(_)) => println!("{}", serde_json::json!({"type":"decision", "display":"inline", "reason":"native Wayland popup surface provider unavailable"})),
+                    _ => {}
+                }
+            }
+            return Ok(());
+        }
+        goh_popup::platform::x11::configure(&mut options);
+    }
+
     eframe::run_native(
         "goh-popup",
         options,
@@ -734,6 +769,8 @@ fn main() -> eframe::Result {
             let (tx, frames) = channel();
             let ctx = cc.egui_ctx.clone();
             install_terminal_font(&cc.egui_ctx);
+            #[cfg(target_os = "linux")]
+            cc.egui_ctx.set_zoom_factor(1.0);
             std::thread::spawn(move || {
                 for line in std::io::stdin().lock().lines().map_while(Result::ok) {
                     match serde_json::from_str::<Frame>(&line) {

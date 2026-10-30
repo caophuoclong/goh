@@ -26,6 +26,7 @@ impl Rect {
 /// Apps whose Accessibility caret rectangles were measured.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum App {
+    LinuxTerminal,
     ITerm2,
     Terminal,
     /// Its terminal is xterm.js; see [`caret_from_rect`] for what is measured there.
@@ -37,6 +38,7 @@ pub enum App {
 impl App {
     pub fn name(self) -> &'static str {
         match self {
+            App::LinuxTerminal => "Linux terminal",
             App::ITerm2 => "iTerm2",
             App::Terminal => "Terminal",
             App::VsCode => "VS Code",
@@ -47,6 +49,7 @@ impl App {
     /// What `$TERM_PROGRAM` is set to by this app.
     pub fn term_program(self) -> &'static str {
         match self {
+            App::LinuxTerminal => "",
             App::ITerm2 => "iTerm.app",
             App::Terminal => "Apple_Terminal",
             App::VsCode => "vscode",
@@ -60,7 +63,7 @@ impl App {
     pub fn caret_range_len(self) -> usize {
         match self {
             App::ITerm2 => 0,
-            App::Terminal => 1,
+            App::Terminal | App::LinuxTerminal => 1,
             App::VsCode | App::Claude => 0, // unused: xterm.js apps are read from the element's frame
         }
     }
@@ -103,6 +106,7 @@ pub struct Caret {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Reason {
     UnsupportedPlatform,
+    Linux(String),
     NotTrusted,
     NoFocusedApp { code: Option<i32> },
     UnknownApp(String),
@@ -123,7 +127,8 @@ pub enum Reason {
 impl fmt::Display for Reason {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Reason::UnsupportedPlatform => f.write_str("caret lookup is only implemented (and verified) on macOS"),
+            Reason::UnsupportedPlatform => f.write_str("caret lookup is unsupported on this platform"),
+            Reason::Linux(reason) => f.write_str(reason),
             Reason::NotTrusted => f.write_str("this terminal is not allowed to use the Accessibility API (System Settings > Privacy & Security > Accessibility)"),
             Reason::NoFocusedApp { code: Some(c) } => write!(f, "no focused application (Accessibility error {c})"),
             Reason::NoFocusedApp { code: None } => f.write_str("no focused application"),
@@ -163,7 +168,7 @@ pub fn caret_from_rect(app: App, rect: Rect, cell_height: Option<f64>) -> Result
         return Err(Reason::EmptyRect);
     }
     match app {
-        App::Terminal => Ok(Caret { x: rect.x, y: rect.y, height: rect.h }),
+        App::Terminal | App::LinuxTerminal => Ok(Caret { x: rect.x, y: rect.y, height: rect.h }),
         App::VsCode | App::Claude if rect.w > 64.0 || rect.h > 64.0 => Err(Reason::NotTerminalInput),
         App::VsCode | App::Claude => Ok(Caret { x: rect.x, y: rect.y, height: rect.h }),
         App::ITerm2 => {

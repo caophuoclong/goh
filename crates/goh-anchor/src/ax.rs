@@ -355,7 +355,7 @@ fn read(trace: &mut Vec<String>, opts: &Options, startup: bool) -> Result<Anchor
     unsafe { AXUIElementSetMessagingTimeout(el.0, timeout) };
     let cell = match app {
         App::ITerm2 => opts.cell_height.or_else(|| if opts.allow_tty_query { iterm_cell_height() } else { None }),
-        App::Terminal | App::VsCode | App::Claude => None,
+        App::LinuxTerminal | App::Terminal | App::VsCode | App::Claude => None,
     };
     let caret_now = || -> Result<crate::rules::Caret, Reason> {
         let rect = if app.reads_input_frame() {

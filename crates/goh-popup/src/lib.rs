@@ -10,3 +10,5 @@ pub mod icons;
 pub mod model;
 pub mod placement;
 pub mod watch;
+
+pub mod platform;

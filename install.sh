@@ -10,7 +10,7 @@
 #   ./install.sh --uninstall           remove the binaries and the block this script added to your shell file
 #
 # It downloads the release package for your system (macOS or Linux, Intel or ARM), checks its SHA-256, and puts goh,
-# gohd and (on macOS) goh-popup in $GOH_BIN (default ~/.local/bin). Then it adds one marked block to ~/.zshrc,
+# gohd and (on macOS/Linux) goh-popup in $GOH_BIN (default ~/.local/bin). Then it adds one marked block to ~/.zshrc,
 # ~/.bashrc or fish's config.fish ($GOH_RC names another file); --uninstall removes exactly that block.
 # Re-running updates the binaries and leaves the block as it is. Building from source needs Rust (https://rustup.rs).
 
@@ -112,7 +112,7 @@ install_release() {
     # Replace through a rename: a running copy keeps working until it exits.
     cp "$f" "$BIN/.$b.new" && mv -f "$BIN/.$b.new" "$BIN/$b"
   done
-  # A popup left from an earlier version (this package may have none, as on Linux) would be stale.
+  # A popup left from an earlier version (older/minimal packages may have none) would be stale.
   [ -x "$work/$name/bin/goh-popup" ] || rm -f "$BIN/goh-popup"
   say "installed goh $ver in $BIN"
 }
@@ -132,10 +132,12 @@ install_source() {
   fi
   say "building (release); the first build takes a few minutes"
   log=$work/build.log
-  # The popup draws the overlay and is only verified on macOS; elsewhere the inline menu needs no popup.
+  # Build the popup on supported desktop platforms; unsupported sessions still use inline.
   packages="-p goh-daemon"
   bins="goh gohd"
-  if [ "$(uname -s)" = Darwin ]; then packages="$packages -p goh-popup"; bins="$bins goh-popup"; fi
+  case "$(uname -s)" in
+    Darwin|Linux) packages="$packages -p goh-popup"; bins="$bins goh-popup" ;;
+  esac
   # shellcheck disable=SC2086  # $packages is a list of flags
   if ! (cd "$src" && cargo build --release --locked $packages) >"$log" 2>&1; then
     tail -n 25 "$log" >&2

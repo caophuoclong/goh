@@ -27,18 +27,6 @@ jobs:
       - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
       - run: cargo test --workspace --locked
 
-  test-linux:
-    name: Test (Linux, engine and daemon)
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
-        with:
-          persist-credentials: false
-      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
-      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
-      - run: sudo apt-get update && sudo apt-get install -y zsh
-      - run: cargo test --locked -p goh-core -p goh-daemon -p goh-theme -p goh-anchor
-
   scripts:
     name: Lint scripts and workflows
     runs-on: ubuntu-24.04
@@ -46,7 +34,7 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           persist-credentials: false
-      - run: shellcheck install.sh scripts/*.sh
+      - run: shellcheck install.sh scripts/*.sh crates/goh-popup/tools/linux-xwayland-test.sh
       - name: Install actionlint
         env:
           VERSION: 1.7.12

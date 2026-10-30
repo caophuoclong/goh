@@ -5,7 +5,7 @@
 #   scripts/package.sh aarch64-apple-darwin v1.2.3
 #
 # The archive has one top-level folder with bin/{goh,gohd,goh-popup}, LICENSE and README.md. The popup is left
-# out with --no-popup (the Linux builds: it is only verified on macOS; the inline menu needs no popup).
+# out with --no-popup for minimal installations; inline fallback needs no popup.
 # TARGET `host` builds for the machine this runs on.
 set -eu
 
