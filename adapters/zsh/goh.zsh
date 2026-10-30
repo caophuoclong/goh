@@ -200,13 +200,16 @@ _goh_pop_start() {
   [[ -n $_goh_pop_pid ]] && return 1  # retry a failed popup on the next menu, not every navigation key
   _goh_pop_stop
   [[ $_GOH_DISPLAY == inline ]] && return 1
-  command -v $_GOH_POPUP >/dev/null 2>&1 || return 1
+  local -a pop=($_GOH_POPUP)
+  # Connected with `goh ssh`: the popup runs on the machine the terminal is on, reached through a forwarded socket.
+  [[ -S ${LC_GOH_POPUP-} && -z ${TMUX-}${STY-} ]] && pop=($_GOH_CTL popup-bridge $LC_GOH_POPUP)
+  command -v $pop[1] >/dev/null 2>&1 || return 1
   local dir
   dir=$(mktemp -d "${TMPDIR:-/tmp}/goh-popup.XXXXXX" 2>/dev/null) || return 1
   mkfifo $dir/in $dir/out 2>/dev/null || { rm -rf -- $dir; return 1 }
   local errf=/dev/null; [[ -n ${GOH_DEBUG-} ]] && errf=$dir/err   # GOH_DEBUG=1 keeps the popup's stderr
   # The config sets this as a shell variable, not exported: hand it to the popup, which reads it at start.
-  GOH_POPUP_OWN_PERMISSION=${GOH_POPUP_OWN_PERMISSION-} command $_GOH_POPUP <$dir/in >$dir/out 2>$errf &!
+  GOH_POPUP_OWN_PERMISSION=${GOH_POPUP_OWN_PERMISSION-} command $pop <$dir/in >$dir/out 2>$errf &!
   _goh_pop_pid=$!
   _goh_pop_dir=$dir
   # Read-write opens never block, and keep a reader on `in` so a dead popup cannot raise SIGPIPE.

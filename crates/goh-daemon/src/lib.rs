@@ -12,6 +12,7 @@ pub mod paths;
 pub mod probe;
 mod project;
 mod providers;
+pub mod relay;
 pub mod risk;
 pub mod runs;
 mod shell;

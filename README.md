@@ -123,6 +123,12 @@ the floating popup at the cursor needs X11 or XWayland, a terminal that exports 
 accessibility over D-Bus, and the `libxkbcommon-x11` and EGL/OpenGL libraries. Native Wayland, SSH, tmux and screen
 use the inline menu. `goh-popup --probe` explains the choice; see [Linux popup support](docs/linux-popup.md).
 
+Over SSH, `goh ssh HOST` (any `ssh` arguments) gets the popup back: the remote zsh's menus are drawn on the machine
+you connect from, at the caret of the terminal you ran it in. Both ends need this goh, the remote shell zsh, and the
+remote sshd must accept `LC_*` variables (Debian and Ubuntu do; the path of the forwarded socket travels in
+`LC_GOH_POPUP`). Inside tmux or screen on the remote host the menu stays inline. `alias ssh='goh ssh'` makes it the
+default.
+
 Homebrew and manual installs do not edit your shell files (Homebrew never does). Run once, then open a new terminal:
 
 ```bash
