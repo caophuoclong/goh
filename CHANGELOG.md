@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.2](https://github.com/caophuoclong/goh/compare/v1.10.1...v1.10.2) (2026-10-30)
+
+
+### Bug fixes
+
+* **popup:** keep goh-popup's macOS permission across updates ([c1e8504](https://github.com/caophuoclong/goh/commit/c1e85045fe4c4972a62e02ba670aa5eeee2f644a))
+
 ## [1.10.1](https://github.com/caophuoclong/goh/compare/v1.10.0...v1.10.1) (2026-10-30)
 
 
