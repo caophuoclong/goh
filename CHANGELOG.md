@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.1](https://github.com/caophuoclong/goh/compare/v1.10.0...v1.10.1) (2026-10-30)
+
+
+### Bug fixes
+
+* **core:** rank directories by their last component ([0081951](https://github.com/caophuoclong/goh/commit/008195155686a19fd78f47f3190c2a5b9f2fd097))
+
 ## [1.10.0](https://github.com/caophuoclong/goh/compare/v1.9.0...v1.10.0) (2026-10-30)
 
 
