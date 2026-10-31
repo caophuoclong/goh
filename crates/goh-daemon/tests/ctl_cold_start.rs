@@ -352,11 +352,8 @@ fn a_daemon_whose_socket_is_removed_exits() {
         .env("GOH_CONFIG", "/nonexistent")
         .spawn()
         .unwrap();
-    let up = Instant::now() + Duration::from_secs(5);
-    while !socket.exists() && Instant::now() < up {
-        std::thread::sleep(Duration::from_millis(20));
-    }
-    assert!(socket.exists(), "the daemon came up");
+    // Binding precedes startup, including the socket watcher; wait for a reply before unlinking it.
+    assert!(goh_daemon::control::wait_until_ready(&socket, Duration::from_secs(5)), "the daemon came up");
     fs::remove_file(&socket).unwrap();
     let gone = Instant::now() + Duration::from_secs(6);
     while child.try_wait().unwrap().is_none() && Instant::now() < gone {
@@ -365,6 +362,7 @@ fn a_daemon_whose_socket_is_removed_exits() {
     let status = child.try_wait().unwrap();
     if status.is_none() {
         let _ = child.kill();
+        let _ = child.wait();
     }
-    assert!(status.is_some_and(|s| s.success()), "it exits on its own once nobody can reach it");
+    assert!(status.is_some_and(|s| s.success()), "it exits on its own once nobody can reach it: {status:?}");
 }

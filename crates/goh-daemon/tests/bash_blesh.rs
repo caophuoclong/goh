@@ -56,6 +56,8 @@ fn screen(out: &[u8]) -> String {
 }
 
 fn shell(fx: &Fixture, bash: &Path, ble: &Path, env: &[(&str, &str)]) -> Pty {
+    // Without an existing XDG cache directory, ble.sh writes beside its shared installation.
+    fs::create_dir(fx.path(".cache")).unwrap();
     let mut sh = Pty::spawn(fx.command(bash.to_str().unwrap(), &["--noprofile", "--norc", "-i"], env));
     sh.drain(Duration::from_millis(400), Duration::from_secs(3));
     sh.send(&format!("PS1='READY> '; source '{}' --attach=none\n", ble.display()), 1500);
