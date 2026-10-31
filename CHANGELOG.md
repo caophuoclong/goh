@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.11.0](https://github.com/caophuoclong/goh/compare/v1.10.2...v1.11.0) (2026-10-31)
+
+
+### Features
+
+* draw the popup over ssh with `goh ssh` ([6bd2c10](https://github.com/caophuoclong/goh/commit/6bd2c107cea0d6cb0c731819c9b48cb5ceb3429c))
+* **risk:** warn about database, data-deleting and publishing commands, in red ([e443c94](https://github.com/caophuoclong/goh/commit/e443c94d7659514c0fe94ebda1bea754c58eabfc))
+* **ssh:** offer a session-only copy, ask in a highlighted question ([0dfeac0](https://github.com/caophuoclong/goh/commit/0dfeac04750d646872ea7590c3eb5899cd9eee44))
+* **ssh:** wrap ssh and offer goh to hosts that have none ([c6d0ea4](https://github.com/caophuoclong/goh/commit/c6d0ea47341b14bed66be99f15d2a8b2f3431ab5))
+
 ## [1.10.2](https://github.com/caophuoclong/goh/compare/v1.10.1...v1.10.2) (2026-10-30)
 
 
