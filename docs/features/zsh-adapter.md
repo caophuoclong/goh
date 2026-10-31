@@ -6,8 +6,8 @@ since: 1.0.0
 updated: 2026-10-31
 area: shells
 shells: [zsh]
-settings: [display.live, display.maxSuggestions, display.mode]
-env: [GOH_LIVE, GOH_LIMIT, GOH_DISPLAY]
+settings: [display.live, display.maxSuggestions, display.mode, display.enterRuns]
+env: [GOH_LIVE, GOH_LIMIT, GOH_DISPLAY, GOH_ENTER_RUNS]
 ---
 
 # zsh: menus as you type
@@ -21,8 +21,10 @@ in an IDE. Load it with `goh setup` or `eval "$(goh init zsh)"`.
   when nothing matches. Esc hides it until the line changes.
 - Tab/→ insert the highlighted candidate; ↑↓ and Shift+Tab move, wrapping; Esc closes; Left closes and moves.
   Navigation keys are bound only while the menu is open.
-- Enter inserts the highlighted candidate after you moved in the menu, or the only one when there is just one;
-  otherwise it runs the line as typed. Ctrl+C closes the menu at the next prompt.
+- Enter takes the highlighted candidate after you moved in the menu, or the only one when there is just one, and runs
+  the line; an option that wants its value, or a folder, is only inserted. `display.enterRuns: false` makes Enter
+  only insert (a second Enter runs). With several untouched candidates Enter runs the line as typed. Ctrl+C closes
+  the menu at the next prompt.
 - Ghost text: the best line is shown after the cursor; → takes it.
 - Fail-open: any problem falls through to the widget Tab had before; `goh-unload` restores it.
 - Works next to zsh-autosuggestions and plugins that replace `zle-line-init`.
@@ -33,6 +35,7 @@ in an IDE. Load it with `goh setup` or `eval "$(goh init zsh)"`.
 
 ## Changes
 
+- unreleased: Enter on a picked suggestion runs the line (`display.enterRuns`, on); an option that wants its value or a folder is only inserted.
 - unreleased: warnings on risky suggestions in bold red; `ssh` runs through `goh ssh` (see ssh-popup).
 - 1.10.0: Enter accepts a lone suggestion.
 - 1.4.0: inline menu with kind glyphs, warnings on every row and a detail line.

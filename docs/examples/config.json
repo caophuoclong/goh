@@ -4,7 +4,8 @@
     "mode": "auto",
     "maxSuggestions": 8,
     "live": true,
-    "predict": false
+    "predict": false,
+    "enterRuns": true
   },
   "popup": {
     "font": "",

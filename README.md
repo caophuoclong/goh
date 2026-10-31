@@ -23,8 +23,9 @@ It reproduces what Fig was useful for, not its branding, and has no dependency o
   `git checkout -b fix`), shows the command that usually comes next, and remembers the values you gave an option (see
   [Privacy](#privacy)). The best of those lines is shown as ghost text after the cursor, as zsh-autosuggestions does:
   → takes the whole line, Tab the selected suggestion.
-- Enter inserts the highlighted suggestion once you have moved in the menu (↑↓), or the only one when the menu shows
-  just one; press Enter again to run. With several untouched suggestions, Enter runs the line as typed.
+- Enter takes the highlighted suggestion once you have moved in the menu (↑↓), or the only one when the menu shows
+  just one, and runs the line; an option that wants its value, or a folder, is only inserted. With several untouched
+  suggestions, Enter runs the line as typed. `display.enterRuns: false` makes Enter only insert (a second Enter runs).
 - Never executes anything for you: it only inserts the candidate you pick.
 - Runs fully local. Command text is not sent over the network (the one optional request is the update check, see [Privacy](#privacy)).
 
@@ -69,12 +70,12 @@ session prints a one-line note instead of silently drawing inline.
 
 macOS gives the permission to the terminal app the popup runs in, so each terminal is allowed on its own. To allow
 goh once instead, for every terminal (experimental), set `"popup": { "ownPermission": true }` with `goh config` and open
-a new shell: at its first menu macOS asks for **goh-popup** itself. The macOS packages ship it as `goh-popup.app`, signed
+a new shell: at its first menu macOS asks for **Goh** (the popup) itself. The macOS packages ship it as `Goh.app`, signed
 with goh's own certificate, so the permission stays through updates. A build from source keeps it too when it is
 signed with that certificate: `./install.sh --from-source` and `scripts/package.sh` use it by themselves when
 `../macos-sign/goh-signing.p12` sits beside the checkout (or `GOH_MACOS_SIGN_P12` names it), and after a plain
 `cargo build` run `scripts/macos-sign.sh target/debug/goh-popup`. Otherwise it is signed ad hoc and is a new program
-to macOS after each rebuild: remove its old **goh-popup** entries under Privacy & Security > Accessibility (−) and
+to macOS after each rebuild: remove its old **Goh** (or **goh-popup**) entries under Privacy & Security > Accessibility (−) and
 allow it again.
 `goh doctor` still reports the terminal's own permission.
 

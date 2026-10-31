@@ -71,7 +71,7 @@ jobs:
           P12_PASSWORD: ${{ secrets.MACOS_SIGN_P12_PASSWORD }}
         run: |
           if [ -z "$P12" ]; then
-            echo "MACOS_SIGN_P12 is not set: goh-popup.app is signed ad hoc, and macOS asks for its permission again after each update" >> "$GITHUB_STEP_SUMMARY"
+            echo "MACOS_SIGN_P12 is not set: Goh.app is signed ad hoc, and macOS asks for its permission again after each update" >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
           keychain=$RUNNER_TEMP/goh-signing.keychain-db

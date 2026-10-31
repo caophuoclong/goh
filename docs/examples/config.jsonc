@@ -17,7 +17,10 @@
     // At an empty prompt, before you press any key, show the command that usually comes next in this folder as
     // grey ghost text (Right or Tab takes it). Learned from privacy.recordCommands, so it needs that on too.
     // false: nothing is suggested until you type.
-    "predict": false
+    "predict": false,
+    // Enter on a suggestion you moved to (or the only one) takes it and runs the line. An option that wants its
+    // value, or a folder, is only inserted. false: Enter only inserts it, and a second Enter runs the line.
+    "enterRuns": true
   },
 
   "popup": {
@@ -25,7 +28,7 @@
     "font": "",
     // Font size for the popup, in points (8-32).
     "fontSize": 13,
-    // macOS: ask for the Accessibility permission once, for goh-popup itself, instead of once per terminal app.
+    // macOS: ask for the Accessibility permission once, for Goh (the popup) itself, instead of once per terminal app.
     // Experimental; the release packages keep it through updates, a build from source must be allowed again.
     "ownPermission": false,
     // Run `ssh` through `goh ssh` in shells with the zsh adapter: a zsh host's menus are drawn here, and a host

@@ -45,6 +45,11 @@
           "type": "boolean",
           "default": false,
           "description": "At an empty prompt, before any key is pressed, offer the command that usually follows the last one run in this folder. Off: nothing is suggested until you type. Needs privacy.recordCommands."
+        },
+        "enterRuns": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enter on a suggestion you moved to, or the only one, takes it and runs the line; an option that wants its value, or a folder, is only inserted. false: Enter only inserts it and a second Enter runs the line."
         }
       }
     },
@@ -64,7 +69,7 @@
         "ownPermission": {
           "type": "boolean",
           "default": false,
-          "description": "macOS: ask for the Accessibility permission once, for goh-popup itself, instead of once per terminal app (experimental). The release packages keep it through updates; a build from source must be allowed again after each rebuild."
+          "description": "macOS: ask for the Accessibility permission once, for Goh (the popup) itself, instead of once per terminal app (experimental). The release packages keep it through updates; a build from source must be allowed again after each rebuild."
         },
         "overSsh": {
           "type": "boolean",

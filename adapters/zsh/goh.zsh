@@ -3,7 +3,8 @@
 # Tab/Right with the menu open: insert the highlighted candidate (never runs the command).
 # Up/Down move the highlight, wrapping. Shift+Tab: previous. Esc/Left: close (Left also moves normally).
 # Tab with the menu closed uses native completion; GOH_LIVE=off enables Tab-triggered menus instead.
-# Enter selects only after menu navigation; otherwise it uses the original shell binding. Ctrl+C closes the menu at the next prompt.
+# Enter takes the highlighted candidate after menu navigation (or the only one) and runs the line (display.enterRuns);
+# otherwise it uses the original shell binding. Ctrl+C closes the menu at the next prompt.
 # With GOH_LIVE=off any edit or cursor move closes the menu (below: as-you-type keeps it in step instead).
 # Navigation keys are bound only while the menu is open.
 #
@@ -170,7 +171,7 @@ _goh_on_decision() {
       _goh_told_permission=1
       # In the menu, not `zle -M`: that line goes at the next key, which is usually already being typed.
       if [[ ${GOH_POPUP_OWN_PERMISSION-} == on ]]; then
-        _goh_notice="goh: goh-popup is not allowed to use Accessibility, so menus are drawn inline. Switch it on in System Settings > Privacy & Security > Accessibility"
+        _goh_notice="goh: Goh (the popup) is not allowed to use Accessibility, so menus are drawn inline. Switch Goh on in System Settings > Privacy & Security > Accessibility"
       else
         _goh_notice="goh: this terminal is not allowed to use Accessibility, so menus are drawn inline. Run: goh doctor --fix"
       fi
@@ -476,8 +477,11 @@ _goh_render() {
   local pos="$_goh_sel/$#_goh_label" accept_hint="Tab/→"
   (( _goh_ghost_line && _goh_ghost_line != _goh_sel )) && accept_hint="→ line · Tab"
   (( $#_goh_label >= 50 )) && pos+='+'   # menus ask for 50: there may be more
-  _goh_enter_takes && accept_hint="Tab/Enter/→"
-  row="  $pos · $accept_hint insert · ↑↓ move · Esc/← close"
+  local run_hint=
+  if _goh_enter_takes; then
+    if _goh_enter_runs; then run_hint=" · Enter run"; else accept_hint="Tab/Enter/→"; fi
+  fi
+  row="  $pos · $accept_hint insert$run_hint · ↑↓ move · Esc/← close"
   (( ${#row} > width )) && row="  $pos · ↑↓ $accept_hint Esc"
   (( ${#row} > width )) && row="  $pos"
   rows+=("${row[1,width]}")
@@ -568,7 +572,7 @@ _goh_down() { _goh_move 1 down-line-or-history }
 _goh_up()   { _goh_move -1 up-line-or-history }
 _goh_esc()  { _goh_close; zle -R }   # stays closed: the hook refreshes only when the line changes
 
-# All acceptance keys share the same validated edit and dismissal. No acceptance executes a line.
+# All acceptance keys share the same validated edit and dismissal. Only Enter then runs the line (see _goh_enter).
 # A directory is accepted without a trailing space, so its contents are what comes next: the menu reopens for them
 # (one refresh after the line is redrawn, like after typing). Nothing else reopens by itself after accepting.
 typeset -gi _goh_reopen=0
@@ -592,12 +596,26 @@ _goh_enter_takes() {
   [[ ${_goh_new% } != "${BUFFER% }" ]]
 }
 
-# An untouched menu with several choices must not change a command being submitted; delegate to
-# the user's saved widget, including plugin wrappers.
+# Does Enter run the line after taking the highlighted candidate? Not when the line cannot be complete yet.
+_goh_enter_runs() {
+  [[ ${GOH_ENTER_RUNS:-on} == on && ${_goh_value[_goh_sel]-} != 1 && ${_goh_insert[_goh_sel]} != */ ]]
+}
+
+# Enter takes the candidate as above and runs the line (GOH_ENTER_RUNS, on unless set off), unless the line cannot be
+# complete yet: an option that wants its value, or a directory whose contents come next, is only inserted (as Tab
+# does). An untouched menu with several choices must not change a command being submitted. Running delegates to the
+# user's saved widget, including plugin wrappers.
 _goh_enter() {
   local key=${(V)KEYS}
   local original=${_goh_saved[$key]:-accept-line}
-  if _goh_valid && _goh_enter_takes && _goh_accept; then return 0; fi
+  if _goh_valid && _goh_enter_takes; then
+    local runs=0
+    _goh_enter_runs && runs=1
+    if _goh_accept; then
+      (( runs )) || return 0
+      _goh_reopen=0
+    fi
+  fi
   # Line-finish owns cleanup when the original widget submits; do not force a refresh here.
   zle $original
 }
