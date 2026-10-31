@@ -39,6 +39,7 @@ _goh_complete() {
   local chars=${#COMP_LINE} cur_chars=${#cur}
 
   # Byte lengths (the wire uses UTF-8 byte offsets).
+  local had_lc_all=${LC_ALL+1} caller_lc_all=${LC_ALL-}
   local LC_ALL=C
   local bytes=${#COMP_LINE} cur_bytes=${#cur} point=$COMP_POINT
   if (( bytes != chars )); then
@@ -57,6 +58,7 @@ _goh_complete() {
   local ble= fs=${_ble_term_FS-}
   [[ ${BLE_ATTACHED-} && $fs ]] && declare -F ble/complete/cand/yield >/dev/null && ble=1
   local IFS=$'\n' tail value
+  local -a values=() tails=() descs=()
   for line in $out; do
     IFS=$'\x1f' read -r start end cursor kind label insert desc ranges <<<"$line"
     # Only candidates that replace exactly the word being completed and extend what is typed.
@@ -65,12 +67,22 @@ _goh_complete() {
     if [[ $ble ]]; then
       tail=; [[ $insert == *' ' ]] && tail=' '
       _goh_unescape "${insert%' '}"; value=$REPLY
-      # Its status is not checked: ble.sh returns non-zero for a candidate its own filter drops.
-      ble/complete/cand/yield mandb "$value" "$value$fs$fs$tail$fs${desc:-$kind}"
+      values+=("$value"); tails+=("$tail"); descs+=("${desc:-$kind}")
     else
       COMPREPLY+=("$insert")
     fi
   done
+  [[ $ble ]] || return 0
+
+  # ble.sh packs lengths of what it is given and cuts them out again in the user's locale, so it is called in that
+  # locale (back from the byte counting above), not under LC_ALL=C. Its status is not checked: it returns non-zero
+  # for a candidate its own filter drops.
+  if [[ $had_lc_all ]]; then LC_ALL=$caller_lc_all; else unset LC_ALL; fi
+  local i
+  for i in "${!values[@]}"; do
+    ble/complete/cand/yield mandb "${values[i]}" "${values[i]}$fs$fs${tails[i]}$fs${descs[i]}"
+  done
+  return 0
 }
 
 # Command record (privacy.recordCommands, GOH_RECORD=on; off by default): a successful line is handed to
