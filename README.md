@@ -135,10 +135,13 @@ Over SSH the popup works too: in a shell with the zsh adapter, `ssh` runs throug
 here, at the caret of the terminal you typed it in. One connection does everything, so you sign in once:
 - A host with goh uses its own; it needs this version or newer, and its sshd must accept `LC_*` variables (Debian
   and Ubuntu do; the forwarded socket's path travels in `LC_GOH_POPUP`).
-- A host whose login shell is zsh and that has no goh is offered a copy, asked once per destination (the answer is
-  kept in `~/.local/share/goh/ssh-hosts`). It goes to `~/.local/share/goh/ssh/<version>` there and is loaded for
-  that session only: your startup files on the host are read as usual and none of them is changed. The package is
-  downloaded once for the host's system and kept in `~/.cache/goh/ssh`.
+- A host whose login shell is zsh and that has no goh is offered a copy, in a highlighted question asked once per
+  destination (the answer is kept in `~/.local/share/goh/ssh-hosts`; delete its line to be asked again):
+  **k** keeps it in `~/.local/share/goh/ssh/<version>` there, sent once; **s** sends it for this session only, to a
+  private folder in `$XDG_RUNTIME_DIR` (or `/tmp`) that is removed with everything goh wrote when you leave (a host
+  whose temporary folders may not run programs gets no **s**); **N**, Enter or no answer is plain ssh. Either copy
+  is loaded for the session only: your startup files on the host are read as usual and none of them is changed. The
+  package is downloaded once for the host's system and kept in `~/.cache/goh/ssh`.
 - `ssh host command`, `-N`, `-f` and the like are plain ssh, as are hosts with another login shell (bash only
   completes on Tab). Inside tmux or screen on the host the menu stays inline.
 

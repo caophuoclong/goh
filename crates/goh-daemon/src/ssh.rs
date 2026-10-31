@@ -2,11 +2,12 @@
 //! `ssh` through it unless `popup.overSsh` is off.
 //!
 //! One connection serves everything (a control master, so you sign in once): it looks at the host, and when the
-//! host's login shell is zsh and it has no goh, offers to copy this version there, into
-//! `~/.local/share/goh/ssh/VERSION` (the binaries for its system, from this version's release, kept in
-//! `~/.cache/goh/ssh`). That copy is loaded for the session only: your startup files on the host are read as
-//! usual and none of them is changed. The answer is remembered per destination in `~/.local/share/goh/ssh-hosts`.
-//! A host that has its own goh keeps it; a command line (`ssh host ls`) and anything unusual is plain ssh.
+//! host's login shell is zsh and it has no goh, asks whether to copy this version there (the binaries for its
+//! system, from this version's release, kept in `~/.cache/goh/ssh`): to keep in `~/.local/share/goh/ssh/VERSION`,
+//! or for this session only, in a private temporary folder that goes, with everything goh wrote, when you leave.
+//! Either copy is loaded for the session only: your startup files on the host are read as usual and none of them is
+//! changed. No answer is no. The answer is remembered per destination in `~/.local/share/goh/ssh-hosts`. A host that
+//! has its own goh keeps it; a command line (`ssh host ls`) and anything unusual is plain ssh.
 
 use std::io::{BufRead, Write};
 use std::os::unix::process::CommandExt;
@@ -69,27 +70,38 @@ pub fn run(args: &[String]) -> i32 {
         .map(|o| Probe::parse(&String::from_utf8_lossy(&o.stdout)))
         .unwrap_or_default();
 
-    let ours = match plan(&probe) {
-        Plan::Ours => true,
-        Plan::Offer(triple) => offer(&parsed.dest, &triple) && install(&parsed.dest, &triple, over_master),
+    let dest = &parsed.dest;
+    let copy = match plan(&probe) {
+        Plan::Ours => Some(Copy::Kept),
+        Plan::Offer(triple) => match choose(dest, &triple, probe.tmp.is_some()) {
+            Choice::Keep => install(dest, &triple, &format!(r#"d={KEPT}; rm -rf "$d.new" && mkdir -p "$d.new" && tar -C "$d.new" -xzf - && rm -rf "$d" && mv "$d.new" "$d""#), &over_master)
+                .then_some(Copy::Kept),
+            Choice::Session => match &probe.tmp {
+                Some(tmp) => {
+                    let dir = format!("{tmp}/goh-ssh-{}", relay::random_hex());
+                    install(dest, &triple, &format!(r#"d={dir}; (umask 077 && mkdir "$d") && tar -C "$d" -xzf -"#), &over_master).then_some(Copy::Session(dir))
+                }
+                None => {
+                    eprintln!("goh: no folder on {dest} may run programs (its /tmp is mounted noexec); plain ssh this time");
+                    None
+                }
+            },
+            Choice::No => None,
+        },
         Plan::Old(version) => {
-            eprintln!("goh: {} has goh {version}, which cannot send its menus here; update it to {VERSION} for the popup", parsed.dest);
-            false
+            eprintln!("goh: {dest} has goh {version}, which cannot send its menus here; update it to {VERSION} for the popup");
+            None
         }
-        Plan::Plain => false,
+        Plan::Plain => None,
     };
 
     let mut session = Command::new("ssh");
     over_master(&mut session);
     session.args(["-o", &format!("SendEnv={VAR}")]).env(VAR, &relay.remote);
-    if ours {
-        let home = format!(".local/share/goh/ssh/{VERSION}");
-        session.args(["-t", &parsed.dest]).arg(format!(
-            "exec env GOH_USER_ZDOTDIR=\"${{ZDOTDIR:-$HOME}}\" ZDOTDIR=\"$HOME/{home}/zdotdir\" PATH=\"$HOME/{home}/bin:$PATH\" zsh -l"
-        ));
-    } else {
-        session.arg(&parsed.dest);
-    }
+    match &copy {
+        Some(copy) => session.args(["-t", dest]).arg(copy.session_command()),
+        None => session.arg(dest),
+    };
     let code = run_ssh(&mut session);
     let _ = Command::new("ssh").args(["-o", &format!("ControlPath={}", control.display()), "-O", "exit", &parsed.dest]).stderr(Stdio::null()).status();
     code
@@ -181,6 +193,31 @@ fn parse(args: &[String]) -> Option<Parsed> {
     Some(p)
 }
 
+/// Where this version is on the host, relative to the home folder or absolute.
+const KEPT: &str = concat!(".local/share/goh/ssh/", env!("CARGO_PKG_VERSION"));
+
+#[derive(Debug, PartialEq)]
+enum Copy {
+    Kept,
+    /// A private folder of its own, for one session.
+    Session(String),
+}
+
+impl Copy {
+    /// What the host runs instead of your login shell: zsh, reading your startup files and then goh's adapter
+    /// (ZDOTDIR), with this copy first on PATH. A session copy also keeps everything goh writes in its folder and
+    /// removes it, after stopping its daemon, when the shell ends or the connection drops.
+    fn session_command(&self) -> String {
+        let env = r#"GOH_USER_ZDOTDIR="${ZDOTDIR:-$HOME}" ZDOTDIR="$d/zdotdir" PATH="$d/bin:$PATH""#;
+        match self {
+            Copy::Kept => format!(r#"d="$HOME/{KEPT}"; exec env {env} zsh -l"#),
+            Copy::Session(dir) => format!(
+                r#"d={dir}; trap 'GOH_SOCKET="$d/gohd.sock" "$d/bin/goh" stop >/dev/null 2>&1; rm -rf "$d"' EXIT HUP TERM; env {env} GOH_SOCKET="$d/gohd.sock" GOH_LOG="$d/gohd.log" GOH_VISITS="$d/dirs" GOH_USAGE="$d/usage" GOH_RUNS="$d/runs" GOH_UPDATE_STATE="$d/update" zsh -l"#
+            ),
+        }
+    }
+}
+
 /// What the host said about itself (`key=value` lines from [`probe_script`]).
 #[derive(Debug, Default, PartialEq)]
 struct Probe {
@@ -191,6 +228,8 @@ struct Probe {
     goh: Option<(String, bool)>,
     /// This version is already copied there.
     ours: bool,
+    /// A temporary folder that may run programs (`$XDG_RUNTIME_DIR`, else `/tmp`), for a session copy.
+    tmp: Option<String>,
 }
 
 impl Probe {
@@ -206,6 +245,7 @@ impl Probe {
                 Some(("bridge", v)) => bridge = v == "yes",
                 Some(("version", v)) => version = v.into(),
                 Some(("ours", v)) => p.ours = v == "yes",
+                Some(("tmp", v)) if v.starts_with('/') => p.tmp = Some(v.into()),
                 _ => {}
             }
         }
@@ -231,7 +271,13 @@ if [ -n "$g" ]; then
   if "$g" popup-bridge </dev/null 2>&1 | grep -q unknown; then echo bridge=no; else echo bridge=yes; fi
   echo "version=$("$g" version 2>/dev/null | sed 's/^goh //')"
 fi
-[ -x "$HOME/.local/share/goh/ssh/{VERSION}/bin/goh" ] && echo ours=yes
+[ -x "$HOME/{KEPT}/bin/goh" ] && echo ours=yes
+for b in "${{XDG_RUNTIME_DIR:-}}" /tmp; do
+  [ -n "$b" ] && [ -d "$b" ] && [ -w "$b" ] || continue
+  t="$b/.goh-exec-$$"
+  if printf '#!/bin/sh\nexit 0\n' > "$t" && chmod 700 "$t" && "$t"; then rm -f "$t"; echo "tmp=$b"; break; fi
+  rm -f "$t"
+done
 exit 0
 "#
     )
@@ -282,39 +328,79 @@ fn home() -> PathBuf {
     PathBuf::from(std::env::var_os("HOME").unwrap_or_default())
 }
 
-/// The remembered answer for a destination, if any.
-fn remembered(text: &str, dest: &str) -> Option<bool> {
-    text.lines().rev().filter_map(|l| l.split_once('\t')).find(|(d, _)| *d == dest).map(|(_, a)| a == "yes")
+#[derive(Debug, PartialEq, Clone, Copy)]
+enum Choice {
+    Keep,
+    Session,
+    No,
 }
 
-/// Ask once per destination, on the terminal; no terminal means no.
-fn offer(dest: &str, triple: &str) -> bool {
+impl Choice {
+    fn word(self) -> &'static str {
+        match self {
+            Choice::Keep => "keep",
+            Choice::Session => "session",
+            Choice::No => "no",
+        }
+    }
+
+    /// A typed answer or a remembered one (`yes` is what an earlier version wrote for keep). Anything else is no.
+    fn read(s: &str) -> Choice {
+        match s.trim() {
+            "k" | "K" | "keep" | "yes" => Choice::Keep,
+            "s" | "S" | "session" => Choice::Session,
+            _ => Choice::No,
+        }
+    }
+}
+
+/// The remembered answer for a destination, if any.
+fn remembered(text: &str, dest: &str) -> Option<Choice> {
+    text.lines().rev().filter_map(|l| l.split_once('\t')).find(|(d, _)| *d == dest).map(|(_, a)| Choice::read(a))
+}
+
+/// The question, in red and bold unless `NO_COLOR` is set: it is about copying programs to another machine.
+fn question(dest: &str, triple: &str, can_session: bool, file: &std::path::Path, color: bool) -> String {
+    let (alert, strong, off) = if color { ("\x1b[1;97;41m", "\x1b[1;31m", "\x1b[0m") } else { ("", "", "") };
+    let session = if can_session { "\n  s  this session only: sent each time, removed with all it wrote when you leave" } else { "" };
+    format!(
+        "\n{alert} goh {off} {strong}{dest} has no goh. Copy goh {VERSION} ({triple}) there, for menus as you type?{off}\n  \
+         k  keep a copy in ~/.local/share/goh/ssh: sent once, nothing else on the host changes{session}\n  \
+         N  no: plain ssh (the default)\n\
+         The answer is kept in {}; delete its line to be asked again.\n{strong}[k/{}N]{off} ",
+        file.display(),
+        if can_session { "s/" } else { "" },
+    )
+}
+
+/// Ask once per destination, on the terminal. No terminal, no answer or Enter alone is no.
+fn choose(dest: &str, triple: &str, can_session: bool) -> Choice {
     let file = hosts_file();
     if let Some(answer) = std::fs::read_to_string(&file).ok().and_then(|t| remembered(&t, dest)) {
         return answer;
     }
-    let Ok(mut tty) = std::fs::OpenOptions::new().read(true).write(true).open("/dev/tty") else { return false };
-    let _ = write!(
-        tty,
-        "goh: {dest} has no goh. Copy goh {VERSION} ({triple}) to ~/.local/share/goh/ssh there, for menus as you type?\n     Nothing else on it changes; the answer is kept in {}. [y/N] ",
-        file.display()
-    );
+    let Ok(mut tty) = std::fs::OpenOptions::new().read(true).write(true).open("/dev/tty") else { return Choice::No };
+    let _ = write!(tty, "{}", question(dest, triple, can_session, &file, std::env::var_os("NO_COLOR").is_none()));
     let mut line = String::new();
-    if std::io::BufReader::new(&tty).read_line(&mut line).is_err() {
-        return false;
+    if std::io::BufReader::new(&tty).read_line(&mut line).is_err() || line.is_empty() {
+        return Choice::No;
     }
-    let yes = matches!(line.trim(), "y" | "Y" | "yes");
+    let choice = match Choice::read(&line) {
+        Choice::Session if !can_session => Choice::No,
+        c => c,
+    };
     if let Some(dir) = file.parent() {
         let _ = std::fs::create_dir_all(dir);
     }
     if let Ok(mut f) = std::fs::OpenOptions::new().create(true).append(true).open(&file) {
-        let _ = writeln!(f, "{dest}\t{}", if yes { "yes" } else { "no" });
+        let _ = writeln!(f, "{dest}\t{}", choice.word());
     }
-    yes
+    choice
 }
 
-/// Copy this version to the host. `false` (after saying why) when it could not.
-fn install(dest: &str, triple: &str, over_master: impl Fn(&mut Command)) -> bool {
+/// Copy this version to the host: `unpack` runs there with the archive on its input. `false` (after saying why)
+/// when it could not.
+fn install(dest: &str, triple: &str, unpack: &str, over_master: &dyn Fn(&mut Command)) -> bool {
     let bins = match binaries(triple) {
         Ok(dir) => dir,
         Err(e) => {
@@ -340,17 +426,16 @@ fn install(dest: &str, triple: &str, over_master: impl Fn(&mut Command)) -> bool
         }
         Ok(())
     })();
-    let dir = format!(".local/share/goh/ssh/{VERSION}");
     let ok = staged.is_ok() && {
         eprintln!("goh: copying goh {VERSION} to {dest}");
         // macOS's tar would add its file attributes, which GNU tar on the host warns about one by one.
-        let tar = Command::new("tar").env("COPYFILE_DISABLE", "1").args(["--no-xattrs", "-C"]).arg(&stage).args(["-cf", "-", "."]).stdout(Stdio::piped()).spawn();
+        let tar = Command::new("tar").env("COPYFILE_DISABLE", "1").args(["--no-xattrs", "-C"]).arg(&stage).args(["-czf", "-", "."]).stdout(Stdio::piped()).spawn();
         tar.ok().and_then(|mut tar| {
             let mut ssh = Command::new("ssh");
             over_master(&mut ssh);
             let status = ssh
                 .args(["-T", dest])
-                .arg(format!(r#"d={dir}; rm -rf "$d.new" && mkdir -p "$d.new" && tar -C "$d.new" -xf - && rm -rf "$d" && mv "$d.new" "$d""#))
+                .arg(unpack)
                 .stdin(tar.stdout.take()?)
                 .status();
             let _ = tar.wait();
@@ -465,14 +550,36 @@ mod tests {
         assert_eq!(probe("os=Linux\narch=x86_64\nshell=zsh\ngoh=/usr/bin/goh\nbridge=yes\nversion=1.11.0\n"), Plan::Plain);
         assert_eq!(probe("os=Linux\narch=x86_64\nshell=zsh\ngoh=/usr/bin/goh\nbridge=no\nversion=1.10.1\n"), Plan::Old("1.10.1".into()));
         assert_eq!(probe(""), Plan::Plain);
+        assert_eq!(Probe::parse("tmp=/run/user/1000\n").tmp.as_deref(), Some("/run/user/1000"));
+        assert_eq!(Probe::parse("tmp=relative\n").tmp, None);
     }
 
     #[test]
     fn the_last_answer_for_a_destination_counts() {
-        let text = "pi\tno\nbox\tyes\npi\tyes\n";
-        assert_eq!(remembered(text, "pi"), Some(true));
-        assert_eq!(remembered(text, "box"), Some(true));
+        let text = "pi\tno\nbox\tyes\npi\tsession\nold\tkeep\n";
+        assert_eq!(remembered(text, "pi"), Some(Choice::Session));
+        assert_eq!(remembered(text, "box"), Some(Choice::Keep));
+        assert_eq!(remembered(text, "old"), Some(Choice::Keep));
         assert_eq!(remembered(text, "other"), None);
+        assert_eq!(Choice::read("\n"), Choice::No);
+        assert_eq!(Choice::read("whatever"), Choice::No);
+    }
+
+    #[test]
+    fn the_question_stands_out_and_defaults_to_no() {
+        let q = question("pi", "aarch64-unknown-linux-gnu", true, std::path::Path::new("/h/ssh-hosts"), true);
+        assert!(q.contains("\x1b[1;97;41m goh \x1b[0m"), "{q:?}");
+        assert!(q.contains("[k/s/N]") && q.contains("(the default)"));
+        let plain = question("pi", "x", false, std::path::Path::new("/h/ssh-hosts"), false);
+        assert!(!plain.contains('\x1b') && plain.contains("[k/N]") && !plain.contains("\n  s "));
+    }
+
+    #[test]
+    fn a_session_copy_cleans_up_after_itself() {
+        let c = Copy::Session("/run/user/1000/goh-ssh-ab".into()).session_command();
+        assert!(c.starts_with("d=/run/user/1000/goh-ssh-ab; trap "), "{c}");
+        assert!(c.contains(r#"rm -rf "$d"' EXIT HUP TERM"#) && c.contains(r#"GOH_SOCKET="$d/gohd.sock""#) && !c.contains("exec env"));
+        assert!(Copy::Kept.session_command().contains("exec env"));
     }
 
     #[test]

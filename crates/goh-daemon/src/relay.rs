@@ -144,7 +144,7 @@ fn popup_binary() -> Option<PathBuf> {
     beside.or_else(|| std::env::split_paths(&std::env::var_os("PATH")?).map(|d| d.join("goh-popup")).find(|p| p.is_file()))
 }
 
-fn random_hex() -> String {
+pub(crate) fn random_hex() -> String {
     let mut b = [0u8; 8];
     if std::fs::File::open("/dev/urandom").and_then(|mut f| f.read_exact(&mut b)).is_err() {
         let t = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map_or(0, |d| d.as_nanos() as u64);
