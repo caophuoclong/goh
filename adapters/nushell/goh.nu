@@ -20,7 +20,7 @@ export def goh-complete [spans: list<string>] {
         let point = ($buffer | encode utf8 | bytes length)
         let cur_bytes = ($spans | last | encode utf8 | bytes length)
         let sep = (char unit_separator)
-        let rows = (do { ^goh menu --session $"nu-($nu.pid)" --cwd $env.PWD --limit 50 --cursor-byte ($point | into string) --buffer $buffer } | complete)
+        let rows = (do { ^goh menu --session $"nushell-($nu.pid)" --cwd $env.PWD --limit 50 --cursor-byte ($point | into string) --buffer $buffer } | complete)
         if $rows.exit_code != 0 { return null }
         $rows.stdout | lines | each {|line|
             let f = ($line | split row $sep)
@@ -36,7 +36,7 @@ export def goh-complete [spans: list<string>] {
 export def goh-menu-source [buffer: string, position: int] {
     try {
         let sep = (char unit_separator)
-        let rows = (do { ^goh menu --live --session $"nu-($nu.pid)" --cwd $env.PWD --limit 50 --cursor-byte ($position | into string) --buffer $buffer } | complete)
+        let rows = (do { ^goh menu --live --session $"nushell-($nu.pid)" --cwd $env.PWD --limit 50 --cursor-byte ($position | into string) --buffer $buffer } | complete)
         if $rows.exit_code != 0 { return [] }
         $rows.stdout | lines | each {|line|
             let f = ($line | split row $sep)
