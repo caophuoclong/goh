@@ -164,6 +164,7 @@ impl Fixture {
             .env("GOH_CONFIG", self.path("no-config.json"))
             .env("GOH_DISPLAY", "inline") // tests must not open the real popup unless they say so
             .env("GOH_LIVE", "off") // existing tests are Tab-triggered; live tests switch it on
+            .env("GOH_INLINE_STYLE", "flat") // existing tests read the flat rows; box tests switch it on
             .env("GOH_CTL", ctl);
         for (k, v) in extra_env {
             cmd.env(k, v);

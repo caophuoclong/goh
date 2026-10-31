@@ -55,6 +55,7 @@ typeset -ga _goh_from_config=()
 typeset -gi _GOH_LIMIT=${GOH_LIMIT:-8}
 (( _GOH_LIMIT < 1 )) && _GOH_LIMIT=1
 typeset -g _GOH_DISPLAY=${GOH_DISPLAY:-auto}   # auto | overlay | inline
+typeset -g _GOH_INLINE_STYLE=${GOH_INLINE_STYLE:-box}   # box | flat (how the menu looks when drawn in the terminal)
 typeset -g _GOH_LIVE=${GOH_LIVE:-on}           # on | off (as-you-type suggestions)
 typeset -gi _GOH_LIVE_MIN=${GOH_LIVE_MIN:-0}   # characters of the current word before the menu may open by itself
 typeset -g _goh_seen_buf
@@ -386,6 +387,20 @@ _goh_window() {
 # The first $2 bytes of $1 in REPLY; the caller counts them in characters.
 _goh_byte_prefix() { local LC_ALL=C; REPLY=${1[1,$2]} }
 
+# The screen column (from 0) where the word being completed starts: the width of the prompt's last line plus the
+# line typed before the word. A prompt this cannot measure only moves the box; nothing else depends on it.
+_goh_word_column() {
+  emulate -L zsh
+  setopt extended_glob
+  local p=${(%)PS1} before
+  p=${p//$'\e'\[[0-9;?]#[@-~]/}            # colours and other CSI sequences take no room
+  p=${p//$'\e'\][^$'\a']#$'\a'/}           # nor do OSC sequences (titles, marks)
+  p=${p##*$'\n'}
+  _goh_byte_prefix "$BUFFER" ${_goh_start[_goh_sel]:-0}; before=$REPLY
+  if [[ $before == *$'\n'* ]]; then p= before=${before##*$'\n'}; fi
+  REPLY=$(( (${(m)#p} + ${(m)#before}) % ${COLUMNS:-80} ))
+}
+
 # Kind glyph and colour of candidate $1 -> _goh_g, _goh_gs (docs/design-system/README.md, Iconography).
 typeset -g _goh_g _goh_gs
 _goh_glyph() {
@@ -405,9 +420,11 @@ _goh_glyph() {
 # warning; the selected suggestion's description; position and key hints. Shapes, not colour, carry
 # every cue, so NO_COLOR keeps all of it but the colours.
 _goh_render() {
-  local i k n p s e row label shown risk desc room pad
+  local i k n p s e h row label shown risk desc room pad
   local -a rows hl
-  local width=$(( ${COLUMNS:-80} - 1 ))
+  local width=$(( ${COLUMNS:-80} - 1 )) box=0
+  # The box needs room for its two sides and a menu worth reading.
+  if [[ $_GOH_INLINE_STYLE == box ]] && (( width >= 24 )); then box=1; width=$(( width - 2 > 60 ? 60 : width - 2 )); fi
   local muted=$_goh_ghost_style accent=fg=cyan match=bold,underline warn=bold,fg=red
   [[ ${_goh_theme[accent]-} =~ '^#[0-9a-f]{6}$' ]] && accent="fg=${_goh_theme[accent]}"
   [[ ${_goh_theme[text-match]-} =~ '^#[0-9a-f]{6}$' ]] && match+=",fg=${_goh_theme[text-match]}"
@@ -512,6 +529,41 @@ _goh_render() {
     (( _goh_overlay == 0 )) && _goh_notice_shown=1
   fi
 
+  # Box style: the same rows inside a frame, filled with the surface colour and moved under the word being
+  # completed, as far right as the terminal allows. Highlight offsets move with the rows.
+  if (( box )); then
+    local inner=1 r indent surface= selected= border=
+    for r in "${rows[@]}"; do (( ${#r} > inner )) && inner=${#r}; done
+    _goh_word_column; indent=$REPLY
+    (( indent + inner + 2 > ${COLUMNS:-80} - 1 )) && indent=$(( ${COLUMNS:-80} - 1 - inner - 2 ))
+    (( indent < 0 )) && indent=0
+    if (( color )); then
+      [[ ${_goh_theme[surface-base]-} =~ '^#[0-9a-f]{6}$' ]] && surface="bg=${_goh_theme[surface-base]}"
+      [[ ${_goh_theme[surface-selected]-} =~ '^#[0-9a-f]{6}$' ]] && selected="bg=${_goh_theme[surface-selected]}"
+      border=${muted:-fg=8}
+    fi
+    local edge= lead=
+    edge=${(l:inner::─:)edge} lead=${(l:indent:: :)lead}
+    local -a framed=("$lead╭$edge╮") moved=() f
+    for r in "${rows[@]}"; do framed+=("$lead│${(r:inner:)r}│"); done
+    framed+=("$lead╰$edge╯")
+    local last=$#framed sel_row=$(( _goh_sel - _goh_win + 2 ))
+    # Fills first, so the row styles that follow combine with them.
+    if [[ -n $surface ]]; then
+      for (( k = 1; k <= last; k++ )); do moved+=("$k $indent $(( indent + inner + 2 )) $surface"); done
+    fi
+    [[ -n $selected ]] && moved+=("$sel_row $(( indent + 1 )) $(( indent + 1 + inner )) $selected")
+    if [[ -n $border ]]; then
+      moved+=("1 $indent $(( indent + inner + 2 )) $border" "$last $indent $(( indent + inner + 2 )) $border")
+      for (( k = 2; k < last; k++ )); do moved+=("$k $indent $(( indent + 1 )) $border" "$k $(( indent + inner + 1 )) $(( indent + inner + 2 )) $border"); done
+    fi
+    for h in "${hl[@]}"; do
+      f=(${=h})
+      moved+=("$(( f[1] + 1 )) $(( f[2] + indent + 1 )) $(( f[3] + indent + 1 ))${f[4]:+ $f[4]}")
+    done
+    rows=("${framed[@]}") hl=("${moved[@]}")
+  fi
+
   # Ghost text only where it is honest: cursor at the end and the insertion extends what is typed.
   _goh_clear_ghost
   local ghost= buflen
@@ -536,7 +588,7 @@ _goh_render() {
   fi
 
   # "P" offsets count from the start of PREDISPLAY+BUFFER+POSTDISPLAY.
-  local from=$(( ${#PREDISPLAY} + ${#BUFFER} )) h
+  local from=$(( ${#PREDISPLAY} + ${#BUFFER} ))
   local -a at=(0) f
   POSTDISPLAY=$ghost
   if [[ -n $ghost ]] && is-at-least 5.9; then

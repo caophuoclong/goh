@@ -1377,3 +1377,67 @@ fn an_alias_defined_in_the_shell_completes_as_its_command() {
     sh.send("g c", 600);
     assert_eq!(fx.state(&mut sh), "BUF[g c] CUR=3 on=1 sel=1 post[heckout ]");
 }
+
+const BOX: &[(&str, &str)] = &[("GOH_LIVE", "on"), ("GOH_INLINE_STYLE", "box")];
+
+#[test]
+fn the_box_frames_the_rows_under_the_word_being_completed() {
+    let fx = Fixture::new(require_env!(), true);
+    let mut sh = fx.shell(BOX, true);
+    menu_dump(&fx, &mut sh);
+    sh.send("git c", 400);
+    let (rows, h) = menu(&fx, &mut sh);
+    // rows[0] is the ghost text on the line itself; the box follows.
+    let top = &rows[1];
+    let indent = top.chars().take_while(|c| *c == ' ').count();
+    let inner = top.trim_start().chars().count() - 2;
+    assert!(top.trim_start().starts_with('╭') && top.ends_with('╮'), "{rows:?}");
+    // `READY> ` is 7 columns and `git ` 4 more: the word starts at column 11, unless the box must move left to fit 60.
+    assert_eq!(indent, 11.min(59 - inner - 2), "{rows:?}");
+    let body: Vec<&String> = rows[2..].iter().take_while(|r| !r.trim_start().starts_with('╰')).collect();
+    assert!(body.iter().all(|r| r.chars().count() == indent + inner + 2 && r[..indent].trim().is_empty()), "every row has the box's width: {rows:?}");
+    assert_eq!(body[0].trim_start(), format!("│{:inner$}│", "❯ ↳ checkout"));
+    assert!(rows.iter().any(|r| r.trim_start().starts_with('╰')), "closed at the bottom: {rows:?}");
+    assert!(h.contains("bold"), "the selected row stays bold: {h}");
+}
+
+#[test]
+fn the_box_keeps_its_shape_without_colour() {
+    let fx = Fixture::new(require_env!(), true);
+    let mut sh = fx.shell(&[("GOH_LIVE", "on"), ("GOH_INLINE_STYLE", "box"), ("NO_COLOR", "1")], true);
+    menu_dump(&fx, &mut sh);
+    sh.send("git c", 400);
+    let (rows, h) = menu(&fx, &mut sh);
+    assert!(rows[1].trim_start().starts_with('╭') && rows.iter().any(|r| r.contains("│❯ ↳ checkout")), "{rows:?}");
+    // The first highlight is the ghost text on the line itself, which keeps its dim colour; the box adds none.
+    let box_styles = h.split(';').skip(1).collect::<Vec<_>>().join(";");
+    assert!(!box_styles.contains("bg=") && !box_styles.contains("fg="), "no colours in the box under NO_COLOR: {h}");
+    assert!(box_styles.contains("bold"), "the selected row stays bold: {h}");
+}
+
+#[test]
+fn flat_style_keeps_the_rows_flush_left() {
+    let fx = Fixture::new(require_env!(), true);
+    let mut sh = fx.shell(&[("GOH_LIVE", "on"), ("GOH_INLINE_STYLE", "flat")], true);
+    menu_dump(&fx, &mut sh);
+    sh.send("git c", 400);
+    let (rows, _) = menu(&fx, &mut sh);
+    assert_eq!(rows[1], SELECTED, "{rows:?}");
+    assert!(!rows.iter().any(|r| r.contains('╭')), "{rows:?}");
+}
+
+#[test]
+fn the_box_moves_left_to_stay_inside_a_narrow_terminal() {
+    let fx = Fixture::new(require_env!(), true);
+    let mut sh = fx.shell(BOX, true);
+    menu_dump(&fx, &mut sh);
+    sh.send("COLUMNS=30\n", 300);
+    sh.send("git c", 400);
+    let (rows, _) = menu(&fx, &mut sh);
+    let top = &rows[1];
+    let indent = top.chars().take_while(|c| *c == ' ').count();
+    // The word starts at column 11, but a box this wide would end past column 29: it slides left, never wraps.
+    assert!(indent < 11, "{rows:?}");
+    assert!(rows[1..].iter().all(|r| r.chars().count() <= 29), "every row fits the 30 columns: {rows:?}");
+    assert!(top.trim_start().starts_with('╭') && top.ends_with('╮'), "{rows:?}");
+}
