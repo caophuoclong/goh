@@ -8,7 +8,7 @@
 # out with --no-popup for minimal installations; inline fallback needs no popup.
 # TARGET `host` builds for the machine this runs on.
 #
-# On macOS the popup is an app bundle, libexec/goh-popup.app, and bin/goh-popup links to its executable: macOS keeps
+# On macOS the popup is an app bundle, libexec/Goh.app, and bin/goh-popup links to its executable: macOS keeps
 # the popup's own Accessibility permission under the bundle identifier and the signature's requirement. The bundle
 # is signed by scripts/macos-sign.sh with goh's certificate (GOH_MACOS_SIGN_IDENTITY in the release workflow,
 # ../macos-sign/goh-signing.p12 on a local build); that requirement then stays the same across releases and the
@@ -46,9 +46,9 @@ done
 case $target in
   *-apple-darwin)
     if [ "$popup" = 1 ]; then
-      scripts/macos-popup-app.sh "$stage/bin/goh-popup" "$version" "$stage/libexec/goh-popup.app"
+      scripts/macos-popup-app.sh "$stage/bin/goh-popup" "$version" "$stage/libexec/Goh.app"
       rm "$stage/bin/goh-popup"
-      ln -s ../libexec/goh-popup.app/Contents/MacOS/goh-popup "$stage/bin/goh-popup"
+      ln -s ../libexec/Goh.app/Contents/MacOS/goh-popup "$stage/bin/goh-popup"
     fi
     ;;
 esac

@@ -1,12 +1,12 @@
 #!/bin/sh
-# Make the certificate that signs goh-popup.app in releases, once.
+# Make the certificate that signs Goh.app (the popup) in releases, once.
 #
 #   scripts/macos-signing-cert.sh DIR
 #
 # Writes DIR/goh-signing.p12 (key and self-signed code-signing certificate, valid 20 years) and its password in
 # DIR/goh-signing.p12.password, then prints how to store both as the repository secrets MACOS_SIGN_P12 and
 # MACOS_SIGN_P12_PASSWORD. macOS keeps goh-popup's Accessibility permission for as long as releases are signed with
-# this same certificate: keep the files somewhere safe, since a new certificate makes every user allow goh-popup again.
+# this same certificate: keep the files somewhere safe, since a new certificate makes every user allow Goh again.
 set -eu
 
 [ $# -eq 1 ] || { sed -n '2,9p' "$0" | sed 's/^# \{0,1\}//' >&2; exit 2; }

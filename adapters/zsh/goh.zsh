@@ -171,7 +171,7 @@ _goh_on_decision() {
       _goh_told_permission=1
       # In the menu, not `zle -M`: that line goes at the next key, which is usually already being typed.
       if [[ ${GOH_POPUP_OWN_PERMISSION-} == on ]]; then
-        _goh_notice="goh: goh-popup is not allowed to use Accessibility, so menus are drawn inline. Switch it on in System Settings > Privacy & Security > Accessibility"
+        _goh_notice="goh: Goh (the popup) is not allowed to use Accessibility, so menus are drawn inline. Switch Goh on in System Settings > Privacy & Security > Accessibility"
       else
         _goh_notice="goh: this terminal is not allowed to use Accessibility, so menus are drawn inline. Run: goh doctor --fix"
       fi

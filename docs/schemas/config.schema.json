@@ -69,7 +69,7 @@
         "ownPermission": {
           "type": "boolean",
           "default": false,
-          "description": "macOS: ask for the Accessibility permission once, for goh-popup itself, instead of once per terminal app (experimental). The release packages keep it through updates; a build from source must be allowed again after each rebuild."
+          "description": "macOS: ask for the Accessibility permission once, for Goh (the popup) itself, instead of once per terminal app (experimental). The release packages keep it through updates; a build from source must be allowed again after each rebuild."
         },
         "overSsh": {
           "type": "boolean",

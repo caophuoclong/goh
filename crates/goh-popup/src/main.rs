@@ -660,12 +660,12 @@ fn install_terminal_font(ctx: &egui::Context) {
 }
 
 /// Opt-in (`popup.ownPermission` in the config, `GOH_POPUP_OWN_PERMISSION=on`): run the popup as its own
-/// "responsible" process, so macOS asks for the Accessibility permission once, for goh-popup, instead of once per
+/// "responsible" process, so macOS asks for the Accessibility permission once, for Goh (this app), instead of once per
 /// terminal app. A child of the shell is attributed to the terminal that runs it; a process spawned with
 /// responsibility disclaimed answers for itself.
 /// The disclaim call is private API (Chromium and LLDB use it); without it the popup runs as before. This process
 /// stays as the one the adapter knows (its pid, its stdin and stdout are shared), waits, and exits as the child does.
-/// macOS ties the permission to the code signature: the release packages sign goh-popup.app with one certificate
+/// macOS ties the permission to the code signature: the release packages sign Goh.app with one certificate
 /// (scripts/package.sh) so it survives updates; an ad hoc signed build is a new program after each rebuild.
 #[cfg(target_os = "macos")]
 fn run_as_own_responsible_process() {

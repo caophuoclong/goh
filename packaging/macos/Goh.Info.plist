@@ -1,15 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Info.plist of goh-popup.app, filled in by scripts/package.sh. macOS keeps the Accessibility permission of an app
-     under its bundle identifier, so the identifier must never change. -->
+<!-- Info.plist of Goh.app, the bundle around goh-popup, filled in by scripts/macos-popup-app.sh. macOS keeps the
+     Accessibility permission of an app under its bundle identifier, so the identifier must never change; the name
+     (what System Settings and macOS's prompt show) and the icon may. -->
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
   <key>CFBundleIdentifier</key>
   <string>io.github.caophuoclong.goh.popup</string>
   <key>CFBundleName</key>
-  <string>goh-popup</string>
+  <string>Goh</string>
+  <key>CFBundleDisplayName</key>
+  <string>Goh</string>
   <key>CFBundleExecutable</key>
   <string>goh-popup</string>
+  <key>CFBundleIconFile</key>
+  <string>Goh</string>
   <key>CFBundlePackageType</key>
   <string>APPL</string>
   <key>CFBundleShortVersionString</key>

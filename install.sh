@@ -10,7 +10,7 @@
 #   ./install.sh --uninstall           remove the binaries and the block this script added to your shell file
 #
 # It downloads the release package for your system (macOS or Linux, Intel or ARM), checks its SHA-256, and puts goh,
-# gohd and (on macOS/Linux) goh-popup in $GOH_BIN (default ~/.local/bin); on macOS goh-popup links to goh-popup.app
+# gohd and (on macOS/Linux) goh-popup in $GOH_BIN (default ~/.local/bin); on macOS goh-popup links to Goh.app
 # in $GOH_LIB (default ~/.local/lib/goh). Then it adds one marked block to ~/.zshrc,
 # ~/.bashrc or fish's config.fish ($GOH_RC names another file); --uninstall removes exactly that block.
 # Re-running updates the binaries and leaves the block as it is. Building from source needs Rust (https://rustup.rs).
@@ -69,7 +69,7 @@ if [ "$action" = uninstall ]; then
   if command -v goh >/dev/null 2>&1; then goh stop >/dev/null 2>&1 || true; fi
   pkill -U "$(id -u)" -x goh-popup 2>/dev/null || true
   for f in goh gohd goh-popup; do rm -f "$BIN/$f"; done
-  rm -rf "$LIB/goh-popup.app"
+  rm -rf "$LIB/Goh.app" "$LIB/goh-popup.app"
   rmdir "$LIB" 2>/dev/null || true
   [ "$touch_rc" = 0 ] || remove_block
   say "uninstalled. Open shells keep the adapter until you run: exec \$SHELL"
@@ -117,15 +117,18 @@ install_release() {
     # Replace through a rename: a running copy keeps working until it exits.
     cp "$f" "$BIN/.$b.new" && mv -f "$BIN/.$b.new" "$BIN/$b"
   done
-  # The app bundle keeps macOS's Accessibility permission for goh-popup itself across updates.
-  if [ -d "$work/$name/libexec/goh-popup.app" ]; then
+  # The app bundle keeps macOS's Accessibility permission for the popup itself across updates. Before 1.12 it was
+  # named goh-popup.app: that one goes.
+  app=
+  for a in "$work/$name"/libexec/*.app; do [ -d "$a" ] && { app=$a; break; }; done
+  if [ -n "$app" ]; then
     mkdir -p "$LIB"
-    rm -rf "$LIB/.goh-popup.app.new"
-    if ! { cp -R "$work/$name/libexec/goh-popup.app" "$LIB/.goh-popup.app.new" &&
-           rm -rf "$LIB/goh-popup.app" && mv "$LIB/.goh-popup.app.new" "$LIB/goh-popup.app" &&
-           ln -sf "$LIB/goh-popup.app/Contents/MacOS/goh-popup" "$BIN/.goh-popup.new" &&
+    rm -rf "$LIB/.Goh.app.new"
+    if ! { cp -R "$app" "$LIB/.Goh.app.new" &&
+           rm -rf "$LIB/Goh.app" "$LIB/goh-popup.app" && mv "$LIB/.Goh.app.new" "$LIB/Goh.app" &&
+           ln -sf "$LIB/Goh.app/Contents/MacOS/goh-popup" "$BIN/.goh-popup.new" &&
            mv -f "$BIN/.goh-popup.new" "$BIN/goh-popup"; }; then
-      say "could not install goh-popup.app in $LIB"
+      say "could not install Goh.app in $LIB"
       return 1
     fi
   fi
@@ -166,10 +169,10 @@ install_source() {
       # As in a release: a signed app bundle (scripts/macos-sign.sh), so the permission stays through rebuilds.
       ver=$("$src/target/release/goh" version | sed 's/^goh //')
       mkdir -p "$LIB"
-      "$src/scripts/macos-popup-app.sh" "$src/target/release/goh-popup" "$ver" "$LIB/.goh-popup.app.new" ||
-        die "could not make goh-popup.app"
-      rm -rf "$LIB/goh-popup.app" && mv "$LIB/.goh-popup.app.new" "$LIB/goh-popup.app"
-      ln -sf "$LIB/goh-popup.app/Contents/MacOS/goh-popup" "$BIN/.goh-popup.new" && mv -f "$BIN/.goh-popup.new" "$BIN/goh-popup"
+      "$src/scripts/macos-popup-app.sh" "$src/target/release/goh-popup" "$ver" "$LIB/.Goh.app.new" ||
+        die "could not make Goh.app"
+      rm -rf "$LIB/Goh.app" "$LIB/goh-popup.app" && mv "$LIB/.Goh.app.new" "$LIB/Goh.app"
+      ln -sf "$LIB/Goh.app/Contents/MacOS/goh-popup" "$BIN/.goh-popup.new" && mv -f "$BIN/.goh-popup.new" "$BIN/goh-popup"
       continue
     fi
     cp "$src/target/release/$b" "$BIN/.$b.new" && mv -f "$BIN/.$b.new" "$BIN/$b"

@@ -28,7 +28,7 @@ class Goh < Formula
   end
 
   def install
-    # macOS: bin/goh-popup links to the executable in libexec/goh-popup.app.
+    # macOS: bin/goh-popup links to the executable in libexec/Goh.app.
     prefix.install "libexec" if File.directory?("libexec")
     bin.install Dir["bin/*"]
   end
