@@ -14,10 +14,17 @@ def command(*args):
     return subprocess.check_output(args, text=True).strip()
 
 
-def resolve(binary, stage="initial"):
-    focus = command("xdotool", "getwindowfocus")
-    result = subprocess.run([binary, "--resolve"], capture_output=True, text=True, timeout=5)
-    data = json.loads(result.stdout)
+def resolve(binary, stage="initial", within=0):
+    """The popup's decision, asked again for up to `within` seconds until it is overlay (the window manager and the
+    accessibility tree settle at their own pace on CI runners)."""
+    deadline = time.monotonic() + within
+    while True:
+        focus = command("xdotool", "getwindowfocus")
+        result = subprocess.run([binary, "--resolve"], capture_output=True, text=True, timeout=5)
+        data = json.loads(result.stdout)
+        if data["display"] == "overlay" or time.monotonic() > deadline:
+            break
+        time.sleep(0.2)
     assert data["display"] == "overlay", (stage, focus, os.environ.get("WINDOWID"), data)
     return data
 
@@ -46,7 +53,7 @@ def child(binary, result_file):
             assert data["display"] == "inline" and "multiple visible terminal panes" in data["reason"], data
             pathlib.Path(result_file).write_text("ok")
             return
-        initial = resolve(binary)
+        initial = resolve(binary, within=15)
         def geometry():
             return dict(line.split("=", 1) for line in command("xdotool", "getwindowgeometry", "--shell", os.environ["WINDOWID"]).splitlines())
         before = geometry()
@@ -123,10 +130,15 @@ def desktop(binary):
     window.present()
     terminal.grab_focus()
     xid = window.get_window().get_xid()
+    tries = [0]
     def focus_terminal():
-        subprocess.run(["xdotool", "windowfocus", "--sync", str(xid)], check=True)
-        return False
-    GLib.timeout_add(500, focus_terminal)
+        # BadMatch until the window manager has mapped the window: try again for a while.
+        tries[0] += 1
+        ok = subprocess.run(["xdotool", "windowfocus", "--sync", str(xid)], capture_output=True).returncode == 0
+        if not ok and tries[0] >= 40:
+            raise RuntimeError("could not focus the test terminal")
+        return not ok
+    GLib.timeout_add(250, focus_terminal)
     env = [f"{key}={value}" for key, value in dict(os.environ, WINDOWID=str(xid)).items()]
     terminal.spawn_async(Vte.PtyFlags.DEFAULT, os.getcwd(),
         [sys.executable, __file__, "--child", binary, result], env,
