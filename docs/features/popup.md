@@ -27,11 +27,13 @@ Where the caret cannot be verified, the menu is drawn inline instead; nothing pr
 
 ## Limits
 
-- Inline in tmux, screen, native Wayland, unverified terminals.
+- Inline in tmux, screen, native Wayland, unverified terminals: there the menu is a floating framed box drawn by the shell
+  (see [zsh-adapter](zsh-adapter.md)).
 - `goh-popup --probe` and `--resolve` explain the decision.
 
 ## Changes
 
+- unreleased: where the popup cannot draw, zsh draws a floating framed box instead.
 - unreleased: warnings on risky suggestions drawn in red.
 - 1.8.0: Linux X11/AT-SPI caret and X11 surfaces.
 - 1.7.1: VS Code's accessibility tree.

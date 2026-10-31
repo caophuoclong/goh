@@ -1,0 +1,249 @@
+{
+  "schemaVersion": 1,
+  "name": "mix",
+  "description": "Build tool for Elixir",
+  "options": [
+    {
+      "name": "-h",
+      "description": "Shows usage information",
+      "takesValue": false
+    },
+    {
+      "name": "--help",
+      "description": "Shows usage information",
+      "takesValue": false
+    },
+    {
+      "name": "-v",
+      "description": "Shows versioning information",
+      "takesValue": false
+    },
+    {
+      "name": "--version",
+      "description": "Shows versioning information",
+      "takesValue": false
+    }
+  ],
+  "args": [
+    {
+      "name": "task",
+      "description": "Invokes the task (mix run) in a project",
+      "isOptional": true
+    }
+  ],
+  "subcommands": [
+    {
+      "name": "new",
+      "description": "Creates a new Elixir project at the given path",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--app",
+          "description": "Name the OTP application for the project",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "app"
+            }
+          ]
+        },
+        {
+          "name": "--modules",
+          "description": "Name the modules in the generated code skeleton",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "module"
+            }
+          ]
+        },
+        {
+          "name": "--sup",
+          "description": "Generate an OTP application skeleton including a supervision tree. Normally an app is generated without a supervisor and without the app callback",
+          "takesValue": false
+        },
+        {
+          "name": "--umbrella",
+          "description": "Generate an umbrella project",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "path"
+        }
+      ]
+    },
+    {
+      "name": "run",
+      "description": "Starts the current application and runs code",
+      "options": [
+        {
+          "name": "--config",
+          "description": "Loads the given configuration files",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "file",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "-e",
+          "description": "Evaluates the given code",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "code",
+              "description": "String containing code to execute",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--eval",
+          "description": "Evaluates the given code",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "code",
+              "description": "String containing code to execute",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "-r",
+          "description": "Executes the given pattern/file",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "file|pattern",
+              "description": "The file|pattern to execute",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--require",
+          "description": "Executes the given pattern/file",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "file|pattern",
+              "description": "The file|pattern to execute",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "-p",
+          "description": "Executes the given pattern/file",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "file|pattern",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--parallel",
+          "description": "Executes the given pattern/file",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "file|pattern",
+              "template": "filepaths"
+            }
+          ]
+        },
+        {
+          "name": "--preload-modules",
+          "description": "Preloads all modules defined in applications",
+          "takesValue": false
+        },
+        {
+          "name": "--no-compile",
+          "description": "Does not compile even if files require compilation",
+          "takesValue": false
+        },
+        {
+          "name": "--no-deps-check",
+          "description": "Does not check dependencies",
+          "takesValue": false
+        },
+        {
+          "name": "--no-archives-check",
+          "description": "Does not check archives",
+          "takesValue": false
+        },
+        {
+          "name": "--no-halt",
+          "description": "Does not halt the system after running the command",
+          "takesValue": false
+        },
+        {
+          "name": "--no-mix-exs",
+          "description": "Allows the command to run even if there is no mix.exs",
+          "takesValue": false
+        },
+        {
+          "name": "--no-start",
+          "description": "Does not start applications after compilation",
+          "takesValue": false
+        },
+        {
+          "name": "--no-elixir-version-check",
+          "description": "Does not check the Elixir version from mix.exs",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "file",
+          "isOptional": true,
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "help",
+      "description": "Prints documentation for a given task (Lists all the tasks if no task is specified)",
+      "options": [
+        {
+          "name": "--search",
+          "description": "Prints all tasks and aliases that contain 'pattern' in the name",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "pattern"
+            }
+          ]
+        },
+        {
+          "name": "--names",
+          "description": "Prints all task names and aliases",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "task",
+          "description": "Prints documentation for a given task",
+          "isOptional": true
+        }
+      ]
+    }
+  ]
+}

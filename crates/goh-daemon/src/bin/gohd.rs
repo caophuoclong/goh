@@ -25,6 +25,7 @@ fn main() -> ExitCode {
     match paths::bind(&socket) {
         Ok(Some(listener)) => {
             log::init();
+            paths::exit_when_orphaned(socket.clone());
             let (loaded, warnings) = specs::load(&spec_dir);
             log::line(&format!("gohd {} (pid {}) started with {} commands", env!("CARGO_PKG_VERSION"), std::process::id(), loaded.len()));
             for w in warnings {

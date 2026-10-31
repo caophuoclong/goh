@@ -1,0 +1,231 @@
+{
+  "schemaVersion": 1,
+  "name": "open",
+  "description": "Open files, apps, or URLs using default application",
+  "options": [
+    {
+      "name": "-a",
+      "description": "Specify the application to use for opening the file",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "Application"
+        }
+      ]
+    },
+    {
+      "name": "-b",
+      "description": "Specify the bundle identifier of the app to use to open the file",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "Bundle Identifier"
+        }
+      ]
+    },
+    {
+      "name": "-D",
+      "description": "Reveals the enclosing folder in finder",
+      "takesValue": false
+    },
+    {
+      "name": "-e",
+      "description": "Opens the file with /Applications/TextEdit",
+      "takesValue": false
+    },
+    {
+      "name": "-t",
+      "description": "Open the file with the default text editor",
+      "takesValue": false
+    },
+    {
+      "name": "-f",
+      "description": "Read input from standard input and open the results in the default text editor",
+      "takesValue": false
+    },
+    {
+      "name": "-F",
+      "description": "Opens the application without restoring windows",
+      "takesValue": false
+    },
+    {
+      "name": "--fresh",
+      "description": "Opens the application without restoring windows",
+      "takesValue": false
+    },
+    {
+      "name": "-W",
+      "description": "Waits until the applications exit",
+      "takesValue": false
+    },
+    {
+      "name": "--wait-apps",
+      "description": "Waits until the applications exit",
+      "takesValue": false
+    },
+    {
+      "name": "-R",
+      "description": "Reveals the file(s) in the Finder instead of opening them",
+      "takesValue": false
+    },
+    {
+      "name": "--reveal",
+      "description": "Reveals the file(s) in the Finder instead of opening them",
+      "takesValue": false
+    },
+    {
+      "name": "-n",
+      "description": "Open a new instance of the application(s) even if one is already running",
+      "takesValue": false
+    },
+    {
+      "name": "--new",
+      "description": "Open a new instance of the application(s) even if one is already running",
+      "takesValue": false
+    },
+    {
+      "name": "-j",
+      "description": "Launches the app hidden",
+      "takesValue": false
+    },
+    {
+      "name": "--hide",
+      "description": "Launches the app hidden",
+      "takesValue": false
+    },
+    {
+      "name": "-g",
+      "description": "Do not bring the application to the foreground",
+      "takesValue": false
+    },
+    {
+      "name": "--background",
+      "description": "Do not bring the application to the foreground",
+      "takesValue": false
+    },
+    {
+      "name": "-h",
+      "description": "Searches header locations for a header whose name matches the given string and then opens it",
+      "takesValue": false
+    },
+    {
+      "name": "--header",
+      "description": "Searches header locations for a header whose name matches the given string and then opens it",
+      "takesValue": false
+    },
+    {
+      "name": "-s",
+      "description": "For -h, the SDK to use; if supplied, only SDKs whose names contain the argument value are searched",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "partial SDK name"
+        }
+      ]
+    },
+    {
+      "name": "-u",
+      "description": "Open this URL, even if it matches exactly a filepath",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "URL"
+        }
+      ]
+    },
+    {
+      "name": "--url",
+      "description": "Open this URL, even if it matches exactly a filepath",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "URL"
+        }
+      ]
+    },
+    {
+      "name": "-i",
+      "description": "Launches the application with stdin connected to PATH; defaults to /dev/null",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "PATH",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "--stdin",
+      "description": "Launches the application with stdin connected to PATH; defaults to /dev/null",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "PATH",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "-o",
+      "description": "Launches the application with /dev/stdout connected to PATH",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "PATH",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "--stdout",
+      "description": "Launches the application with /dev/stdout connected to PATH",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "PATH",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "--stderr",
+      "description": "Launches the application with /dev/stderr connected to PATH",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "PATH",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "--env",
+      "description": "Add an enviroment variable to the launched process, where VAR is formatted AAA=foo",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "VAR"
+        }
+      ],
+      "isRepeatable": true
+    },
+    {
+      "name": "--args",
+      "description": "All remaining arguments are passed to the opened application in the argv parameter to main().  These arguments are not opened or interpreted by the open tool",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "Arguments",
+          "isVariadic": true
+        }
+      ]
+    }
+  ],
+  "args": [
+    {
+      "name": "argument",
+      "isVariadic": true,
+      "template": "filepaths"
+    }
+  ]
+}

@@ -305,3 +305,64 @@ fn spec_gen_reads_a_commands_help_and_refuses_to_clobber() {
     assert!(!goh(&["spec", "gen", "git"]).status.success(), "a bundled spec is not replaced by a worse one");
     assert!(!goh(&["spec", "gen", "../evil"]).status.success() && !goh(&["spec", "gen", "no-such-command-xyz"]).status.success());
 }
+
+#[test]
+fn menu_late_prints_pending_while_docker_has_not_answered() {
+    let dir = tempfile::Builder::new().prefix("fl").tempdir_in("/tmp").unwrap();
+    let (socket, specs, bin) = (dir.path().join("run/s"), dir.path().join("specs"), dir.path().join("bin"));
+    fs::create_dir_all(&specs).unwrap();
+    fs::create_dir_all(&bin).unwrap();
+    let docker = bin.join("docker");
+    fs::write(&docker, "#!/bin/sh\nsleep 1\necho '{\"Names\":\"web-1\",\"Image\":\"nginx\"}'\n").unwrap();
+    fs::set_permissions(&docker, std::os::unix::fs::PermissionsExt::from_mode(0o700)).unwrap();
+    let goh_dir = Path::new(env!("CARGO_BIN_EXE_goh")).parent().unwrap();
+    let path = format!("{}:{}:/usr/bin:/bin", bin.display(), goh_dir.display());
+    let run = |late: bool| {
+        let mut args = vec!["menu", "--session", "test-late-1", "--cwd", "/", "--cursor-byte", "12", "--buffer", "docker exec "];
+        if late {
+            args.push("--late");
+        }
+        let out = Command::new(env!("CARGO_BIN_EXE_goh"))
+            .args(&args)
+            .env("GOH_SOCKET", &socket)
+            .env("GOH_SPEC_DIR", &specs)
+            .env("GOH_CONFIG", "/nonexistent")
+            .env("PATH", &path)
+            .output()
+            .unwrap();
+        String::from_utf8(out.stdout).unwrap()
+    };
+    let first = run(true);
+    let plain = run(false);
+    std::thread::sleep(Duration::from_millis(1500));
+    let later = run(true);
+    // Stop the daemon before asserting, so a failure leaves none running.
+    kill_socket_holder(&socket);
+    assert_eq!(first.lines().last(), Some("pending"), "{first}");
+    assert!(!plain.contains("pending"), "only --late prints it");
+    assert!(later.contains("web-1") && !later.contains("pending"), "{later}");
+}
+
+#[test]
+fn a_daemon_whose_socket_is_removed_exits() {
+    let dir = tempfile::Builder::new().prefix("fo").tempdir_in("/tmp").unwrap();
+    let socket = dir.path().join("run/s");
+    let mut child = Command::new(env!("CARGO_BIN_EXE_gohd"))
+        .args(["--socket", socket.to_str().unwrap(), "--spec-dir", dir.path().to_str().unwrap()])
+        .env("GOH_CONFIG", "/nonexistent")
+        .spawn()
+        .unwrap();
+    // Binding precedes startup, including the socket watcher; wait for a reply before unlinking it.
+    assert!(goh_daemon::control::wait_until_ready(&socket, Duration::from_secs(5)), "the daemon came up");
+    fs::remove_file(&socket).unwrap();
+    let gone = Instant::now() + Duration::from_secs(6);
+    while child.try_wait().unwrap().is_none() && Instant::now() < gone {
+        std::thread::sleep(Duration::from_millis(50));
+    }
+    let status = child.try_wait().unwrap();
+    if status.is_none() {
+        let _ = child.kill();
+        let _ = child.wait();
+    }
+    assert!(status.is_some_and(|s| s.success()), "it exits on its own once nobody can reach it: {status:?}");
+}

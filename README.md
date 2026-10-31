@@ -5,10 +5,12 @@ command suggestions right where you type. It brings IDE-style completion to your
 
 It reproduces what Fig was useful for, not its branding, and has no dependency on Amazon Q CLI.
 
+![goh completing git and docker commands in zsh](docs/media/demo.gif)
+
 ## What it does
 
 - Suggests subcommands, flags, arguments and paths as you type, with descriptions.
-- Is driven by declarative JSON completion specs (114 bundled: `git`, `docker`, `npm`, `pnpm`, `cargo`, `kubectl`, `just`, `task`, `brew`, `aws`, `deno`, `gradle`, `flutter`, `jq`, `tmux`, `systemctl`, ...; a command with none gets one from its `--help`, see `goh spec gen`).
+- Is driven by declarative JSON completion specs (191 bundled: `git`, `docker`, `npm`, `pnpm`, `cargo`, `kubectl`, `just`, `task`, `brew`, `aws`, `deno`, `gradle`, `flutter`, `jq`, `tmux`, `systemctl`, `pytest`, `ruff`, `podman`, `lsof`, ...; a command with none gets one from its `--help`, see `goh spec gen`).
 - Completes the command after `sudo`, `time`, `env`, `xargs`, `watch`, `nohup`, `npx` and `FOO=1` by that command's own spec, skips options you already gave, reads `ls -la` as `-l -a` and offers `-` for the previous branch or directory.
 - Shows an overlay popup anchored near the cursor, with an inline fallback where the terminal can't support one.
 - Inherits your terminal's colors instead of imposing its own theme.
@@ -28,6 +30,22 @@ It reproduces what Fig was useful for, not its branding, and has no dependency o
   suggestions, Enter runs the line as typed. `display.enterRuns: false` makes Enter only insert (a second Enter runs).
 - Never executes anything for you: it only inserts the candidate you pick.
 - Runs fully local. Command text is not sent over the network (the one optional request is the update check, see [Privacy](#privacy)).
+
+## Where the menu appears
+
+| Where | How the menu is drawn | Needs |
+|---|---|---|
+| zsh in iTerm2, Terminal.app, VS Code, the Claude app (macOS) | a popup at the cursor, in the terminal's font and colours | the Accessibility permission (`goh doctor --fix`) |
+| zsh in Linux X11 / XWayland terminals that expose AT-SPI | a popup at the cursor | `libxkbcommon-x11`, EGL/OpenGL |
+| zsh in Ghostty, Kitty, WezTerm, or any terminal where the cursor cannot be located | a floating framed box under the word, drawn by the shell | nothing |
+| zsh in tmux, screen, native Wayland | the floating framed box | nothing |
+| zsh over ssh | the popup on the machine you connected from (`goh ssh`), else the floating box | goh on the machine you connect from, and on the host (`goh ssh` offers a copy) |
+| bash with ble.sh | ble.sh's menu with descriptions, opening as you type | bash 4+ and ble.sh |
+| PowerShell 7.2+ | PSReadLine's prediction list, as you type | PSReadLine 2.2.2+ |
+| Nushell | a bordered menu that opens at each new word | the `goh-ui` line in `config.nu` after `source goh.nu` |
+| bash without ble.sh, fish, elvish, xonsh | the shell's own completion list on Tab, filled by goh | nothing |
+
+`display.inlineStyle: "flat"` replaces the box with plain rows, which screen readers read more easily.
 
 ## Privacy
 
@@ -179,7 +197,10 @@ bindings and options, and [docs/docs/](docs/docs/00-vision.md) for design and st
 
 ## Status
 
-Version 1.0. Verified on macOS with zsh and bash; Linux X11 has automated VTE coverage; other Linux terminal configurations and PowerShell need further verification.
+Version 2.1 (see [CHANGELOG.md](CHANGELOG.md)). zsh on macOS and Linux is the main target and is tested on a real
+pseudo-terminal in CI; bash (with and without ble.sh), fish and Nushell have tests in CI too. The PowerShell test
+runs wherever pwsh 7.2+ is installed. The PowerShell, Nushell, elvish and xonsh adapters are experimental, and elvish
+and xonsh are untested. Each feature's state is in [docs/features](docs/features/README.md).
 
 ```bash
 cargo test

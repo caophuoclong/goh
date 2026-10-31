@@ -6,8 +6,8 @@ since: 1.0.0
 updated: 2026-10-31
 area: shells
 shells: [zsh]
-settings: [display.live, display.maxSuggestions, display.mode, display.enterRuns]
-env: [GOH_LIVE, GOH_LIMIT, GOH_DISPLAY, GOH_ENTER_RUNS]
+settings: [display.live, display.maxSuggestions, display.mode, display.enterRuns, display.inlineStyle]
+env: [GOH_LIVE, GOH_LIMIT, GOH_DISPLAY, GOH_ENTER_RUNS, GOH_INLINE_STYLE]
 ---
 
 # zsh: menus as you type
@@ -22,22 +22,42 @@ in an IDE. Load it with `goh setup` or `eval "$(goh init zsh)"`.
 - Tab/→ insert the highlighted candidate; ↑↓ and Shift+Tab move, wrapping; Esc closes; Left closes and moves.
   Navigation keys are bound only while the menu is open.
 - Esc closes at once, without zsh's `KEYTIMEOUT` wait: while the menu is open goh reads what follows Esc itself, and
-  Alt+key, a paste or any other key starting with Esc closes the menu and does what it did before.
+  Alt+key, a paste or any other key starting with Esc closes the menu and does what it did before, including one bound
+  to type text (`bindkey -s`, as oh-my-zsh's Alt+L).
 - Enter takes the highlighted candidate after you moved in the menu, or the only one when there is just one, and runs
   the line; an option that wants its value, or a folder, is only inserted. `display.enterRuns: false` makes Enter
-  only insert (a second Enter runs). With several untouched candidates Enter runs the line as typed. Ctrl+C closes
-  the menu at the next prompt.
+  only insert (a second Enter runs). With several untouched candidates Enter runs the line as typed. Ctrl+C ends
+  the line and takes the inline menu off the screen before the next prompt; the line itself, with any ghost text, stays.
 - Ghost text: the best line is shown after the cursor; → takes it.
+- Where the popup cannot draw (Ghostty, Kitty, WezTerm, tmux, ssh, ...), the menu is a floating framed box under the word you
+  are completing, in the terminal's own colours; no permission is needed. `display.inlineStyle: "flat"` draws plain
+  rows instead, which a screen reader reads more easily. The box finds the word's column by measuring your prompt,
+  including one built from `prompt_subst` parameters (powerlevel10k); row borders stay straight with wide characters
+  (CJK, emoji), and the selected row and the border keep the box's background.
+- A program still answering (a slow Docker, a cluster) shows `…` in the footer; its values appear when they arrive. The
+  wait stops when you close the menu (Esc, Left) or move in it, and gives up after about 5 s; each new prompt starts
+  the count again, so the same line typed later is asked again.
 - Fail-open: any problem falls through to the widget Tab had before; `goh-unload` restores it.
 - Works next to zsh-autosuggestions and plugins that replace `zle-line-init`.
 
 ## Limits
 
 - Needs zsh; the menu is drawn by [popup](popup.md) where the caret is verified, else inline.
+- A prompt that runs a command (`$(...)` or a backtick under `prompt_subst`) is not run again to measure it: the box
+  anchors as if the prompt had no width, so it sits left of the word by the prompt's width (2 columns for starship's
+  `❯ `, more for an oh-my-zsh theme that keeps the folder on the same line).
 - With the menu open, Esc pressed by hand and then a key more than 20 ms later counts as Esc, then that key.
 
 ## Changes
 
+- unreleased: Ctrl+C with the inline menu open no longer leaves the menu on the screen above the next prompt.
+- unreleased: Esc closes the menu at once next to a key bound to type text that starts with Esc (`bindkey -s`, as oh-my-zsh's Alt+L), instead of after `KEYTIMEOUT` (0.4 s); that key types its text again once the menu closes.
+- unreleased: Ctrl+C pressed while a slow program is still answering aborts the line at once, instead of seeming to do nothing until the next key.
+- unreleased: a line that gave up waiting for a slow program no longer makes the same line at a later prompt give up at once; `goh-unload` stops a pending wait.
+- unreleased: the selected row's marker, glyph and label, and the box's border, keep the box's background (zsh 5.9 showed the terminal's background through them).
+- unreleased: the box lands under the word with prompts built from `prompt_subst` parameters (powerlevel10k); a prompt that runs a command (starship, oh-my-zsh) no longer throws it to a far column: it anchors as if the prompt had no width. Its right border stays straight with wide characters.
+- unreleased: late values from slow programs appear without another key.
+- unreleased: the inline menu is a floating framed box under the word being completed (`display.inlineStyle`, `box` by default; `flat` is the old look).
 - unreleased: Esc closes the menu at once instead of after `KEYTIMEOUT` (0.4 s).
 - unreleased: Enter on a picked suggestion runs the line (`display.enterRuns`, on); an option that wants its value or a folder is only inserted.
 - unreleased: warnings on risky suggestions in bold red; `ssh` runs through `goh ssh` (see ssh-popup).

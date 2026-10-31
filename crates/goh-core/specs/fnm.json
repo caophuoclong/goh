@@ -1,0 +1,2007 @@
+{
+  "schemaVersion": 1,
+  "name": "fnm",
+  "description": "Fast Node Manager",
+  "options": [
+    {
+      "name": "--help",
+      "description": "Prints help information",
+      "takesValue": false
+    },
+    {
+      "name": "-h",
+      "description": "Prints help information",
+      "takesValue": false
+    },
+    {
+      "name": "--version",
+      "description": "Prints version information",
+      "takesValue": false
+    },
+    {
+      "name": "-V",
+      "description": "Prints version information",
+      "takesValue": false
+    },
+    {
+      "name": "--arch",
+      "description": "Override the architecture of the installed Node binary. Defaults to arch of fnm binary",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "arch",
+          "suggestions": [
+            {
+              "name": "x86"
+            },
+            {
+              "name": "x64"
+            },
+            {
+              "name": "arm64"
+            },
+            {
+              "name": "armv7l"
+            },
+            {
+              "name": "ppc64le"
+            },
+            {
+              "name": "ppc64"
+            },
+            {
+              "name": "s390x"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "--fnm-dir",
+      "description": "The root directory of fnm installations",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "dir",
+          "template": "folders"
+        }
+      ]
+    },
+    {
+      "name": "--log-level",
+      "description": "The log level of fnm commands",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "logLevel",
+          "suggestions": [
+            {
+              "name": "quiet"
+            },
+            {
+              "name": "info"
+            },
+            {
+              "name": "error"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "--node-dist-mirror",
+      "description": "Mirror of https://nodejs.org/dist",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "nodeDistMirror"
+        }
+      ]
+    },
+    {
+      "name": "--version-file-strategy",
+      "description": "Strategy for how to resolve the Node version",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "strategy",
+          "suggestions": [
+            {
+              "name": "local"
+            },
+            {
+              "name": "recursive"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "subcommands": [
+    {
+      "name": "install",
+      "description": "Install a new Node.js version",
+      "options": [
+        {
+          "name": "--lts",
+          "description": "Install latest LTS",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Prints help information",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Prints help information",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Prints version information",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Prints version information",
+          "takesValue": false
+        },
+        {
+          "name": "--arch",
+          "description": "Override the architecture of the installed Node binary. Defaults to arch of fnm binary",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "arch",
+              "suggestions": [
+                {
+                  "name": "x86"
+                },
+                {
+                  "name": "x64"
+                },
+                {
+                  "name": "arm64"
+                },
+                {
+                  "name": "armv7l"
+                },
+                {
+                  "name": "ppc64le"
+                },
+                {
+                  "name": "ppc64"
+                },
+                {
+                  "name": "s390x"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--fnm-dir",
+          "description": "The root directory of fnm installations",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "dir",
+              "template": "folders"
+            }
+          ]
+        },
+        {
+          "name": "--log-level",
+          "description": "The log level of fnm commands",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "logLevel",
+              "suggestions": [
+                {
+                  "name": "quiet"
+                },
+                {
+                  "name": "info"
+                },
+                {
+                  "name": "error"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--node-dist-mirror",
+          "description": "Mirror of https://nodejs.org/dist",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "nodeDistMirror"
+            }
+          ]
+        },
+        {
+          "name": "--version-file-strategy",
+          "description": "Strategy for how to resolve the Node version",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "strategy",
+              "suggestions": [
+                {
+                  "name": "local"
+                },
+                {
+                  "name": "recursive"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "version",
+          "description": "A version string. Can be a partial semver or a LTS version name by the format lts/NAME",
+          "isOptional": true
+        }
+      ]
+    },
+    {
+      "name": "uninstall",
+      "description": "Uninstall a Node.js version",
+      "options": [
+        {
+          "name": "--lts",
+          "description": "Install latest LTS",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Prints help information",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Prints help information",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Prints version information",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Prints version information",
+          "takesValue": false
+        },
+        {
+          "name": "--arch",
+          "description": "Override the architecture of the installed Node binary. Defaults to arch of fnm binary",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "arch",
+              "suggestions": [
+                {
+                  "name": "x86"
+                },
+                {
+                  "name": "x64"
+                },
+                {
+                  "name": "arm64"
+                },
+                {
+                  "name": "armv7l"
+                },
+                {
+                  "name": "ppc64le"
+                },
+                {
+                  "name": "ppc64"
+                },
+                {
+                  "name": "s390x"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--fnm-dir",
+          "description": "The root directory of fnm installations",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "dir",
+              "template": "folders"
+            }
+          ]
+        },
+        {
+          "name": "--log-level",
+          "description": "The log level of fnm commands",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "logLevel",
+              "suggestions": [
+                {
+                  "name": "quiet"
+                },
+                {
+                  "name": "info"
+                },
+                {
+                  "name": "error"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--node-dist-mirror",
+          "description": "Mirror of https://nodejs.org/dist",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "nodeDistMirror"
+            }
+          ]
+        },
+        {
+          "name": "--version-file-strategy",
+          "description": "Strategy for how to resolve the Node version",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "strategy",
+              "suggestions": [
+                {
+                  "name": "local"
+                },
+                {
+                  "name": "recursive"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "version",
+          "description": "A version string. Can be a partial semver or a LTS version name by the format lts/NAME",
+          "isOptional": true
+        }
+      ]
+    },
+    {
+      "name": "use",
+      "description": "Change Node.js version",
+      "options": [
+        {
+          "name": "--install-if-missing",
+          "description": "Install the version if it isn't installed yet",
+          "takesValue": false
+        },
+        {
+          "name": "--lts",
+          "description": "Install latest LTS",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Prints help information",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Prints help information",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Prints version information",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Prints version information",
+          "takesValue": false
+        },
+        {
+          "name": "--arch",
+          "description": "Override the architecture of the installed Node binary. Defaults to arch of fnm binary",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "arch",
+              "suggestions": [
+                {
+                  "name": "x86"
+                },
+                {
+                  "name": "x64"
+                },
+                {
+                  "name": "arm64"
+                },
+                {
+                  "name": "armv7l"
+                },
+                {
+                  "name": "ppc64le"
+                },
+                {
+                  "name": "ppc64"
+                },
+                {
+                  "name": "s390x"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--fnm-dir",
+          "description": "The root directory of fnm installations",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "dir",
+              "template": "folders"
+            }
+          ]
+        },
+        {
+          "name": "--log-level",
+          "description": "The log level of fnm commands",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "logLevel",
+              "suggestions": [
+                {
+                  "name": "quiet"
+                },
+                {
+                  "name": "info"
+                },
+                {
+                  "name": "error"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--node-dist-mirror",
+          "description": "Mirror of https://nodejs.org/dist",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "nodeDistMirror"
+            }
+          ]
+        },
+        {
+          "name": "--version-file-strategy",
+          "description": "Strategy for how to resolve the Node version",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "strategy",
+              "suggestions": [
+                {
+                  "name": "local"
+                },
+                {
+                  "name": "recursive"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "version",
+          "description": "A version string. Can be a partial semver or a LTS version name by the format lts/NAME",
+          "isOptional": true
+        }
+      ]
+    },
+    {
+      "name": "exec",
+      "description": "Run a command within fnm context",
+      "options": [
+        {
+          "name": "--using",
+          "description": "Either an explicit version, or a filename with the version written in it",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "version",
+              "description": "A version string. Can be a partial semver or a LTS version name by the format lts/NAME",
+              "isOptional": true
+            }
+          ]
+        },
+        {
+          "name": "--lts",
+          "description": "Install latest LTS",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Prints help information",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Prints help information",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Prints version information",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Prints version information",
+          "takesValue": false
+        },
+        {
+          "name": "--arch",
+          "description": "Override the architecture of the installed Node binary. Defaults to arch of fnm binary",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "arch",
+              "suggestions": [
+                {
+                  "name": "x86"
+                },
+                {
+                  "name": "x64"
+                },
+                {
+                  "name": "arm64"
+                },
+                {
+                  "name": "armv7l"
+                },
+                {
+                  "name": "ppc64le"
+                },
+                {
+                  "name": "ppc64"
+                },
+                {
+                  "name": "s390x"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--fnm-dir",
+          "description": "The root directory of fnm installations",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "dir",
+              "template": "folders"
+            }
+          ]
+        },
+        {
+          "name": "--log-level",
+          "description": "The log level of fnm commands",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "logLevel",
+              "suggestions": [
+                {
+                  "name": "quiet"
+                },
+                {
+                  "name": "info"
+                },
+                {
+                  "name": "error"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--node-dist-mirror",
+          "description": "Mirror of https://nodejs.org/dist",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "nodeDistMirror"
+            }
+          ]
+        },
+        {
+          "name": "--version-file-strategy",
+          "description": "Strategy for how to resolve the Node version",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "strategy",
+              "suggestions": [
+                {
+                  "name": "local"
+                },
+                {
+                  "name": "recursive"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "command",
+          "isVariadic": true,
+          "isCommand": true
+        }
+      ]
+    },
+    {
+      "name": "current",
+      "description": "Print the current Node.js version",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Prints help information",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Prints help information",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Prints version information",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Prints version information",
+          "takesValue": false
+        },
+        {
+          "name": "--arch",
+          "description": "Override the architecture of the installed Node binary. Defaults to arch of fnm binary",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "arch",
+              "suggestions": [
+                {
+                  "name": "x86"
+                },
+                {
+                  "name": "x64"
+                },
+                {
+                  "name": "arm64"
+                },
+                {
+                  "name": "armv7l"
+                },
+                {
+                  "name": "ppc64le"
+                },
+                {
+                  "name": "ppc64"
+                },
+                {
+                  "name": "s390x"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--fnm-dir",
+          "description": "The root directory of fnm installations",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "dir",
+              "template": "folders"
+            }
+          ]
+        },
+        {
+          "name": "--log-level",
+          "description": "The log level of fnm commands",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "logLevel",
+              "suggestions": [
+                {
+                  "name": "quiet"
+                },
+                {
+                  "name": "info"
+                },
+                {
+                  "name": "error"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--node-dist-mirror",
+          "description": "Mirror of https://nodejs.org/dist",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "nodeDistMirror"
+            }
+          ]
+        },
+        {
+          "name": "--version-file-strategy",
+          "description": "Strategy for how to resolve the Node version",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "strategy",
+              "suggestions": [
+                {
+                  "name": "local"
+                },
+                {
+                  "name": "recursive"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "list",
+      "description": "List all locally installed Node.js versions",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Prints help information",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Prints help information",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Prints version information",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Prints version information",
+          "takesValue": false
+        },
+        {
+          "name": "--arch",
+          "description": "Override the architecture of the installed Node binary. Defaults to arch of fnm binary",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "arch",
+              "suggestions": [
+                {
+                  "name": "x86"
+                },
+                {
+                  "name": "x64"
+                },
+                {
+                  "name": "arm64"
+                },
+                {
+                  "name": "armv7l"
+                },
+                {
+                  "name": "ppc64le"
+                },
+                {
+                  "name": "ppc64"
+                },
+                {
+                  "name": "s390x"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--fnm-dir",
+          "description": "The root directory of fnm installations",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "dir",
+              "template": "folders"
+            }
+          ]
+        },
+        {
+          "name": "--log-level",
+          "description": "The log level of fnm commands",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "logLevel",
+              "suggestions": [
+                {
+                  "name": "quiet"
+                },
+                {
+                  "name": "info"
+                },
+                {
+                  "name": "error"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--node-dist-mirror",
+          "description": "Mirror of https://nodejs.org/dist",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "nodeDistMirror"
+            }
+          ]
+        },
+        {
+          "name": "--version-file-strategy",
+          "description": "Strategy for how to resolve the Node version",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "strategy",
+              "suggestions": [
+                {
+                  "name": "local"
+                },
+                {
+                  "name": "recursive"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ls",
+      "description": "List all locally installed Node.js versions",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Prints help information",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Prints help information",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Prints version information",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Prints version information",
+          "takesValue": false
+        },
+        {
+          "name": "--arch",
+          "description": "Override the architecture of the installed Node binary. Defaults to arch of fnm binary",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "arch",
+              "suggestions": [
+                {
+                  "name": "x86"
+                },
+                {
+                  "name": "x64"
+                },
+                {
+                  "name": "arm64"
+                },
+                {
+                  "name": "armv7l"
+                },
+                {
+                  "name": "ppc64le"
+                },
+                {
+                  "name": "ppc64"
+                },
+                {
+                  "name": "s390x"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--fnm-dir",
+          "description": "The root directory of fnm installations",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "dir",
+              "template": "folders"
+            }
+          ]
+        },
+        {
+          "name": "--log-level",
+          "description": "The log level of fnm commands",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "logLevel",
+              "suggestions": [
+                {
+                  "name": "quiet"
+                },
+                {
+                  "name": "info"
+                },
+                {
+                  "name": "error"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--node-dist-mirror",
+          "description": "Mirror of https://nodejs.org/dist",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "nodeDistMirror"
+            }
+          ]
+        },
+        {
+          "name": "--version-file-strategy",
+          "description": "Strategy for how to resolve the Node version",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "strategy",
+              "suggestions": [
+                {
+                  "name": "local"
+                },
+                {
+                  "name": "recursive"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "list-remote",
+      "description": "List all remote Node.js versions",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Prints help information",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Prints help information",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Prints version information",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Prints version information",
+          "takesValue": false
+        },
+        {
+          "name": "--arch",
+          "description": "Override the architecture of the installed Node binary. Defaults to arch of fnm binary",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "arch",
+              "suggestions": [
+                {
+                  "name": "x86"
+                },
+                {
+                  "name": "x64"
+                },
+                {
+                  "name": "arm64"
+                },
+                {
+                  "name": "armv7l"
+                },
+                {
+                  "name": "ppc64le"
+                },
+                {
+                  "name": "ppc64"
+                },
+                {
+                  "name": "s390x"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--fnm-dir",
+          "description": "The root directory of fnm installations",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "dir",
+              "template": "folders"
+            }
+          ]
+        },
+        {
+          "name": "--log-level",
+          "description": "The log level of fnm commands",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "logLevel",
+              "suggestions": [
+                {
+                  "name": "quiet"
+                },
+                {
+                  "name": "info"
+                },
+                {
+                  "name": "error"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--node-dist-mirror",
+          "description": "Mirror of https://nodejs.org/dist",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "nodeDistMirror"
+            }
+          ]
+        },
+        {
+          "name": "--version-file-strategy",
+          "description": "Strategy for how to resolve the Node version",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "strategy",
+              "suggestions": [
+                {
+                  "name": "local"
+                },
+                {
+                  "name": "recursive"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ls-remote",
+      "description": "List all remote Node.js versions",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Prints help information",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Prints help information",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Prints version information",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Prints version information",
+          "takesValue": false
+        },
+        {
+          "name": "--arch",
+          "description": "Override the architecture of the installed Node binary. Defaults to arch of fnm binary",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "arch",
+              "suggestions": [
+                {
+                  "name": "x86"
+                },
+                {
+                  "name": "x64"
+                },
+                {
+                  "name": "arm64"
+                },
+                {
+                  "name": "armv7l"
+                },
+                {
+                  "name": "ppc64le"
+                },
+                {
+                  "name": "ppc64"
+                },
+                {
+                  "name": "s390x"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--fnm-dir",
+          "description": "The root directory of fnm installations",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "dir",
+              "template": "folders"
+            }
+          ]
+        },
+        {
+          "name": "--log-level",
+          "description": "The log level of fnm commands",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "logLevel",
+              "suggestions": [
+                {
+                  "name": "quiet"
+                },
+                {
+                  "name": "info"
+                },
+                {
+                  "name": "error"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--node-dist-mirror",
+          "description": "Mirror of https://nodejs.org/dist",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "nodeDistMirror"
+            }
+          ]
+        },
+        {
+          "name": "--version-file-strategy",
+          "description": "Strategy for how to resolve the Node version",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "strategy",
+              "suggestions": [
+                {
+                  "name": "local"
+                },
+                {
+                  "name": "recursive"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "alias",
+      "description": "Alias a version to a common name",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Prints help information",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Prints help information",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Prints version information",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Prints version information",
+          "takesValue": false
+        },
+        {
+          "name": "--arch",
+          "description": "Override the architecture of the installed Node binary. Defaults to arch of fnm binary",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "arch",
+              "suggestions": [
+                {
+                  "name": "x86"
+                },
+                {
+                  "name": "x64"
+                },
+                {
+                  "name": "arm64"
+                },
+                {
+                  "name": "armv7l"
+                },
+                {
+                  "name": "ppc64le"
+                },
+                {
+                  "name": "ppc64"
+                },
+                {
+                  "name": "s390x"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--fnm-dir",
+          "description": "The root directory of fnm installations",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "dir",
+              "template": "folders"
+            }
+          ]
+        },
+        {
+          "name": "--log-level",
+          "description": "The log level of fnm commands",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "logLevel",
+              "suggestions": [
+                {
+                  "name": "quiet"
+                },
+                {
+                  "name": "info"
+                },
+                {
+                  "name": "error"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--node-dist-mirror",
+          "description": "Mirror of https://nodejs.org/dist",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "nodeDistMirror"
+            }
+          ]
+        },
+        {
+          "name": "--version-file-strategy",
+          "description": "Strategy for how to resolve the Node version",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "strategy",
+              "suggestions": [
+                {
+                  "name": "local"
+                },
+                {
+                  "name": "recursive"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "version",
+          "description": "A version string. Can be a partial semver or a LTS version name by the format lts/NAME",
+          "isOptional": true
+        },
+        {
+          "name": "name",
+          "description": "Alias name"
+        }
+      ]
+    },
+    {
+      "name": "unalias",
+      "description": "Deletes the alias named <name>",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Prints help information",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Prints help information",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Prints version information",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Prints version information",
+          "takesValue": false
+        },
+        {
+          "name": "--arch",
+          "description": "Override the architecture of the installed Node binary. Defaults to arch of fnm binary",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "arch",
+              "suggestions": [
+                {
+                  "name": "x86"
+                },
+                {
+                  "name": "x64"
+                },
+                {
+                  "name": "arm64"
+                },
+                {
+                  "name": "armv7l"
+                },
+                {
+                  "name": "ppc64le"
+                },
+                {
+                  "name": "ppc64"
+                },
+                {
+                  "name": "s390x"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--fnm-dir",
+          "description": "The root directory of fnm installations",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "dir",
+              "template": "folders"
+            }
+          ]
+        },
+        {
+          "name": "--log-level",
+          "description": "The log level of fnm commands",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "logLevel",
+              "suggestions": [
+                {
+                  "name": "quiet"
+                },
+                {
+                  "name": "info"
+                },
+                {
+                  "name": "error"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--node-dist-mirror",
+          "description": "Mirror of https://nodejs.org/dist",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "nodeDistMirror"
+            }
+          ]
+        },
+        {
+          "name": "--version-file-strategy",
+          "description": "Strategy for how to resolve the Node version",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "strategy",
+              "suggestions": [
+                {
+                  "name": "local"
+                },
+                {
+                  "name": "recursive"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "requested-alias",
+          "description": "Alias name"
+        }
+      ]
+    },
+    {
+      "name": "completions",
+      "description": "Print shell completions to stdout",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Prints help information",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Prints help information",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Prints version information",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Prints version information",
+          "takesValue": false
+        },
+        {
+          "name": "--arch",
+          "description": "Override the architecture of the installed Node binary. Defaults to arch of fnm binary",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "arch",
+              "suggestions": [
+                {
+                  "name": "x86"
+                },
+                {
+                  "name": "x64"
+                },
+                {
+                  "name": "arm64"
+                },
+                {
+                  "name": "armv7l"
+                },
+                {
+                  "name": "ppc64le"
+                },
+                {
+                  "name": "ppc64"
+                },
+                {
+                  "name": "s390x"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--fnm-dir",
+          "description": "The root directory of fnm installations",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "dir",
+              "template": "folders"
+            }
+          ]
+        },
+        {
+          "name": "--log-level",
+          "description": "The log level of fnm commands",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "logLevel",
+              "suggestions": [
+                {
+                  "name": "quiet"
+                },
+                {
+                  "name": "info"
+                },
+                {
+                  "name": "error"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--node-dist-mirror",
+          "description": "Mirror of https://nodejs.org/dist",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "nodeDistMirror"
+            }
+          ]
+        },
+        {
+          "name": "--version-file-strategy",
+          "description": "Strategy for how to resolve the Node version",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "strategy",
+              "suggestions": [
+                {
+                  "name": "local"
+                },
+                {
+                  "name": "recursive"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "default",
+      "description": "Set a version as the default version. This is a shorthand for 'fnm alias VERSION default'",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Prints help information",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Prints help information",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Prints version information",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Prints version information",
+          "takesValue": false
+        },
+        {
+          "name": "--arch",
+          "description": "Override the architecture of the installed Node binary. Defaults to arch of fnm binary",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "arch",
+              "suggestions": [
+                {
+                  "name": "x86"
+                },
+                {
+                  "name": "x64"
+                },
+                {
+                  "name": "arm64"
+                },
+                {
+                  "name": "armv7l"
+                },
+                {
+                  "name": "ppc64le"
+                },
+                {
+                  "name": "ppc64"
+                },
+                {
+                  "name": "s390x"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--fnm-dir",
+          "description": "The root directory of fnm installations",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "dir",
+              "template": "folders"
+            }
+          ]
+        },
+        {
+          "name": "--log-level",
+          "description": "The log level of fnm commands",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "logLevel",
+              "suggestions": [
+                {
+                  "name": "quiet"
+                },
+                {
+                  "name": "info"
+                },
+                {
+                  "name": "error"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--node-dist-mirror",
+          "description": "Mirror of https://nodejs.org/dist",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "nodeDistMirror"
+            }
+          ]
+        },
+        {
+          "name": "--version-file-strategy",
+          "description": "Strategy for how to resolve the Node version",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "strategy",
+              "suggestions": [
+                {
+                  "name": "local"
+                },
+                {
+                  "name": "recursive"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "version",
+          "description": "A version string. Can be a partial semver or a LTS version name by the format lts/NAME",
+          "isOptional": true
+        }
+      ]
+    },
+    {
+      "name": "env",
+      "description": "Print and set up required environment variables for fnm",
+      "options": [
+        {
+          "name": "--use-on-cd",
+          "description": "Print the script to change Node versions every directory change",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Prints help information",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Prints help information",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Prints version information",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Prints version information",
+          "takesValue": false
+        },
+        {
+          "name": "--arch",
+          "description": "Override the architecture of the installed Node binary. Defaults to arch of fnm binary",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "arch",
+              "suggestions": [
+                {
+                  "name": "x86"
+                },
+                {
+                  "name": "x64"
+                },
+                {
+                  "name": "arm64"
+                },
+                {
+                  "name": "armv7l"
+                },
+                {
+                  "name": "ppc64le"
+                },
+                {
+                  "name": "ppc64"
+                },
+                {
+                  "name": "s390x"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--fnm-dir",
+          "description": "The root directory of fnm installations",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "dir",
+              "template": "folders"
+            }
+          ]
+        },
+        {
+          "name": "--log-level",
+          "description": "The log level of fnm commands",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "logLevel",
+              "suggestions": [
+                {
+                  "name": "quiet"
+                },
+                {
+                  "name": "info"
+                },
+                {
+                  "name": "error"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--node-dist-mirror",
+          "description": "Mirror of https://nodejs.org/dist",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "nodeDistMirror"
+            }
+          ]
+        },
+        {
+          "name": "--version-file-strategy",
+          "description": "Strategy for how to resolve the Node version",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "strategy",
+              "suggestions": [
+                {
+                  "name": "local"
+                },
+                {
+                  "name": "recursive"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "help",
+      "description": "Prints the help page or the help of the given subcommand(s)",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Prints help information",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Prints help information",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Prints version information",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Prints version information",
+          "takesValue": false
+        },
+        {
+          "name": "--arch",
+          "description": "Override the architecture of the installed Node binary. Defaults to arch of fnm binary",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "arch",
+              "suggestions": [
+                {
+                  "name": "x86"
+                },
+                {
+                  "name": "x64"
+                },
+                {
+                  "name": "arm64"
+                },
+                {
+                  "name": "armv7l"
+                },
+                {
+                  "name": "ppc64le"
+                },
+                {
+                  "name": "ppc64"
+                },
+                {
+                  "name": "s390x"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--fnm-dir",
+          "description": "The root directory of fnm installations",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "dir",
+              "template": "folders"
+            }
+          ]
+        },
+        {
+          "name": "--log-level",
+          "description": "The log level of fnm commands",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "logLevel",
+              "suggestions": [
+                {
+                  "name": "quiet"
+                },
+                {
+                  "name": "info"
+                },
+                {
+                  "name": "error"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--node-dist-mirror",
+          "description": "Mirror of https://nodejs.org/dist",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "nodeDistMirror"
+            }
+          ]
+        },
+        {
+          "name": "--version-file-strategy",
+          "description": "Strategy for how to resolve the Node version",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "strategy",
+              "suggestions": [
+                {
+                  "name": "local"
+                },
+                {
+                  "name": "recursive"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "command",
+          "isOptional": true
+        }
+      ]
+    }
+  ]
+}

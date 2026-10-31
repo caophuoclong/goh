@@ -1,0 +1,339 @@
+{
+  "schemaVersion": 1,
+  "name": "bat",
+  "description": "A cat(1) clone with syntax highlighting and Git integration",
+  "options": [
+    {
+      "name": "-A",
+      "description": "Show non-printable characters",
+      "takesValue": false
+    },
+    {
+      "name": "--show-all",
+      "description": "Show non-printable characters",
+      "takesValue": false
+    },
+    {
+      "name": "-p",
+      "description": "Show plain style, no decorations",
+      "takesValue": false
+    },
+    {
+      "name": "--plain",
+      "description": "Show plain style, no decorations",
+      "takesValue": false
+    },
+    {
+      "name": "-l",
+      "description": "Explicitly set the language for syntax highlighting",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "<language>"
+        }
+      ]
+    },
+    {
+      "name": "--language",
+      "description": "Explicitly set the language for syntax highlighting",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "<language>"
+        }
+      ]
+    },
+    {
+      "name": "-H",
+      "description": "Highlight the specified line ranges",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "<N:M> ",
+          "description": "Range of line"
+        }
+      ]
+    },
+    {
+      "name": "--highlight-line",
+      "description": "Highlight the specified line ranges",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "<N:M> ",
+          "description": "Range of line"
+        }
+      ]
+    },
+    {
+      "name": "--file-name",
+      "description": "Specify the name to display for a file. Useful when piping data to bat from STDIN when bat does not otherwise know the filename",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "argument",
+          "description": "File(s)",
+          "isVariadic": true,
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "-d",
+      "description": "Show lines that have been added/removed/modified with respect to the Git index",
+      "takesValue": false
+    },
+    {
+      "name": "--diff",
+      "description": "Show lines that have been added/removed/modified with respect to the Git index",
+      "takesValue": false
+    },
+    {
+      "name": "--diff-context",
+      "description": "Include N lines of context around added/removed/modified lines when using '--diff'",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "<N> ",
+          "description": "Lines of context"
+        }
+      ]
+    },
+    {
+      "name": "--tabs",
+      "description": "Set the tab width to T spaces. Use a width of 0 to pass tabs through directly",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "<T> ",
+          "description": "Spaces of tab width"
+        }
+      ]
+    },
+    {
+      "name": "--wrap",
+      "description": "Specify when to use colored output",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "<mode>"
+        }
+      ]
+    },
+    {
+      "name": "--terminal-width",
+      "description": "Explicitly set the width of the terminal instead of determining it automatically",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "<width> ",
+          "description": "Width to wrap"
+        }
+      ]
+    },
+    {
+      "name": "-n",
+      "description": "Show line numbers, no other decorations",
+      "takesValue": false
+    },
+    {
+      "name": "--number",
+      "description": "Show line numbers, no other decorations",
+      "takesValue": false
+    },
+    {
+      "name": "--color",
+      "description": "Specify when to use colored output",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "<when>"
+        }
+      ]
+    },
+    {
+      "name": "--italic-text",
+      "description": "Specify when to use ANSI sequences for italic text in the output",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "<when>"
+        }
+      ]
+    },
+    {
+      "name": "--decorations",
+      "description": "Specify when to use the decorations that have been specified via '--style'",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "<when>"
+        }
+      ]
+    },
+    {
+      "name": "-f",
+      "description": "Alias for '--decorations=always --color=always'",
+      "takesValue": false
+    },
+    {
+      "name": "--force-colorization",
+      "description": "Alias for '--decorations=always --color=always'",
+      "takesValue": false
+    },
+    {
+      "name": "--paging",
+      "description": "Specify when to use the pager",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "<when>"
+        }
+      ]
+    },
+    {
+      "name": "--pager",
+      "description": "Determine which pager is used",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "<command>",
+          "description": "Command to pager"
+        }
+      ]
+    },
+    {
+      "name": "-m",
+      "description": "Map a glob pattern to an existing syntax name",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "<glob:syntax>",
+          "description": "Full path or the filename:language that highlighted"
+        }
+      ]
+    },
+    {
+      "name": "--map-syntax",
+      "description": "Map a glob pattern to an existing syntax name",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "<glob:syntax>",
+          "description": "Full path or the filename:language that highlighted"
+        }
+      ]
+    },
+    {
+      "name": "--ignored-suffix",
+      "description": "Ignore extension",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "<ignored-suffix>",
+          "description": "Extension"
+        }
+      ]
+    },
+    {
+      "name": "--theme",
+      "description": "Set the theme for syntax highlighting",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "<theme>"
+        }
+      ]
+    },
+    {
+      "name": "--list-themes",
+      "description": "Display a list of supported themes for syntax highlighting",
+      "takesValue": false
+    },
+    {
+      "name": "--style",
+      "description": "Display a list of supported themes for syntax highlighting",
+      "takesValue": false
+    },
+    {
+      "name": "-r",
+      "description": "Only print the specified range of lines for each file",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "<N:M> ",
+          "description": "Range of line"
+        }
+      ]
+    },
+    {
+      "name": "--line-range",
+      "description": "Only print the specified range of lines for each file",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "<N:M> ",
+          "description": "Range of line"
+        }
+      ]
+    },
+    {
+      "name": "-L",
+      "description": "Display a list of supported languages for syntax highlighting",
+      "takesValue": false
+    },
+    {
+      "name": "--list-languages",
+      "description": "Display a list of supported languages for syntax highlighting",
+      "takesValue": false
+    },
+    {
+      "name": "-u",
+      "description": "Make output unbuffered (exists for POSIX-compliance reasons and is simply ignored)",
+      "takesValue": false
+    },
+    {
+      "name": "--unbuffered",
+      "description": "Make output unbuffered (exists for POSIX-compliance reasons and is simply ignored)",
+      "takesValue": false
+    },
+    {
+      "name": "--diagnostic",
+      "description": "Show diagnostic information for bug reports",
+      "takesValue": false
+    },
+    {
+      "name": "--acknowledgements",
+      "description": "Show acknowledgements",
+      "takesValue": false
+    },
+    {
+      "name": "-h",
+      "description": "Print help message",
+      "takesValue": false
+    },
+    {
+      "name": "--help",
+      "description": "Print help message",
+      "takesValue": false
+    },
+    {
+      "name": "-V",
+      "description": "Show version information",
+      "takesValue": false
+    },
+    {
+      "name": "--version",
+      "description": "Show version information",
+      "takesValue": false
+    }
+  ],
+  "args": [
+    {
+      "name": "argument",
+      "description": "File(s)",
+      "isVariadic": true,
+      "template": "filepaths"
+    }
+  ]
+}

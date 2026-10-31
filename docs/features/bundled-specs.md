@@ -12,7 +12,7 @@ files: [~/.config/goh/specs/]
 
 # Bundled specs and specs from --help
 
-goh ships completion specs for 114 common commands and can write one for any other program from its `--help`.
+goh ships completion specs for 191 common commands and can write one for any other program from its `--help`.
 
 ## Behaviour
 
@@ -30,6 +30,7 @@ goh ships completion specs for 114 common commands and can write one for any oth
 
 ## Changes
 
+- unreleased: 77 more specs (kill, lsof, pytest, ruff, podman, pulumi, cmake, adb, nx, bat, fd, ...).
 - 1.7.0: 18 more specs.
 - 1.3.0: 39 more specs; `goh specs --missing`.
 - 1.0.0: first release.

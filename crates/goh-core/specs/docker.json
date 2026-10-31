@@ -8670,7 +8670,8 @@
           ],
           "args": [
             {
-              "name": "NETWORK"
+              "name": "NETWORK",
+              "provider": "docker-networks"
             },
             {
               "name": "container",
@@ -8861,7 +8862,8 @@
           ],
           "args": [
             {
-              "name": "NETWORK"
+              "name": "NETWORK",
+              "provider": "docker-networks"
             },
             {
               "name": "container",
@@ -8907,7 +8909,8 @@
           "args": [
             {
               "name": "NETWORK",
-              "isVariadic": true
+              "isVariadic": true,
+              "provider": "docker-networks"
             }
           ]
         },
@@ -8994,7 +8997,8 @@
           "args": [
             {
               "name": "NETWORK",
-              "isVariadic": true
+              "isVariadic": true,
+              "provider": "docker-networks"
             }
           ]
         }
@@ -13953,7 +13957,8 @@
           "args": [
             {
               "name": "VOLUME",
-              "isVariadic": true
+              "isVariadic": true,
+              "provider": "docker-volumes"
             }
           ]
         },
@@ -14047,7 +14052,8 @@
           "args": [
             {
               "name": "VOLUME",
-              "isVariadic": true
+              "isVariadic": true,
+              "provider": "docker-volumes"
             }
           ]
         }

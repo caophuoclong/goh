@@ -1,0 +1,4401 @@
+{
+  "schemaVersion": 1,
+  "name": "k3d",
+  "description": "K3d is a lightweight wrapper to run k3s in Docker",
+  "options": [
+    {
+      "name": "-h",
+      "description": "Help for k3d",
+      "takesValue": false
+    },
+    {
+      "name": "--help",
+      "description": "Help for k3d",
+      "takesValue": false
+    },
+    {
+      "name": "--verbose",
+      "description": "Verbose output",
+      "takesValue": false
+    },
+    {
+      "name": "--trace",
+      "description": "Trace output",
+      "takesValue": false
+    },
+    {
+      "name": "--version",
+      "description": "Print version information",
+      "takesValue": false
+    },
+    {
+      "name": "--timestamps",
+      "description": "Print timestamp in log output",
+      "takesValue": false
+    }
+  ],
+  "subcommands": [
+    {
+      "name": "cluster",
+      "description": "Manage k3s clusters",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Help for k3d",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Help for k3d",
+          "takesValue": false
+        },
+        {
+          "name": "--verbose",
+          "description": "Verbose output",
+          "takesValue": false
+        },
+        {
+          "name": "--trace",
+          "description": "Trace output",
+          "takesValue": false
+        },
+        {
+          "name": "--timestamps",
+          "description": "Print timestamp in log output",
+          "takesValue": false
+        }
+      ],
+      "subcommands": [
+        {
+          "name": "create",
+          "description": "Create a new k3s cluster",
+          "options": [
+            {
+              "name": "-h",
+              "description": "Help for create",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for create",
+              "takesValue": false
+            },
+            {
+              "name": "--verbose",
+              "description": "Verbose output",
+              "takesValue": false
+            },
+            {
+              "name": "--trace",
+              "description": "Trace output",
+              "takesValue": false
+            },
+            {
+              "name": "--timestamps",
+              "description": "Print timestamp in log output",
+              "takesValue": false
+            },
+            {
+              "name": "-a",
+              "description": "Number of agents to create",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "number of agents",
+                  "description": "Number of agents to create"
+                }
+              ]
+            },
+            {
+              "name": "--agents",
+              "description": "Number of agents to create",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "number of agents",
+                  "description": "Number of agents to create"
+                }
+              ]
+            },
+            {
+              "name": "--agents-memory",
+              "description": "Memory limit imposed on the agents nodes",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "memory limit",
+                  "description": "Memory limit imposed on the agents nodes"
+                }
+              ]
+            },
+            {
+              "name": "--api-port",
+              "description": "Specify the Kubernetes API server port exposed on the LoadBalancer",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "port",
+                  "description": "Specify the Kubernetes API server port exposed on the LoadBalancer"
+                }
+              ]
+            },
+            {
+              "name": "-c",
+              "description": "Path of a config file to use",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "path",
+                  "description": "Path of a config file to use"
+                }
+              ]
+            },
+            {
+              "name": "--config",
+              "description": "Path of a config file to use",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "path",
+                  "description": "Path of a config file to use"
+                }
+              ]
+            },
+            {
+              "name": "-e",
+              "description": "Add environment variables to nodes",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "environment variables",
+                  "description": "Add environment variables to nodes"
+                }
+              ]
+            },
+            {
+              "name": "--env",
+              "description": "Add environment variables to nodes",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "environment variables",
+                  "description": "Add environment variables to nodes"
+                }
+              ]
+            },
+            {
+              "name": "--gpus",
+              "description": "GPU devices to add to the cluster node containers",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "devices",
+                  "description": "GPU devices to add to the cluster node containers"
+                }
+              ]
+            },
+            {
+              "name": "--host-alias",
+              "description": "Add ip:host[,host,...] mappings",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "ip:host[,host,...]",
+                  "description": "Add ip:host[,host,...] mappings"
+                }
+              ]
+            },
+            {
+              "name": "--host-pid-mode",
+              "description": "Enable host pid mode of server(s) and agent(s)",
+              "takesValue": false
+            },
+            {
+              "name": "-i",
+              "description": "Specify k3s image that you want to use for the nodes",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "image",
+                  "description": "Specify k3s image that you want to use for the nodes"
+                }
+              ]
+            },
+            {
+              "name": "--image",
+              "description": "Specify k3s image that you want to use for the nodes",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "image",
+                  "description": "Specify k3s image that you want to use for the nodes"
+                }
+              ]
+            },
+            {
+              "name": "--k3s-arg",
+              "description": "Additional args passed to k3s command",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "ARG@NODEFILTER[;@NODEFILTER]",
+                  "description": "Additional args passed to k3s command"
+                }
+              ]
+            },
+            {
+              "name": "--k3s-node-label",
+              "description": "Add label to k3s node",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "KEY[=VALUE][@NODEFILTER[;NODEFILTER...]]",
+                  "description": "Add label to k3s node"
+                }
+              ]
+            },
+            {
+              "name": "--kubeconfig-switch-context",
+              "description": "Directly switch the default kubeconfig's current-context to the new cluster's context (requires --kubeconfig-update-default) (default true)",
+              "takesValue": false
+            },
+            {
+              "name": "--kubeconfig-update-default",
+              "description": "Directly update the default kubeconfig with the new cluster's context (default true)",
+              "takesValue": false
+            },
+            {
+              "name": "--lb-config-override",
+              "description": "Use dotted YAML path syntax to override nginx loadbalancer settings",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "path"
+                }
+              ]
+            },
+            {
+              "name": "--network",
+              "description": "Specify the docker network to use",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "network",
+                  "description": "Specify the docker network to use"
+                }
+              ]
+            },
+            {
+              "name": "--no-image-volume",
+              "description": "Don't create a volume for the container's root filesystem",
+              "takesValue": false
+            },
+            {
+              "name": "--no-lb",
+              "description": "Don't create a loadbalancer for the cluster",
+              "takesValue": false
+            },
+            {
+              "name": "--no-rollback",
+              "description": "Don't rollback changes if cluster creation failed",
+              "takesValue": false
+            },
+            {
+              "name": "-p",
+              "description": "Map ports from the node containers (via the serverlb) to the host",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "port",
+                  "description": "Map ports from the node containers (via the serverlb) to the host"
+                }
+              ]
+            },
+            {
+              "name": "--port",
+              "description": "Map ports from the node containers (via the serverlb) to the host",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "port",
+                  "description": "Map ports from the node containers (via the serverlb) to the host"
+                }
+              ]
+            },
+            {
+              "name": "--registry-config",
+              "description": "Specify path to an extra registries.yaml file",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "path",
+                  "description": "Specify path to an extra registries.yaml file"
+                }
+              ]
+            },
+            {
+              "name": "--registry-create",
+              "description": "Create a k3d-managed registry and connect it to the cluster (Format: NAME[:HOST][:HOSTPORT] - Example: `k3d cluster create --registry-create mycluster-registry",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "NAME[:HOST][:HOSTPORT]",
+                  "description": "Create a k3d-managed registry and connect it to the cluster (Format: NAME[:HOST][:HOSTPORT] - Example: `k3d cluster create --registry-create mycluster-registry"
+                }
+              ]
+            },
+            {
+              "name": "--registry-use",
+              "description": "Connect to one or more k3d-managed registries running locally",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "NAME[:HOST][:HOSTPORT]"
+                }
+              ]
+            },
+            {
+              "name": "--runtime-label",
+              "description": "Add label to container runtime (Format: KEY[=VALUE][@NODEFILTER[;NODEFILTER...]] - Example: `k3d cluster create --agents 2 --runtime-label \"my.label@agent:0,1\" --runtime-label \"other.label=somevalue@server:0\"`",
+              "takesValue": false
+            },
+            {
+              "name": "-s",
+              "description": "Specify how many servers you want to create",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "int",
+                  "description": "Specify how many servers you want to create"
+                }
+              ]
+            },
+            {
+              "name": "--servers",
+              "description": "Specify how many servers you want to create",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "int",
+                  "description": "Specify how many servers you want to create"
+                }
+              ]
+            },
+            {
+              "name": "--servers-memory",
+              "description": "Memory limit imposed on the server nodes [From docker]",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "string",
+                  "description": "Memory limit imposed on the server nodes [From docker]"
+                }
+              ]
+            },
+            {
+              "name": "--subnet",
+              "description": "[Experimental: IPAM] Define a subnet for the newly created container network",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "string"
+                }
+              ]
+            },
+            {
+              "name": "--timeout",
+              "description": "Rollback changes if cluster couldn't be created in specified duration",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "duration",
+                  "description": "Rollback changes if cluster couldn't be created in specified duration"
+                }
+              ]
+            },
+            {
+              "name": "--token",
+              "description": "Specify a cluster token. By default, we generate one",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "string",
+                  "description": "Specify a cluster token. By default, we generate one"
+                }
+              ]
+            },
+            {
+              "name": "-v",
+              "description": "Mount volumes into the nodes",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "[SOURCE:]DEST[@NODEFILTER[;NODEFILTER...]]",
+                  "description": "Mount volumes into the nodes"
+                }
+              ]
+            },
+            {
+              "name": "--volume",
+              "description": "Mount volumes into the nodes",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "[SOURCE:]DEST[@NODEFILTER[;NODEFILTER...]]",
+                  "description": "Mount volumes into the nodes"
+                }
+              ]
+            },
+            {
+              "name": "--wait",
+              "description": "Wait for the server(s) to be ready before returning",
+              "takesValue": false
+            }
+          ],
+          "args": [
+            {
+              "name": "cluster name",
+              "description": "Name of the cluster to create"
+            }
+          ]
+        },
+        {
+          "name": "delete",
+          "description": "Delete a cluster",
+          "options": [
+            {
+              "name": "-h",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--verbose",
+              "description": "Verbose output",
+              "takesValue": false
+            },
+            {
+              "name": "--trace",
+              "description": "Trace output",
+              "takesValue": false
+            },
+            {
+              "name": "--timestamps",
+              "description": "Print timestamp in log output",
+              "takesValue": false
+            },
+            {
+              "name": "-a",
+              "description": "Delete all clusters",
+              "takesValue": false
+            },
+            {
+              "name": "--all",
+              "description": "Delete all clusters",
+              "takesValue": false
+            },
+            {
+              "name": "-c",
+              "description": "Path of a config file to use",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "path",
+                  "description": "Path of a config file to use"
+                }
+              ]
+            },
+            {
+              "name": "--config",
+              "description": "Path of a config file to use",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "path",
+                  "description": "Path of a config file to use"
+                }
+              ]
+            }
+          ],
+          "args": [
+            {
+              "name": "cluster",
+              "description": "Cluster to delete"
+            }
+          ]
+        },
+        {
+          "name": "del",
+          "description": "Delete a cluster",
+          "options": [
+            {
+              "name": "-h",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--verbose",
+              "description": "Verbose output",
+              "takesValue": false
+            },
+            {
+              "name": "--trace",
+              "description": "Trace output",
+              "takesValue": false
+            },
+            {
+              "name": "--timestamps",
+              "description": "Print timestamp in log output",
+              "takesValue": false
+            },
+            {
+              "name": "-a",
+              "description": "Delete all clusters",
+              "takesValue": false
+            },
+            {
+              "name": "--all",
+              "description": "Delete all clusters",
+              "takesValue": false
+            },
+            {
+              "name": "-c",
+              "description": "Path of a config file to use",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "path",
+                  "description": "Path of a config file to use"
+                }
+              ]
+            },
+            {
+              "name": "--config",
+              "description": "Path of a config file to use",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "path",
+                  "description": "Path of a config file to use"
+                }
+              ]
+            }
+          ],
+          "args": [
+            {
+              "name": "cluster",
+              "description": "Cluster to delete"
+            }
+          ]
+        },
+        {
+          "name": "rm",
+          "description": "Delete a cluster",
+          "options": [
+            {
+              "name": "-h",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--verbose",
+              "description": "Verbose output",
+              "takesValue": false
+            },
+            {
+              "name": "--trace",
+              "description": "Trace output",
+              "takesValue": false
+            },
+            {
+              "name": "--timestamps",
+              "description": "Print timestamp in log output",
+              "takesValue": false
+            },
+            {
+              "name": "-a",
+              "description": "Delete all clusters",
+              "takesValue": false
+            },
+            {
+              "name": "--all",
+              "description": "Delete all clusters",
+              "takesValue": false
+            },
+            {
+              "name": "-c",
+              "description": "Path of a config file to use",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "path",
+                  "description": "Path of a config file to use"
+                }
+              ]
+            },
+            {
+              "name": "--config",
+              "description": "Path of a config file to use",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "path",
+                  "description": "Path of a config file to use"
+                }
+              ]
+            }
+          ],
+          "args": [
+            {
+              "name": "cluster",
+              "description": "Cluster to delete"
+            }
+          ]
+        },
+        {
+          "name": "edit",
+          "description": "Edit a cluster",
+          "options": [
+            {
+              "name": "-h",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--verbose",
+              "description": "Verbose output",
+              "takesValue": false
+            },
+            {
+              "name": "--trace",
+              "description": "Trace output",
+              "takesValue": false
+            },
+            {
+              "name": "--timestamps",
+              "description": "Print timestamp in log output",
+              "takesValue": false
+            },
+            {
+              "name": "--port-add",
+              "description": "Map ports from the node containers",
+              "takesValue": false
+            }
+          ],
+          "args": [
+            {
+              "name": "cluster",
+              "description": "Cluster to edit"
+            }
+          ]
+        },
+        {
+          "name": "update",
+          "description": "Edit a cluster",
+          "options": [
+            {
+              "name": "-h",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--verbose",
+              "description": "Verbose output",
+              "takesValue": false
+            },
+            {
+              "name": "--trace",
+              "description": "Trace output",
+              "takesValue": false
+            },
+            {
+              "name": "--timestamps",
+              "description": "Print timestamp in log output",
+              "takesValue": false
+            },
+            {
+              "name": "--port-add",
+              "description": "Map ports from the node containers",
+              "takesValue": false
+            }
+          ],
+          "args": [
+            {
+              "name": "cluster",
+              "description": "Cluster to edit"
+            }
+          ]
+        },
+        {
+          "name": "list",
+          "description": "List clusters",
+          "options": [
+            {
+              "name": "-h",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--verbose",
+              "description": "Verbose output",
+              "takesValue": false
+            },
+            {
+              "name": "--trace",
+              "description": "Trace output",
+              "takesValue": false
+            },
+            {
+              "name": "--timestamps",
+              "description": "Print timestamp in log output",
+              "takesValue": false
+            },
+            {
+              "name": "--no-headers",
+              "description": "Don't print headers",
+              "takesValue": false
+            },
+            {
+              "name": "-o",
+              "description": "Output format",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "string",
+                  "description": "Output format",
+                  "suggestions": [
+                    {
+                      "name": "json"
+                    },
+                    {
+                      "name": "yaml"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "--output",
+              "description": "Output format",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "string",
+                  "description": "Output format",
+                  "suggestions": [
+                    {
+                      "name": "json"
+                    },
+                    {
+                      "name": "yaml"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "--token",
+              "description": "Print k3s cluster token",
+              "takesValue": false
+            }
+          ],
+          "args": [
+            {
+              "name": "cluster",
+              "description": "Cluster to list"
+            }
+          ]
+        },
+        {
+          "name": "ls",
+          "description": "List clusters",
+          "options": [
+            {
+              "name": "-h",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--verbose",
+              "description": "Verbose output",
+              "takesValue": false
+            },
+            {
+              "name": "--trace",
+              "description": "Trace output",
+              "takesValue": false
+            },
+            {
+              "name": "--timestamps",
+              "description": "Print timestamp in log output",
+              "takesValue": false
+            },
+            {
+              "name": "--no-headers",
+              "description": "Don't print headers",
+              "takesValue": false
+            },
+            {
+              "name": "-o",
+              "description": "Output format",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "string",
+                  "description": "Output format",
+                  "suggestions": [
+                    {
+                      "name": "json"
+                    },
+                    {
+                      "name": "yaml"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "--output",
+              "description": "Output format",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "string",
+                  "description": "Output format",
+                  "suggestions": [
+                    {
+                      "name": "json"
+                    },
+                    {
+                      "name": "yaml"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "--token",
+              "description": "Print k3s cluster token",
+              "takesValue": false
+            }
+          ],
+          "args": [
+            {
+              "name": "cluster",
+              "description": "Cluster to list"
+            }
+          ]
+        },
+        {
+          "name": "get",
+          "description": "List clusters",
+          "options": [
+            {
+              "name": "-h",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--verbose",
+              "description": "Verbose output",
+              "takesValue": false
+            },
+            {
+              "name": "--trace",
+              "description": "Trace output",
+              "takesValue": false
+            },
+            {
+              "name": "--timestamps",
+              "description": "Print timestamp in log output",
+              "takesValue": false
+            },
+            {
+              "name": "--no-headers",
+              "description": "Don't print headers",
+              "takesValue": false
+            },
+            {
+              "name": "-o",
+              "description": "Output format",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "string",
+                  "description": "Output format",
+                  "suggestions": [
+                    {
+                      "name": "json"
+                    },
+                    {
+                      "name": "yaml"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "--output",
+              "description": "Output format",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "string",
+                  "description": "Output format",
+                  "suggestions": [
+                    {
+                      "name": "json"
+                    },
+                    {
+                      "name": "yaml"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "--token",
+              "description": "Print k3s cluster token",
+              "takesValue": false
+            }
+          ],
+          "args": [
+            {
+              "name": "cluster",
+              "description": "Cluster to list"
+            }
+          ]
+        },
+        {
+          "name": "start",
+          "description": "Start a cluster",
+          "options": [
+            {
+              "name": "-h",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--verbose",
+              "description": "Verbose output",
+              "takesValue": false
+            },
+            {
+              "name": "--trace",
+              "description": "Trace output",
+              "takesValue": false
+            },
+            {
+              "name": "--timestamps",
+              "description": "Print timestamp in log output",
+              "takesValue": false
+            },
+            {
+              "name": "--all",
+              "description": "Start all clusters",
+              "takesValue": false
+            },
+            {
+              "name": "--timeout",
+              "description": "Maximum waiting time for '--wait' before canceling/returning",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "duration",
+                  "description": "Maximum waiting time for '--wait' before canceling/returning"
+                }
+              ]
+            },
+            {
+              "name": "--wait",
+              "description": "Wait for the server(s) (and loadbalancer) to be ready before returning",
+              "takesValue": false
+            }
+          ],
+          "args": [
+            {
+              "name": "cluster",
+              "description": "Cluster to start"
+            }
+          ]
+        },
+        {
+          "name": "stop",
+          "description": "Stop a cluster",
+          "options": [
+            {
+              "name": "-h",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--verbose",
+              "description": "Verbose output",
+              "takesValue": false
+            },
+            {
+              "name": "--trace",
+              "description": "Trace output",
+              "takesValue": false
+            },
+            {
+              "name": "--timestamps",
+              "description": "Print timestamp in log output",
+              "takesValue": false
+            },
+            {
+              "name": "-a",
+              "description": "Stop all clusters",
+              "takesValue": false
+            },
+            {
+              "name": "--all",
+              "description": "Stop all clusters",
+              "takesValue": false
+            }
+          ],
+          "args": [
+            {
+              "name": "cluster",
+              "description": "Cluster to stop"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "completion",
+      "description": "Generate shell completion scripts",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Help for k3d",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Help for k3d",
+          "takesValue": false
+        },
+        {
+          "name": "--verbose",
+          "description": "Verbose output",
+          "takesValue": false
+        },
+        {
+          "name": "--trace",
+          "description": "Trace output",
+          "takesValue": false
+        },
+        {
+          "name": "--timestamps",
+          "description": "Print timestamp in log output",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "shell",
+          "description": "Shell to generate completion script for",
+          "suggestions": [
+            {
+              "name": "bash",
+              "description": "Bash shell"
+            },
+            {
+              "name": "zsh",
+              "description": "Zsh shell"
+            },
+            {
+              "name": "fish",
+              "description": "Fish shell"
+            },
+            {
+              "name": "powershell",
+              "description": "Powershell"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "config",
+      "description": "Manage k3d config",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Help for k3d",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Help for k3d",
+          "takesValue": false
+        },
+        {
+          "name": "--verbose",
+          "description": "Verbose output",
+          "takesValue": false
+        },
+        {
+          "name": "--trace",
+          "description": "Trace output",
+          "takesValue": false
+        },
+        {
+          "name": "--timestamps",
+          "description": "Print timestamp in log output",
+          "takesValue": false
+        }
+      ],
+      "subcommands": [
+        {
+          "name": "init",
+          "description": "Create a new config file",
+          "options": [
+            {
+              "name": "-h",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--verbose",
+              "description": "Verbose output",
+              "takesValue": false
+            },
+            {
+              "name": "--trace",
+              "description": "Trace output",
+              "takesValue": false
+            },
+            {
+              "name": "--timestamps",
+              "description": "Print timestamp in log output",
+              "takesValue": false
+            },
+            {
+              "name": "-f",
+              "description": "Force overwrite of target file",
+              "takesValue": false
+            },
+            {
+              "name": "--force",
+              "description": "Force overwrite of target file",
+              "takesValue": false
+            },
+            {
+              "name": "-o",
+              "description": "Write a default k3d config (default \"k3d-default.yaml\")",
+              "takesValue": false
+            },
+            {
+              "name": "--output",
+              "description": "Write a default k3d config (default \"k3d-default.yaml\")",
+              "takesValue": false
+            }
+          ]
+        },
+        {
+          "name": "create",
+          "description": "Create a new config file",
+          "options": [
+            {
+              "name": "-h",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--verbose",
+              "description": "Verbose output",
+              "takesValue": false
+            },
+            {
+              "name": "--trace",
+              "description": "Trace output",
+              "takesValue": false
+            },
+            {
+              "name": "--timestamps",
+              "description": "Print timestamp in log output",
+              "takesValue": false
+            },
+            {
+              "name": "-f",
+              "description": "Force overwrite of target file",
+              "takesValue": false
+            },
+            {
+              "name": "--force",
+              "description": "Force overwrite of target file",
+              "takesValue": false
+            },
+            {
+              "name": "-o",
+              "description": "Write a default k3d config (default \"k3d-default.yaml\")",
+              "takesValue": false
+            },
+            {
+              "name": "--output",
+              "description": "Write a default k3d config (default \"k3d-default.yaml\")",
+              "takesValue": false
+            }
+          ]
+        },
+        {
+          "name": "migrate",
+          "description": "Migrate a config file to the latest version",
+          "options": [
+            {
+              "name": "-h",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--verbose",
+              "description": "Verbose output",
+              "takesValue": false
+            },
+            {
+              "name": "--trace",
+              "description": "Trace output",
+              "takesValue": false
+            },
+            {
+              "name": "--timestamps",
+              "description": "Print timestamp in log output",
+              "takesValue": false
+            }
+          ]
+        },
+        {
+          "name": "update",
+          "description": "Migrate a config file to the latest version",
+          "options": [
+            {
+              "name": "-h",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--verbose",
+              "description": "Verbose output",
+              "takesValue": false
+            },
+            {
+              "name": "--trace",
+              "description": "Trace output",
+              "takesValue": false
+            },
+            {
+              "name": "--timestamps",
+              "description": "Print timestamp in log output",
+              "takesValue": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "image",
+      "description": "Manage k3d images",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Help for k3d",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Help for k3d",
+          "takesValue": false
+        },
+        {
+          "name": "--verbose",
+          "description": "Verbose output",
+          "takesValue": false
+        },
+        {
+          "name": "--trace",
+          "description": "Trace output",
+          "takesValue": false
+        },
+        {
+          "name": "--timestamps",
+          "description": "Print timestamp in log output",
+          "takesValue": false
+        }
+      ],
+      "subcommands": [
+        {
+          "name": "import",
+          "description": "Import image(s) from docker into k3d cluster(s)",
+          "options": [
+            {
+              "name": "-h",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--verbose",
+              "description": "Verbose output",
+              "takesValue": false
+            },
+            {
+              "name": "--trace",
+              "description": "Trace output",
+              "takesValue": false
+            },
+            {
+              "name": "--timestamps",
+              "description": "Print timestamp in log output",
+              "takesValue": false
+            },
+            {
+              "name": "-c",
+              "description": "Cluster to import image(s) into",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "cluster",
+                  "description": "Cluster to import image(s) into"
+                }
+              ]
+            },
+            {
+              "name": "--cluster",
+              "description": "Cluster to import image(s) into",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "cluster",
+                  "description": "Cluster to import image(s) into"
+                }
+              ]
+            },
+            {
+              "name": "-k",
+              "description": "Do not delete the tarball containing the saved images from the shared volume",
+              "takesValue": false
+            },
+            {
+              "name": "--keep-tarball",
+              "description": "Do not delete the tarball containing the saved images from the shared volume",
+              "takesValue": false
+            },
+            {
+              "name": "-t",
+              "description": "Do not delete the tools node after import",
+              "takesValue": false
+            },
+            {
+              "name": "--keep-tools",
+              "description": "Do not delete the tools node after import",
+              "takesValue": false
+            },
+            {
+              "name": "-m",
+              "description": "Import mode",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "mode",
+                  "description": "Import mode",
+                  "suggestions": [
+                    {
+                      "name": "auto"
+                    },
+                    {
+                      "name": "direct"
+                    },
+                    {
+                      "name": "tools"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "--mode",
+              "description": "Import mode",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "mode",
+                  "description": "Import mode",
+                  "suggestions": [
+                    {
+                      "name": "auto"
+                    },
+                    {
+                      "name": "direct"
+                    },
+                    {
+                      "name": "tools"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "args": [
+            {
+              "name": "image",
+              "description": "Image to import"
+            }
+          ]
+        },
+        {
+          "name": "load",
+          "description": "Import image(s) from docker into k3d cluster(s)",
+          "options": [
+            {
+              "name": "-h",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--verbose",
+              "description": "Verbose output",
+              "takesValue": false
+            },
+            {
+              "name": "--trace",
+              "description": "Trace output",
+              "takesValue": false
+            },
+            {
+              "name": "--timestamps",
+              "description": "Print timestamp in log output",
+              "takesValue": false
+            },
+            {
+              "name": "-c",
+              "description": "Cluster to import image(s) into",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "cluster",
+                  "description": "Cluster to import image(s) into"
+                }
+              ]
+            },
+            {
+              "name": "--cluster",
+              "description": "Cluster to import image(s) into",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "cluster",
+                  "description": "Cluster to import image(s) into"
+                }
+              ]
+            },
+            {
+              "name": "-k",
+              "description": "Do not delete the tarball containing the saved images from the shared volume",
+              "takesValue": false
+            },
+            {
+              "name": "--keep-tarball",
+              "description": "Do not delete the tarball containing the saved images from the shared volume",
+              "takesValue": false
+            },
+            {
+              "name": "-t",
+              "description": "Do not delete the tools node after import",
+              "takesValue": false
+            },
+            {
+              "name": "--keep-tools",
+              "description": "Do not delete the tools node after import",
+              "takesValue": false
+            },
+            {
+              "name": "-m",
+              "description": "Import mode",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "mode",
+                  "description": "Import mode",
+                  "suggestions": [
+                    {
+                      "name": "auto"
+                    },
+                    {
+                      "name": "direct"
+                    },
+                    {
+                      "name": "tools"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "--mode",
+              "description": "Import mode",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "mode",
+                  "description": "Import mode",
+                  "suggestions": [
+                    {
+                      "name": "auto"
+                    },
+                    {
+                      "name": "direct"
+                    },
+                    {
+                      "name": "tools"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "args": [
+            {
+              "name": "image",
+              "description": "Image to import"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "kubeconfig",
+      "description": "Manage k3d kubeconfig",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Help for k3d",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Help for k3d",
+          "takesValue": false
+        },
+        {
+          "name": "--verbose",
+          "description": "Verbose output",
+          "takesValue": false
+        },
+        {
+          "name": "--trace",
+          "description": "Trace output",
+          "takesValue": false
+        },
+        {
+          "name": "--timestamps",
+          "description": "Print timestamp in log output",
+          "takesValue": false
+        }
+      ],
+      "subcommands": [
+        {
+          "name": "get",
+          "options": [
+            {
+              "name": "-h",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--verbose",
+              "description": "Verbose output",
+              "takesValue": false
+            },
+            {
+              "name": "--trace",
+              "description": "Trace output",
+              "takesValue": false
+            },
+            {
+              "name": "--timestamps",
+              "description": "Print timestamp in log output",
+              "takesValue": false
+            },
+            {
+              "name": "-a",
+              "takesValue": false
+            },
+            {
+              "name": "--all",
+              "takesValue": false
+            }
+          ],
+          "args": [
+            {
+              "name": "cluster",
+              "description": "Cluster to get kubeconfig for"
+            }
+          ]
+        },
+        {
+          "name": "print",
+          "options": [
+            {
+              "name": "-h",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--verbose",
+              "description": "Verbose output",
+              "takesValue": false
+            },
+            {
+              "name": "--trace",
+              "description": "Trace output",
+              "takesValue": false
+            },
+            {
+              "name": "--timestamps",
+              "description": "Print timestamp in log output",
+              "takesValue": false
+            },
+            {
+              "name": "-a",
+              "takesValue": false
+            },
+            {
+              "name": "--all",
+              "takesValue": false
+            }
+          ],
+          "args": [
+            {
+              "name": "cluster",
+              "description": "Cluster to get kubeconfig for"
+            }
+          ]
+        },
+        {
+          "name": "show",
+          "options": [
+            {
+              "name": "-h",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--verbose",
+              "description": "Verbose output",
+              "takesValue": false
+            },
+            {
+              "name": "--trace",
+              "description": "Trace output",
+              "takesValue": false
+            },
+            {
+              "name": "--timestamps",
+              "description": "Print timestamp in log output",
+              "takesValue": false
+            },
+            {
+              "name": "-a",
+              "takesValue": false
+            },
+            {
+              "name": "--all",
+              "takesValue": false
+            }
+          ],
+          "args": [
+            {
+              "name": "cluster",
+              "description": "Cluster to get kubeconfig for"
+            }
+          ]
+        },
+        {
+          "name": "merge",
+          "description": "Write/Merge kubeconfig(s) from cluster(s) into new or existing kubeconfig/file",
+          "options": [
+            {
+              "name": "-h",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--verbose",
+              "description": "Verbose output",
+              "takesValue": false
+            },
+            {
+              "name": "--trace",
+              "description": "Trace output",
+              "takesValue": false
+            },
+            {
+              "name": "--timestamps",
+              "description": "Print timestamp in log output",
+              "takesValue": false
+            },
+            {
+              "name": "-a",
+              "takesValue": false
+            },
+            {
+              "name": "--all",
+              "takesValue": false
+            },
+            {
+              "name": "-d",
+              "description": "Merge into the default kubeconfig ($KUBECONFIG or /Users/balli/.kube/config)",
+              "takesValue": false
+            },
+            {
+              "name": "--kubeconfig-merge-default",
+              "description": "Merge into the default kubeconfig ($KUBECONFIG or /Users/balli/.kube/config)",
+              "takesValue": false
+            },
+            {
+              "name": "-s",
+              "description": "Switch to new context (default true)",
+              "takesValue": false
+            },
+            {
+              "name": "--kubeconfig-switch-context",
+              "description": "Switch to new context (default true)",
+              "takesValue": false
+            },
+            {
+              "name": "-o",
+              "description": "Define output [ - | FILE ] (default from $KUBECONFIG or /Users/balli/.kube/config",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "string",
+                  "description": "Define output [ - | FILE ] (default from $KUBECONFIG or /Users/balli/.kube/config"
+                }
+              ]
+            },
+            {
+              "name": "--output",
+              "description": "Define output [ - | FILE ] (default from $KUBECONFIG or /Users/balli/.kube/config",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "string",
+                  "description": "Define output [ - | FILE ] (default from $KUBECONFIG or /Users/balli/.kube/config"
+                }
+              ]
+            },
+            {
+              "name": "--overwrite",
+              "description": "[Careful!] Overwrite existing file, ignoring its contents",
+              "takesValue": false
+            },
+            {
+              "name": "-u",
+              "description": "Update conflicting fields in existing kubeconfig (default true)",
+              "takesValue": false
+            },
+            {
+              "name": "--update",
+              "description": "Update conflicting fields in existing kubeconfig (default true)",
+              "takesValue": false
+            }
+          ],
+          "args": [
+            {
+              "name": "cluster",
+              "description": "Cluster to get kubeconfig for"
+            }
+          ]
+        },
+        {
+          "name": "write",
+          "description": "Write/Merge kubeconfig(s) from cluster(s) into new or existing kubeconfig/file",
+          "options": [
+            {
+              "name": "-h",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--verbose",
+              "description": "Verbose output",
+              "takesValue": false
+            },
+            {
+              "name": "--trace",
+              "description": "Trace output",
+              "takesValue": false
+            },
+            {
+              "name": "--timestamps",
+              "description": "Print timestamp in log output",
+              "takesValue": false
+            },
+            {
+              "name": "-a",
+              "takesValue": false
+            },
+            {
+              "name": "--all",
+              "takesValue": false
+            },
+            {
+              "name": "-d",
+              "description": "Merge into the default kubeconfig ($KUBECONFIG or /Users/balli/.kube/config)",
+              "takesValue": false
+            },
+            {
+              "name": "--kubeconfig-merge-default",
+              "description": "Merge into the default kubeconfig ($KUBECONFIG or /Users/balli/.kube/config)",
+              "takesValue": false
+            },
+            {
+              "name": "-s",
+              "description": "Switch to new context (default true)",
+              "takesValue": false
+            },
+            {
+              "name": "--kubeconfig-switch-context",
+              "description": "Switch to new context (default true)",
+              "takesValue": false
+            },
+            {
+              "name": "-o",
+              "description": "Define output [ - | FILE ] (default from $KUBECONFIG or /Users/balli/.kube/config",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "string",
+                  "description": "Define output [ - | FILE ] (default from $KUBECONFIG or /Users/balli/.kube/config"
+                }
+              ]
+            },
+            {
+              "name": "--output",
+              "description": "Define output [ - | FILE ] (default from $KUBECONFIG or /Users/balli/.kube/config",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "string",
+                  "description": "Define output [ - | FILE ] (default from $KUBECONFIG or /Users/balli/.kube/config"
+                }
+              ]
+            },
+            {
+              "name": "--overwrite",
+              "description": "[Careful!] Overwrite existing file, ignoring its contents",
+              "takesValue": false
+            },
+            {
+              "name": "-u",
+              "description": "Update conflicting fields in existing kubeconfig (default true)",
+              "takesValue": false
+            },
+            {
+              "name": "--update",
+              "description": "Update conflicting fields in existing kubeconfig (default true)",
+              "takesValue": false
+            }
+          ],
+          "args": [
+            {
+              "name": "cluster",
+              "description": "Cluster to get kubeconfig for"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "node",
+      "description": "Manage k3d nodes",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Help for k3d",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Help for k3d",
+          "takesValue": false
+        },
+        {
+          "name": "--verbose",
+          "description": "Verbose output",
+          "takesValue": false
+        },
+        {
+          "name": "--trace",
+          "description": "Trace output",
+          "takesValue": false
+        },
+        {
+          "name": "--timestamps",
+          "description": "Print timestamp in log output",
+          "takesValue": false
+        }
+      ],
+      "subcommands": [
+        {
+          "name": "create",
+          "description": "Create a new node",
+          "options": [
+            {
+              "name": "-h",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--verbose",
+              "description": "Verbose output",
+              "takesValue": false
+            },
+            {
+              "name": "--trace",
+              "description": "Trace output",
+              "takesValue": false
+            },
+            {
+              "name": "--timestamps",
+              "description": "Print timestamp in log output",
+              "takesValue": false
+            },
+            {
+              "name": "-c",
+              "description": "Cluster URL or k3d cluster name to connect to. (default \"k3s-default\")",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "cluster",
+                  "description": "Cluster to connect to"
+                }
+              ]
+            },
+            {
+              "name": "--cluster",
+              "description": "Cluster URL or k3d cluster name to connect to. (default \"k3s-default\")",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "cluster",
+                  "description": "Cluster to connect to"
+                }
+              ]
+            },
+            {
+              "name": "-i",
+              "description": "Node image to use",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "image",
+                  "description": "Node image to use"
+                }
+              ]
+            },
+            {
+              "name": "--image",
+              "description": "Node image to use",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "image",
+                  "description": "Node image to use"
+                }
+              ]
+            },
+            {
+              "name": "--k3s-arg",
+              "description": "Additional k3s arguments",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "k3s-arg",
+                  "description": "Additional k3s arguments"
+                }
+              ]
+            },
+            {
+              "name": "--k3s-node-label",
+              "description": "Specify k3s node labels in format",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "k3s-node-label",
+                  "description": "Specify k3s node labels in format \"foo=bar\""
+                }
+              ]
+            },
+            {
+              "name": "--memory",
+              "description": "Memory limit for the node container",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "memory",
+                  "description": "Memory limit for the node container"
+                }
+              ]
+            },
+            {
+              "name": "-n",
+              "description": "Add node to (another) runtime network",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "network"
+                }
+              ]
+            },
+            {
+              "name": "--network",
+              "description": "Add node to (another) runtime network",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "network"
+                }
+              ]
+            },
+            {
+              "name": "--replicas",
+              "description": "Number of replicas to create",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "replicas",
+                  "description": "Number of replicas to create",
+                  "suggestions": [
+                    {
+                      "name": "1"
+                    },
+                    {
+                      "name": "2"
+                    },
+                    {
+                      "name": "3"
+                    },
+                    {
+                      "name": "4"
+                    },
+                    {
+                      "name": "5"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "--role",
+              "description": "Node role",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "role",
+                  "description": "Node role",
+                  "suggestions": [
+                    {
+                      "name": "agent"
+                    },
+                    {
+                      "name": "server"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "--runtime-label",
+              "description": "Specify runtime labels in format",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "runtime-label",
+                  "description": "Specify runtime labels in format \"foo=bar\""
+                }
+              ]
+            },
+            {
+              "name": "--timeout",
+              "description": "Maximum waiting time for '--wait' before canceling/returning",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "timeout",
+                  "description": "Maximum waiting time for '--wait' before canceling/returning"
+                }
+              ]
+            },
+            {
+              "name": "-t",
+              "description": "Override cluster token",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "token"
+                }
+              ]
+            },
+            {
+              "name": "--token",
+              "description": "Override cluster token",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "token"
+                }
+              ]
+            },
+            {
+              "name": "--wait",
+              "description": "Wait for the node(s) to be ready before returning",
+              "takesValue": false
+            }
+          ],
+          "args": [
+            {
+              "name": "Node Name",
+              "description": "Name of the node"
+            }
+          ]
+        },
+        {
+          "name": "delete",
+          "description": "Delete a node",
+          "options": [
+            {
+              "name": "-h",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--verbose",
+              "description": "Verbose output",
+              "takesValue": false
+            },
+            {
+              "name": "--trace",
+              "description": "Trace output",
+              "takesValue": false
+            },
+            {
+              "name": "--timestamps",
+              "description": "Print timestamp in log output",
+              "takesValue": false
+            },
+            {
+              "name": "-a",
+              "description": "Delete all existing nodes",
+              "takesValue": false
+            },
+            {
+              "name": "--all",
+              "description": "Delete all existing nodes",
+              "takesValue": false
+            },
+            {
+              "name": "-r",
+              "description": "Also delete registries",
+              "takesValue": false
+            },
+            {
+              "name": "--registry",
+              "description": "Also delete registries",
+              "takesValue": false
+            }
+          ],
+          "args": [
+            {
+              "name": "Node Name",
+              "description": "Name of the node"
+            }
+          ]
+        },
+        {
+          "name": "edit",
+          "description": "[EXPERIMENTAL] Edit node(s)",
+          "options": [
+            {
+              "name": "-h",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--verbose",
+              "description": "Verbose output",
+              "takesValue": false
+            },
+            {
+              "name": "--trace",
+              "description": "Trace output",
+              "takesValue": false
+            },
+            {
+              "name": "--timestamps",
+              "description": "Print timestamp in log output",
+              "takesValue": false
+            },
+            {
+              "name": "--port-add",
+              "description": "Map ports from the node container to the host",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "port-add",
+                  "description": "Map ports from the node container to the host"
+                }
+              ]
+            }
+          ],
+          "args": [
+            {
+              "name": "Node Name",
+              "description": "Name of the node"
+            }
+          ]
+        },
+        {
+          "name": "update",
+          "description": "[EXPERIMENTAL] Edit node(s)",
+          "options": [
+            {
+              "name": "-h",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--verbose",
+              "description": "Verbose output",
+              "takesValue": false
+            },
+            {
+              "name": "--trace",
+              "description": "Trace output",
+              "takesValue": false
+            },
+            {
+              "name": "--timestamps",
+              "description": "Print timestamp in log output",
+              "takesValue": false
+            },
+            {
+              "name": "--port-add",
+              "description": "Map ports from the node container to the host",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "port-add",
+                  "description": "Map ports from the node container to the host"
+                }
+              ]
+            }
+          ],
+          "args": [
+            {
+              "name": "Node Name",
+              "description": "Name of the node"
+            }
+          ]
+        },
+        {
+          "name": "list",
+          "description": "List nodes",
+          "options": [
+            {
+              "name": "-h",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--verbose",
+              "description": "Verbose output",
+              "takesValue": false
+            },
+            {
+              "name": "--trace",
+              "description": "Trace output",
+              "takesValue": false
+            },
+            {
+              "name": "--timestamps",
+              "description": "Print timestamp in log output",
+              "takesValue": false
+            },
+            {
+              "name": "--no-headers",
+              "description": "Don't print headers (default print headers)",
+              "takesValue": false
+            },
+            {
+              "name": "-o",
+              "description": "Output format",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "output",
+                  "description": "Output format",
+                  "suggestions": [
+                    {
+                      "name": "json"
+                    },
+                    {
+                      "name": "yaml"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "--output",
+              "description": "Output format",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "output",
+                  "description": "Output format",
+                  "suggestions": [
+                    {
+                      "name": "json"
+                    },
+                    {
+                      "name": "yaml"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "ls",
+          "description": "List nodes",
+          "options": [
+            {
+              "name": "-h",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--verbose",
+              "description": "Verbose output",
+              "takesValue": false
+            },
+            {
+              "name": "--trace",
+              "description": "Trace output",
+              "takesValue": false
+            },
+            {
+              "name": "--timestamps",
+              "description": "Print timestamp in log output",
+              "takesValue": false
+            },
+            {
+              "name": "--no-headers",
+              "description": "Don't print headers (default print headers)",
+              "takesValue": false
+            },
+            {
+              "name": "-o",
+              "description": "Output format",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "output",
+                  "description": "Output format",
+                  "suggestions": [
+                    {
+                      "name": "json"
+                    },
+                    {
+                      "name": "yaml"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "--output",
+              "description": "Output format",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "output",
+                  "description": "Output format",
+                  "suggestions": [
+                    {
+                      "name": "json"
+                    },
+                    {
+                      "name": "yaml"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "get",
+          "description": "List nodes",
+          "options": [
+            {
+              "name": "-h",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--verbose",
+              "description": "Verbose output",
+              "takesValue": false
+            },
+            {
+              "name": "--trace",
+              "description": "Trace output",
+              "takesValue": false
+            },
+            {
+              "name": "--timestamps",
+              "description": "Print timestamp in log output",
+              "takesValue": false
+            },
+            {
+              "name": "--no-headers",
+              "description": "Don't print headers (default print headers)",
+              "takesValue": false
+            },
+            {
+              "name": "-o",
+              "description": "Output format",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "output",
+                  "description": "Output format",
+                  "suggestions": [
+                    {
+                      "name": "json"
+                    },
+                    {
+                      "name": "yaml"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "--output",
+              "description": "Output format",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "output",
+                  "description": "Output format",
+                  "suggestions": [
+                    {
+                      "name": "json"
+                    },
+                    {
+                      "name": "yaml"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "start",
+          "description": "Start a node",
+          "options": [
+            {
+              "name": "-h",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--verbose",
+              "description": "Verbose output",
+              "takesValue": false
+            },
+            {
+              "name": "--trace",
+              "description": "Trace output",
+              "takesValue": false
+            },
+            {
+              "name": "--timestamps",
+              "description": "Print timestamp in log output",
+              "takesValue": false
+            }
+          ],
+          "args": [
+            {
+              "name": "Node Name",
+              "description": "Name of the node"
+            }
+          ]
+        },
+        {
+          "name": "stop",
+          "description": "Stop a node",
+          "options": [
+            {
+              "name": "-h",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--verbose",
+              "description": "Verbose output",
+              "takesValue": false
+            },
+            {
+              "name": "--trace",
+              "description": "Trace output",
+              "takesValue": false
+            },
+            {
+              "name": "--timestamps",
+              "description": "Print timestamp in log output",
+              "takesValue": false
+            }
+          ],
+          "args": [
+            {
+              "name": "Node Name",
+              "description": "Name of the node"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "registry",
+      "description": "Manage registry/registries",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Help for k3d",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Help for k3d",
+          "takesValue": false
+        },
+        {
+          "name": "--verbose",
+          "description": "Verbose output",
+          "takesValue": false
+        },
+        {
+          "name": "--trace",
+          "description": "Trace output",
+          "takesValue": false
+        },
+        {
+          "name": "--timestamps",
+          "description": "Print timestamp in log output",
+          "takesValue": false
+        }
+      ],
+      "subcommands": [
+        {
+          "name": "create",
+          "description": "Create a new registry",
+          "options": [
+            {
+              "name": "-h",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--verbose",
+              "description": "Verbose output",
+              "takesValue": false
+            },
+            {
+              "name": "--trace",
+              "description": "Trace output",
+              "takesValue": false
+            },
+            {
+              "name": "--timestamps",
+              "description": "Print timestamp in log output",
+              "takesValue": false
+            },
+            {
+              "name": "--default-network",
+              "description": "Specify the network connected to the registry (default \"bridge\")",
+              "takesValue": false
+            },
+            {
+              "name": "-i",
+              "description": "Specify image used for the registry (default \"docker.io/library/registry:2\")",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "image"
+                }
+              ]
+            },
+            {
+              "name": "--image",
+              "description": "Specify image used for the registry (default \"docker.io/library/registry:2\")",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "image"
+                }
+              ]
+            },
+            {
+              "name": "--no-help",
+              "description": "Disable the help text (How-To use the registry)",
+              "takesValue": false
+            },
+            {
+              "name": "-p",
+              "description": "Select which port the registry should be listening on your machine (localhost) (Format: [HOST:]HOSTPORT)",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "port"
+                }
+              ]
+            },
+            {
+              "name": "--port",
+              "description": "Select which port the registry should be listening on your machine (localhost) (Format: [HOST:]HOSTPORT)",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "port"
+                }
+              ]
+            },
+            {
+              "name": "--proxy-password",
+              "description": "Specify the password of the proxied remote registry",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "proxy-password"
+                }
+              ]
+            },
+            {
+              "name": "--proxy-remote-url",
+              "description": "Specify the url of the proxied remote registry",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "proxy-remote-url"
+                }
+              ]
+            },
+            {
+              "name": "--proxy-username",
+              "description": "Specify the username of the proxied remote registry",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "proxy-username"
+                }
+              ]
+            },
+            {
+              "name": "-v",
+              "description": "Mount volumes into the registry node (Format: [SOURCE:]DEST",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "volume"
+                }
+              ]
+            },
+            {
+              "name": "--volume",
+              "description": "Mount volumes into the registry node (Format: [SOURCE:]DEST",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "volume"
+                }
+              ]
+            }
+          ],
+          "args": [
+            {
+              "name": "Registry Name",
+              "description": "Name of the registry"
+            }
+          ]
+        },
+        {
+          "name": "delete",
+          "description": "Delete registry/registries",
+          "options": [
+            {
+              "name": "-h",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--verbose",
+              "description": "Verbose output",
+              "takesValue": false
+            },
+            {
+              "name": "--trace",
+              "description": "Trace output",
+              "takesValue": false
+            },
+            {
+              "name": "--timestamps",
+              "description": "Print timestamp in log output",
+              "takesValue": false
+            },
+            {
+              "name": "-a",
+              "takesValue": false
+            },
+            {
+              "name": "--all",
+              "takesValue": false
+            }
+          ],
+          "args": [
+            {
+              "name": "Registry Name",
+              "description": "Name of the registry"
+            }
+          ]
+        },
+        {
+          "name": "del",
+          "description": "Delete registry/registries",
+          "options": [
+            {
+              "name": "-h",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--verbose",
+              "description": "Verbose output",
+              "takesValue": false
+            },
+            {
+              "name": "--trace",
+              "description": "Trace output",
+              "takesValue": false
+            },
+            {
+              "name": "--timestamps",
+              "description": "Print timestamp in log output",
+              "takesValue": false
+            },
+            {
+              "name": "-a",
+              "takesValue": false
+            },
+            {
+              "name": "--all",
+              "takesValue": false
+            }
+          ],
+          "args": [
+            {
+              "name": "Registry Name",
+              "description": "Name of the registry"
+            }
+          ]
+        },
+        {
+          "name": "rm",
+          "description": "Delete registry/registries",
+          "options": [
+            {
+              "name": "-h",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--verbose",
+              "description": "Verbose output",
+              "takesValue": false
+            },
+            {
+              "name": "--trace",
+              "description": "Trace output",
+              "takesValue": false
+            },
+            {
+              "name": "--timestamps",
+              "description": "Print timestamp in log output",
+              "takesValue": false
+            },
+            {
+              "name": "-a",
+              "takesValue": false
+            },
+            {
+              "name": "--all",
+              "takesValue": false
+            }
+          ],
+          "args": [
+            {
+              "name": "Registry Name",
+              "description": "Name of the registry"
+            }
+          ]
+        },
+        {
+          "name": "list",
+          "description": "List registries",
+          "options": [
+            {
+              "name": "-h",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--verbose",
+              "description": "Verbose output",
+              "takesValue": false
+            },
+            {
+              "name": "--trace",
+              "description": "Trace output",
+              "takesValue": false
+            },
+            {
+              "name": "--timestamps",
+              "description": "Print timestamp in log output",
+              "takesValue": false
+            },
+            {
+              "name": "--no-headers",
+              "description": "Don't print headers (default print headers)",
+              "takesValue": false
+            },
+            {
+              "name": "-o",
+              "description": "Output format",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "output",
+                  "description": "Output format",
+                  "suggestions": [
+                    {
+                      "name": "json"
+                    },
+                    {
+                      "name": "yaml"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "--output",
+              "description": "Output format",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "output",
+                  "description": "Output format",
+                  "suggestions": [
+                    {
+                      "name": "json"
+                    },
+                    {
+                      "name": "yaml"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "args": [
+            {
+              "name": "Registry Name",
+              "description": "Name of the registry",
+              "isOptional": true
+            }
+          ]
+        },
+        {
+          "name": "ls",
+          "description": "List registries",
+          "options": [
+            {
+              "name": "-h",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--verbose",
+              "description": "Verbose output",
+              "takesValue": false
+            },
+            {
+              "name": "--trace",
+              "description": "Trace output",
+              "takesValue": false
+            },
+            {
+              "name": "--timestamps",
+              "description": "Print timestamp in log output",
+              "takesValue": false
+            },
+            {
+              "name": "--no-headers",
+              "description": "Don't print headers (default print headers)",
+              "takesValue": false
+            },
+            {
+              "name": "-o",
+              "description": "Output format",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "output",
+                  "description": "Output format",
+                  "suggestions": [
+                    {
+                      "name": "json"
+                    },
+                    {
+                      "name": "yaml"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "--output",
+              "description": "Output format",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "output",
+                  "description": "Output format",
+                  "suggestions": [
+                    {
+                      "name": "json"
+                    },
+                    {
+                      "name": "yaml"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "args": [
+            {
+              "name": "Registry Name",
+              "description": "Name of the registry",
+              "isOptional": true
+            }
+          ]
+        },
+        {
+          "name": "get",
+          "description": "List registries",
+          "options": [
+            {
+              "name": "-h",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--verbose",
+              "description": "Verbose output",
+              "takesValue": false
+            },
+            {
+              "name": "--trace",
+              "description": "Trace output",
+              "takesValue": false
+            },
+            {
+              "name": "--timestamps",
+              "description": "Print timestamp in log output",
+              "takesValue": false
+            },
+            {
+              "name": "--no-headers",
+              "description": "Don't print headers (default print headers)",
+              "takesValue": false
+            },
+            {
+              "name": "-o",
+              "description": "Output format",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "output",
+                  "description": "Output format",
+                  "suggestions": [
+                    {
+                      "name": "json"
+                    },
+                    {
+                      "name": "yaml"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "--output",
+              "description": "Output format",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "output",
+                  "description": "Output format",
+                  "suggestions": [
+                    {
+                      "name": "json"
+                    },
+                    {
+                      "name": "yaml"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "args": [
+            {
+              "name": "Registry Name",
+              "description": "Name of the registry",
+              "isOptional": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "registries",
+      "description": "Manage registry/registries",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Help for k3d",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Help for k3d",
+          "takesValue": false
+        },
+        {
+          "name": "--verbose",
+          "description": "Verbose output",
+          "takesValue": false
+        },
+        {
+          "name": "--trace",
+          "description": "Trace output",
+          "takesValue": false
+        },
+        {
+          "name": "--timestamps",
+          "description": "Print timestamp in log output",
+          "takesValue": false
+        }
+      ],
+      "subcommands": [
+        {
+          "name": "create",
+          "description": "Create a new registry",
+          "options": [
+            {
+              "name": "-h",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--verbose",
+              "description": "Verbose output",
+              "takesValue": false
+            },
+            {
+              "name": "--trace",
+              "description": "Trace output",
+              "takesValue": false
+            },
+            {
+              "name": "--timestamps",
+              "description": "Print timestamp in log output",
+              "takesValue": false
+            },
+            {
+              "name": "--default-network",
+              "description": "Specify the network connected to the registry (default \"bridge\")",
+              "takesValue": false
+            },
+            {
+              "name": "-i",
+              "description": "Specify image used for the registry (default \"docker.io/library/registry:2\")",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "image"
+                }
+              ]
+            },
+            {
+              "name": "--image",
+              "description": "Specify image used for the registry (default \"docker.io/library/registry:2\")",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "image"
+                }
+              ]
+            },
+            {
+              "name": "--no-help",
+              "description": "Disable the help text (How-To use the registry)",
+              "takesValue": false
+            },
+            {
+              "name": "-p",
+              "description": "Select which port the registry should be listening on your machine (localhost) (Format: [HOST:]HOSTPORT)",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "port"
+                }
+              ]
+            },
+            {
+              "name": "--port",
+              "description": "Select which port the registry should be listening on your machine (localhost) (Format: [HOST:]HOSTPORT)",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "port"
+                }
+              ]
+            },
+            {
+              "name": "--proxy-password",
+              "description": "Specify the password of the proxied remote registry",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "proxy-password"
+                }
+              ]
+            },
+            {
+              "name": "--proxy-remote-url",
+              "description": "Specify the url of the proxied remote registry",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "proxy-remote-url"
+                }
+              ]
+            },
+            {
+              "name": "--proxy-username",
+              "description": "Specify the username of the proxied remote registry",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "proxy-username"
+                }
+              ]
+            },
+            {
+              "name": "-v",
+              "description": "Mount volumes into the registry node (Format: [SOURCE:]DEST",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "volume"
+                }
+              ]
+            },
+            {
+              "name": "--volume",
+              "description": "Mount volumes into the registry node (Format: [SOURCE:]DEST",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "volume"
+                }
+              ]
+            }
+          ],
+          "args": [
+            {
+              "name": "Registry Name",
+              "description": "Name of the registry"
+            }
+          ]
+        },
+        {
+          "name": "delete",
+          "description": "Delete registry/registries",
+          "options": [
+            {
+              "name": "-h",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--verbose",
+              "description": "Verbose output",
+              "takesValue": false
+            },
+            {
+              "name": "--trace",
+              "description": "Trace output",
+              "takesValue": false
+            },
+            {
+              "name": "--timestamps",
+              "description": "Print timestamp in log output",
+              "takesValue": false
+            },
+            {
+              "name": "-a",
+              "takesValue": false
+            },
+            {
+              "name": "--all",
+              "takesValue": false
+            }
+          ],
+          "args": [
+            {
+              "name": "Registry Name",
+              "description": "Name of the registry"
+            }
+          ]
+        },
+        {
+          "name": "del",
+          "description": "Delete registry/registries",
+          "options": [
+            {
+              "name": "-h",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--verbose",
+              "description": "Verbose output",
+              "takesValue": false
+            },
+            {
+              "name": "--trace",
+              "description": "Trace output",
+              "takesValue": false
+            },
+            {
+              "name": "--timestamps",
+              "description": "Print timestamp in log output",
+              "takesValue": false
+            },
+            {
+              "name": "-a",
+              "takesValue": false
+            },
+            {
+              "name": "--all",
+              "takesValue": false
+            }
+          ],
+          "args": [
+            {
+              "name": "Registry Name",
+              "description": "Name of the registry"
+            }
+          ]
+        },
+        {
+          "name": "rm",
+          "description": "Delete registry/registries",
+          "options": [
+            {
+              "name": "-h",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--verbose",
+              "description": "Verbose output",
+              "takesValue": false
+            },
+            {
+              "name": "--trace",
+              "description": "Trace output",
+              "takesValue": false
+            },
+            {
+              "name": "--timestamps",
+              "description": "Print timestamp in log output",
+              "takesValue": false
+            },
+            {
+              "name": "-a",
+              "takesValue": false
+            },
+            {
+              "name": "--all",
+              "takesValue": false
+            }
+          ],
+          "args": [
+            {
+              "name": "Registry Name",
+              "description": "Name of the registry"
+            }
+          ]
+        },
+        {
+          "name": "list",
+          "description": "List registries",
+          "options": [
+            {
+              "name": "-h",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--verbose",
+              "description": "Verbose output",
+              "takesValue": false
+            },
+            {
+              "name": "--trace",
+              "description": "Trace output",
+              "takesValue": false
+            },
+            {
+              "name": "--timestamps",
+              "description": "Print timestamp in log output",
+              "takesValue": false
+            },
+            {
+              "name": "--no-headers",
+              "description": "Don't print headers (default print headers)",
+              "takesValue": false
+            },
+            {
+              "name": "-o",
+              "description": "Output format",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "output",
+                  "description": "Output format",
+                  "suggestions": [
+                    {
+                      "name": "json"
+                    },
+                    {
+                      "name": "yaml"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "--output",
+              "description": "Output format",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "output",
+                  "description": "Output format",
+                  "suggestions": [
+                    {
+                      "name": "json"
+                    },
+                    {
+                      "name": "yaml"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "args": [
+            {
+              "name": "Registry Name",
+              "description": "Name of the registry",
+              "isOptional": true
+            }
+          ]
+        },
+        {
+          "name": "ls",
+          "description": "List registries",
+          "options": [
+            {
+              "name": "-h",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--verbose",
+              "description": "Verbose output",
+              "takesValue": false
+            },
+            {
+              "name": "--trace",
+              "description": "Trace output",
+              "takesValue": false
+            },
+            {
+              "name": "--timestamps",
+              "description": "Print timestamp in log output",
+              "takesValue": false
+            },
+            {
+              "name": "--no-headers",
+              "description": "Don't print headers (default print headers)",
+              "takesValue": false
+            },
+            {
+              "name": "-o",
+              "description": "Output format",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "output",
+                  "description": "Output format",
+                  "suggestions": [
+                    {
+                      "name": "json"
+                    },
+                    {
+                      "name": "yaml"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "--output",
+              "description": "Output format",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "output",
+                  "description": "Output format",
+                  "suggestions": [
+                    {
+                      "name": "json"
+                    },
+                    {
+                      "name": "yaml"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "args": [
+            {
+              "name": "Registry Name",
+              "description": "Name of the registry",
+              "isOptional": true
+            }
+          ]
+        },
+        {
+          "name": "get",
+          "description": "List registries",
+          "options": [
+            {
+              "name": "-h",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--verbose",
+              "description": "Verbose output",
+              "takesValue": false
+            },
+            {
+              "name": "--trace",
+              "description": "Trace output",
+              "takesValue": false
+            },
+            {
+              "name": "--timestamps",
+              "description": "Print timestamp in log output",
+              "takesValue": false
+            },
+            {
+              "name": "--no-headers",
+              "description": "Don't print headers (default print headers)",
+              "takesValue": false
+            },
+            {
+              "name": "-o",
+              "description": "Output format",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "output",
+                  "description": "Output format",
+                  "suggestions": [
+                    {
+                      "name": "json"
+                    },
+                    {
+                      "name": "yaml"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "--output",
+              "description": "Output format",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "output",
+                  "description": "Output format",
+                  "suggestions": [
+                    {
+                      "name": "json"
+                    },
+                    {
+                      "name": "yaml"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "args": [
+            {
+              "name": "Registry Name",
+              "description": "Name of the registry",
+              "isOptional": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "reg",
+      "description": "Manage registry/registries",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Help for k3d",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Help for k3d",
+          "takesValue": false
+        },
+        {
+          "name": "--verbose",
+          "description": "Verbose output",
+          "takesValue": false
+        },
+        {
+          "name": "--trace",
+          "description": "Trace output",
+          "takesValue": false
+        },
+        {
+          "name": "--timestamps",
+          "description": "Print timestamp in log output",
+          "takesValue": false
+        }
+      ],
+      "subcommands": [
+        {
+          "name": "create",
+          "description": "Create a new registry",
+          "options": [
+            {
+              "name": "-h",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--verbose",
+              "description": "Verbose output",
+              "takesValue": false
+            },
+            {
+              "name": "--trace",
+              "description": "Trace output",
+              "takesValue": false
+            },
+            {
+              "name": "--timestamps",
+              "description": "Print timestamp in log output",
+              "takesValue": false
+            },
+            {
+              "name": "--default-network",
+              "description": "Specify the network connected to the registry (default \"bridge\")",
+              "takesValue": false
+            },
+            {
+              "name": "-i",
+              "description": "Specify image used for the registry (default \"docker.io/library/registry:2\")",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "image"
+                }
+              ]
+            },
+            {
+              "name": "--image",
+              "description": "Specify image used for the registry (default \"docker.io/library/registry:2\")",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "image"
+                }
+              ]
+            },
+            {
+              "name": "--no-help",
+              "description": "Disable the help text (How-To use the registry)",
+              "takesValue": false
+            },
+            {
+              "name": "-p",
+              "description": "Select which port the registry should be listening on your machine (localhost) (Format: [HOST:]HOSTPORT)",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "port"
+                }
+              ]
+            },
+            {
+              "name": "--port",
+              "description": "Select which port the registry should be listening on your machine (localhost) (Format: [HOST:]HOSTPORT)",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "port"
+                }
+              ]
+            },
+            {
+              "name": "--proxy-password",
+              "description": "Specify the password of the proxied remote registry",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "proxy-password"
+                }
+              ]
+            },
+            {
+              "name": "--proxy-remote-url",
+              "description": "Specify the url of the proxied remote registry",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "proxy-remote-url"
+                }
+              ]
+            },
+            {
+              "name": "--proxy-username",
+              "description": "Specify the username of the proxied remote registry",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "proxy-username"
+                }
+              ]
+            },
+            {
+              "name": "-v",
+              "description": "Mount volumes into the registry node (Format: [SOURCE:]DEST",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "volume"
+                }
+              ]
+            },
+            {
+              "name": "--volume",
+              "description": "Mount volumes into the registry node (Format: [SOURCE:]DEST",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "volume"
+                }
+              ]
+            }
+          ],
+          "args": [
+            {
+              "name": "Registry Name",
+              "description": "Name of the registry"
+            }
+          ]
+        },
+        {
+          "name": "delete",
+          "description": "Delete registry/registries",
+          "options": [
+            {
+              "name": "-h",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--verbose",
+              "description": "Verbose output",
+              "takesValue": false
+            },
+            {
+              "name": "--trace",
+              "description": "Trace output",
+              "takesValue": false
+            },
+            {
+              "name": "--timestamps",
+              "description": "Print timestamp in log output",
+              "takesValue": false
+            },
+            {
+              "name": "-a",
+              "takesValue": false
+            },
+            {
+              "name": "--all",
+              "takesValue": false
+            }
+          ],
+          "args": [
+            {
+              "name": "Registry Name",
+              "description": "Name of the registry"
+            }
+          ]
+        },
+        {
+          "name": "del",
+          "description": "Delete registry/registries",
+          "options": [
+            {
+              "name": "-h",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--verbose",
+              "description": "Verbose output",
+              "takesValue": false
+            },
+            {
+              "name": "--trace",
+              "description": "Trace output",
+              "takesValue": false
+            },
+            {
+              "name": "--timestamps",
+              "description": "Print timestamp in log output",
+              "takesValue": false
+            },
+            {
+              "name": "-a",
+              "takesValue": false
+            },
+            {
+              "name": "--all",
+              "takesValue": false
+            }
+          ],
+          "args": [
+            {
+              "name": "Registry Name",
+              "description": "Name of the registry"
+            }
+          ]
+        },
+        {
+          "name": "rm",
+          "description": "Delete registry/registries",
+          "options": [
+            {
+              "name": "-h",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--verbose",
+              "description": "Verbose output",
+              "takesValue": false
+            },
+            {
+              "name": "--trace",
+              "description": "Trace output",
+              "takesValue": false
+            },
+            {
+              "name": "--timestamps",
+              "description": "Print timestamp in log output",
+              "takesValue": false
+            },
+            {
+              "name": "-a",
+              "takesValue": false
+            },
+            {
+              "name": "--all",
+              "takesValue": false
+            }
+          ],
+          "args": [
+            {
+              "name": "Registry Name",
+              "description": "Name of the registry"
+            }
+          ]
+        },
+        {
+          "name": "list",
+          "description": "List registries",
+          "options": [
+            {
+              "name": "-h",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--verbose",
+              "description": "Verbose output",
+              "takesValue": false
+            },
+            {
+              "name": "--trace",
+              "description": "Trace output",
+              "takesValue": false
+            },
+            {
+              "name": "--timestamps",
+              "description": "Print timestamp in log output",
+              "takesValue": false
+            },
+            {
+              "name": "--no-headers",
+              "description": "Don't print headers (default print headers)",
+              "takesValue": false
+            },
+            {
+              "name": "-o",
+              "description": "Output format",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "output",
+                  "description": "Output format",
+                  "suggestions": [
+                    {
+                      "name": "json"
+                    },
+                    {
+                      "name": "yaml"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "--output",
+              "description": "Output format",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "output",
+                  "description": "Output format",
+                  "suggestions": [
+                    {
+                      "name": "json"
+                    },
+                    {
+                      "name": "yaml"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "args": [
+            {
+              "name": "Registry Name",
+              "description": "Name of the registry",
+              "isOptional": true
+            }
+          ]
+        },
+        {
+          "name": "ls",
+          "description": "List registries",
+          "options": [
+            {
+              "name": "-h",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--verbose",
+              "description": "Verbose output",
+              "takesValue": false
+            },
+            {
+              "name": "--trace",
+              "description": "Trace output",
+              "takesValue": false
+            },
+            {
+              "name": "--timestamps",
+              "description": "Print timestamp in log output",
+              "takesValue": false
+            },
+            {
+              "name": "--no-headers",
+              "description": "Don't print headers (default print headers)",
+              "takesValue": false
+            },
+            {
+              "name": "-o",
+              "description": "Output format",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "output",
+                  "description": "Output format",
+                  "suggestions": [
+                    {
+                      "name": "json"
+                    },
+                    {
+                      "name": "yaml"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "--output",
+              "description": "Output format",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "output",
+                  "description": "Output format",
+                  "suggestions": [
+                    {
+                      "name": "json"
+                    },
+                    {
+                      "name": "yaml"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "args": [
+            {
+              "name": "Registry Name",
+              "description": "Name of the registry",
+              "isOptional": true
+            }
+          ]
+        },
+        {
+          "name": "get",
+          "description": "List registries",
+          "options": [
+            {
+              "name": "-h",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--help",
+              "description": "Help for k3d",
+              "takesValue": false
+            },
+            {
+              "name": "--verbose",
+              "description": "Verbose output",
+              "takesValue": false
+            },
+            {
+              "name": "--trace",
+              "description": "Trace output",
+              "takesValue": false
+            },
+            {
+              "name": "--timestamps",
+              "description": "Print timestamp in log output",
+              "takesValue": false
+            },
+            {
+              "name": "--no-headers",
+              "description": "Don't print headers (default print headers)",
+              "takesValue": false
+            },
+            {
+              "name": "-o",
+              "description": "Output format",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "output",
+                  "description": "Output format",
+                  "suggestions": [
+                    {
+                      "name": "json"
+                    },
+                    {
+                      "name": "yaml"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "--output",
+              "description": "Output format",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "output",
+                  "description": "Output format",
+                  "suggestions": [
+                    {
+                      "name": "json"
+                    },
+                    {
+                      "name": "yaml"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "args": [
+            {
+              "name": "Registry Name",
+              "description": "Name of the registry",
+              "isOptional": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "version",
+      "description": "Show k3d and default k3s version",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Help for k3d",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Help for k3d",
+          "takesValue": false
+        },
+        {
+          "name": "--verbose",
+          "description": "Verbose output",
+          "takesValue": false
+        },
+        {
+          "name": "--trace",
+          "description": "Trace output",
+          "takesValue": false
+        },
+        {
+          "name": "--timestamps",
+          "description": "Print timestamp in log output",
+          "takesValue": false
+        }
+      ]
+    }
+  ]
+}

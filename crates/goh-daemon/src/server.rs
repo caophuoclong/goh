@@ -109,9 +109,15 @@ impl Server {
                 if v != 1 || !valid_session(&session_id) {
                     return None;
                 }
+                let pending = std::cell::Cell::new(false);
+                let values = |p, cwd: &Path| {
+                    let (values, waiting) = self.providers.values_or_pending(p, cwd);
+                    pending.set(pending.get() || waiting);
+                    values
+                };
                 let candidates = if editor_state == "editing" {
                     let shell = self.contexts.lock().ok().and_then(|c| c.get(&session_id).map(|(_, ctx)| ctx.clone())).unwrap_or_default();
-                    let mut found = match self.engine.complete_in(&buffer, cursor_byte, Path::new(&cwd), &|p, cwd| self.providers.values(p, cwd), &shell) {
+                    let mut found = match self.engine.complete_in(&buffer, cursor_byte, Path::new(&cwd), &values, &shell) {
                         // As-you-type requests only get suggestions for a recognised command in progress.
                         Ok(c) if live && c.valid => c.prefix_matches_only().candidates,
                         Ok(c) if !live => c.candidates,
@@ -139,7 +145,7 @@ impl Server {
                     session_id.clone(),
                     Session { generation, buffer_hash: buffer_hash(&buffer), candidates: candidates.clone() },
                 );
-                Some(Reply::Results { v: 1, session_id, generation, suggestions: candidates })
+                Some(Reply::Results { v: 1, session_id, generation, suggestions: candidates, pending: pending.get() })
             }
             Request::Hello { v } => (v == 1).then(|| Reply::Hello { v: 1, version: env!("CARGO_PKG_VERSION").to_string(), pid: std::process::id() }),
             Request::Context { v, session_id, aliases, functions, builtins, path, env, cdpath, history, seq } => {

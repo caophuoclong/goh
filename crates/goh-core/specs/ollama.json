@@ -1,0 +1,456 @@
+{
+  "schemaVersion": 1,
+  "name": "ollama",
+  "description": "A command-line tool for managing and deploying machine learning models",
+  "options": [
+    {
+      "name": "--help",
+      "description": "Show help for ollama",
+      "takesValue": false
+    },
+    {
+      "name": "-h",
+      "description": "Show help for ollama",
+      "takesValue": false
+    },
+    {
+      "name": "--version",
+      "description": "Show version information",
+      "takesValue": false
+    },
+    {
+      "name": "-v",
+      "description": "Show version information",
+      "takesValue": false
+    }
+  ],
+  "subcommands": [
+    {
+      "name": "serve",
+      "description": "Start ollama",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show help for ollama",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show help for ollama",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "create",
+      "description": "Create a model from a Modelfile",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show help for ollama",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show help for ollama",
+          "takesValue": false
+        },
+        {
+          "name": "-f",
+          "description": "Specify Modelfile",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "filename",
+              "template": "filepaths"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "show",
+      "description": "Show information for a model",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show help for ollama",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show help for ollama",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "model"
+        }
+      ]
+    },
+    {
+      "name": "run",
+      "description": "Run a model",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show help for ollama",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show help for ollama",
+          "takesValue": false
+        },
+        {
+          "name": "--verbose",
+          "description": "Enable verbose output",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "model"
+        }
+      ]
+    },
+    {
+      "name": "stop",
+      "description": "Stop the ollama server",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show help for ollama",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show help for ollama",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "model"
+        }
+      ]
+    },
+    {
+      "name": "pull",
+      "description": "Pull a model from a registry",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show help for ollama",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show help for ollama",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "push",
+      "description": "Push a model to a registry",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show help for ollama",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show help for ollama",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "list",
+      "description": "List models",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show help for ollama",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show help for ollama",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "ls",
+      "description": "List models",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show help for ollama",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show help for ollama",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "ps",
+      "description": "List running models",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show help for ollama",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show help for ollama",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "cp",
+      "description": "Copy a model",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show help for ollama",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show help for ollama",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "SOURCE"
+        }
+      ]
+    },
+    {
+      "name": "rm",
+      "description": "Remove a model",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show help for ollama",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show help for ollama",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "model"
+        }
+      ]
+    },
+    {
+      "name": "help",
+      "description": "Help about any command",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show help for ollama",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show help for ollama",
+          "takesValue": false
+        }
+      ],
+      "subcommands": [
+        {
+          "name": "serve",
+          "description": "Start ollama",
+          "options": [
+            {
+              "name": "--help",
+              "description": "Show help for ollama",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Show help for ollama",
+              "takesValue": false
+            }
+          ]
+        },
+        {
+          "name": "create",
+          "description": "Create a model from a Modelfile",
+          "options": [
+            {
+              "name": "--help",
+              "description": "Show help for ollama",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Show help for ollama",
+              "takesValue": false
+            }
+          ]
+        },
+        {
+          "name": "show",
+          "description": "Show information for a model",
+          "options": [
+            {
+              "name": "--help",
+              "description": "Show help for ollama",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Show help for ollama",
+              "takesValue": false
+            }
+          ]
+        },
+        {
+          "name": "run",
+          "description": "Run a model",
+          "options": [
+            {
+              "name": "--help",
+              "description": "Show help for ollama",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Show help for ollama",
+              "takesValue": false
+            }
+          ]
+        },
+        {
+          "name": "stop",
+          "description": "Stop the ollama server",
+          "options": [
+            {
+              "name": "--help",
+              "description": "Show help for ollama",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Show help for ollama",
+              "takesValue": false
+            }
+          ]
+        },
+        {
+          "name": "pull",
+          "description": "Pull a model from a registry",
+          "options": [
+            {
+              "name": "--help",
+              "description": "Show help for ollama",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Show help for ollama",
+              "takesValue": false
+            }
+          ]
+        },
+        {
+          "name": "push",
+          "description": "Push a model to a registry",
+          "options": [
+            {
+              "name": "--help",
+              "description": "Show help for ollama",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Show help for ollama",
+              "takesValue": false
+            }
+          ]
+        },
+        {
+          "name": "list",
+          "description": "List models",
+          "options": [
+            {
+              "name": "--help",
+              "description": "Show help for ollama",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Show help for ollama",
+              "takesValue": false
+            }
+          ]
+        },
+        {
+          "name": "ps",
+          "description": "List running models",
+          "options": [
+            {
+              "name": "--help",
+              "description": "Show help for ollama",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Show help for ollama",
+              "takesValue": false
+            }
+          ]
+        },
+        {
+          "name": "cp",
+          "description": "Copy a model",
+          "options": [
+            {
+              "name": "--help",
+              "description": "Show help for ollama",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Show help for ollama",
+              "takesValue": false
+            }
+          ]
+        },
+        {
+          "name": "rm",
+          "description": "Remove a model",
+          "options": [
+            {
+              "name": "--help",
+              "description": "Show help for ollama",
+              "takesValue": false
+            },
+            {
+              "name": "-h",
+              "description": "Show help for ollama",
+              "takesValue": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

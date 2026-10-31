@@ -1377,3 +1377,342 @@ fn an_alias_defined_in_the_shell_completes_as_its_command() {
     sh.send("g c", 600);
     assert_eq!(fx.state(&mut sh), "BUF[g c] CUR=3 on=1 sel=1 post[heckout ]");
 }
+
+const BOX: &[(&str, &str)] = &[("GOH_LIVE", "on"), ("GOH_INLINE_STYLE", "box")];
+
+#[test]
+fn the_box_frames_the_rows_under_the_word_being_completed() {
+    let fx = Fixture::new(require_env!(), true);
+    let mut sh = fx.shell(BOX, true);
+    menu_dump(&fx, &mut sh);
+    sh.send("git c", 400);
+    let (rows, h) = menu(&fx, &mut sh);
+    // rows[0] is the ghost text on the line itself; the box follows.
+    let top = &rows[1];
+    let indent = top.chars().take_while(|c| *c == ' ').count();
+    let inner = top.trim_start().chars().count() - 2;
+    assert!(top.trim_start().starts_with('╭') && top.ends_with('╮'), "{rows:?}");
+    // `READY> ` is 7 columns and `git ` 4 more: the word starts at column 11, unless the box must move left to fit 60.
+    assert_eq!(indent, 11.min(59 - inner - 2), "{rows:?}");
+    let body: Vec<&String> = rows[2..].iter().take_while(|r| !r.trim_start().starts_with('╰')).collect();
+    assert!(body.iter().all(|r| r.chars().count() == indent + inner + 2 && r[..indent].trim().is_empty()), "every row has the box's width: {rows:?}");
+    assert_eq!(body[0].trim_start(), format!("│{:inner$}│", "❯ ↳ checkout"));
+    assert!(rows.iter().any(|r| r.trim_start().starts_with('╰')), "closed at the bottom: {rows:?}");
+    assert!(h.contains("bold"), "the selected row stays bold: {h}");
+    // Highlights are `P<start> <end> <style>` counted from the start of the line; they must land on the box.
+    let row = row_offset(&rows, 2, 5);
+    let marker = row + indent + 1;
+    assert!(styles_at(&h, marker, marker + 1).any(|st| st.contains("bold")), "the bold `❯` sits on the selected row's marker (P{marker}): {h}");
+    assert!(styles_at(&h, marker, marker + inner).any(|st| st.starts_with("bg=")), "the selected row's fill spans the inside of the box, P{marker} to P{}: {h}", marker + inner);
+    let top_at = row_offset(&rows, 1, 5) + indent;
+    assert!(styles_at(&h, top_at, top_at + inner + 2).any(|st| st.starts_with("fg=")), "the top border starts at the corner (P{top_at}): {h}");
+    // zsh 5.9 drops a fill's background under a later style that sets a colour, so each style on a fill repeats it:
+    // otherwise the marker, glyph and label of the selected row show the terminal's background through the fill.
+    let fill = styles_at(&h, marker, marker + inner).find(|st| st.starts_with("bg=")).unwrap();
+    let fill = fill.split([',', ' ']).next().unwrap().to_string();
+    let on_selected: Vec<&str> = h
+        .split(';')
+        .filter(|e| {
+            let mut n = e.trim_start_matches('P').split(' ').map(|x| x.parse::<usize>().unwrap_or(usize::MAX));
+            let (s, end) = (n.next().unwrap(), n.next().unwrap_or(usize::MAX));
+            s >= marker && end <= marker + inner && e.contains("memo=goh-ghost")
+        })
+        .collect();
+    assert!(on_selected.len() > 1, "the selected row has styles over its fill: {h}");
+    assert!(on_selected.iter().all(|e| e.contains(&fill)), "every style on the selected row keeps {fill}: {on_selected:?}");
+    assert!(styles_at(&h, top_at, top_at + inner + 2).filter(|st| st.starts_with("fg=")).all(|st| st.contains(",bg=")), "the border keeps the box's fill: {h}");
+}
+
+#[test]
+fn the_box_measures_a_prompt_subst_prompt_after_expanding_its_parameters() {
+    let fx = Fixture::new(require_env!(), true);
+    let mut sh = fx.shell(BOX, true);
+    menu_dump(&fx, &mut sh);
+    sh.send("COLUMNS=100; setopt prompt_subst; GOH_PROMPT_LABEL=0123456789; PS1='${GOH_PROMPT_LABEL}> '\n", 300);
+    sh.send("git c", 400);
+    let (rows, _) = menu(&fx, &mut sh);
+    let top = &rows[1];
+    let indent = top.chars().take_while(|c| *c == ' ').count();
+    let inner = top.trim_start().chars().count() - 2;
+    // The prompt is 12 columns once `${GOH_PROMPT_LABEL}` is expanded, and `git ` 4 more: the word starts at column 16.
+    assert_eq!(indent, 16.min(99 - inner - 2), "{rows:?}");
+    assert_eq!(indent, 16, "the expanded prompt, not its source text, sets the column: {rows:?}");
+}
+
+#[test]
+fn a_command_in_a_prompt_is_not_run_again_and_counts_as_no_width() {
+    let fx = Fixture::new(require_env!(), true);
+    let mut sh = fx.shell(BOX, true);
+    menu_dump(&fx, &mut sh);
+    let counter = fx.path("prompt-runs");
+    sh.send(&format!("COLUMNS=100; setopt prompt_subst; PS1='$(echo . >> {})READY> '\n", counter.display()), 500);
+    let runs = |n: &str| fs::read_to_string(&counter).map(|s| s.lines().count().to_string()).unwrap_or_else(|_| n.into());
+    let before = runs("0");
+    sh.send("git c", 400);
+    let (rows, _) = menu(&fx, &mut sh);
+    sh.send("\x1b[B", 300);
+    let after_move = menu(&fx, &mut sh).0;
+    let indent = rows[1].chars().take_while(|c| *c == ' ').count();
+    assert_eq!(indent, 4, "anchored at `git ` as if the prompt had no width: {rows:?}");
+    assert_eq!(after_move[1].chars().take_while(|c| *c == ' ').count(), 4, "{after_move:?}");
+    assert_eq!(runs("0"), before, "the menu never ran the prompt's command (ran {before} before): {rows:?}");
+    assert_eq!(before, "1", "the prompt ran once when it was drawn");
+}
+
+#[test]
+fn the_boxs_right_border_follows_screen_cells_not_characters() {
+    let fx = Fixture::new(require_env!(), false);
+    fs::write(fx.path("specs/git.json"), serde_json::json!({"schemaVersion":1,"name":"git","subcommands":[{"name":"checkout","description":"日本語の説明です"}]}).to_string()).unwrap();
+    let mut sh = fx.shell(BOX, true);
+    menu_dump(&fx, &mut sh);
+    sh.send("git c", 400);
+    let (rows, _) = menu(&fx, &mut sh);
+    let cells = |r: &str| r.chars().map(|c| if ('\u{2e80}'..='\u{a4cf}').contains(&c) { 2 } else { 1 }).sum::<usize>();
+    let top = cells(&rows[1]);
+    assert!(rows[2..].iter().filter(|r| r.contains('│') || r.contains('╰')).all(|r| cells(r) == top), "every row ends in the same screen column {top}: {rows:?}");
+}
+
+/// Offset, from the start of the line, of the first character of dumped row `i` (row 0 is the ghost text) when the
+/// line is `from` characters long: the ghost, a newline, then every row and its newline.
+fn row_offset(rows: &[String], i: usize, from: usize) -> usize {
+    from + rows[0].chars().count() + 1 + rows[1..i].iter().map(|r| r.chars().count() + 1).sum::<usize>()
+}
+
+/// The styles of the highlights spanning exactly `start..end` in a dumped `region_highlight`.
+fn styles_at(h: &str, start: usize, end: usize) -> impl Iterator<Item = String> + '_ {
+    let key = format!("P{start} {end} ");
+    h.split(';').filter_map(move |e| e.strip_prefix(key.as_str()).map(|st| st.to_string()))
+}
+
+#[test]
+fn the_box_keeps_its_shape_without_colour() {
+    let fx = Fixture::new(require_env!(), true);
+    let mut sh = fx.shell(&[("GOH_LIVE", "on"), ("GOH_INLINE_STYLE", "box"), ("NO_COLOR", "1")], true);
+    menu_dump(&fx, &mut sh);
+    sh.send("git c", 400);
+    let (rows, h) = menu(&fx, &mut sh);
+    assert!(rows[1].trim_start().starts_with('╭') && rows.iter().any(|r| r.contains("│❯ ↳ checkout")), "{rows:?}");
+    // The first highlight is the ghost text on the line itself, which keeps its dim colour; the box adds none.
+    let box_styles = h.split(';').skip(1).collect::<Vec<_>>().join(";");
+    assert!(!box_styles.contains("bg=") && !box_styles.contains("fg="), "no colours in the box under NO_COLOR: {h}");
+    assert!(box_styles.contains("bold"), "the selected row stays bold: {h}");
+}
+
+#[test]
+fn flat_style_keeps_the_rows_flush_left() {
+    let fx = Fixture::new(require_env!(), true);
+    let mut sh = fx.shell(&[("GOH_LIVE", "on"), ("GOH_INLINE_STYLE", "flat")], true);
+    menu_dump(&fx, &mut sh);
+    sh.send("git c", 400);
+    let (rows, _) = menu(&fx, &mut sh);
+    assert_eq!(rows[1], SELECTED, "{rows:?}");
+    assert!(!rows.iter().any(|r| r.contains('╭')), "{rows:?}");
+}
+
+#[test]
+fn the_box_moves_left_to_stay_inside_a_narrow_terminal() {
+    let fx = Fixture::new(require_env!(), true);
+    let mut sh = fx.shell(BOX, true);
+    menu_dump(&fx, &mut sh);
+    sh.send("COLUMNS=30\n", 300);
+    sh.send("git c", 400);
+    let (rows, _) = menu(&fx, &mut sh);
+    let top = &rows[1];
+    let indent = top.chars().take_while(|c| *c == ' ').count();
+    // The word starts at column 11, but a box this wide would end past column 29: it slides left, never wraps.
+    assert!(indent < 11, "{rows:?}");
+    assert!(rows[1..].iter().all(|r| r.chars().count() <= 29), "every row fits the 30 columns: {rows:?}");
+    assert!(top.trim_start().starts_with('╭') && top.ends_with('╮'), "{rows:?}");
+}
+
+#[test]
+fn the_selection_highlight_follows_the_selected_row_when_the_window_scrolls() {
+    let fx = Fixture::new(require_env!(), false);
+    let subcommands: Vec<_> = (0..12).map(|i| serde_json::json!({"name": format!("item-{i:02}")})).collect();
+    fs::write(fx.path("specs/git.json"), serde_json::json!({"schemaVersion":1,"name":"git","subcommands":subcommands}).to_string()).unwrap();
+    let mut sh = fx.shell(&[("GOH_LIVE", "on"), ("GOH_INLINE_STYLE", "box"), ("GOH_LIMIT", "2")], true);
+    menu_dump(&fx, &mut sh);
+    sh.send("git ", 400);
+    sh.send(&"\x1b[B".repeat(3), 400);
+    // Selection 4 of 12 with two rows showing: the window starts at item 3, so the selected row is the second.
+    let (rows, h) = menu(&fx, &mut sh);
+    assert!(rows[2].contains("│  ↳ item-02") && rows[3].contains("│❯ ↳ item-03"), "{rows:?}");
+    let indent = rows[1].chars().take_while(|c| *c == ' ').count();
+    let inner = rows[1].trim_start().chars().count() - 2;
+    let (first, second) = (row_offset(&rows, 2, 4) + indent + 1, row_offset(&rows, 3, 4) + indent + 1);
+    assert!(styles_at(&h, second, second + inner).any(|st| st.starts_with("bg=")), "the selected fill is on the second row (P{second}): {h}");
+    assert!(!styles_at(&h, first, first + inner).any(|st| st.starts_with("bg=")), "and not on the first (P{first}): {h}");
+    assert!(styles_at(&h, second, second + 1).any(|st| st.contains("bold")), "the bold `❯` is on the second row: {h}");
+}
+
+#[test]
+fn the_box_stays_under_the_word_when_the_selection_moves_onto_a_history_line() {
+    let fx = Fixture::new(require_env!(), false);
+    let now = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_secs();
+    fs::write(fx.path(".zsh_history"), format!(": {}:0;git commit -m wip\n: {}:0;git checkout -b done-once\n", now - 300, now - 200)).unwrap();
+    let mut sh = fx.shell(&[("GOH_LIVE", "on"), ("GOH_RECORD", "on"), ("GOH_INLINE_STYLE", "box")], true);
+    menu_dump(&fx, &mut sh);
+    // 50 columns keep the box narrow enough that it is never pushed left: only the anchor decides its column.
+    sh.send("COLUMNS=50\n", 300);
+    sh.send("git c", 1500);
+    let mut on_history = false;
+    for step in 0..4 {
+        let (rows, _) = menu(&fx, &mut sh);
+        let indent = rows[1].chars().take_while(|c| *c == ' ').count();
+        // `READY> git ` is 11 columns, and a history line starts at the beginning of the line (column 7).
+        assert_eq!(indent, 11, "step {step}: {rows:?}");
+        on_history |= rows.iter().any(|r| r.contains("│❯ ↺ git commit -m wip"));
+        sh.send("\x1b[B", 400);
+    }
+    assert!(on_history, "the selection did reach the history line");
+    kill_socket_holder(&fx.socket);
+}
+
+#[test]
+fn ctrl_c_takes_the_box_off_the_screen() {
+    let fx = Fixture::new(require_env!(), true);
+    let mut sh = fx.shell(BOX, true);
+    menu_dump(&fx, &mut sh);
+    sh.send("git c", 400);
+    let (rows, _) = menu(&fx, &mut sh);
+    // rows[0] is the ghost text on the line itself; the box takes the rows under it.
+    let erase = format!("\x1b[{}A\r\x1b[J", rows.len() - 1);
+    // zsh ends the line without zle-line-finish and leaves what was drawn under it; before the next prompt the
+    // adapter moves up over the box's rows and clears them, and the prompt is drawn where the box was.
+    let out = sh.send("\x03", 800);
+    let at = out.find(&erase).unwrap_or_else(|| panic!("Ctrl+C clears the {} box rows: {out:?}", rows.len() - 1));
+    assert!(out[at..].contains("READY> "), "the next prompt follows: {out:?}");
+    // A line that ended normally leaves nothing to clear.
+    sh.send("git c", 400);
+    sh.send("\x1b", 200);
+    sh.send("\x15", 100);
+    let out = sh.send("true\n", 800);
+    assert!(!out.contains(&erase), "nothing is cleared after a normal line: {out:?}");
+}
+
+#[test]
+fn esc_closes_at_once_next_to_a_bindkey_s_esc_key() {
+    let fx = Fixture::new(require_env!(), true);
+    let mut sh = fx.shell(&[], true);
+    // oh-my-zsh binds Alt+L to type `ls` (`bindkey -s`). Left bound while the menu is open, it makes ZLE wait
+    // KEYTIMEOUT (0.4 s) after Esc.
+    sh.send("bindkey -s '^[l' 'ls^J'\n", 300);
+    let keymap_before = fx.keymap(&mut sh, 0);
+    assert!(keymap_before.contains(r#"bindkey -s "^[l" "ls^J""#), "{keymap_before}");
+    sh.send("git c", 150);
+    sh.send("\t", 500);
+    let open = fx.keymap(&mut sh, 1);
+    assert!(!open.contains(r#""^[l""#), "Alt+L is reached through _goh_esc while the menu is open: {open}");
+    assert!(fx.state(&mut sh).contains("on=1"), "the menu is still open");
+    let closed = sh.send("\x1b", 150);
+    assert!(!closed.is_empty(), "Esc closes the menu within 150 ms");
+    assert!(fx.state(&mut sh).contains("on=0"));
+    assert_eq!(fx.keymap(&mut sh, 1), keymap_before, "the `bindkey -s` key types its text again after the menu closes");
+}
+
+#[test]
+fn a_slow_docker_fills_the_open_menu_without_another_key() {
+    let fx = Fixture::new(require_env!(), false);
+    let bin = fx.path("slowbin");
+    fs::create_dir_all(&bin).unwrap();
+    let docker = bin.join("docker");
+    fs::write(&docker, "#!/bin/sh\nsleep 0.6\necho '{\"Names\":\"web-1\",\"Image\":\"nginx\"}'\n").unwrap();
+    fs::set_permissions(&docker, std::os::unix::fs::PermissionsExt::from_mode(0o700)).unwrap();
+    let goh_dir = Path::new(env!("CARGO_BIN_EXE_goh")).parent().unwrap().display().to_string();
+    let path = format!("{}:{goh_dir}:/usr/bin:/bin", bin.display());
+    let mut sh = fx.shell(&[("GOH_LIVE", "on"), ("PATH", &path)], true);
+    menu_dump(&fx, &mut sh);
+    sh.send("docker exec ", 1500); // the first key also starts the daemon
+    // No key after this: the answer must arrive through the adapter's own re-ask.
+    sh.drain(Duration::from_millis(1500), Duration::from_secs(3));
+    let (rows, _) = menu(&fx, &mut sh);
+    kill_socket_holder(&fx.socket);
+    assert!(rows.iter().any(|r| r.contains("web-1")), "the late container shows by itself: {rows:?}");
+}
+
+/// A shell whose `docker` waits `delay` seconds before answering with one container, `web-1`.
+fn slow_docker_shell(fx: &Fixture, delay: &str) -> Pty {
+    let bin = fx.path("slowbin");
+    fs::create_dir_all(&bin).unwrap();
+    let docker = bin.join("docker");
+    fs::write(&docker, format!("#!/bin/sh\nsleep {delay}\necho '{{\"Names\":\"web-1\",\"Image\":\"nginx\"}}'\n")).unwrap();
+    fs::set_permissions(&docker, std::os::unix::fs::PermissionsExt::from_mode(0o700)).unwrap();
+    let goh_dir = Path::new(env!("CARGO_BIN_EXE_goh")).parent().unwrap().display().to_string();
+    let path = format!("{}:{goh_dir}:/usr/bin:/bin", bin.display());
+    let mut sh = fx.shell(&[("GOH_LIVE", "on"), ("PATH", &path)], true);
+    menu_dump(fx, &mut sh);
+    sh
+}
+
+/// Presses Ctrl-C and waits (up to 3 s) for the fresh `READY> ` prompt.
+fn ctrl_c_returns_the_prompt(sh: &mut Pty) -> bool {
+    sh.write_all_keys(b"\x03");
+    let (start, mut out) = (Instant::now(), String::new());
+    while start.elapsed() < Duration::from_secs(3) && !out.contains("READY> ") {
+        out.push_str(&String::from_utf8_lossy(&sh.drain(Duration::from_millis(20), Duration::from_millis(100))));
+    }
+    out.contains("READY> ")
+}
+
+#[test]
+fn ctrl_c_while_a_late_answer_is_pending_aborts_the_line_at_once() {
+    let locale = require_env!();
+    // The adapter asks again every ~0.4 s while a program is slow, and each ask holds the shell for a moment: a
+    // Ctrl-C landing in that moment used to be acted on only at the next key. A fresh shell each time (the daemon
+    // remembers how long a program has been slow) and a Ctrl-C a few seconds in make that about a third of the tries.
+    for _ in 0..6 {
+        let fx = Fixture::new(locale.clone(), false);
+        let mut sh = slow_docker_shell(&fx, "20");
+        sh.send("docker exec ", 800);
+        sh.drain(Duration::from_millis(1800), Duration::from_millis(1800));
+        let back = ctrl_c_returns_the_prompt(&mut sh);
+        kill_socket_holder(&fx.socket);
+        assert!(back, "Ctrl-C was swallowed until the next key");
+    }
+}
+
+#[test]
+fn a_new_prompt_starts_the_late_answer_count_again() {
+    let fx = Fixture::new(require_env!(), false);
+    let mut sh = slow_docker_shell(&fx, "20");
+    sh.send(&format!("latew() {{ print -r -- \"TRIES=$_goh_late_tries LINE[$_goh_late_line]\" >> {}; }}; zle -N latew; bindkey '^Xl' latew\n", fx.path("late.txt").display()), 300);
+    sh.send("docker exec ", 800);
+    sh.drain(Duration::from_millis(3500), Duration::from_secs(4));
+    let asked = fx.state_file(&mut sh, "\x18l", "late.txt");
+    assert!(!asked.starts_with("TRIES=0 "), "the line has been re-asked a few times: {asked}");
+    // Without the reset, the same line typed at a later prompt would carry the count over and give up at once once
+    // it had passed 16.
+    assert!(ctrl_c_returns_the_prompt(&mut sh), "Ctrl-C brings the prompt back");
+    let fresh = fx.state_file(&mut sh, "\x18l", "late.txt");
+    kill_socket_holder(&fx.socket);
+    assert_eq!(fresh, "TRIES=0 LINE[]", "a new prompt counts again from nothing");
+}
+
+#[test]
+fn a_late_answer_does_not_reopen_a_menu_closed_with_esc() {
+    let fx = Fixture::new(require_env!(), false);
+    let mut sh = slow_docker_shell(&fx, "2.5");
+    sh.send("docker exec ", 800);
+    sh.send("\x1b", 200);
+    sh.drain(Duration::from_millis(1500), Duration::from_secs(6));
+    let state = fx.state(&mut sh);
+    let (rows, _) = menu(&fx, &mut sh);
+    kill_socket_holder(&fx.socket);
+    assert!(state.contains("on=0"), "Esc keeps the menu closed: {state}");
+    assert!(!rows.iter().any(|r| r.contains("web-1")), "{rows:?}");
+}
+
+#[test]
+fn a_late_answer_leaves_the_users_selection_alone() {
+    let fx = Fixture::new(require_env!(), false);
+    let mut sh = slow_docker_shell(&fx, "2.5");
+    sh.send("docker exec ", 800);
+    sh.send("\x1b[B", 200);
+    sh.drain(Duration::from_millis(1500), Duration::from_secs(6));
+    let state = fx.state(&mut sh);
+    let (rows, _) = menu(&fx, &mut sh);
+    kill_socket_holder(&fx.socket);
+    assert!(state.contains("on=1 sel=2"), "the highlight stays on the second row: {state}");
+    assert!(rows.iter().any(|r| r.starts_with("❯ ") && r.contains("-d")), "{rows:?}");
+    assert!(!rows.iter().any(|r| r.contains("web-1") || r.contains('…')), "nothing reshuffled after the user moved: {rows:?}");
+}

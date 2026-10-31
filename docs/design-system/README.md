@@ -39,7 +39,10 @@ With learned choices on, the first three suggestions picked before replace their
 
 ## Inline menu
 
-The inline menu is the main surface outside iTerm2, Terminal.app, VS Code and Claude: tmux, ssh, Ghostty, WezTerm, Kitty and Linux terminals. It is also the one a screen reader can read. It is flat: no fill, no border.
+The inline menu is the main surface outside iTerm2, Terminal.app, VS Code and Claude: tmux, ssh, Ghostty, WezTerm, Kitty and Linux terminals. It is also the one a screen reader can read. By default it is a floating box: a one-cell frame in `text-muted`, filled with `surface-base`, the selected row in
+`surface-selected`, starting under the first letter of the word being completed and moved left only as far as the
+terminal's width needs. `display.inlineStyle: "flat"` keeps the frameless rows for screen readers. The frame is shape,
+not colour: it stays under `NO_COLOR`.
 
 - **Rows.** `❯`, glyph, label. Labels share one column as wide as the longest label in the list (at most 32 cells), so the menu does not shift while scrolling.
 - **Selection.** `❯` and the label in `accent`, bold. Never colour alone: the marker and weight carry it under `NO_COLOR`.

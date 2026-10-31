@@ -49,7 +49,10 @@ mod tests {
             ("uv sy", "sync"), ("cargo bu", "build"), ("kubectl ge", "get"),
             ("terraform pl", "plan"), ("gh pr cr", "create"), ("aws s", "s3"),
             ("aws s3 c", "cp"), ("gcloud run dep", "deploy"),
-            ("gcloud co", "compute"), ("curl --con", "--connect-timeout"), ("ssh -", "-p")] {
+            ("gcloud co", "compute"), ("curl --con", "--connect-timeout"), ("ssh -", "-p"),
+            ("kill -", "-s"), ("lsof -", "-i"), ("ollama r", "run"), ("pytest --co", "--collect-only"),
+            ("cmake --pre", "--preset"), ("pod ins", "install"), ("adb dev", "devices"),
+            ("podman p", "ps"), ("pulumi u", "up"), ("conda ins", "install")] {
             let result = engine.complete_full(line, line.len(), cwd.path()).unwrap();
             assert!(result.valid && result.candidates.iter().any(|c| c.label == label), "{line:?}: {result:?}");
         }
@@ -94,6 +97,34 @@ mod tests {
         assert_eq!(found.first().map(String::as_str), Some("mytool"), "the project's own programs first: {found:?}");
         let (found, _) = labels(&engine, "npx tsc --wat", cwd.path(), &none, &shell);
         assert!(found.contains(&"--watch".to_string()), "npx runs a program completed by its own spec: {found:?}");
+    }
+
+    #[test]
+    fn sessions_units_networks_and_processes_reach_their_arguments() {
+        let cwd = tempfile::tempdir().unwrap();
+        let engine = Engine::new(bundled_specs());
+        let shell = ShellContext::default();
+        let values = |p: Provider, _: &std::path::Path| {
+            let name = match p {
+                Provider::TmuxSessions => "work",
+                Provider::TmuxWindows => "work:1",
+                Provider::SystemdUnits => "nginx.service",
+                Provider::DockerNetworks => "backend",
+                Provider::DockerVolumes => "pgdata",
+                Provider::Processes => "4242",
+                Provider::ProcessNames => "node",
+                _ => return vec![],
+            };
+            vec![Suggestion { name: name.into(), description: None, insert_value: None }]
+        };
+        for (line, label) in [("tmux attach-session -t ", "work"), ("tmux kill-session -t ", "work"), ("tmux select-window -t ", "work:1"),
+            ("systemctl restart ", "nginx.service"), ("docker network rm ", "backend"), ("docker volume rm ", "pgdata"),
+            ("kill ", "4242"), ("pkill ", "node"), ("killall ", "node")] {
+            let (found, _) = labels(&engine, line, cwd.path(), &values, &shell);
+            assert!(found.contains(&label.to_string()), "{line:?}: {found:?}");
+        }
+        let (found, _) = labels(&engine, "docker network create ", cwd.path(), &values, &shell);
+        assert!(!found.contains(&"backend".to_string()), "a new network has no name yet: {found:?}");
     }
 
     #[test]

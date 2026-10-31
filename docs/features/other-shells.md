@@ -1,17 +1,17 @@
 ---
 id: other-shells
-title: fish, PowerShell, Nushell, elvish, xonsh
+title: fish, elvish, xonsh
 status: experimental
 since: 1.0.0
 updated: 2026-10-31
 area: shells
-shells: [fish, pwsh, nu, elvish, xonsh]
+shells: [fish, elvish, xonsh]
 commands: [goh init]
 ---
 
-# fish, PowerShell, Nushell, elvish, xonsh
+# fish, elvish, xonsh
 
-Adapters for fish, PowerShell, Nushell, elvish and xonsh complete through each shell's own completion hook.
+Adapters for fish, elvish and xonsh complete through each shell's own completion hook.
 
 ## Behaviour
 
@@ -24,3 +24,7 @@ Adapters for fish, PowerShell, Nushell, elvish and xonsh complete through each s
 ## Changes
 
 - 1.0.0: first release.
+- unreleased: the fish adapter is tested in a real fish.
+- unreleased: fish completion produced no candidates because the adapter measured byte offsets with an option `string length` does not have; fixed.
+- unreleased: PowerShell has its own spec (powershell-adapter).
+- unreleased: Nushell has its own spec (nushell-adapter).

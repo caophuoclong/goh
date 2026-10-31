@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "name": "kubectx",
+  "description": "Switch between Kubernetes-contexts",
+  "options": [
+    {
+      "name": "--help",
+      "description": "Show help for kubectx",
+      "takesValue": false
+    },
+    {
+      "name": "-h",
+      "description": "Show help for kubectx",
+      "takesValue": false
+    },
+    {
+      "name": "--current",
+      "description": "Show current context",
+      "takesValue": false
+    },
+    {
+      "name": "-c",
+      "description": "Show current context",
+      "takesValue": false
+    },
+    {
+      "name": "--unset",
+      "description": "Unset the current context",
+      "takesValue": false
+    },
+    {
+      "name": "-u",
+      "description": "Unset the current context",
+      "takesValue": false
+    },
+    {
+      "name": "-d",
+      "description": "Delete context",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "context",
+          "isVariadic": true
+        }
+      ]
+    }
+  ],
+  "args": [
+    {
+      "name": "context",
+      "isOptional": true
+    }
+  ]
+}

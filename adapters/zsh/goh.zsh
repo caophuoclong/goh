@@ -4,7 +4,7 @@
 # Up/Down move the highlight, wrapping. Shift+Tab: previous. Esc/Left: close (Left also moves normally).
 # Tab with the menu closed uses native completion; GOH_LIVE=off enables Tab-triggered menus instead.
 # Enter takes the highlighted candidate after menu navigation (or the only one) and runs the line (display.enterRuns);
-# otherwise it uses the original shell binding. Ctrl+C closes the menu at the next prompt.
+# otherwise it uses the original shell binding. Ctrl+C ends the line; the inline menu is cleared before the next prompt.
 # With GOH_LIVE=off any edit or cursor move closes the menu (below: as-you-type keeps it in step instead).
 # Navigation keys are bound only while the menu is open.
 #
@@ -55,6 +55,7 @@ typeset -ga _goh_from_config=()
 typeset -gi _GOH_LIMIT=${GOH_LIMIT:-8}
 (( _GOH_LIMIT < 1 )) && _GOH_LIMIT=1
 typeset -g _GOH_DISPLAY=${GOH_DISPLAY:-auto}   # auto | overlay | inline
+typeset -g _GOH_INLINE_STYLE=${GOH_INLINE_STYLE:-box}   # box | flat (how the menu looks when drawn in the terminal)
 typeset -g _GOH_LIVE=${GOH_LIVE:-on}           # on | off (as-you-type suggestions)
 typeset -gi _GOH_LIVE_MIN=${GOH_LIVE_MIN:-0}   # characters of the current word before the menu may open by itself
 typeset -g _goh_seen_buf
@@ -76,6 +77,7 @@ typeset -ga _goh_start _goh_end _goh_cursor _goh_kind _goh_label _goh_insert _go
 typeset -gA _goh_theme   # resolved design tokens (see goh-theme-refresh)
 typeset -g _goh_ghost_style='fg=8'
 typeset -gA _goh_saved   # key -> widget it was bound to before the menu opened ("" = unbound)
+typeset -gA _goh_saved_str   # key -> text it typed before the menu opened (`bindkey -s`, as oh-my-zsh's Alt+L)
 
 # Menu-only keys and the widget each gets; those starting with Esc are dispatched by _goh_esc (see below).
 typeset -gA _goh_menu_keys=(
@@ -267,6 +269,56 @@ _goh_pop_hide() {
   _goh_pop_alive && (( _goh_pin >= 0 )) && print -r -u $_goh_pin -- '{"type":"hide"}' 2>/dev/null
 }
 
+# ---- late answers ----------------------------------------------------------------------------
+# A program the menu asked (Docker, a cluster, tmux, ...) had not answered: ask again in 300 ms while the line stays
+# the same, so its values show without another key. One timer at a time, at most 16 tries (about 5 s) per line.
+typeset -gi _goh_late_fd=-1 _goh_late_tries=0 _goh_late=0
+typeset -g _goh_late_line
+
+_goh_late_stop() {
+  (( _goh_late_fd >= 0 )) || return 0
+  zle -F $_goh_late_fd 2>/dev/null
+  exec {_goh_late_fd}<&-
+  _goh_late_fd=-1
+}
+
+# Stop waiting: the footer's `…` goes away (the menu is drawn again if it is still open).
+_goh_late_giveup() {
+  _goh_late_stop
+  (( _goh_late )) || return 0
+  _goh_late=0
+  if _goh_valid; then _goh_render; _goh_pop_show; fi
+}
+
+_goh_late_wait() {
+  if [[ $_goh_late_line != "$CURSOR:$BUFFER" ]]; then _goh_late_line="$CURSOR:$BUFFER" _goh_late_tries=0; fi
+  (( _goh_late_fd >= 0 )) && return 0
+  if (( ++_goh_late_tries > 16 )); then _goh_late_giveup; return 0; fi
+  exec {_goh_late_fd}< <(command sleep 0.3; print)
+  zle -F -w $_goh_late_fd _goh_on_late
+}
+
+# zle does not look at a Ctrl-C that arrives while a handler runs (the re-ask below waits on `goh` for a moment,
+# several times a second): it would act on it only at the next key, so Ctrl-C seemed to do nothing. Catch it here and
+# raise it again once zle is waiting for input, where it aborts the line as usual.
+_goh_on_late() {
+  emulate -L zsh
+  setopt localtraps
+  local interrupted=0
+  trap 'interrupted=1' INT
+  _goh_on_late_ask
+  (( interrupted )) && { command sleep 0.05; kill -INT $$ } &!
+}
+
+_goh_on_late_ask() {
+  _goh_late_stop
+  [[ $_goh_late_line == "$CURSOR:$BUFFER" && $CONTEXT == start ]] || return 0
+  # A refresh would put the selection back on the first row: once the user has moved in the menu, stop asking.
+  if (( _goh_on && _goh_navigated )); then _goh_late_giveup; zle -R; return 0; fi
+  _goh_live_refresh
+  zle -R
+}
+
 # ---- menu state ---------------------------------------------------------------------------
 
 # zsh-autosuggestions shows its suggestion in POSTDISPLAY, where the menu and its ghost text are, and its answer
@@ -294,16 +346,18 @@ _goh_as_find_keys() {
 _goh_keys_on() {
   local k
   (( _goh_as_found )) || { _goh_as_found=1; _goh_as_find_keys }
-  local line; local -a w; local -A now   # key -> widget, every binding of the main keymap
+  local line; local -a w; local -A now str   # key -> widget, or -> the text a `bindkey -s` key types
   for line in "${(@f)$(bindkey -L)}"; do
-    w=(${(z)line})   # bindkey "KEY" WIDGET (ranges, `bindkey -R`, are never Esc sequences)
-    (( $#w == 3 )) && now[${(Q)w[2]}]=$w[3]
+    w=(${(z)line})   # bindkey "KEY" WIDGET, or bindkey -s "KEY" "TEXT" (ranges, `bindkey -R`, are never Esc sequences)
+    if (( $#w == 3 )); then now[${(Q)w[2]}]=$w[3]
+    elif (( $#w == 4 )) && [[ $w[2] == -s ]]; then now[${(Q)w[3]}]= str[${(Q)w[3]}]=${(Q)w[4]}
+    fi
   done
   local -a menu=(${(k)_goh_menu_keys})
   _goh_esc_keys=(${(M)${(k)now}:#\^\[?*} ${(M)menu:#\^\[?*})
   _goh_bound=($menu ${_goh_as_keys:|menu} ${_goh_esc_keys:|menu})
   for k in $_goh_bound; do
-    _goh_saved[$k]=${now[$k]-}
+    _goh_saved[$k]=${now[$k]-} _goh_saved_str[$k]=${str[$k]-}
     if [[ $k == '^['?* ]]; then
       bindkey -r -- $k   # reached through _goh_esc
     else
@@ -327,9 +381,11 @@ _goh_keys_on() {
 _goh_keys_off() {
   local k
   for k in $_goh_bound; do
-    if [[ -n ${_goh_saved[$k]-} ]]; then bindkey -- $k ${_goh_saved[$k]}; else bindkey -r -- $k; fi
+    if [[ -n ${_goh_saved[$k]-} ]]; then bindkey -- $k ${_goh_saved[$k]}
+    elif [[ -n ${_goh_saved_str[$k]-} ]]; then bindkey -s -- $k ${_goh_saved_str[$k]}
+    else bindkey -r -- $k; fi
   done
-  _goh_saved=() _goh_bound=() _goh_esc_keys=()
+  _goh_saved=() _goh_saved_str=() _goh_bound=() _goh_esc_keys=()
   if (( _goh_as_paused )); then
     _goh_as_paused=0
     _goh_zle autosuggest-enable
@@ -337,7 +393,7 @@ _goh_keys_off() {
 }
 
 _goh_clear_ghost() {
-  POSTDISPLAY=
+  POSTDISPLAY= _goh_rows_shown=0
   # ZLE normalises colors and moves ranges when BUFFER changes. Its memo tag survives both;
   # remove only our highlights, leaving syntax-highlighting and other plugins' regions intact.
   # Also a highlight that starts past the line: it was for the text shown after it (a zsh-autosuggestions
@@ -386,6 +442,34 @@ _goh_window() {
 # The first $2 bytes of $1 in REPLY; the caller counts them in characters.
 _goh_byte_prefix() { local LC_ALL=C; REPLY=${1[1,$2]} }
 
+# The screen column (from 0) where the word being completed starts: the width of the prompt's last line plus the
+# line typed before the word. A prompt this cannot measure only moves the box; nothing else depends on it.
+# With prompt_subst the prompt is measured as zsh draws it: parameters first, then `%` escapes. One that runs a
+# command (`$(...)`, a backtick) is never run again here (it may be slow or have side effects) and counts as no
+# width, so the box anchors at the word's offset in the typed line.
+_goh_word_column() {
+  local subst=${options[prompt_subst]}
+  emulate -L zsh
+  setopt extended_glob
+  local p before i start=0
+  if [[ $subst == on ]]; then
+    if [[ $PS1 == *'$('* || $PS1 == *'`'* ]]; then p=; else p=${(%)${(e)PS1}}; fi
+  else
+    p=${(%)PS1}
+  fi
+  # The word being completed starts where the first non-history candidate starts: a history line starts at 0,
+  # and the box must not jump when the selection moves onto one.
+  for (( i = 1; i <= $#_goh_kind; i++ )); do
+    [[ ${_goh_kind[i]} == history ]] || { start=${_goh_start[i]:-0}; break }
+  done
+  p=${p//$'\e'\[[0-9;?]#[@-~]/}            # colours and other CSI sequences take no room
+  p=${p//$'\e'\][^$'\a']#$'\a'/}           # nor do OSC sequences (titles, marks)
+  p=${p##*$'\n'}
+  _goh_byte_prefix "$BUFFER" $start; before=$REPLY
+  if [[ $before == *$'\n'* ]]; then p= before=${before##*$'\n'}; fi
+  REPLY=$(( (${(m)#p} + ${(m)#before}) % ${COLUMNS:-80} ))
+}
+
 # Kind glyph and colour of candidate $1 -> _goh_g, _goh_gs (docs/design-system/README.md, Iconography).
 typeset -g _goh_g _goh_gs
 _goh_glyph() {
@@ -405,9 +489,11 @@ _goh_glyph() {
 # warning; the selected suggestion's description; position and key hints. Shapes, not colour, carry
 # every cue, so NO_COLOR keeps all of it but the colours.
 _goh_render() {
-  local i k n p s e row label shown risk desc room pad
+  local i k n p s e h row label shown risk desc room pad
   local -a rows hl
-  local width=$(( ${COLUMNS:-80} - 1 ))
+  local width=$(( ${COLUMNS:-80} - 1 )) box=0
+  # The box needs room for its two sides and a menu worth reading.
+  if [[ $_GOH_INLINE_STYLE == box ]] && (( width >= 24 )); then box=1; width=$(( width - 2 > 60 ? 60 : width - 2 )); fi
   local muted=$_goh_ghost_style accent=fg=cyan match=bold,underline warn=bold,fg=red
   [[ ${_goh_theme[accent]-} =~ '^#[0-9a-f]{6}$' ]] && accent="fg=${_goh_theme[accent]}"
   [[ ${_goh_theme[text-match]-} =~ '^#[0-9a-f]{6}$' ]] && match+=",fg=${_goh_theme[text-match]}"
@@ -491,6 +577,7 @@ _goh_render() {
   local pos="$_goh_sel/$#_goh_label" accept_hint="Tab/→"
   (( _goh_ghost_line && _goh_ghost_line != _goh_sel )) && accept_hint="→ line · Tab"
   (( $#_goh_label >= 50 )) && pos+='+'   # menus ask for 50: there may be more
+  (( _goh_late )) && pos+=' …'   # a program has not answered yet: more may come
   local run_hint=
   if _goh_enter_takes; then
     if _goh_enter_runs; then run_hint=" · Enter run"; else accept_hint="Tab/Enter/→"; fi
@@ -510,6 +597,49 @@ _goh_render() {
     done
     rows+=("${row[1,width]}")
     (( _goh_overlay == 0 )) && _goh_notice_shown=1
+  fi
+
+  # Box style: the same rows inside a frame, filled with the surface colour and moved under the word being
+  # completed, as far right as the terminal allows. Highlight offsets move with the rows.
+  if (( box )); then
+    local inner=1 r indent surface= selected= border=
+    for r in "${rows[@]}"; do (( ${(m)#r} > inner )) && inner=${(m)#r}; done
+    _goh_word_column; indent=$REPLY
+    (( indent + inner + 2 > ${COLUMNS:-80} - 1 )) && indent=$(( ${COLUMNS:-80} - 1 - inner - 2 ))
+    (( indent < 0 )) && indent=0
+    if (( color )); then
+      [[ ${_goh_theme[surface-base]-} =~ '^#[0-9a-f]{6}$' ]] && surface="bg=${_goh_theme[surface-base]}"
+      [[ ${_goh_theme[surface-selected]-} =~ '^#[0-9a-f]{6}$' ]] && selected="bg=${_goh_theme[surface-selected]}"
+      border=${muted:-fg=8}
+    fi
+    local edge= lead=
+    edge=${(l:inner::─:)edge} lead=${(l:indent:: :)lead}
+    local -a framed=("$lead╭$edge╮") moved=() clen=() f
+    # Padded to `inner` screen cells: a wide or combining character makes a row's character count differ from its
+    # width, so offsets on the right (the border, the fills) come from each framed row's own length.
+    for r in "${rows[@]}"; do framed+=("$lead│${(mr:inner:)r}│"); done
+    framed+=("$lead╰$edge╯")
+    local last=$#framed sel_row=$(( _goh_sel - _goh_win + 2 ))
+    for (( k = 1; k <= last; k++ )); do clen[k]=${#framed[k]}; done
+    # Fills first, then the row styles. zsh 5.9 does not keep an earlier entry's background under a later entry
+    # that sets a colour, so every style drawn on a fill repeats that fill's background.
+    if [[ -n $surface ]]; then
+      for (( k = 1; k <= last; k++ )); do moved+=("$k $indent $clen[k] $surface"); done
+    fi
+    [[ -n $selected ]] && moved+=("$sel_row $(( indent + 1 )) $(( clen[sel_row] - 1 )) $selected")
+    if [[ -n $border ]]; then
+      local b=$border${surface:+,$surface}
+      moved+=("1 $indent $clen[1] $b" "$last $indent $clen[last] $b")
+      for (( k = 2; k < last; k++ )); do moved+=("$k $indent $(( indent + 1 )) $b" "$k $(( clen[k] - 1 )) $clen[k] $b"); done
+    fi
+    local fill
+    for h in "${hl[@]}"; do
+      f=(${=h})
+      fill=$surface
+      [[ -n $selected ]] && (( f[1] + 1 == sel_row )) && fill=$selected
+      moved+=("$(( f[1] + 1 )) $(( f[2] + indent + 1 )) $(( f[3] + indent + 1 ))${f[4]:+ ${fill:+$fill,}$f[4]}")
+    done
+    rows=("${framed[@]}") hl=("${moved[@]}")
   fi
 
   # Ghost text only where it is honest: cursor at the end and the insertion extends what is typed.
@@ -536,7 +666,7 @@ _goh_render() {
   fi
 
   # "P" offsets count from the start of PREDISPLAY+BUFFER+POSTDISPLAY.
-  local from=$(( ${#PREDISPLAY} + ${#BUFFER} )) h
+  local from=$(( ${#PREDISPLAY} + ${#BUFFER} ))
   local -a at=(0) f
   POSTDISPLAY=$ghost
   if [[ -n $ghost ]] && is-at-least 5.9; then
@@ -546,6 +676,7 @@ _goh_render() {
   fi
   if (( styled )); then
     POSTDISPLAY+=$'\n'"${(pj:\n:)rows}"
+    _goh_rows_shown=$#rows
     p=$(( from + ${#ghost} + 1 ))
     for row in "${rows[@]}"; do at+=($p); p=$(( p + ${#row} + 1 )); done
     for h in "${hl[@]}"; do
@@ -603,7 +734,7 @@ _goh_esc() {
   case ${_goh_menu_keys[$seq]-} in
     (_goh_up|_goh_down) zle ${_goh_menu_keys[$seq]} ;;
     (_goh_take) _goh_take || { _goh_close; zle -U -- $raw } ;;
-    (*) _goh_close; if [[ $seq == '^[' ]]; then zle -R; else zle -U -- $raw; fi ;;
+    (*) _goh_close; if [[ $seq == '^[' ]]; then _goh_late_giveup; zle -R; else zle -U -- $raw; fi ;;
   esac
 }
 
@@ -665,6 +796,7 @@ _goh_left() {
   local key=${(V)KEYS}
   local original=${_goh_saved[$key]:-backward-char}
   _goh_close
+  _goh_late_giveup
   zle $original
 }
 
@@ -793,8 +925,10 @@ _goh_live_refresh() {
     local out was_on=$_goh_on cb
     if [[ $CONTEXT != start || -z ${BUFFER//[[:space:]]/} ]]; then _goh_close; return 0; fi
     _goh_bytes "${BUFFER[1,CURSOR]}"; cb=$REPLY
-    out=$(command $_GOH_CTL menu --labels --live --session $_GOH_SESSION --cwd $PWD --limit 50 \
+    out=$(command $_GOH_CTL menu --labels --live --late --session $_GOH_SESSION --cwd $PWD --limit 50 \
           --cursor-byte $cb --buffer "$BUFFER" 2>/dev/null) || out=
+    _goh_late=0
+    [[ ${out##*$'\n'} == pending ]] && _goh_late=1
     [[ -n $out ]] && _goh_parse_menu "$out" || REPLY=0
     if (( REPLY >= 1 )); then
       # Nothing to offer: too few characters typed, or a lone candidate that is just the finished word.
@@ -813,6 +947,7 @@ _goh_live_refresh() {
     else
       _goh_close
     fi
+    (( _goh_late )) && _goh_late_wait
   } always {
     _goh_busy=0
   }
@@ -843,7 +978,7 @@ _goh_hook_redraw() {
   (( _goh_on )) && ! _goh_valid && _goh_close       # the line changed some other way: the menu is stale
   return 0
 }
-_goh_hook_finish() { _goh_close no-redisplay; _goh_drop_pred; _goh_seen_cur=-1; return 0 }
+_goh_hook_finish() { _goh_late_stop; _goh_late_tries=0 _goh_late_line=; _goh_close no-redisplay; _goh_drop_pred; _goh_seen_cur=-1; return 0 }
 
 # Ctrl+C ends the line without zle-line-finish, so the zle-line-init hook is what closes the menu at the next
 # prompt. A plugin that defines its own zle-line-init (or -finish, -pre-redraw) after this adapter loaded replaces
@@ -899,6 +1034,17 @@ _goh_visit() { command $_GOH_CTL visit "$PWD" >/dev/null 2>&1 &! }
 # anything that looks secret and lines starting with a space.
 typeset -g _goh_run_cmd _goh_run_cwd
 _goh_run_start() { _goh_run_cmd=$1 _goh_run_cwd=$PWD }
+# Ctrl+C ends the line without zle-line-finish, and zsh leaves what was drawn under the line on the screen. Before the
+# next prompt is drawn the cursor is on the row after the menu, so moving up over the rows it took and clearing to the
+# end of the screen takes it away. Only the menu's rows: the line above it stays as it was typed.
+typeset -gi _goh_rows_shown=0
+_goh_erase_left() {
+  local st=$?
+  (( _goh_rows_shown > 0 )) && print -nr -- $'\e['$_goh_rows_shown$'A\r\e[J'
+  _goh_rows_shown=0
+  return $st
+}
+
 _goh_run_done() {
   local st=$?   # first thing: the status of the command that just ended
   if (( st == 0 )) && [[ -n $_goh_run_cmd ]]; then
@@ -964,6 +1110,7 @@ goh-load() {
   zle -N _goh_tab
   zle -N _goh_up; zle -N _goh_down; zle -N _goh_esc
   zle -N _goh_enter; zle -N _goh_left
+  zle -N _goh_on_late
   bindkey '^I' _goh_tab
   if [[ ${GOH_RECORD-} == on ]]; then
     # Right takes a prediction when one is showing and is the user's own Right otherwise.
@@ -989,6 +1136,9 @@ goh-load() {
     add-zsh-hook precmd _goh_run_done
     precmd_functions=(_goh_run_done ${precmd_functions:#_goh_run_done})
   fi
+  # First, before any other precmd can print under a menu left on the screen; it keeps the status for them.
+  add-zsh-hook precmd _goh_erase_left
+  precmd_functions=(_goh_erase_left ${precmd_functions:#_goh_erase_left})
   _goh_sync_context
   # `ssh` through `goh ssh` (popup.overSsh, on unless set off): a zsh host's menus are drawn by the popup here. Not
   # where no popup can draw them (over ssh, in a multiplexer, inline only), and never over your own `ssh`.
@@ -1000,6 +1150,7 @@ goh-load() {
 }
 
 goh-unload() {
+  _goh_late_stop 2>/dev/null
   _goh_close 2>/dev/null
   _goh_pop_stop 2>/dev/null
   [[ -n $_GOH_ORIG_TAB ]] && bindkey '^I' $_GOH_ORIG_TAB
@@ -1014,8 +1165,9 @@ goh-unload() {
   add-zsh-hook -d chpwd _goh_visit 2>/dev/null
   add-zsh-hook -d precmd _goh_sync_context 2>/dev/null
   add-zsh-hook -d precmd _goh_hook_precmd 2>/dev/null
+  add-zsh-hook -d precmd _goh_erase_left 2>/dev/null
   (( _goh_ssh_wrapped )) && { unfunction ssh 2>/dev/null; _goh_ssh_wrapped=0 }
-  zle -D _goh_tab _goh_up _goh_down _goh_esc _goh_enter _goh_left _goh_right _goh_on_decision 2>/dev/null
+  zle -D _goh_tab _goh_up _goh_down _goh_esc _goh_enter _goh_left _goh_right _goh_on_decision _goh_on_late 2>/dev/null
   unset _GOH_ORIG_TAB
 }
 

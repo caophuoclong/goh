@@ -130,13 +130,18 @@ pub struct Fixture {
 impl Fixture {
     /// Short paths: Unix socket paths are limited to ~104 bytes.
     pub fn new(locale: String, daemon: bool) -> Fixture {
+        Fixture::with_git_spec(locale, daemon, GIT)
+    }
+
+    /// Like `new`, with `git_spec` (JSON) as the one spec the daemon and the spec directory hold.
+    pub fn with_git_spec(locale: String, daemon: bool, git_spec: &str) -> Fixture {
         let dir = tempfile::Builder::new().prefix("fz").tempdir_in("/tmp").unwrap();
         fs::create_dir(dir.path().join("specs")).unwrap();
-        fs::write(dir.path().join("specs/git.json"), GIT).unwrap();
+        fs::write(dir.path().join("specs/git.json"), git_spec).unwrap();
         let socket = dir.path().join("run/s");
         if daemon {
             let listener = paths::bind(&socket).unwrap().unwrap();
-            let server = isolated_server(Engine::new(vec![Spec::from_json(GIT).unwrap()]), dir.path());
+            let server = isolated_server(Engine::new(vec![Spec::from_json(git_spec).unwrap()]), dir.path());
             std::thread::spawn(move || Arc::new(server).serve(listener));
         }
         Fixture { dir, socket, locale }
@@ -164,6 +169,7 @@ impl Fixture {
             .env("GOH_CONFIG", self.path("no-config.json"))
             .env("GOH_DISPLAY", "inline") // tests must not open the real popup unless they say so
             .env("GOH_LIVE", "off") // existing tests are Tab-triggered; live tests switch it on
+            .env("GOH_INLINE_STYLE", "flat") // existing tests read the flat rows; box tests switch it on
             .env("GOH_CTL", ctl);
         for (k, v) in extra_env {
             cmd.env(k, v);
@@ -172,14 +178,10 @@ impl Fixture {
     }
 }
 
-/// Stop the daemon holding the fixture's socket (one started on demand by goh). Only a process named `gohd` is
-/// signalled: `lsof` also lists every other process with the socket open, and a test must never signal itself.
+/// Stop only the daemon connected to this fixture's socket, leaving its stale socket file for recovery tests.
+/// Peer credentials avoid matching another test's unlinked socket when its filesystem inode is reused.
 pub fn kill_socket_holder(socket: &Path) {
-    let Ok(out) = Command::new("lsof").args(["-t"]).arg(socket).output() else { return };
-    for pid in String::from_utf8_lossy(&out.stdout).split_whitespace() {
-        let name = Command::new("ps").args(["-o", "comm=", "-p", pid]).output().map(|o| String::from_utf8_lossy(&o.stdout).trim().to_string()).unwrap_or_default();
-        if pid != std::process::id().to_string() && name.rsplit('/').next() == Some("gohd") {
-            let _ = Command::new("kill").arg(pid).status();
-        }
+    if let Some(pid) = goh_daemon::control::running(socket) {
+        let _ = Command::new("kill").arg(pid.to_string()).status();
     }
 }

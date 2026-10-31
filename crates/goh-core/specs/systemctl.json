@@ -668,7 +668,8 @@
       "args": [
         {
           "name": "UNIT",
-          "isVariadic": true
+          "isVariadic": true,
+          "provider": "systemd-units"
         }
       ]
     },
@@ -678,7 +679,8 @@
       "args": [
         {
           "name": "UNIT",
-          "isVariadic": true
+          "isVariadic": true,
+          "provider": "systemd-units"
         }
       ]
     },
@@ -688,7 +690,8 @@
       "args": [
         {
           "name": "UNIT",
-          "isVariadic": true
+          "isVariadic": true,
+          "provider": "systemd-units"
         }
       ]
     },
@@ -698,7 +701,8 @@
       "args": [
         {
           "name": "UNIT",
-          "isVariadic": true
+          "isVariadic": true,
+          "provider": "systemd-units"
         }
       ]
     },
@@ -708,7 +712,8 @@
       "args": [
         {
           "name": "UNIT",
-          "isVariadic": true
+          "isVariadic": true,
+          "provider": "systemd-units"
         }
       ]
     },
@@ -718,7 +723,8 @@
       "args": [
         {
           "name": "UNIT",
-          "isVariadic": true
+          "isVariadic": true,
+          "provider": "systemd-units"
         }
       ]
     },
@@ -728,7 +734,8 @@
       "args": [
         {
           "name": "UNIT",
-          "isVariadic": true
+          "isVariadic": true,
+          "provider": "systemd-units"
         }
       ]
     },
@@ -737,7 +744,8 @@
       "description": "Start one unit and stop all others",
       "args": [
         {
-          "name": "UNIT"
+          "name": "UNIT",
+          "provider": "systemd-units"
         }
       ]
     },
@@ -747,7 +755,8 @@
       "args": [
         {
           "name": "UNIT",
-          "isVariadic": true
+          "isVariadic": true,
+          "provider": "systemd-units"
         }
       ]
     },
@@ -757,7 +766,8 @@
       "args": [
         {
           "name": "UNIT",
-          "isVariadic": true
+          "isVariadic": true,
+          "provider": "systemd-units"
         }
       ]
     },
@@ -786,7 +796,8 @@
       "description": "Sets one or more properties of a unit",
       "args": [
         {
-          "name": "UNIT"
+          "name": "UNIT",
+          "provider": "systemd-units"
         },
         {
           "name": "PROPERTY=VALUE"
@@ -798,7 +809,8 @@
       "description": "Bind-mount a path from the host into a unit's namespace",
       "args": [
         {
-          "name": "UNIT"
+          "name": "UNIT",
+          "provider": "systemd-units"
         },
         {
           "name": "PATH",
@@ -816,7 +828,8 @@
       "description": "Mount an image from the host into a unit's namespace",
       "args": [
         {
-          "name": "UNIT"
+          "name": "UNIT",
+          "provider": "systemd-units"
         },
         {
           "name": "PATH",
@@ -888,7 +901,8 @@
         {
           "name": "UNIT|PATH",
           "isVariadic": true,
-          "isOptional": true
+          "isOptional": true,
+          "provider": "systemd-units"
         }
       ]
     },
@@ -898,7 +912,8 @@
       "args": [
         {
           "name": "UNIT|PATH",
-          "isVariadic": true
+          "isVariadic": true,
+          "provider": "systemd-units"
         }
       ]
     },
@@ -908,7 +923,8 @@
       "args": [
         {
           "name": "UNIT",
-          "isVariadic": true
+          "isVariadic": true,
+          "provider": "systemd-units"
         }
       ]
     },
@@ -918,7 +934,8 @@
       "args": [
         {
           "name": "UNIT",
-          "isVariadic": true
+          "isVariadic": true,
+          "provider": "systemd-units"
         }
       ]
     },
@@ -928,7 +945,8 @@
       "args": [
         {
           "name": "UNIT",
-          "isVariadic": true
+          "isVariadic": true,
+          "provider": "systemd-units"
         }
       ]
     },
@@ -938,7 +956,8 @@
       "args": [
         {
           "name": "UNIT",
-          "isVariadic": true
+          "isVariadic": true,
+          "provider": "systemd-units"
         }
       ]
     },
@@ -948,7 +967,8 @@
       "args": [
         {
           "name": "UNIT",
-          "isVariadic": true
+          "isVariadic": true,
+          "provider": "systemd-units"
         }
       ]
     },
@@ -969,7 +989,8 @@
       "args": [
         {
           "name": "UNIT",
-          "isVariadic": true
+          "isVariadic": true,
+          "provider": "systemd-units"
         }
       ]
     },
@@ -982,7 +1003,8 @@
         },
         {
           "name": "UNIT",
-          "isVariadic": true
+          "isVariadic": true,
+          "provider": "systemd-units"
         }
       ]
     },
@@ -995,7 +1017,8 @@
         },
         {
           "name": "UNIT",
-          "isVariadic": true
+          "isVariadic": true,
+          "provider": "systemd-units"
         }
       ]
     },
@@ -1005,7 +1028,8 @@
       "args": [
         {
           "name": "UNIT",
-          "isVariadic": true
+          "isVariadic": true,
+          "provider": "systemd-units"
         }
       ]
     },

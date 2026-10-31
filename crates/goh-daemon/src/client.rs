@@ -121,13 +121,13 @@ fn valid_edit(buffer: &str, e: &Edit) -> bool {
         && !e.insert.chars().any(char::is_control)
 }
 
-/// Candidates for the menu, best first, with invalid insertions dropped. The adapter applies them
+/// Candidates for the menu, best first, with invalid insertions dropped, and whether a program has yet to answer. The adapter applies them
 /// locally while the buffer is unchanged, so no `accept` round trip is needed. Whole lines from history come last
 /// but are kept past `limit` (there are at most three): the adapter shows the best one as ghost text.
-pub fn menu(sock: &Path, session: &str, cwd: &str, buffer: &str, cursor_byte: usize, limit: usize, live: bool) -> io::Result<Vec<Item>> {
+pub fn menu(sock: &Path, session: &str, cwd: &str, buffer: &str, cursor_byte: usize, limit: usize, live: bool) -> io::Result<(Vec<Item>, bool)> {
     let (_, _, reply) = complete(sock, session, cwd, buffer, cursor_byte, live)?;
-    let Reply::Results { suggestions, .. } = reply else { return Ok(vec![]) };
-    Ok(keep_history(items(suggestions, buffer), limit))
+    let Reply::Results { suggestions, pending, .. } = reply else { return Ok((vec![], false)) };
+    Ok((keep_history(items(suggestions, buffer), limit), pending))
 }
 
 /// The first `limit` items, except that the whole lines from history (last in the list) replace the last of the

@@ -5,6 +5,8 @@
 # therefore does not touch any key binding. It registers a completion function for commands that
 # have a spec; Tab, the candidate list and every other binding stay bash's own. Anything unusual
 # returns no candidates, and `-o default` hands the word back to filename completion (fail-open).
+# Under ble.sh (bash 4+, sourced before this file), the same function feeds ble.sh's menu with descriptions, and the
+# menu opens by itself while you type (see _goh_ble_setup).
 #
 # Source it from ~/.bashrc after bash-completion. Commands that already have a completion spec
 # (e.g. git from bash-completion) are left alone. `goh-unload` removes what it registered.
@@ -20,12 +22,24 @@ _GOH_SESSION="bash-$$-$RANDOM"
 export GOH_ADAPTER="bash:$$"
 _GOH_REGISTERED=()
 
+# A word as goh escapes it for the shell (`my\ file`), without the escapes: ble.sh quotes what it inserts itself.
+_goh_unescape() {
+  local s=$1 out= c
+  while [[ $s ]]; do
+    c=${s:0:1} s=${s:1}
+    if [[ $c == '\' && $s ]]; then c=${s:0:1} s=${s:1}; fi
+    out+=$c
+  done
+  REPLY=$out
+}
+
 _goh_complete() {
   COMPREPLY=()
   local cur=${COMP_WORDS[COMP_CWORD]}
   local chars=${#COMP_LINE} cur_chars=${#cur}
 
   # Byte lengths (the wire uses UTF-8 byte offsets).
+  local had_lc_all=${LC_ALL+1} caller_lc_all=${LC_ALL-}
   local LC_ALL=C
   local bytes=${#COMP_LINE} cur_bytes=${#cur} point=$COMP_POINT
   if (( bytes != chars )); then
@@ -39,14 +53,36 @@ _goh_complete() {
   out=$(command "$_GOH_CTL" menu --session "$_GOH_SESSION" --cwd "$PWD" --limit 50 \
         --cursor-byte "$point" --buffer "$COMP_LINE" 2>/dev/null) || return 0
 
-  local IFS=$'\n'
+  # Under ble.sh, candidates go to its menu with their descriptions (its `mandb` action: CAND, menu suffix, the tail
+  # added after insertion, description, separated by $_ble_term_FS). Elsewhere, and if that fails, COMPREPLY.
+  local ble= fs=${_ble_term_FS-}
+  [[ ${BLE_ATTACHED-} && $fs ]] && declare -F ble/complete/cand/yield >/dev/null && ble=1
+  local IFS=$'\n' tail value
+  local -a values=() tails=() descs=()
   for line in $out; do
     IFS=$'\x1f' read -r start end cursor kind label insert desc ranges <<<"$line"
     # Only candidates that replace exactly the word being completed and extend what is typed.
     [[ $start == $(( point - cur_bytes )) && $end == "$point" ]] || continue
     [[ $insert == "$cur"* ]] || continue
-    COMPREPLY+=("$insert")
+    if [[ $ble ]]; then
+      tail=; [[ $insert == *' ' ]] && tail=' '
+      _goh_unescape "${insert%' '}"; value=$REPLY
+      values+=("$value"); tails+=("$tail"); descs+=("${desc:-$kind}")
+    else
+      COMPREPLY+=("$insert")
+    fi
   done
+  [[ $ble ]] || return 0
+
+  # ble.sh packs lengths of what it is given and cuts them out again in the user's locale, so it is called in that
+  # locale (back from the byte counting above), not under LC_ALL=C. Its status is not checked: it returns non-zero
+  # for a candidate its own filter drops.
+  if [[ $had_lc_all ]]; then LC_ALL=$caller_lc_all; else unset LC_ALL; fi
+  local i
+  for i in "${!values[@]}"; do
+    ble/complete/cand/yield mandb "${values[i]}" "${values[i]}$fs$fs${tails[i]}$fs${descs[i]}"
+  done
+  return 0
 }
 
 # Command record (privacy.recordCommands, GOH_RECORD=on; off by default): a successful line is handed to
@@ -70,12 +106,25 @@ _goh_visit() {
   (command "$_GOH_CTL" visit "$PWD" >/dev/null 2>&1 &)
 }
 
+# ble.sh loaded before this file: show descriptions in its menu and, with display.live on (GOH_LIVE, default on),
+# open the menu by itself 300 ms after you stop typing. Only settings still at ble.sh's defaults change.
+_goh_ble_setup() {
+  local live=${GOH_LIVE-}
+  if [[ -z $live ]]; then
+    live=on; [[ $1 == *GOH_LIVE=off* ]] && live=off
+  fi
+  [[ ${bleopt_complete_menu_style-align-nowrap} == align-nowrap ]] && bleopt complete_menu_style=desc
+  [[ $live == on && -z ${bleopt_complete_auto_menu-} ]] && bleopt complete_auto_menu=300
+  return 0
+}
+
 goh-load() {
   local record=0 cfg
   cfg=$(command "$_GOH_CTL" config env 2>/dev/null)
   [[ $cfg == *GOH_RECORD=on* ]] && record=1
   # `updates.check`: one line, when the shell starts, if a newer release is known (see `goh update`).
   [[ $cfg == *GOH_UPDATE_CHECK=on* ]] && command "$_GOH_CTL" update --notice 2>/dev/null
+  [[ ${BLE_VERSION-} ]] && _goh_ble_setup "$cfg"
   _GOH_LAST_NUM=$HISTCMD   # what was in history when the shell started is not a command to record
   if [[ $(declare -p PROMPT_COMMAND 2>/dev/null) == "declare -a"* ]]; then
     # `_goh_record` goes first: it needs the status of the command that just ended.

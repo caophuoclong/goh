@@ -10,7 +10,7 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, '../..');
 const manifest = JSON.parse(await fs.readFile(path.join(here, 'sources.json'), 'utf8'));
 const { repository, revision, commands, loadSpecs = [] } = manifest;
-if (repository !== 'withfig/autocomplete' || !/^[a-f0-9]{40}$/.test(revision) || commands.some(c => !/^[a-z][a-z0-9-]*$/.test(c))) throw new Error('Invalid pinned source manifest');
+if (repository !== 'withfig/autocomplete' || !/^[a-f0-9]{40}$/.test(revision) || commands.some(c => !/^[a-z][a-z0-9_-]*$/.test(c))) throw new Error('Invalid pinned source manifest');
 if (loadSpecs.some(name => !/^[a-z][a-z0-9-]*(?:\/[a-z][a-z0-9-]*)?$/.test(name))) throw new Error('Invalid selected loadSpec');
 const check = process.argv.includes('--check');
 const cache = path.join(root, 'target/spec-import', revision);

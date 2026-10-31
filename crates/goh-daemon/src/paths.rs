@@ -52,3 +52,16 @@ pub fn bind(path: &Path) -> io::Result<Option<UnixListener>> {
     fs::set_permissions(path, fs::Permissions::from_mode(0o600))?;
     Ok(Some(listener))
 }
+
+/// End the process once `socket` is gone or is another file: nothing can reach this daemon any more (its folder was
+/// removed, as a test's temporary one is, or a newer daemon took the path). Checked every 2 s on its own thread.
+pub fn exit_when_orphaned(socket: PathBuf) {
+    let Ok(ino) = fs::metadata(&socket).map(|m| m.ino()) else { return };
+    std::thread::spawn(move || loop {
+        std::thread::sleep(std::time::Duration::from_secs(2));
+        if fs::metadata(&socket).map(|m| m.ino()).ok() != Some(ino) {
+            crate::log::line("the socket was removed or replaced: exiting");
+            std::process::exit(0);
+        }
+    });
+}

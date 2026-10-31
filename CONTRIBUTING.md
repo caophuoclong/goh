@@ -37,4 +37,6 @@ that changes what goh does without touching a spec, unless it carries the `no-sp
 cargo test --workspace --locked      # the whole suite, including real zsh/bash on a pseudo-terminal
 shellcheck install.sh scripts/*.sh
 scripts/check-feature-specs.sh       # the specs in docs/features are well formed and indexed
+cargo run --release -p goh-core --example bench   # spec loading and per-keystroke time, against budgets
+scripts/check-binary-size.sh                      # after a release build: binaries within their size budget
 ```

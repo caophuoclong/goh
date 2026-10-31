@@ -31,6 +31,11 @@
             "inline"
           ]
         },
+        "inlineStyle": {
+          "enum": ["box", "flat"],
+          "default": "box",
+          "description": "How the menu looks when drawn in the terminal: a framed box under the word (box) or plain rows (flat)."
+        },
         "maxSuggestions": {
           "type": "integer",
           "minimum": 4,

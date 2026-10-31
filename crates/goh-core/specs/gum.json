@@ -1,0 +1,1436 @@
+{
+  "schemaVersion": 1,
+  "name": "gum",
+  "description": "A tool for glamorous shell scripts",
+  "options": [
+    {
+      "name": "--help",
+      "description": "Show context-sensitive help",
+      "takesValue": false
+    },
+    {
+      "name": "-h",
+      "description": "Show context-sensitive help",
+      "takesValue": false
+    },
+    {
+      "name": "--version",
+      "description": "Print the version number",
+      "takesValue": false
+    },
+    {
+      "name": "-v",
+      "description": "Print the version number",
+      "takesValue": false
+    }
+  ],
+  "subcommands": [
+    {
+      "name": "choose",
+      "description": "Choose an option from a list of choices",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show context-sensitive help",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show context-sensitive help",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Print the version number",
+          "takesValue": false
+        },
+        {
+          "name": "-v",
+          "description": "Print the version number",
+          "takesValue": false
+        },
+        {
+          "name": "--height",
+          "description": "Height of the list",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "lines"
+            }
+          ]
+        },
+        {
+          "name": "--cursor",
+          "description": "Prefix to show on item that corresponds to the cursor position",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "symbol"
+            }
+          ]
+        },
+        {
+          "name": "--cursor-prefix",
+          "description": "Prefix to show on the cursor item",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "symbol"
+            }
+          ]
+        },
+        {
+          "name": "--selected-prefix",
+          "description": "Prefix to show on selected items",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "symbol"
+            }
+          ]
+        },
+        {
+          "name": "--unselected-prefix",
+          "description": "Prefix to show on unselected items",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "symbol"
+            }
+          ]
+        },
+        {
+          "name": "--selected",
+          "description": "Options that should start as selected",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "option"
+            }
+          ],
+          "isRepeatable": true
+        },
+        {
+          "name": "--limit",
+          "description": "Maximum number of options to pick",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "number"
+            }
+          ]
+        },
+        {
+          "name": "--no-limit",
+          "description": "Pick unlimited number of options (ignores limit)",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "options",
+          "description": "Options to choose from",
+          "isVariadic": true
+        }
+      ]
+    },
+    {
+      "name": "confirm",
+      "description": "Ask a user to confirm an action",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show context-sensitive help",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show context-sensitive help",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Print the version number",
+          "takesValue": false
+        },
+        {
+          "name": "-v",
+          "description": "Print the version number",
+          "takesValue": false
+        },
+        {
+          "name": "--affirmative",
+          "description": "The title of the affirmative action",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "title"
+            }
+          ]
+        },
+        {
+          "name": "--negative",
+          "description": "The title of the negative action",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "title"
+            }
+          ]
+        },
+        {
+          "name": "--default",
+          "description": "Default confirmation action",
+          "takesValue": false
+        },
+        {
+          "name": "--timeout",
+          "description": "Timeout for confirmation",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "duration"
+            }
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "prompt",
+          "description": "Prompt to display"
+        }
+      ]
+    },
+    {
+      "name": "filter",
+      "description": "Filter items from a list",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show context-sensitive help",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show context-sensitive help",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Print the version number",
+          "takesValue": false
+        },
+        {
+          "name": "-v",
+          "description": "Print the version number",
+          "takesValue": false
+        },
+        {
+          "name": "--indicator",
+          "description": "Character for selection",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "symbol"
+            }
+          ]
+        },
+        {
+          "name": "--selected-prefix",
+          "description": "Character to indicate selected items",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "symbol"
+            }
+          ]
+        },
+        {
+          "name": "--unselected-prefix",
+          "description": "Character to indicate unselected items",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "symbol"
+            }
+          ]
+        },
+        {
+          "name": "--placeholder",
+          "description": "Placeholder value",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "placeholder"
+            }
+          ]
+        },
+        {
+          "name": "--prompt",
+          "description": "Prompt to display",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "prompt"
+            }
+          ]
+        },
+        {
+          "name": "--width",
+          "description": "Input width",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "width"
+            }
+          ]
+        },
+        {
+          "name": "--height",
+          "description": "Input height",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "lines"
+            }
+          ]
+        },
+        {
+          "name": "--value",
+          "description": "Initial filter",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "value"
+            }
+          ]
+        },
+        {
+          "name": "--reverse",
+          "description": "Display from the bottom of the screen",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "format",
+      "description": "Format a string using a template",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show context-sensitive help",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show context-sensitive help",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Print the version number",
+          "takesValue": false
+        },
+        {
+          "name": "-v",
+          "description": "Print the version number",
+          "takesValue": false
+        },
+        {
+          "name": "--type",
+          "description": "Format to use",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument",
+              "suggestions": [
+                {
+                  "name": "markdown"
+                },
+                {
+                  "name": "template"
+                },
+                {
+                  "name": "code"
+                },
+                {
+                  "name": "emoji"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "-t",
+          "description": "Format to use",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument",
+              "suggestions": [
+                {
+                  "name": "markdown"
+                },
+                {
+                  "name": "template"
+                },
+                {
+                  "name": "code"
+                },
+                {
+                  "name": "emoji"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "template",
+          "description": "Template string to format",
+          "isVariadic": true
+        }
+      ]
+    },
+    {
+      "name": "input",
+      "description": "Prompt for some input",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show context-sensitive help",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show context-sensitive help",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Print the version number",
+          "takesValue": false
+        },
+        {
+          "name": "-v",
+          "description": "Print the version number",
+          "takesValue": false
+        },
+        {
+          "name": "--placeholder",
+          "description": "Placeholder value",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "placeholder"
+            }
+          ]
+        },
+        {
+          "name": "--prompt",
+          "description": "Prompt to display",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "prompt"
+            }
+          ]
+        },
+        {
+          "name": "--value",
+          "description": "Initial value",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "value"
+            }
+          ]
+        },
+        {
+          "name": "--char-limit",
+          "description": "Maximum value length",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "limit"
+            }
+          ]
+        },
+        {
+          "name": "--width",
+          "description": "Input width",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "width"
+            }
+          ]
+        },
+        {
+          "name": "--password",
+          "description": "Mask input characters",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "join",
+      "description": "Join text vertically or horizontally",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show context-sensitive help",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show context-sensitive help",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Print the version number",
+          "takesValue": false
+        },
+        {
+          "name": "-v",
+          "description": "Print the version number",
+          "takesValue": false
+        },
+        {
+          "name": "--align",
+          "description": "Text alignment",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument",
+              "suggestions": [
+                {
+                  "name": "left"
+                },
+                {
+                  "name": "center"
+                },
+                {
+                  "name": "right"
+                },
+                {
+                  "name": "bottom"
+                },
+                {
+                  "name": "middle"
+                },
+                {
+                  "name": "top"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--horizontal",
+          "description": "Join (potentially multi-line) strings horizontally",
+          "takesValue": false
+        },
+        {
+          "name": "--vertical",
+          "description": "Join (potentially multi-line) strings vertically",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "text",
+          "description": "Text to join",
+          "isVariadic": true
+        }
+      ]
+    },
+    {
+      "name": "spin",
+      "description": "Display spinner while running a command",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show context-sensitive help",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show context-sensitive help",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Print the version number",
+          "takesValue": false
+        },
+        {
+          "name": "-v",
+          "description": "Print the version number",
+          "takesValue": false
+        },
+        {
+          "name": "--show-output",
+          "description": "Show output of command",
+          "takesValue": false
+        },
+        {
+          "name": "--spinner",
+          "description": "Spinner type",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument",
+              "suggestions": [
+                {
+                  "name": "line"
+                },
+                {
+                  "name": "dot"
+                },
+                {
+                  "name": "minidot"
+                },
+                {
+                  "name": "jump"
+                },
+                {
+                  "name": "pulse"
+                },
+                {
+                  "name": "points"
+                },
+                {
+                  "name": "globe"
+                },
+                {
+                  "name": "moon"
+                },
+                {
+                  "name": "monkey"
+                },
+                {
+                  "name": "meter"
+                },
+                {
+                  "name": "hamburger"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "-s",
+          "description": "Spinner type",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument",
+              "suggestions": [
+                {
+                  "name": "line"
+                },
+                {
+                  "name": "dot"
+                },
+                {
+                  "name": "minidot"
+                },
+                {
+                  "name": "jump"
+                },
+                {
+                  "name": "pulse"
+                },
+                {
+                  "name": "points"
+                },
+                {
+                  "name": "globe"
+                },
+                {
+                  "name": "moon"
+                },
+                {
+                  "name": "monkey"
+                },
+                {
+                  "name": "meter"
+                },
+                {
+                  "name": "hamburger"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--title",
+          "description": "Text to display to user while spinning",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "text"
+            }
+          ]
+        },
+        {
+          "name": "--align",
+          "description": "Alignment of spinner with regard to the title",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument",
+              "suggestions": [
+                {
+                  "name": "left"
+                },
+                {
+                  "name": "center"
+                },
+                {
+                  "name": "right"
+                },
+                {
+                  "name": "bottom"
+                },
+                {
+                  "name": "middle"
+                },
+                {
+                  "name": "top"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "-a",
+          "description": "Alignment of spinner with regard to the title",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument",
+              "suggestions": [
+                {
+                  "name": "left"
+                },
+                {
+                  "name": "center"
+                },
+                {
+                  "name": "right"
+                },
+                {
+                  "name": "bottom"
+                },
+                {
+                  "name": "middle"
+                },
+                {
+                  "name": "top"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "style",
+      "description": "Apply coloring, borders, spacing to text",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show context-sensitive help",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show context-sensitive help",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Print the version number",
+          "takesValue": false
+        },
+        {
+          "name": "-v",
+          "description": "Print the version number",
+          "takesValue": false
+        },
+        {
+          "name": "--background",
+          "description": "Background Color",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "color"
+            }
+          ]
+        },
+        {
+          "name": "--foreground",
+          "description": "Foreground Color",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "color"
+            }
+          ]
+        },
+        {
+          "name": "--border",
+          "description": "Border Style",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument",
+              "suggestions": [
+                {
+                  "name": "none"
+                },
+                {
+                  "name": "hidden"
+                },
+                {
+                  "name": "normal"
+                },
+                {
+                  "name": "rounded"
+                },
+                {
+                  "name": "thick"
+                },
+                {
+                  "name": "double"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--border-background",
+          "description": "Border Background Color",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "color"
+            }
+          ]
+        },
+        {
+          "name": "--border-foreground",
+          "description": "Border Foreground Color",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "color"
+            }
+          ]
+        },
+        {
+          "name": "--align",
+          "description": "Text Alignment",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument",
+              "suggestions": [
+                {
+                  "name": "left"
+                },
+                {
+                  "name": "center"
+                },
+                {
+                  "name": "right"
+                },
+                {
+                  "name": "bottom"
+                },
+                {
+                  "name": "middle"
+                },
+                {
+                  "name": "top"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--height",
+          "description": "Text height",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "lines"
+            }
+          ]
+        },
+        {
+          "name": "--width",
+          "description": "Text width",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "width"
+            }
+          ]
+        },
+        {
+          "name": "--margin",
+          "description": "Text margin",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "margin"
+            }
+          ]
+        },
+        {
+          "name": "--padding",
+          "description": "Text padding",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "padding"
+            }
+          ]
+        },
+        {
+          "name": "--bold",
+          "description": "Bold text",
+          "takesValue": false
+        },
+        {
+          "name": "--faint",
+          "description": "Faint text",
+          "takesValue": false
+        },
+        {
+          "name": "--italic",
+          "description": "Italicize text",
+          "takesValue": false
+        },
+        {
+          "name": "--strikethrough",
+          "description": "Strikethrough text",
+          "takesValue": false
+        },
+        {
+          "name": "--underline",
+          "description": "Underline text",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "text",
+          "description": "Text to which to apply the style",
+          "isVariadic": true
+        }
+      ]
+    },
+    {
+      "name": "write",
+      "description": "Prompt for long-form text",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show context-sensitive help",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show context-sensitive help",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Print the version number",
+          "takesValue": false
+        },
+        {
+          "name": "-v",
+          "description": "Print the version number",
+          "takesValue": false
+        },
+        {
+          "name": "--width",
+          "description": "Text area width",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--height",
+          "description": "Text area height",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--placeholder",
+          "description": "Placeholder value",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--prompt",
+          "description": "Prompt to display",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--show-cursor-line",
+          "description": "Show cursor line",
+          "takesValue": false
+        },
+        {
+          "name": "--show-line-numbers",
+          "description": "Show line numbers",
+          "takesValue": false
+        },
+        {
+          "name": "--value",
+          "description": "Initial value (can be passed via stdin)",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--char-limit",
+          "description": "Maximum value length (0 for no limit)",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--header",
+          "description": "Header value",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "name"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "file",
+      "description": "Pick a file from a folder",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show context-sensitive help",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show context-sensitive help",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Print the version number",
+          "takesValue": false
+        },
+        {
+          "name": "-v",
+          "description": "Print the version number",
+          "takesValue": false
+        },
+        {
+          "name": "--cursor",
+          "description": "The cursor character",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "cursor"
+            }
+          ]
+        },
+        {
+          "name": "-c",
+          "description": "The cursor character",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "cursor"
+            }
+          ]
+        },
+        {
+          "name": "--all",
+          "description": "Show hidden and 'dot' files",
+          "takesValue": false
+        },
+        {
+          "name": "-a",
+          "description": "Show hidden and 'dot' files",
+          "takesValue": false
+        },
+        {
+          "name": "--height",
+          "description": "Maximum number of files to display",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "lines"
+            }
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "path",
+          "description": "The path to the folder to begin traversing"
+        }
+      ]
+    },
+    {
+      "name": "table",
+      "description": "Render a table of data",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show context-sensitive help",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show context-sensitive help",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Print the version number",
+          "takesValue": false
+        },
+        {
+          "name": "-v",
+          "description": "Print the version number",
+          "takesValue": false
+        },
+        {
+          "name": "--separator",
+          "description": "Row separator",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "separator"
+            }
+          ]
+        },
+        {
+          "name": "-s",
+          "description": "Row separator",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "separator"
+            }
+          ]
+        },
+        {
+          "name": "--columns",
+          "description": "Column names",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "names"
+            }
+          ]
+        },
+        {
+          "name": "-c",
+          "description": "Column names",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "names"
+            }
+          ]
+        },
+        {
+          "name": "--widths",
+          "description": "Column widths",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "widths"
+            }
+          ]
+        },
+        {
+          "name": "-w",
+          "description": "Column widths",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "widths"
+            }
+          ]
+        },
+        {
+          "name": "--height",
+          "description": "Table height",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "lines"
+            }
+          ]
+        },
+        {
+          "name": "--file",
+          "description": "File path",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "filename"
+            }
+          ]
+        },
+        {
+          "name": "-f",
+          "description": "File path",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "filename"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "pager",
+      "description": "Scroll through a file",
+      "options": [
+        {
+          "name": "--help",
+          "description": "Show context-sensitive help",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Show context-sensitive help",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Print the version number",
+          "takesValue": false
+        },
+        {
+          "name": "-v",
+          "description": "Print the version number",
+          "takesValue": false
+        },
+        {
+          "name": "--show-line-numbers",
+          "description": "Show line numbers",
+          "takesValue": false
+        },
+        {
+          "name": "--background",
+          "description": "Background Color",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "color"
+            }
+          ]
+        },
+        {
+          "name": "--foreground",
+          "description": "Foreground Color",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "color"
+            }
+          ]
+        },
+        {
+          "name": "--border",
+          "description": "Border Style",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument",
+              "suggestions": [
+                {
+                  "name": "none"
+                },
+                {
+                  "name": "hidden"
+                },
+                {
+                  "name": "normal"
+                },
+                {
+                  "name": "rounded"
+                },
+                {
+                  "name": "thick"
+                },
+                {
+                  "name": "double"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--border-background",
+          "description": "Border Background Color",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "color"
+            }
+          ]
+        },
+        {
+          "name": "--border-foreground",
+          "description": "Border Foreground Color",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "color"
+            }
+          ]
+        },
+        {
+          "name": "--align",
+          "description": "Text Alignment",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument",
+              "suggestions": [
+                {
+                  "name": "left"
+                },
+                {
+                  "name": "center"
+                },
+                {
+                  "name": "right"
+                },
+                {
+                  "name": "bottom"
+                },
+                {
+                  "name": "middle"
+                },
+                {
+                  "name": "top"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--height",
+          "description": "Text height",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "lines"
+            }
+          ]
+        },
+        {
+          "name": "--width",
+          "description": "Text width",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "width"
+            }
+          ]
+        },
+        {
+          "name": "--margin",
+          "description": "Text margin",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "margin"
+            }
+          ]
+        },
+        {
+          "name": "--padding",
+          "description": "Text padding",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "padding"
+            }
+          ]
+        },
+        {
+          "name": "--bold",
+          "description": "Bold text",
+          "takesValue": false
+        },
+        {
+          "name": "--faint",
+          "description": "Faint text",
+          "takesValue": false
+        },
+        {
+          "name": "--italic",
+          "description": "Italicize text",
+          "takesValue": false
+        },
+        {
+          "name": "--strikethrough",
+          "description": "Strikethrough text",
+          "takesValue": false
+        },
+        {
+          "name": "--underline",
+          "description": "Underline text",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "content",
+          "description": "Display content to scroll"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,943 @@
+{
+  "schemaVersion": 1,
+  "name": "eza",
+  "description": "A modern replacement for ls",
+  "options": [
+    {
+      "name": "--help",
+      "description": "Show list of command-line options",
+      "takesValue": false
+    },
+    {
+      "name": "-v",
+      "description": "Show version of eza",
+      "takesValue": false
+    },
+    {
+      "name": "--version",
+      "description": "Show version of eza",
+      "takesValue": false
+    },
+    {
+      "name": "-1",
+      "description": "Display one entry per line",
+      "takesValue": false
+    },
+    {
+      "name": "--oneline",
+      "description": "Display one entry per line",
+      "takesValue": false
+    },
+    {
+      "name": "-l",
+      "description": "Display extended file metadata as a table",
+      "takesValue": false
+    },
+    {
+      "name": "--long",
+      "description": "Display extended file metadata as a table",
+      "takesValue": false
+    },
+    {
+      "name": "-G",
+      "description": "Display entries as a grid (default)",
+      "takesValue": false
+    },
+    {
+      "name": "--grid",
+      "description": "Display entries as a grid (default)",
+      "takesValue": false
+    },
+    {
+      "name": "-x",
+      "description": "Sort the grid across, rather than downward",
+      "takesValue": false
+    },
+    {
+      "name": "--across",
+      "description": "Sort the grid across, rather than downward",
+      "takesValue": false
+    },
+    {
+      "name": "-R",
+      "description": "Recurse into directories",
+      "takesValue": false
+    },
+    {
+      "name": "--recurse",
+      "description": "Recurse into directories",
+      "takesValue": false
+    },
+    {
+      "name": "-T",
+      "description": "Recurse into directories as a tree",
+      "takesValue": false
+    },
+    {
+      "name": "--tree",
+      "description": "Recurse into directories as a tree",
+      "takesValue": false
+    },
+    {
+      "name": "-X",
+      "description": "Dereference symbolic links when displaying information",
+      "takesValue": false
+    },
+    {
+      "name": "--dereference",
+      "description": "Dereference symbolic links when displaying information",
+      "takesValue": false
+    },
+    {
+      "name": "-F",
+      "description": "Display type indicator by file names",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "when",
+          "suggestions": [
+            {
+              "name": "auto",
+              "description": "Display file kind indicators only when the standard output is connected to a real terminal"
+            },
+            {
+              "name": "automatic",
+              "description": "Display file kind indicators only when the standard output is connected to a real terminal"
+            },
+            {
+              "name": "always",
+              "description": "Always display file kind indicators"
+            },
+            {
+              "name": "never",
+              "description": "Disables the use of file kind indicators"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "--classify",
+      "description": "Display type indicator by file names",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "when",
+          "suggestions": [
+            {
+              "name": "auto",
+              "description": "Display file kind indicators only when the standard output is connected to a real terminal"
+            },
+            {
+              "name": "automatic",
+              "description": "Display file kind indicators only when the standard output is connected to a real terminal"
+            },
+            {
+              "name": "always",
+              "description": "Always display file kind indicators"
+            },
+            {
+              "name": "never",
+              "description": "Disables the use of file kind indicators"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "--color",
+      "description": "When to use terminal colours",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "when",
+          "suggestions": [
+            {
+              "name": "auto",
+              "description": "To colorize the output only when the standard output is connected to a real terminal"
+            },
+            {
+              "name": "automatic",
+              "description": "To colorize the output only when the standard output is connected to a real terminal"
+            },
+            {
+              "name": "always",
+              "description": "Always output terminal color"
+            },
+            {
+              "name": "never",
+              "description": "Disables the use of terminal color"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "--colour",
+      "description": "When to use terminal colours",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "when",
+          "suggestions": [
+            {
+              "name": "auto",
+              "description": "To colorize the output only when the standard output is connected to a real terminal"
+            },
+            {
+              "name": "automatic",
+              "description": "To colorize the output only when the standard output is connected to a real terminal"
+            },
+            {
+              "name": "always",
+              "description": "Always output terminal color"
+            },
+            {
+              "name": "never",
+              "description": "Disables the use of terminal color"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "--color-scale",
+      "description": "Highlight levels of 'field' distinctly",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "field",
+          "suggestions": [
+            {
+              "name": "all"
+            },
+            {
+              "name": "age"
+            },
+            {
+              "name": "size"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "--colour-scale",
+      "description": "Highlight levels of 'field' distinctly",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "field",
+          "suggestions": [
+            {
+              "name": "all"
+            },
+            {
+              "name": "age"
+            },
+            {
+              "name": "size"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "--color-scale-mode",
+      "description": "Use gradient or fixed colors in --color-scale",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "mode",
+          "suggestions": [
+            {
+              "name": "fixed"
+            },
+            {
+              "name": "gradient"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "--colour-scale-mode",
+      "description": "Use gradient or fixed colors in --color-scale",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "mode",
+          "suggestions": [
+            {
+              "name": "fixed"
+            },
+            {
+              "name": "gradient"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "--icons",
+      "description": "When to display icons",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "when",
+          "suggestions": [
+            {
+              "name": "auto",
+              "description": "Display icons only when the standard output is connected to a real terminal"
+            },
+            {
+              "name": "automatic",
+              "description": "Display icons only when the standard output is connected to a real terminal"
+            },
+            {
+              "name": "always",
+              "description": "Always display icons"
+            },
+            {
+              "name": "never",
+              "description": "Disables the use of icons"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "--no-quotes",
+      "description": "Don't quote file names with spaces",
+      "takesValue": false
+    },
+    {
+      "name": "--hyperlink",
+      "description": "Display entries as hyperlinks",
+      "takesValue": false
+    },
+    {
+      "name": "--absolute",
+      "description": "Display entries with their absolute path",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "mode",
+          "suggestions": [
+            {
+              "name": "off"
+            },
+            {
+              "name": "on"
+            },
+            {
+              "name": "follow"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "--follow-symlinks",
+      "description": "Drill down into symbolic links that point to directories",
+      "takesValue": false
+    },
+    {
+      "name": "-w",
+      "description": "Set screen width in columns",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "columns"
+        }
+      ]
+    },
+    {
+      "name": "--width",
+      "description": "Set screen width in columns",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "columns"
+        }
+      ]
+    },
+    {
+      "name": "-a",
+      "description": "Show hidden and 'dot' files",
+      "takesValue": false,
+      "isRepeatable": true
+    },
+    {
+      "name": "--all",
+      "description": "Show hidden and 'dot' files",
+      "takesValue": false,
+      "isRepeatable": true
+    },
+    {
+      "name": "-A",
+      "description": "Equivalent to '--all'",
+      "takesValue": false,
+      "isRepeatable": true
+    },
+    {
+      "name": "--almost-all",
+      "description": "Equivalent to '--all'",
+      "takesValue": false,
+      "isRepeatable": true
+    },
+    {
+      "name": "-d",
+      "description": "List directories like regular files",
+      "takesValue": false
+    },
+    {
+      "name": "--list-dirs",
+      "description": "List directories like regular files",
+      "takesValue": false
+    },
+    {
+      "name": "-D",
+      "description": "List only directories",
+      "takesValue": false
+    },
+    {
+      "name": "--only-dirs",
+      "description": "List only directories",
+      "takesValue": false
+    },
+    {
+      "name": "-f",
+      "description": "List only files",
+      "takesValue": false
+    },
+    {
+      "name": "--only-files",
+      "description": "List only files",
+      "takesValue": false
+    },
+    {
+      "name": "--show-symlinks",
+      "description": "Explicitly show symbolic links",
+      "takesValue": false
+    },
+    {
+      "name": "--no-symlinks",
+      "description": "Do not show symbolic links",
+      "takesValue": false
+    },
+    {
+      "name": "-L",
+      "description": "Limit the depth of recursion",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "depth"
+        }
+      ]
+    },
+    {
+      "name": "--level",
+      "description": "Limit the depth of recursion",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "depth"
+        }
+      ]
+    },
+    {
+      "name": "-r",
+      "description": "Reverse the sort order",
+      "takesValue": false
+    },
+    {
+      "name": "--reverse",
+      "description": "Reverse the sort order",
+      "takesValue": false
+    },
+    {
+      "name": "-s",
+      "description": "Which field to sort by",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "field",
+          "suggestions": [
+            {
+              "name": "name",
+              "description": "Lowercase precede UPERCASE"
+            },
+            {
+              "name": "Name",
+              "description": "UPERCASE precede lowercase"
+            },
+            {
+              "name": "extension",
+              "description": "Lowercase precede UPERCASE"
+            },
+            {
+              "name": "Extension",
+              "description": "UPERCASE precede lowercase"
+            },
+            {
+              "name": "size"
+            },
+            {
+              "name": "modified"
+            },
+            {
+              "name": "changed"
+            },
+            {
+              "name": "accessed"
+            },
+            {
+              "name": "created"
+            },
+            {
+              "name": "inode"
+            },
+            {
+              "name": "type"
+            },
+            {
+              "name": "none"
+            },
+            {
+              "name": "date"
+            },
+            {
+              "name": "time"
+            },
+            {
+              "name": "new"
+            },
+            {
+              "name": "newest"
+            },
+            {
+              "name": "age"
+            },
+            {
+              "name": "old"
+            },
+            {
+              "name": "oldest"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "--sort",
+      "description": "Which field to sort by",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "field",
+          "suggestions": [
+            {
+              "name": "name",
+              "description": "Lowercase precede UPERCASE"
+            },
+            {
+              "name": "Name",
+              "description": "UPERCASE precede lowercase"
+            },
+            {
+              "name": "extension",
+              "description": "Lowercase precede UPERCASE"
+            },
+            {
+              "name": "Extension",
+              "description": "UPERCASE precede lowercase"
+            },
+            {
+              "name": "size"
+            },
+            {
+              "name": "modified"
+            },
+            {
+              "name": "changed"
+            },
+            {
+              "name": "accessed"
+            },
+            {
+              "name": "created"
+            },
+            {
+              "name": "inode"
+            },
+            {
+              "name": "type"
+            },
+            {
+              "name": "none"
+            },
+            {
+              "name": "date"
+            },
+            {
+              "name": "time"
+            },
+            {
+              "name": "new"
+            },
+            {
+              "name": "newest"
+            },
+            {
+              "name": "age"
+            },
+            {
+              "name": "old"
+            },
+            {
+              "name": "oldest"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "--group-directories-first",
+      "description": "List directories before other files",
+      "takesValue": false
+    },
+    {
+      "name": "--group-directories-last",
+      "description": "List directories after other files",
+      "takesValue": false
+    },
+    {
+      "name": "-I",
+      "description": "Glob patterns (pipe-separated) of files to ignore",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "globs"
+        }
+      ]
+    },
+    {
+      "name": "--ignore-glob",
+      "description": "Glob patterns (pipe-separated) of files to ignore",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "globs"
+        }
+      ]
+    },
+    {
+      "name": "--git-ignore",
+      "description": "Ignore files mentioned in '.gitignore'",
+      "takesValue": false
+    },
+    {
+      "name": "-b",
+      "description": "List file sizes with binary prefixes",
+      "takesValue": false
+    },
+    {
+      "name": "--binary",
+      "description": "List file sizes with binary prefixes",
+      "takesValue": false
+    },
+    {
+      "name": "-B",
+      "description": "List file sizes in bytes, without any prefixes",
+      "takesValue": false
+    },
+    {
+      "name": "--bytes",
+      "description": "List file sizes in bytes, without any prefixes",
+      "takesValue": false
+    },
+    {
+      "name": "-g",
+      "description": "List each file's group",
+      "takesValue": false
+    },
+    {
+      "name": "--group",
+      "description": "List each file's group",
+      "takesValue": false
+    },
+    {
+      "name": "--smart-group",
+      "description": "Only show group if it has a different name from owner",
+      "takesValue": false
+    },
+    {
+      "name": "-h",
+      "description": "Add a header row to each column",
+      "takesValue": false
+    },
+    {
+      "name": "--header",
+      "description": "Add a header row to each column",
+      "takesValue": false
+    },
+    {
+      "name": "-H",
+      "description": "List each file's number of hard links",
+      "takesValue": false
+    },
+    {
+      "name": "--links",
+      "description": "List each file's number of hard links",
+      "takesValue": false
+    },
+    {
+      "name": "-i",
+      "description": "List each file's inode number",
+      "takesValue": false
+    },
+    {
+      "name": "--inode",
+      "description": "List each file's inode number",
+      "takesValue": false
+    },
+    {
+      "name": "-M",
+      "description": "Show mount details",
+      "takesValue": false
+    },
+    {
+      "name": "--mounts",
+      "description": "Show mount details",
+      "takesValue": false
+    },
+    {
+      "name": "-n",
+      "description": "List numeric user and group IDs",
+      "takesValue": false
+    },
+    {
+      "name": "--numeric",
+      "description": "List numeric user and group IDs",
+      "takesValue": false
+    },
+    {
+      "name": "-O",
+      "description": "List file flags",
+      "takesValue": false
+    },
+    {
+      "name": "--flags",
+      "description": "List file flags",
+      "takesValue": false
+    },
+    {
+      "name": "-S",
+      "description": "Show size of allocated file system blocks",
+      "takesValue": false
+    },
+    {
+      "name": "--blocksize",
+      "description": "Show size of allocated file system blocks",
+      "takesValue": false
+    },
+    {
+      "name": "-t",
+      "description": "Which timestamp field to list",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "field",
+          "suggestions": [
+            {
+              "name": "modified"
+            },
+            {
+              "name": "changed"
+            },
+            {
+              "name": "accessed"
+            },
+            {
+              "name": "created"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "--time",
+      "description": "Which timestamp field to list",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "field",
+          "suggestions": [
+            {
+              "name": "modified"
+            },
+            {
+              "name": "changed"
+            },
+            {
+              "name": "accessed"
+            },
+            {
+              "name": "created"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "-m",
+      "description": "Use the modified timestamp field",
+      "takesValue": false
+    },
+    {
+      "name": "--modified",
+      "description": "Use the modified timestamp field",
+      "takesValue": false
+    },
+    {
+      "name": "-u",
+      "description": "Use the accessed timestamp field",
+      "takesValue": false
+    },
+    {
+      "name": "--accessed",
+      "description": "Use the accessed timestamp field",
+      "takesValue": false
+    },
+    {
+      "name": "-U",
+      "description": "Use the created timestamp field",
+      "takesValue": false
+    },
+    {
+      "name": "--created",
+      "description": "Use the created timestamp field",
+      "takesValue": false
+    },
+    {
+      "name": "--changed",
+      "description": "Use the changed timestamp field",
+      "takesValue": false
+    },
+    {
+      "name": "--time-style",
+      "description": "How to format timestamps",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "format",
+          "suggestions": [
+            {
+              "name": "default"
+            },
+            {
+              "name": "iso"
+            },
+            {
+              "name": "long-iso"
+            },
+            {
+              "name": "relative"
+            },
+            {
+              "name": "+%Y-%m-%d %H:%M"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "--total-size",
+      "description": "Show the size of a directory as the size of all files and directories inside",
+      "takesValue": false
+    },
+    {
+      "name": "-o",
+      "description": "List each file's permission in octal format",
+      "takesValue": false
+    },
+    {
+      "name": "--octal-permissions",
+      "description": "List each file's permission in octal format",
+      "takesValue": false
+    },
+    {
+      "name": "--no-permissions",
+      "description": "Suppress the permissions field",
+      "takesValue": false
+    },
+    {
+      "name": "--no-filesize",
+      "description": "Suppress the filesize field",
+      "takesValue": false
+    },
+    {
+      "name": "--no-user",
+      "description": "Suppress the user field",
+      "takesValue": false
+    },
+    {
+      "name": "--no-time",
+      "description": "Suppress the time field",
+      "takesValue": false
+    },
+    {
+      "name": "--stdin",
+      "description": "Read file names from stdin, one per line or other separator specified in environment",
+      "takesValue": false
+    },
+    {
+      "name": "--git",
+      "description": "List each file's Git status, if tracked or ignored",
+      "takesValue": false
+    },
+    {
+      "name": "--no-git",
+      "description": "Suppress Git status",
+      "takesValue": false
+    },
+    {
+      "name": "--git-repos",
+      "description": "List root of git-tree status",
+      "takesValue": false
+    },
+    {
+      "name": "--git-repos-no-status",
+      "description": "List each git-repos branch name (much faster)",
+      "takesValue": false
+    },
+    {
+      "name": "-@",
+      "description": "List each file's extended attributes and sizes",
+      "takesValue": false
+    },
+    {
+      "name": "--extended",
+      "description": "List each file's extended attributes and sizes",
+      "takesValue": false
+    },
+    {
+      "name": "-Z",
+      "description": "List each file's security context",
+      "takesValue": false
+    },
+    {
+      "name": "--context",
+      "description": "List each file's security context",
+      "takesValue": false
+    }
+  ],
+  "args": [
+    {
+      "name": "argument",
+      "isVariadic": true,
+      "template": "folders"
+    }
+  ]
+}

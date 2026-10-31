@@ -1,0 +1,364 @@
+{
+  "schemaVersion": 1,
+  "name": "cmake",
+  "description": "Command-line interface of the cross-platform buildsystem generator CMake",
+  "options": [
+    {
+      "name": "-S",
+      "description": "Path to root directory of the CMake project to build",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "path-to-source",
+          "template": "folders"
+        }
+      ]
+    },
+    {
+      "name": "--help",
+      "takesValue": false
+    },
+    {
+      "name": "-B",
+      "description": "Path to directory which CMake will use as the root of build directory. If the directory doesn't already exist CMake will make it",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "path-to-source",
+          "template": "folders"
+        }
+      ]
+    },
+    {
+      "name": "-C",
+      "description": "Pre-load a script to populate the cache",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "initial-cache",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "-D",
+      "description": "Create or update a CMake CACHE entry",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "key value pair",
+          "description": "<var>:<type>=<value> or <var>=<value>"
+        }
+      ]
+    },
+    {
+      "name": "-U",
+      "description": "Remove matching entries from CMake CACHE",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "globbing_expr"
+        }
+      ]
+    },
+    {
+      "name": "-G",
+      "description": "Specify a build system generator",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "generator-name"
+        }
+      ]
+    },
+    {
+      "name": "-T",
+      "description": "Toolset specification for the generator, if supported",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "toolset-spec"
+        }
+      ]
+    },
+    {
+      "name": "-A",
+      "description": "Specify platform name if supported by generator",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "platform-name"
+        }
+      ]
+    },
+    {
+      "name": "--install-prefix",
+      "description": "Specify the installation directory, used by the CMAKE_INSTALL_PREFIX variable. Must be an absolute path",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "directory",
+          "template": "folders"
+        }
+      ]
+    },
+    {
+      "name": "-Wno-dev",
+      "description": "Suppress developer warnings",
+      "takesValue": false
+    },
+    {
+      "name": "-Wdev",
+      "description": "Enable developer warnings",
+      "takesValue": false
+    },
+    {
+      "name": "-Werror",
+      "description": "Enable the type of warnings",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "type",
+          "suggestions": [
+            {
+              "name": "dev",
+              "description": "Make developer warnings errors"
+            },
+            {
+              "name": "deprecated",
+              "description": "Make deprecated macro and function warnings errors"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "-Wno-error",
+      "description": "Disable the type of warnings",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "type",
+          "suggestions": [
+            {
+              "name": "dev",
+              "description": "Make developer warnings not errors"
+            },
+            {
+              "name": "deprecated",
+              "description": "Make deprecated macro and function warnings not errors"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "-Wdeprecated",
+      "description": "Enable deprecated functionality warnings",
+      "takesValue": false
+    },
+    {
+      "name": "-Wno-deprecated",
+      "description": "Suppress deprecated functionality warnings",
+      "takesValue": false
+    },
+    {
+      "name": "-L",
+      "description": "List non-advanced cached-variables",
+      "takesValue": false
+    },
+    {
+      "name": "-N",
+      "description": "View mode only",
+      "takesValue": false
+    },
+    {
+      "name": "--graphviz",
+      "description": "Generate graphviz of dependencies",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "file",
+          "isOptional": true,
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "--system-information",
+      "description": "Dump information about this system",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "file",
+          "isOptional": true,
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "--log-level",
+      "description": "Set log-level",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "log-level",
+          "suggestions": [
+            {
+              "name": "ERROR"
+            },
+            {
+              "name": "WARNING"
+            },
+            {
+              "name": "NOTICE"
+            },
+            {
+              "name": "STATUS"
+            },
+            {
+              "name": "VERBOSE"
+            },
+            {
+              "name": "DEBUG"
+            },
+            {
+              "name": "TRACE"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "--log-context",
+      "description": "Enable the message() command outputting context attached to each message",
+      "takesValue": false
+    },
+    {
+      "name": "--debug-trycompile",
+      "description": "Do not delete the try_compile() build tree",
+      "takesValue": false
+    },
+    {
+      "name": "--debug-output",
+      "description": "Put cmake in a debug mode",
+      "takesValue": false
+    },
+    {
+      "name": "--debug-find",
+      "description": "Put cmake find commands in a debug mode",
+      "takesValue": false
+    },
+    {
+      "name": "--trace",
+      "description": "Put cmake in trace mode",
+      "takesValue": false
+    },
+    {
+      "name": "--trace-expand",
+      "description": "Put cmake in trace mode with variables expanded",
+      "takesValue": false
+    },
+    {
+      "name": "--trace-format",
+      "description": "Put cmake in trace mode and sets the trace output format",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "format",
+          "suggestions": [
+            {
+              "name": "human"
+            },
+            {
+              "name": "json-v1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "--trace-source",
+      "description": "Put cmake in trace mode, but output only lines of a specified file",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "file",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "--trace-redirect",
+      "description": "Put cmake in trace mode and redirect trace output to a file instead of stderr",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "file",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "--warn-uninitialized",
+      "description": "Warn about uninitialized values",
+      "takesValue": false
+    },
+    {
+      "name": "--warn-unused-vars",
+      "description": "Does nothing. In CMake versions 3.2 and below this enabled warnings about unused variables. In CMake versions 3.3 through 3.18 the option was broken. In CMake 3.19 and above the option has been removed",
+      "takesValue": false
+    },
+    {
+      "name": "--no-warn-unused-cli",
+      "description": "Don't warn about command line options. Don't find variables that are declared on the command line, but not used",
+      "takesValue": false
+    },
+    {
+      "name": "--check-system-vars",
+      "description": "Find problems with variable usage in system files",
+      "takesValue": false
+    },
+    {
+      "name": "--preset",
+      "description": "Reads a preset from <path-to-source>/CMakePresets.json and <path-to-source>/CMakeUserPresets.json. The preset may specify the generator and the build directory, and a list of variables and other arguments to pass to CMake. The current working directory must contain CMake preset files. The CMake GUI can also recognize CMakePresets.json and CMakeUserPresets.json files",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "preset"
+        }
+      ]
+    },
+    {
+      "name": "--list-presets",
+      "description": "Lists the available presets",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "type",
+          "isOptional": true,
+          "suggestions": [
+            {
+              "name": "configure"
+            },
+            {
+              "name": "build"
+            },
+            {
+              "name": "test"
+            },
+            {
+              "name": "all"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "args": [
+    {
+      "name": "path-to-source | path-to-existing-build",
+      "template": "folders"
+    }
+  ]
+}

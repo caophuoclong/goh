@@ -55,6 +55,8 @@ Write for a user: what happens, what to type, what it needs. Implementation note
 | [zsh-adapter](zsh-adapter.md) | shells | stable | 1.0.0 |
 | [bash-adapter](bash-adapter.md) | shells | stable | 1.0.0 |
 | [other-shells](other-shells.md) | shells | experimental | 1.0.0 |
+| [powershell-adapter](powershell-adapter.md) | shells | experimental | unreleased |
+| [nushell-adapter](nushell-adapter.md) | shells | experimental | unreleased |
 | [popup](popup.md) | display | stable | 1.0.0 |
 | [popup-permission](popup-permission.md) | display | experimental | 1.6.0 |
 | [theme](theme.md) | display | stable | 1.0.0 |

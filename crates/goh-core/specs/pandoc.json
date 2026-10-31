@@ -1,0 +1,1183 @@
+{
+  "schemaVersion": 1,
+  "name": "pandoc",
+  "description": "A universal document converter",
+  "options": [
+    {
+      "name": "-f",
+      "description": "Specify input format",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "format"
+        }
+      ]
+    },
+    {
+      "name": "-r",
+      "description": "Specify input format",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "format"
+        }
+      ]
+    },
+    {
+      "name": "--from",
+      "description": "Specify input format",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "format"
+        }
+      ]
+    },
+    {
+      "name": "--read",
+      "description": "Specify input format",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "format"
+        }
+      ]
+    },
+    {
+      "name": "-t",
+      "description": "Specify output format",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "format"
+        }
+      ]
+    },
+    {
+      "name": "-w",
+      "description": "Specify output format",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "format"
+        }
+      ]
+    },
+    {
+      "name": "--to",
+      "description": "Specify output format",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "format"
+        }
+      ]
+    },
+    {
+      "name": "--write",
+      "description": "Specify output format",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "format"
+        }
+      ]
+    },
+    {
+      "name": "-o",
+      "description": "Write output to FILE instead of stdout",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "file",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "--output",
+      "description": "Write output to FILE instead of stdout",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "file",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "--data-dir",
+      "description": "Specify the user data directory to search for pandoc data files",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "directory",
+          "template": "folders"
+        }
+      ]
+    },
+    {
+      "name": "-d",
+      "description": "Specify a set of default option settings",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "file"
+        }
+      ]
+    },
+    {
+      "name": "--defaults",
+      "description": "Specify a set of default option settings",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "file"
+        }
+      ]
+    },
+    {
+      "name": "--bash-completion",
+      "description": "Generate a bash completion script",
+      "takesValue": false
+    },
+    {
+      "name": "--verbose",
+      "description": "Give verbose debugging output",
+      "takesValue": false
+    },
+    {
+      "name": "--quiet",
+      "description": "Suppress warning messages",
+      "takesValue": false
+    },
+    {
+      "name": "--fail-if-warnings",
+      "description": "Exit with error status if there are any warnings",
+      "takesValue": false
+    },
+    {
+      "name": "--log",
+      "description": "Write log messages in machine-readable JSON format to FILE",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "file",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "--list-input-formats",
+      "description": "List supported input formats, one per line",
+      "takesValue": false
+    },
+    {
+      "name": "--list-output-formats",
+      "description": "List supported output formats, one per line",
+      "takesValue": false
+    },
+    {
+      "name": "--list-extensions",
+      "description": "List supported extensions for FORMAT, one per line, preceded by a + or -  indicating whether it is enabled by default in FORMAT",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "format",
+          "isOptional": true
+        }
+      ]
+    },
+    {
+      "name": "--list-highlight-languages",
+      "description": "List supported languages for syntax highlighting, one per line",
+      "takesValue": false
+    },
+    {
+      "name": "--list-highlight-styles",
+      "description": "List supported styles for syntax highlighting, one per line",
+      "takesValue": false
+    },
+    {
+      "name": "-v",
+      "description": "Print version",
+      "takesValue": false
+    },
+    {
+      "name": "--version",
+      "description": "Print version",
+      "takesValue": false
+    },
+    {
+      "name": "-h",
+      "description": "Show usage message",
+      "takesValue": false
+    },
+    {
+      "name": "--help",
+      "description": "Show usage message",
+      "takesValue": false
+    },
+    {
+      "name": "--shift-heading-level-by",
+      "description": "Shift heading levels by a positive or negative integer",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "number"
+        }
+      ]
+    },
+    {
+      "name": "--indented-code-classes",
+      "description": "Specify classes to use for indented code blocks–for example, perl,numberLines or haskell. Multiple classes may be separated by spaces or commas",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "classes"
+        }
+      ]
+    },
+    {
+      "name": "--default-image-extension",
+      "description": "Specify a default extension to use when image paths/URLs have no extension. This allows you to use the same source for formats that require different kinds of images. Currently this option only affects the Markdown and LaTeX readers",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "extension"
+        }
+      ]
+    },
+    {
+      "name": "--file-scope",
+      "description": "Parse each file individually before combining for multifile documents. This will allow footnotes in different files with the same identifiers to work as expected",
+      "takesValue": false
+    },
+    {
+      "name": "-F",
+      "description": "Specify an executable to be used as a filter transforming the pandoc AST after the input is parsed and before the output is written",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "executable",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "--filter",
+      "description": "Specify an executable to be used as a filter transforming the pandoc AST after the input is parsed and before the output is written",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "executable",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "-L",
+      "description": "Transform the document in a similar fashion as JSON filters, but use pandoc’s built-in Lua filtering system",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "script",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "--lua-filter",
+      "description": "Transform the document in a similar fashion as JSON filters, but use pandoc’s built-in Lua filtering system",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "script",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "-M",
+      "description": "Set the metadata field KEY to the value VAL",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "key"
+        },
+        {
+          "name": "value",
+          "isOptional": true
+        }
+      ]
+    },
+    {
+      "name": "--metadata",
+      "description": "Set the metadata field KEY to the value VAL",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "key"
+        },
+        {
+          "name": "value",
+          "isOptional": true
+        }
+      ]
+    },
+    {
+      "name": "--metadata-file",
+      "description": "Read metadata from the supplied YAML (or JSON) file",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "file"
+        }
+      ]
+    },
+    {
+      "name": "-p",
+      "description": "Preserve tabs instead of converting them to spaces",
+      "takesValue": false
+    },
+    {
+      "name": "--preserve-tabs",
+      "description": "Preserve tabs instead of converting them to spaces",
+      "takesValue": false
+    },
+    {
+      "name": "--tab-stop",
+      "description": "Specify the number of spaces per tab",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "number"
+        }
+      ]
+    },
+    {
+      "name": "--track-changes",
+      "description": "Specifies what to do with insertions, deletions, and comments produced by the MS Word `Track Changes` feature",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "mode",
+          "suggestions": [
+            {
+              "name": "accept",
+              "description": "Processes all the insertions and deletions and ignores comments"
+            },
+            {
+              "name": "reject",
+              "description": "Ignores all the insertions and deletions and ignores comments"
+            },
+            {
+              "name": "all",
+              "description": "Includes all insertions, deletions, and comments, wrapped in spans with insertion, deletion, comment-start, and comment-end classes, respectively"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "--extract-media",
+      "description": "Extract images and other media contained in or linked from the source document to the path DIR, creating it if necessary, and adjust the images references in the document so they point to the extracted files",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "dir",
+          "template": "folders"
+        }
+      ]
+    },
+    {
+      "name": "--abbreviations",
+      "description": "Specifies a custom abbreviations file, with abbreviations one to a line. If this option is not specified, pandoc will read the data file abbreviations from the user data directory or fall back on a system default",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "file",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "-s",
+      "description": "Produce output with an appropriate header and footer (e.g. a standalone HTML, LaTeX, TEI, or RTF file, not a fragment). This option is set automatically for pdf, epub, epub3, fb2, docx, and odt output",
+      "takesValue": false
+    },
+    {
+      "name": "--standalone",
+      "description": "Produce output with an appropriate header and footer (e.g. a standalone HTML, LaTeX, TEI, or RTF file, not a fragment). This option is set automatically for pdf, epub, epub3, fb2, docx, and odt output",
+      "takesValue": false
+    },
+    {
+      "name": "--template",
+      "description": "Use the specified file as a custom template for the generated document",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "file or URL",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "-V",
+      "description": "Set the template variable KEY to the value VAL when rendering the document in standalone mode. If no VAL is specified, the key will be given the value true",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "key"
+        },
+        {
+          "name": "value",
+          "isOptional": true
+        }
+      ]
+    },
+    {
+      "name": "--variable",
+      "description": "Set the template variable KEY to the value VAL when rendering the document in standalone mode. If no VAL is specified, the key will be given the value true",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "key"
+        },
+        {
+          "name": "value",
+          "isOptional": true
+        }
+      ]
+    },
+    {
+      "name": "-D",
+      "description": "Print the system default template for an output FORMAT. Templates in the user data directory are ignored",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "format"
+        }
+      ]
+    },
+    {
+      "name": "--print-default-template",
+      "description": "Print the system default template for an output FORMAT. Templates in the user data directory are ignored",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "format"
+        }
+      ]
+    },
+    {
+      "name": "--print-default-data-file",
+      "description": "Print a system default data file. Files in the user data directory are ignored",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "file",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "--eol",
+      "description": "Manually specify line endings: crlf (Windows), lf (macOS/Linux/UNIX), or native (line endings appropriate to the OS on which pandoc is being run). The default is native",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "type",
+          "suggestions": [
+            {
+              "name": "crlf",
+              "description": "Windows"
+            },
+            {
+              "name": "lf",
+              "description": "MacOS/Linux/UNIX"
+            },
+            {
+              "name": "native",
+              "description": "Line endings appropriate to the OS on which Pandoc is being run"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "--dpi",
+      "description": "Specify the default dpi (dots per inch) value for conversion from pixels to inch/centimeters and vice versa",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "number"
+        }
+      ]
+    },
+    {
+      "name": "--wrap",
+      "description": "Determine how text is wrapped in the output (the source code, not the rendered version)",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "mode",
+          "suggestions": [
+            {
+              "name": "auto",
+              "description": "Attempts to wrap lines to the column width specified by --columns (default 72)"
+            },
+            {
+              "name": "none",
+              "description": "Will not wrap lines at all"
+            },
+            {
+              "name": "preserve",
+              "description": "Attempts to preserve the wrapping from the source document"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "--columns",
+      "description": "Specify length of lines in characters. This affects text wrapping in the generated source code",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "number"
+        }
+      ]
+    },
+    {
+      "name": "--toc",
+      "description": "Include an automatically generated table of contents (or, in the case of latex, context, docx, odt, opendocument, rst, or ms, an instruction to create one) in the output document. It has no effect on man, docbook4, docbook5, or jats output",
+      "takesValue": false
+    },
+    {
+      "name": "--table-of-contents",
+      "description": "Include an automatically generated table of contents (or, in the case of latex, context, docx, odt, opendocument, rst, or ms, an instruction to create one) in the output document. It has no effect on man, docbook4, docbook5, or jats output",
+      "takesValue": false
+    },
+    {
+      "name": "--toc-depth",
+      "description": "Specify the number of section levels to include in the table of contents",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "number"
+        }
+      ]
+    },
+    {
+      "name": "--strip-comments",
+      "description": "Strip out HTML comments in the Markdown or Textile source, rather than passing them on to Markdown, Textile or HTML output as raw HTML. This does not apply to HTML comments inside raw HTML blocks when the markdown_in_html_blocks extension is not set",
+      "takesValue": false
+    },
+    {
+      "name": "--no-highlight",
+      "description": "Disables syntax highlighting for code blocks and inlines, even when a language attribute is given",
+      "takesValue": false
+    },
+    {
+      "name": "--highlight-style",
+      "description": "Specifies the coloring style to be used in highlighted source code",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "STYLE|FILE",
+          "template": "filepaths",
+          "suggestions": [
+            {
+              "name": "pygments"
+            },
+            {
+              "name": "kate"
+            },
+            {
+              "name": "monochrome"
+            },
+            {
+              "name": "breezeDark"
+            },
+            {
+              "name": "espresso"
+            },
+            {
+              "name": "zenburn"
+            },
+            {
+              "name": "haddock"
+            },
+            {
+              "name": "tango"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "--print-highlight-style",
+      "description": "Prints a JSON version of a highlighting style, which can be modified, saved with a .theme extension, and used with --highlight-style",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "STYLE|FILE",
+          "template": "filepaths",
+          "suggestions": [
+            {
+              "name": "pygments"
+            },
+            {
+              "name": "kate"
+            },
+            {
+              "name": "monochrome"
+            },
+            {
+              "name": "breezeDark"
+            },
+            {
+              "name": "espresso"
+            },
+            {
+              "name": "zenburn"
+            },
+            {
+              "name": "haddock"
+            },
+            {
+              "name": "tango"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "--syntax-definition",
+      "description": "Instructs pandoc to load a KDE XML syntax definition file, which will be used for syntax highlighting of appropriately marked code blocks",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "file",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "-H",
+      "description": "Include contents of FILE, verbatim, at the end of the header",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "FILE|URL",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "--include-in-header",
+      "description": "Include contents of FILE, verbatim, at the end of the header",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "FILE|URL",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "-B",
+      "description": "Include contents of FILE, verbatim, at the beginning of the document body",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "FILE|URL",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "--include-before-body",
+      "description": "Include contents of FILE, verbatim, at the beginning of the document body",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "FILE|URL",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "-A",
+      "description": "Include contents of FILE, verbatim, at the end of the document body",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "FILE|URL",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "--include-after-body",
+      "description": "Include contents of FILE, verbatim, at the end of the document body",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "FILE|URL",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "--resource-path",
+      "description": "List of paths to search for images and other resources. If --resource-path is not specified, the default resource path is the working directory",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "search path",
+          "description": "The paths should be separated by : on Linux, UNIX, and macOS systems, and by ; on Windows",
+          "template": "folders"
+        }
+      ]
+    },
+    {
+      "name": "--request-header",
+      "description": "Set the request header NAME to the value VAL when making HTTP requests. If you’re behind a proxy, you also need to set the environment variable http_proxy to http://",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "NAME:VAL"
+        }
+      ]
+    },
+    {
+      "name": "--no-check-certificate",
+      "description": "Disable the certificate verification to allow access to unsecure HTTP resources",
+      "takesValue": false
+    },
+    {
+      "name": "--self-contained",
+      "description": "Produce a standalone HTML file with no external dependencies, using data: URIs to incorporate the contents of linked scripts, stylesheets, images, and videos",
+      "takesValue": false
+    },
+    {
+      "name": "--html-q-tags",
+      "description": "Use <q> tags for quotes in HTML. This option only has an effect if the smart extension is enabled",
+      "takesValue": false
+    },
+    {
+      "name": "--ascii",
+      "description": "Use only ASCII characters in output. Currently supported for XML, HTML formats, CommonMark, gfm, Markdown, roff ms , and to a limited degree LaTeX, roff man output uses ASCII by default",
+      "takesValue": false
+    },
+    {
+      "name": "--reference-links",
+      "description": "Use reference-style links, rather than inline links, in writing Markdown or reStructuredText",
+      "takesValue": false
+    },
+    {
+      "name": "--reference-location",
+      "description": "Specify whether footnotes (and references, if reference-links is set) are placed at the end of the current (top-level) block, the current section, or the document. Currently only affects the markdown writer",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "type",
+          "suggestions": [
+            {
+              "name": "block"
+            },
+            {
+              "name": "section"
+            },
+            {
+              "name": "document"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "--markdown-headings",
+      "description": "Specify whether to use ATX-style (#-prefixed) or Setext-style (underlined) headings for level 1 and 2 headings in Markdown output",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "type",
+          "suggestions": [
+            {
+              "name": "setext"
+            },
+            {
+              "name": "atx"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "--atx-headers",
+      "description": "Deprecated synonym for --markdown-headings=atx",
+      "takesValue": false
+    },
+    {
+      "name": "--top-level-division",
+      "description": "Treat top-level headings as the given division type in LaTeX, ConTeXt, DocBook, and TEI output",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "mode",
+          "suggestions": [
+            {
+              "name": "default"
+            },
+            {
+              "name": "section"
+            },
+            {
+              "name": "chapter"
+            },
+            {
+              "name": "part"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "-N",
+      "description": "Number section headings in LaTeX, ConTeXt, HTML, Docx, ms, or EPUB output. By default, sections are not numbered",
+      "takesValue": false
+    },
+    {
+      "name": "--number-sections",
+      "description": "Number section headings in LaTeX, ConTeXt, HTML, Docx, ms, or EPUB output. By default, sections are not numbered",
+      "takesValue": false
+    },
+    {
+      "name": "--number-offset",
+      "description": "Offset for section headings in HTML output (ignored in other output formats)",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "number",
+          "description": "The first number is added to the section number for top-level headings, the second for second-level headings, and so on",
+          "isVariadic": true
+        }
+      ]
+    },
+    {
+      "name": "--listings",
+      "description": "Use the listings package for LaTeX code blocks. The package does not support multi-byte encoding for source code. To handle UTF-8 you would need to use a custom template",
+      "takesValue": false
+    },
+    {
+      "name": "-i",
+      "description": "Make list items in slide shows display incrementally",
+      "takesValue": false
+    },
+    {
+      "name": "--incremental",
+      "description": "Make list items in slide shows display incrementally",
+      "takesValue": false
+    },
+    {
+      "name": "--slide-level",
+      "description": "Specifies that headings with the specified level create slides (for beamer, s5, slidy, slideous, dzslides). Headings above this level in the hierarchy are used to divide the slide show into sections; headings below this level create subheads within a slide",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "level",
+          "description": "Number"
+        }
+      ]
+    },
+    {
+      "name": "--section-divs",
+      "description": "Wrap sections in <section> tags (or <div> tags for html4), and attach identifiers to the enclosing <section> (or <div>) rather than the heading itself",
+      "takesValue": false
+    },
+    {
+      "name": "--email-obfuscation",
+      "description": "Specify a method for obfuscating mailto: links in HTML documents references . The default is none",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "type",
+          "suggestions": [
+            {
+              "name": "none",
+              "description": "Leaves mailto: links as they are"
+            },
+            {
+              "name": "javascript",
+              "description": "Obfuscates mailto: links using JavaScript"
+            },
+            {
+              "name": "references",
+              "description": "Obfuscates mailto: links by printing their letters as decimal or hexadecimal character references"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "--id-prefix",
+      "description": "Specify a prefix to be added to all identifiers and internal links in HTML and DocBook output, and to footnote numbers in Markdown and Haddock output",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "string"
+        }
+      ]
+    },
+    {
+      "name": "-T",
+      "description": "Specify STRING as a prefix at the beginning of the title that appears in the HTML header (but not in the title as it appears at the beginning of the HTML body)",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "string"
+        }
+      ]
+    },
+    {
+      "name": "--title-prefix",
+      "description": "Specify STRING as a prefix at the beginning of the title that appears in the HTML header (but not in the title as it appears at the beginning of the HTML body)",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "string"
+        }
+      ]
+    },
+    {
+      "name": "-c",
+      "description": "Link to a CSS style sheet. This option can be used repeatedly to include multiple files. They will be included in the order specified",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "URL"
+        }
+      ]
+    },
+    {
+      "name": "--css",
+      "description": "Link to a CSS style sheet. This option can be used repeatedly to include multiple files. They will be included in the order specified",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "URL"
+        }
+      ]
+    },
+    {
+      "name": "--reference-doc",
+      "description": "Use the specified file as a style reference in producing a docx or ODT file",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "file",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "--epub-cover-image",
+      "description": "Use the specified image as the EPUB cover. It is recommended that the image be less than 1000px in width and height. Note that in a Markdown source document you can also specify cover-image in a YAML metadata block",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "file",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "--epub-metadata",
+      "description": "Look in the specified XML file for metadata for the EPUB. The file should contain a series of Dublin Core elements",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "file",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "--epub-embed-font",
+      "description": "Embed the specified font in the EPUB. This option can be repeated to embed multiple fonts. Wildcards can also be used",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "file",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "--pdf-engine",
+      "description": "Use the specified engine when producing PDF output",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "program",
+          "suggestions": [
+            {
+              "name": "pdflatex"
+            },
+            {
+              "name": "lualatex"
+            },
+            {
+              "name": "xelatex"
+            },
+            {
+              "name": "latexmk"
+            },
+            {
+              "name": "tectonic"
+            },
+            {
+              "name": "wkhtmltopdf"
+            },
+            {
+              "name": "weasyprint"
+            },
+            {
+              "name": "prince"
+            },
+            {
+              "name": "context"
+            },
+            {
+              "name": "pdfroff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "--pdf-engine-opt",
+      "description": "Use the given string as a command-line argument to the pdf-engine",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "string"
+        }
+      ]
+    },
+    {
+      "name": "-C",
+      "description": "Process the citations in the file, replacing them with rendered citations and adding a bibliography. Citation processing will not take place unless bibliographic data is supplied, either through an external file specified using the --bibliography option or the bibliography field in metadata, or via a references section in metadata containing a list of citations in CSL YAML format with Markdown formatting. The style is controlled by a CSL stylesheet specified using the --csl option or the csl field in metadata. (If no stylesheet is specified, the chicago-author-date style will be used by default)",
+      "takesValue": false
+    },
+    {
+      "name": "--citeproc",
+      "description": "Process the citations in the file, replacing them with rendered citations and adding a bibliography. Citation processing will not take place unless bibliographic data is supplied, either through an external file specified using the --bibliography option or the bibliography field in metadata, or via a references section in metadata containing a list of citations in CSL YAML format with Markdown formatting. The style is controlled by a CSL stylesheet specified using the --csl option or the csl field in metadata. (If no stylesheet is specified, the chicago-author-date style will be used by default)",
+      "takesValue": false
+    },
+    {
+      "name": "--bibliography",
+      "description": "Set the bibliography field in the document’s metadata to FILE, overriding any value set in the metadata. If you supply this argument multiple times, each FILE will be added to bibliography. If FILE is a URL, it will be fetched via HTTP. If FILE is not found relative to the working directory, it will be sought in the resource path",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "file",
+          "template": "filepaths"
+        }
+      ],
+      "isRepeatable": true
+    },
+    {
+      "name": "--csl",
+      "description": "Set the csl field in the document’s metadata to FILE, overriding any value set in the metadata. (This is equivalent to --metadata csl=FILE.) If FILE is a URL, it will be fetched via HTTP. If FILE is not found relative to the working directory, it will be sought in the resource path and finally in the csl subdirectory of the pandoc user data directory",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "file",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "--citation-abbreviations",
+      "description": "Set the citation-abbreviations field in the document’s metadata to FILE, overriding any value set in the metadata. If FILE is a URL, it will be fetched via HTTP. If FILE is not found relative to the working directory, it will be sought in the resource path and finally in the csl subdirectory of the pandoc user data directory",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "file",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "--natbib",
+      "description": "Use natbib for citations in LaTeX output. It is intended for use in producing a LaTeX file that can be processed with bibtex",
+      "takesValue": false
+    },
+    {
+      "name": "--biblatex",
+      "description": "Use biblatex for citations in LaTeX output. It is intended for use in producing a LaTeX file that can be processed with bibtex or biber",
+      "takesValue": false
+    },
+    {
+      "name": "--mathjax",
+      "description": "Use MathJax to display embedded TeX math in HTML output. TeX math will be put between (...) (for inline math) or [...] (for display math) and wrapped in <span> tags with class math. Then the MathJax JavaScript will render it. The URL should point to the MathJax.js load script. If a URL is not provided, a link to the Cloudflare CDN will be inserted",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "URL"
+        }
+      ]
+    },
+    {
+      "name": "--mathml",
+      "description": "Convert TeX math to MathML (in epub3, docbook4, docbook5, jats, html4 and html5). This is the default in odt output. Note that currently only Firefox and Safari (and select e-book readers) natively support MathML",
+      "takesValue": false
+    },
+    {
+      "name": "--webtex",
+      "description": "Convert TeX formulas to <img> tags that link to an external script that converts formulas to images. The formula will be URL-encoded and concatenated with the URL provided. For SVG images you can for example use --webtex https://latex.codecogs.com/svg.latex?. If no URL is specified, the CodeCogs URL generating PNGs will be used (https://latex.codecogs.com/png.latex?). Note: the --webtex option will affect Markdown output as well as HTML, which is useful if you’re targeting a version of Markdown without native math support",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "URL"
+        }
+      ]
+    },
+    {
+      "name": "--katex",
+      "description": "Use KaTeX to display embedded TeX math in HTML output. The URL is the base URL for the KaTeX library. That directory should contain a katex.min.js and a katex.min.css file. If a URL is not provided, a link to the KaTeX CDN will be inserted",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "URL"
+        }
+      ]
+    },
+    {
+      "name": "--gladtex",
+      "description": "Enclose TeX math in <eq> tags in HTML output. The resulting HTML can then be processed by GladTeX to produce SVG images of the typeset formulas and an HTML file with these images embedded",
+      "takesValue": false
+    },
+    {
+      "name": "--dump-args",
+      "description": "Print information about command-line arguments to stdout, then exit. This option is intended primarily for use in wrapper scripts",
+      "takesValue": false
+    },
+    {
+      "name": "--ignore-args",
+      "description": "Ignore command-line arguments (for use in wrapper scripts). Regular pandoc options are not ignored",
+      "takesValue": false
+    }
+  ],
+  "args": [
+    {
+      "name": "input file(s)",
+      "isVariadic": true,
+      "template": "filepaths"
+    }
+  ]
+}

@@ -1,0 +1,249 @@
+{
+  "schemaVersion": 1,
+  "name": "htop",
+  "description": "Improved top (interactive process viewer)",
+  "options": [
+    {
+      "name": "--help",
+      "description": "Show help for htop",
+      "takesValue": false
+    },
+    {
+      "name": "-h",
+      "description": "Show help for htop",
+      "takesValue": false
+    },
+    {
+      "name": "--no-color",
+      "description": "Use a monochrome color scheme",
+      "takesValue": false
+    },
+    {
+      "name": "-C",
+      "description": "Use a monochrome color scheme",
+      "takesValue": false
+    },
+    {
+      "name": "--delay",
+      "description": "Delay between updates, in tenths of sec",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "delay",
+          "suggestions": [
+            {
+              "name": "10"
+            },
+            {
+              "name": "1"
+            },
+            {
+              "name": "60"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "-d",
+      "description": "Delay between updates, in tenths of sec",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "delay",
+          "suggestions": [
+            {
+              "name": "10"
+            },
+            {
+              "name": "1"
+            },
+            {
+              "name": "60"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "--filter",
+      "description": "Filter commands",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "filter"
+        }
+      ]
+    },
+    {
+      "name": "-F",
+      "description": "Filter commands",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "filter"
+        }
+      ]
+    },
+    {
+      "name": "--highlight-changes",
+      "description": "Highlight new and old processes",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "delay",
+          "description": "Delay between updates of highlights, in tenths of sec",
+          "isOptional": true,
+          "suggestions": [
+            {
+              "name": "10"
+            },
+            {
+              "name": "1"
+            },
+            {
+              "name": "60"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "-H",
+      "description": "Highlight new and old processes",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "delay",
+          "description": "Delay between updates of highlights, in tenths of sec",
+          "isOptional": true,
+          "suggestions": [
+            {
+              "name": "10"
+            },
+            {
+              "name": "1"
+            },
+            {
+              "name": "60"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "--no-mouse",
+      "description": "Disable the mouse",
+      "takesValue": false
+    },
+    {
+      "name": "-M",
+      "description": "Disable the mouse",
+      "takesValue": false
+    },
+    {
+      "name": "--pid",
+      "description": "Show only the given PIDs",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "PID",
+          "isVariadic": true
+        }
+      ]
+    },
+    {
+      "name": "-p",
+      "description": "Show only the given PIDs",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "PID",
+          "isVariadic": true
+        }
+      ]
+    },
+    {
+      "name": "--sort-key",
+      "description": "Sort by COLUMN in list view",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "column"
+        }
+      ]
+    },
+    {
+      "name": "-s",
+      "description": "Sort by COLUMN in list view",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "column"
+        }
+      ]
+    },
+    {
+      "name": "--tree",
+      "description": "Show the tree view",
+      "takesValue": false
+    },
+    {
+      "name": "-t",
+      "description": "Show the tree view",
+      "takesValue": false
+    },
+    {
+      "name": "--user",
+      "description": "Show only processes for a given user (or $USER)",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "user",
+          "isOptional": true,
+          "suggestions": [
+            {
+              "name": "$USER"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "-u",
+      "description": "Show only processes for a given user (or $USER)",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "user",
+          "isOptional": true,
+          "suggestions": [
+            {
+              "name": "$USER"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "--no-unicode",
+      "description": "Do not use unicode but plain ASCII",
+      "takesValue": false
+    },
+    {
+      "name": "-U",
+      "description": "Do not use unicode but plain ASCII",
+      "takesValue": false
+    },
+    {
+      "name": "--version",
+      "description": "Print version info",
+      "takesValue": false
+    },
+    {
+      "name": "-V",
+      "description": "Print version info",
+      "takesValue": false
+    }
+  ]
+}

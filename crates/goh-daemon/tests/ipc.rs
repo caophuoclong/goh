@@ -112,14 +112,14 @@ fn malformed_or_oversized_frames_close_the_connection() {
 #[test]
 fn client_menu_returns_validated_items() {
     let (_d, sock) = start();
-    let items = client::menu(&sock, SESSION, "/", "git ch", 6, 8, false).unwrap();
+    let items = client::menu(&sock, SESSION, "/", "git ch", 6, 8, false).unwrap().0;
     let labels: Vec<_> = items.iter().map(|i| i.label.as_str()).collect();
     assert_eq!(labels, ["checkout", "cherry-pick"]);
     let e = &items[0].edit;
     assert_eq!((e.start, e.end, e.cursor, e.insert.as_str()), (4, 6, 13, "checkout "));
     assert_eq!(items[0].kind, "subcommand");
-    assert_eq!(client::menu(&sock, SESSION, "/", "git ch", 6, 1, false).unwrap().len(), 1);
-    assert!(client::menu(&sock, SESSION, "/", "git zzz", 7, 8, false).unwrap().is_empty());
+    assert_eq!(client::menu(&sock, SESSION, "/", "git ch", 6, 1, false).unwrap().0.len(), 1);
+    assert!(client::menu(&sock, SESSION, "/", "git zzz", 7, 8, false).unwrap().0.is_empty());
 }
 
 #[test]
@@ -138,7 +138,7 @@ fn client_fails_open_when_daemon_dies() {
     std::thread::spawn(move || drop(l.accept()));
     assert!(client::menu(&dead, SESSION, "/", "git ch", 6, 8, false).is_err());
     // ...and the real one is unaffected.
-    assert!(!client::menu(&sock, SESSION, "/", "git ch", 6, 8, false).unwrap().is_empty());
+    assert!(!client::menu(&sock, SESSION, "/", "git ch", 6, 8, false).unwrap().0.is_empty());
 }
 
 #[test]
@@ -165,11 +165,11 @@ fn socket_is_private_and_stale_socket_is_replaced() {
 fn live_requests_get_suggestions_only_for_a_recognised_command_in_progress() {
     let (_d, sock) = start();
     let labels = |buf: &str, live| -> Vec<String> {
-        client::menu(&sock, SESSION, "/", buf, buf.len(), 8, live).unwrap().into_iter().map(|i| i.label).collect()
+        client::menu(&sock, SESSION, "/", buf, buf.len(), 8, live).unwrap().0.into_iter().map(|i| i.label).collect()
     };
     assert_eq!(labels("git c", true), ["checkout", "cherry-pick"]);
     assert_eq!(labels("git", true), ["checkout", "cherry-pick"]);
-    let bare = client::menu(&sock, SESSION, "/", "git", 3, 8, true).unwrap();
+    let bare = client::menu(&sock, SESSION, "/", "git", 3, 8, true).unwrap().0;
     assert_eq!((bare[0].edit.start, bare[0].edit.end, bare[0].edit.insert.as_str()), (3, 3, " checkout "));
     assert!(labels("git foo c", true).is_empty(), "foo is not a git subcommand");
     assert!(labels("zzz c", true).is_empty(), "no spec for zzz");
@@ -178,7 +178,7 @@ fn live_requests_get_suggestions_only_for_a_recognised_command_in_progress() {
     std::fs::write(dir.path().join("note.txt"), "").unwrap();
     let cwd = dir.path().to_str().unwrap();
     let files = |live| -> Vec<String> {
-        client::menu(&sock, SESSION, cwd, "cat no", 6, 8, live).unwrap().into_iter().map(|i| i.label).collect()
+        client::menu(&sock, SESSION, cwd, "cat no", 6, 8, live).unwrap().0.into_iter().map(|i| i.label).collect()
     };
     assert_eq!(files(false), ["note.txt"]);
     assert!(files(true).is_empty());
@@ -188,7 +188,7 @@ fn live_requests_get_suggestions_only_for_a_recognised_command_in_progress() {
 fn live_requests_drop_fuzzy_matches_when_a_prefix_matches() {
     let (_d, sock) = start();
     let labels = |live| -> Vec<String> {
-        client::menu(&sock, SESSION, "/", "tool sh", 7, 8, live).unwrap().into_iter().map(|i| i.label).collect()
+        client::menu(&sock, SESSION, "/", "tool sh", 7, 8, live).unwrap().0.into_iter().map(|i| i.label).collect()
     };
     assert_eq!(labels(false), ["shell", "stash"], "asked for: stash matches s..h in order");
     assert_eq!(labels(true), ["shell"], "unasked: only the prefix match");
@@ -202,7 +202,7 @@ fn an_older_shell_context_arriving_late_does_not_replace_a_newer_one() {
         let req = Request::Context { v: 1, session_id: SESSION.into(), aliases, functions: vec![], builtins: vec![], path: String::new(), env: vec![], cdpath: String::new(), history: String::new(), seq };
         client::context(&sock, req).unwrap()
     };
-    let labels = || -> Vec<String> { client::menu(&sock, SESSION, "/", "gg ch", 5, 8, false).unwrap().into_iter().map(|i| i.label).collect() };
+    let labels = || -> Vec<String> { client::menu(&sock, SESSION, "/", "gg ch", 5, 8, false).unwrap().0.into_iter().map(|i| i.label).collect() };
     send(vec![["gg".into(), "git".into()]], 2);
     send(vec![], 1);
     assert_eq!(labels(), ["checkout", "cherry-pick"], "the alias from the newer context stays");

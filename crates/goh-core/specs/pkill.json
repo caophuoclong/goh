@@ -1,0 +1,503 @@
+{
+  "schemaVersion": 1,
+  "name": "pkill",
+  "description": "Send  the  specified  signal  (by default SIGTERM) to each specified process",
+  "options": [
+    {
+      "name": "--signal",
+      "description": "Signal to send (either number or name)",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "signal",
+          "description": "Signal to send",
+          "suggestions": [
+            {
+              "name": "SIGABRT"
+            },
+            {
+              "name": "SIGALRM"
+            },
+            {
+              "name": "SIGBUS"
+            },
+            {
+              "name": "SIGCHLD"
+            },
+            {
+              "name": "SIGCLD"
+            },
+            {
+              "name": "SIGCONT"
+            },
+            {
+              "name": "SIGEMT"
+            },
+            {
+              "name": "SIGFPE"
+            },
+            {
+              "name": "SIGHUP"
+            },
+            {
+              "name": "SIGILL"
+            },
+            {
+              "name": "SIGINFO"
+            },
+            {
+              "name": "SIGINT"
+            },
+            {
+              "name": "SIGIO"
+            },
+            {
+              "name": "SIGIOT"
+            },
+            {
+              "name": "SIGKILL"
+            },
+            {
+              "name": "SIGLOST"
+            },
+            {
+              "name": "SIGPIPE"
+            },
+            {
+              "name": "SIGPOLL"
+            },
+            {
+              "name": "SIGPROF"
+            },
+            {
+              "name": "SIGPWR"
+            },
+            {
+              "name": "SIGQUIT"
+            },
+            {
+              "name": "SIGSEGV"
+            },
+            {
+              "name": "SIGSTKFLT"
+            },
+            {
+              "name": "SIGSTOP"
+            },
+            {
+              "name": "SIGTSTP"
+            },
+            {
+              "name": "SIGSYS"
+            },
+            {
+              "name": "SIGTERM"
+            },
+            {
+              "name": "SIGTRAP"
+            },
+            {
+              "name": "SIGTTIN"
+            },
+            {
+              "name": "SIGTTOU"
+            },
+            {
+              "name": "SIGUNUSED"
+            },
+            {
+              "name": "SIGURG"
+            },
+            {
+              "name": "SIGUSR1"
+            },
+            {
+              "name": "SIGUSR2"
+            },
+            {
+              "name": "SIGVTALRM"
+            },
+            {
+              "name": "SIGXCPU"
+            },
+            {
+              "name": "SIGXFSZ"
+            },
+            {
+              "name": "SIGWINCH"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "-q",
+      "description": "Integer value to be sent with the signal",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "value"
+        }
+      ]
+    },
+    {
+      "name": "--queue",
+      "description": "Integer value to be sent with the signal",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "value"
+        }
+      ]
+    },
+    {
+      "name": "-e",
+      "description": "Display what is killed",
+      "takesValue": false
+    },
+    {
+      "name": "--echo",
+      "description": "Display what is killed",
+      "takesValue": false
+    },
+    {
+      "name": "-f",
+      "description": "Use full process name to match",
+      "takesValue": false
+    },
+    {
+      "name": "--full",
+      "description": "Use full process name to match",
+      "takesValue": false
+    },
+    {
+      "name": "-g",
+      "description": "Match listed process group IDs",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "PGID",
+          "isVariadic": true
+        }
+      ]
+    },
+    {
+      "name": "--pgroup",
+      "description": "Match listed process group IDs",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "PGID",
+          "isVariadic": true
+        }
+      ]
+    },
+    {
+      "name": "-G",
+      "description": "Match real group IDs",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "GID",
+          "isVariadic": true
+        }
+      ]
+    },
+    {
+      "name": "--group",
+      "description": "Match real group IDs",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "GID",
+          "isVariadic": true
+        }
+      ]
+    },
+    {
+      "name": "-i",
+      "description": "Match case insensitively",
+      "takesValue": false
+    },
+    {
+      "name": "--ignore-case",
+      "description": "Match case insensitively",
+      "takesValue": false
+    },
+    {
+      "name": "-n",
+      "description": "Select most recently started",
+      "takesValue": false
+    },
+    {
+      "name": "--newest",
+      "description": "Select most recently started",
+      "takesValue": false
+    },
+    {
+      "name": "-o",
+      "description": "Select least recently started",
+      "takesValue": false
+    },
+    {
+      "name": "--oldest",
+      "description": "Select least recently started",
+      "takesValue": false
+    },
+    {
+      "name": "-O",
+      "description": "Select where older than seconds",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "seconds"
+        }
+      ]
+    },
+    {
+      "name": "--older",
+      "description": "Select where older than seconds",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "seconds"
+        }
+      ]
+    },
+    {
+      "name": "-P",
+      "description": "Match only child processes of the given parent",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "PPID",
+          "isVariadic": true
+        }
+      ]
+    },
+    {
+      "name": "--parent",
+      "description": "Match only child processes of the given parent",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "PPID",
+          "isVariadic": true
+        }
+      ]
+    },
+    {
+      "name": "-s",
+      "description": "Match session IDs",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "SID",
+          "isVariadic": true
+        }
+      ]
+    },
+    {
+      "name": "--session",
+      "description": "Match session IDs",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "SID",
+          "isVariadic": true
+        }
+      ]
+    },
+    {
+      "name": "-t",
+      "description": "Match by controlling terminal",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "tty",
+          "isVariadic": true
+        }
+      ]
+    },
+    {
+      "name": "--terminal",
+      "description": "Match by controlling terminal",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "tty",
+          "isVariadic": true
+        }
+      ]
+    },
+    {
+      "name": "-u",
+      "description": "Match by effective IDs",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "ID",
+          "isVariadic": true
+        }
+      ]
+    },
+    {
+      "name": "--euid",
+      "description": "Match by effective IDs",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "ID",
+          "isVariadic": true
+        }
+      ]
+    },
+    {
+      "name": "-U",
+      "description": "Match by real IDs",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "ID",
+          "isVariadic": true
+        }
+      ]
+    },
+    {
+      "name": "--uid",
+      "description": "Match by real IDs",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "ID",
+          "isVariadic": true
+        }
+      ]
+    },
+    {
+      "name": "-x",
+      "description": "Match exactly with the command name",
+      "takesValue": false
+    },
+    {
+      "name": "--exact",
+      "description": "Match exactly with the command name",
+      "takesValue": false
+    },
+    {
+      "name": "-F",
+      "description": "Read PIDs from file",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "file",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "--pidfile",
+      "description": "Read PIDs from file",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "file",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "-L",
+      "description": "Fail if PID file is not locked",
+      "takesValue": false
+    },
+    {
+      "name": "-r",
+      "description": "Match runstates",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "state"
+        }
+      ]
+    },
+    {
+      "name": "--runstates",
+      "description": "Match runstates",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "state"
+        }
+      ]
+    },
+    {
+      "name": "--ns",
+      "description": "Match the processes that belong to a specified PID",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "PID"
+        }
+      ]
+    },
+    {
+      "name": "--nslist",
+      "description": "List which namespaces will be considered for the --ns option",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "ns",
+          "isVariadic": true,
+          "suggestions": [
+            {
+              "name": "ipc"
+            },
+            {
+              "name": "mnt"
+            },
+            {
+              "name": "net"
+            },
+            {
+              "name": "pid"
+            },
+            {
+              "name": "user"
+            },
+            {
+              "name": "uts"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "-h",
+      "description": "Output help message and exit",
+      "takesValue": false
+    },
+    {
+      "name": "--help",
+      "description": "Output help message and exit",
+      "takesValue": false
+    },
+    {
+      "name": "-V",
+      "description": "Output version information and exit",
+      "takesValue": false
+    },
+    {
+      "name": "--version",
+      "description": "Output version information and exit",
+      "takesValue": false
+    }
+  ],
+  "args": [
+    {
+      "name": "pattern",
+      "description": "Specifies an Extended Regular Expression for matching against the process names or command lines",
+      "provider": "process-names"
+    }
+  ]
+}
