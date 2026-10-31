@@ -64,7 +64,9 @@ namespace Goh
         public static volatile string Socket = "";
         // PowerShell's location is not the process's working directory: goh.ps1 keeps this one up to date.
         public static volatile string Cwd = "/";
-        public static readonly string Session = "ps-" + Environment.ProcessId;
+        // Its own session, apart from the Tab completer's ps-<pid>: gohd answers Stale to a generation older than the
+        // session's latest, and `goh menu` counts generations from the clock.
+        public static readonly string Session = "ps-" + Environment.ProcessId + "-predict";
     }
 
     public sealed class Predictor : ICommandPredictor
@@ -72,7 +74,8 @@ namespace Goh
         internal static readonly Guid Identifier = new Guid("6f3c2d8e-5a1b-4c7e-9d2f-0b8a7e6c5d41");
         private const int MaxFrame = 16 * 1024;
         private const int MaxSuggestions = 10;
-        private static long _generation;
+        // Seeded from the clock (nanoseconds, as `goh menu` counts) so it is never behind what the daemon has seen.
+        private static long _generation = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() * 1000000L;
 
         public Guid Id => Identifier;
         public string Name => "goh";
@@ -161,7 +164,8 @@ namespace Goh
 '@
 
 # Compile the predictor once per version of its source, then load it. $false (and nothing changed) on PowerShell
-# older than 7.2 or on any error.
+# older than 7.2 or on any error. The compiled file is written under a temporary name and moved into place, so a
+# half-written dll is never loaded; a cached dll that will not load is deleted and compiled once more.
 function Import-GohPredictor {
     if ($PSVersionTable.PSVersion -lt [version]'7.2') { return $false }
     if ('Goh.Predictor' -as [type]) { return $true }
@@ -171,13 +175,29 @@ function Import-GohPredictor {
         $cacheRoot = if ($env:XDG_CACHE_HOME) { $env:XDG_CACHE_HOME } else { Join-Path $HOME '.cache' }
         $cache = Join-Path $cacheRoot 'goh/powershell'
         $dll = Join-Path $cache "GohPredictor-$hash.dll"
-        if (-not (Test-Path $dll)) {
-            New-Item -ItemType Directory -Force -Path $cache | Out-Null
-            $refs = @{}
-            if ($script:GohPredictorRefs.Count) { $refs.ReferencedAssemblies = $script:GohPredictorRefs }
-            Add-Type -TypeDefinition $script:GohPredictorSource -OutputAssembly $dll -OutputType Library @refs
+        $loaded = $false
+        foreach ($attempt in 1..2) {
+            if (-not (Test-Path -LiteralPath $dll)) {
+                New-Item -ItemType Directory -Force -Path $cache | Out-Null
+                $temp = "$dll.$PID.tmp"
+                try {
+                    $refs = @{}
+                    if ($script:GohPredictorRefs.Count) { $refs.ReferencedAssemblies = $script:GohPredictorRefs }
+                    Add-Type -TypeDefinition $script:GohPredictorSource -OutputAssembly $temp -OutputType Library @refs
+                    Move-Item -LiteralPath $temp -Destination $dll -Force
+                } finally {
+                    Remove-Item -LiteralPath $temp -Force -ErrorAction SilentlyContinue
+                }
+            }
+            try {
+                Import-Module $dll -ErrorAction Stop
+                $loaded = $true
+                break
+            } catch {
+                Remove-Item -LiteralPath $dll -Force -ErrorAction SilentlyContinue
+            }
         }
-        Import-Module $dll -ErrorAction Stop
+        if (-not $loaded) { return $false }
         [Goh.State]::Socket = Get-GohSocket
         [Goh.State]::Cwd = (Get-Location).ProviderPath
         return $true
@@ -186,17 +206,21 @@ function Import-GohPredictor {
     }
 }
 
-# Show the predictor's list as you type: add goh to PSReadLine's prediction sources and use the list view, unless
-# GOH_LIVE=off (display.live). The user's own choice of source is kept, only widened.
+# Show the predictor's list as you type: add goh to PSReadLine's prediction sources and use the list view. Nothing
+# at all when GOH_LIVE=off (display.live). The user's own choice of source is kept, only widened. Never throws.
 function Enable-GohPredictor {
-    $psrl = Get-Module PSReadLine
-    if (-not $psrl -or $psrl.Version -lt [version]'2.2.2') { return }
-    if (-not (Import-GohPredictor)) { return }
-    & goh start *> $null
-    $source = (Get-PSReadLineOption).PredictionSource.ToString()
-    $wider = switch ($source) { 'None' { 'Plugin' } 'History' { 'HistoryAndPlugin' } default { $source } }
-    Set-PSReadLineOption -PredictionSource $wider
-    if ($env:GOH_LIVE -ne 'off') { Set-PSReadLineOption -PredictionViewStyle ListView }
+    try {
+        if ($env:GOH_LIVE -eq 'off') { return }
+        $psrl = Get-Module PSReadLine
+        if (-not $psrl -or $psrl.Version -lt [version]'2.2.2') { return }
+        if (-not (Import-GohPredictor)) { return }
+        # Start the daemon only when its socket is missing: no process per shell start while it is up.
+        if (-not (Test-Path -LiteralPath (Get-GohSocket))) { & goh start *> $null }
+        $source = (Get-PSReadLineOption).PredictionSource.ToString()
+        $wider = switch ($source) { 'None' { 'Plugin' } 'History' { 'HistoryAndPlugin' } default { $source } }
+        Set-PSReadLineOption -PredictionSource $wider
+        Set-PSReadLineOption -PredictionViewStyle ListView
+    } catch { }
 }
 
 # Directory history for `cd` suggestions when zoxide is not installed; the predictor's working directory.
