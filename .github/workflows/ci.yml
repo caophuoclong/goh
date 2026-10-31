@@ -34,7 +34,7 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           persist-credentials: false
-      - run: shellcheck install.sh scripts/*.sh crates/goh-popup/tools/linux-xwayland-test.sh
+      - run: shellcheck install.sh scripts/*.sh crates/goh-popup/tools/linux-xwayland-test.sh crates/goh-popup/tools/linux-x11-test.sh
       - name: Install actionlint
         env:
           VERSION: 1.7.12
