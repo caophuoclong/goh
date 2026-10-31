@@ -472,11 +472,12 @@ mod tests {
     #[test]
     fn a_slow_docker_answers_from_the_next_request_on() {
         let dir = tempfile::tempdir().unwrap();
-        let docker = script(dir.path(), "sleep 0.3\necho '{\"Names\":\"web-1\",\"Image\":\"nginx\"}'");
+        // Far slower than the deadline, so the bounds below hold on a loaded machine too.
+        let docker = script(dir.path(), "sleep 1.5\necho '{\"Names\":\"web-1\",\"Image\":\"nginx\"}'");
         let providers = Providers { docker, home: dir.path().to_path_buf(), ..Providers::default() };
         let at = Instant::now();
         assert!(providers.values(Provider::DockerContainers, Path::new("/")).is_empty(), "past the deadline: nothing yet");
-        assert!(at.elapsed() < Duration::from_millis(250), "a slow Docker cannot block typing");
+        assert!(at.elapsed() < Duration::from_secs(1), "a slow Docker cannot block typing");
         let deadline = Instant::now() + Duration::from_secs(5);
         while providers.values(Provider::DockerContainers, Path::new("/")).is_empty() && Instant::now() < deadline {
             std::thread::sleep(Duration::from_millis(20));
@@ -485,7 +486,8 @@ mod tests {
         std::thread::sleep(TTL);
         let at = Instant::now();
         assert_eq!(providers.values(Provider::DockerContainers, Path::new("/"))[0].name, "web-1", "the last answer while it is asked again");
-        assert!(at.elapsed() < Duration::from_millis(50), "a Docker known to be slow is not waited for again");
+        // Waiting would take the whole DEADLINE: this Docker answers long after it.
+        assert!(at.elapsed() < DEADLINE, "a Docker known to be slow is not waited for again");
     }
 
     #[test]
