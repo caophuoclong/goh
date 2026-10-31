@@ -51,6 +51,31 @@ export function enhance(spec) {
     for (const option of compose?.options ?? []) if (option.name === '-f' || option.name === '--file') option.args = [{name: 'file', template: 'filepaths', extensions: ['yml', 'yaml']}];
     changes.push({source:'https://docs.docker.com/reference/cli/docker/compose/', feature:'compose-file-services'});
   }
+  // Live values from goh's fixed read-only providers (crates/goh-daemon/src/providers.rs); nothing here runs.
+  const argsOf = node => node?.args ?? [];
+  if (spec.name === 'docker') {
+    const sub = (group, name) => spec.subcommands?.find(s => s.name === group)?.subcommands?.find(s => s.name === name);
+    for (const name of ['rm', 'inspect', 'connect', 'disconnect']) for (const arg of argsOf(sub('network', name))) if (arg.name === 'NETWORK') arg.provider = 'docker-networks';
+    for (const name of ['rm', 'inspect']) for (const arg of argsOf(sub('volume', name))) if (arg.name === 'VOLUME') arg.provider = 'docker-volumes';
+    changes.push({source:'https://docs.docker.com/reference/cli/docker/network/', feature:'network-and-volume-names'});
+  }
+  if (spec.name === 'tmux') {
+    const sessions = ['a', 'attach', 'attach-session', 'has-session', 'kill-session', 'lock-session', 'rename-session', 'switch-client'];
+    const windows = ['select-window', 'kill-window', 'rename-window', 'swap-window', 'move-window', 'link-window', 'unlink-window', 'respawn-window'];
+    for (const node of spec.subcommands ?? []) {
+      const provider = sessions.includes(node.name) ? 'tmux-sessions' : windows.includes(node.name) ? 'tmux-windows' : null;
+      if (provider) for (const option of node.options ?? []) if (option.name === '-t') withProvider(option, provider);
+    }
+    changes.push({source:'https://man.openbsd.org/tmux.1#COMMANDS', feature:'session-and-window-targets'});
+  }
+  if (spec.name === 'systemctl') {
+    walk(spec, node => { for (const arg of node.args ?? []) if (/UNIT/.test(arg.name ?? '')) arg.provider = 'systemd-units'; });
+    changes.push({source:'https://www.freedesktop.org/software/systemd/man/latest/systemctl.html', feature:'unit-names'});
+  }
+  if (spec.name === 'kill') for (const arg of spec.args ?? []) arg.provider = 'processes';
+  if (spec.name === 'pkill' || spec.name === 'killall') for (const arg of spec.args ?? []) arg.provider = 'process-names';
+  if (['kill', 'pkill', 'killall'].includes(spec.name)) changes.push({source:'https://pubs.opengroup.org/onlinepubs/9699919799/utilities/kill.html', feature:'process-arguments'});
+
   const only = (arg, extensions) => { if (arg) arg.extensions = extensions; };
   if (spec.name === 'python' || spec.name === 'python3') only(spec.args?.find(a => a.template === 'filepaths'), ['py', 'pyw']);
   if (spec.name === 'node') only(spec.args?.find(a => a.template === 'filepaths'), ['js', 'mjs', 'cjs', 'ts', 'mts', 'cts']);

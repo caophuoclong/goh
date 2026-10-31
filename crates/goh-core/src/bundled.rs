@@ -100,6 +100,34 @@ mod tests {
     }
 
     #[test]
+    fn sessions_units_networks_and_processes_reach_their_arguments() {
+        let cwd = tempfile::tempdir().unwrap();
+        let engine = Engine::new(bundled_specs());
+        let shell = ShellContext::default();
+        let values = |p: Provider, _: &std::path::Path| {
+            let name = match p {
+                Provider::TmuxSessions => "work",
+                Provider::TmuxWindows => "work:1",
+                Provider::SystemdUnits => "nginx.service",
+                Provider::DockerNetworks => "backend",
+                Provider::DockerVolumes => "pgdata",
+                Provider::Processes => "4242",
+                Provider::ProcessNames => "node",
+                _ => return vec![],
+            };
+            vec![Suggestion { name: name.into(), description: None, insert_value: None }]
+        };
+        for (line, label) in [("tmux attach-session -t ", "work"), ("tmux kill-session -t ", "work"), ("tmux select-window -t ", "work:1"),
+            ("systemctl restart ", "nginx.service"), ("docker network rm ", "backend"), ("docker volume rm ", "pgdata"),
+            ("kill ", "4242"), ("pkill ", "node"), ("killall ", "node")] {
+            let (found, _) = labels(&engine, line, cwd.path(), &values, &shell);
+            assert!(found.contains(&label.to_string()), "{line:?}: {found:?}");
+        }
+        let (found, _) = labels(&engine, "docker network create ", cwd.path(), &values, &shell);
+        assert!(!found.contains(&"backend".to_string()), "a new network has no name yet: {found:?}");
+    }
+
+    #[test]
     fn options_given_once_are_not_offered_again_and_letters_join_into_groups() {
         let cwd = tempfile::tempdir().unwrap();
         let engine = Engine::new(bundled_specs());

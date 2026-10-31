@@ -496,7 +496,8 @@
   "args": [
     {
       "name": "pattern",
-      "description": "Specifies an Extended Regular Expression for matching against the process names or command lines"
+      "description": "Specifies an Extended Regular Expression for matching against the process names or command lines",
+      "provider": "process-names"
     }
   ]
 }

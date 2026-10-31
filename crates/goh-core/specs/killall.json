@@ -87,7 +87,8 @@
   "args": [
     {
       "name": "process_name",
-      "isVariadic": true
+      "isVariadic": true,
+      "provider": "process-names"
     }
   ]
 }

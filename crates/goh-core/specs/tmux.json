@@ -71,7 +71,8 @@
           "takesValue": true,
           "args": [
             {
-              "name": "argument"
+              "name": "argument",
+              "provider": "tmux-sessions"
             }
           ]
         }
@@ -219,7 +220,8 @@
           "takesValue": true,
           "args": [
             {
-              "name": "argument"
+              "name": "argument",
+              "provider": "tmux-sessions"
             }
           ]
         }
@@ -293,7 +295,8 @@
           "takesValue": true,
           "args": [
             {
-              "name": "argument"
+              "name": "argument",
+              "provider": "tmux-sessions"
             }
           ]
         }
@@ -1779,7 +1782,8 @@
           "takesValue": true,
           "args": [
             {
-              "name": "argument"
+              "name": "argument",
+              "provider": "tmux-sessions"
             }
           ]
         }
@@ -2063,7 +2067,8 @@
           "takesValue": true,
           "args": [
             {
-              "name": "argument"
+              "name": "argument",
+              "provider": "tmux-sessions"
             }
           ]
         },
@@ -2115,7 +2120,8 @@
           "takesValue": true,
           "args": [
             {
-              "name": "argument"
+              "name": "argument",
+              "provider": "tmux-windows"
             }
           ]
         }
@@ -2301,7 +2307,8 @@
           "takesValue": true,
           "args": [
             {
-              "name": "argument"
+              "name": "argument",
+              "provider": "tmux-windows"
             }
           ]
         }
@@ -2797,7 +2804,8 @@
           "takesValue": true,
           "args": [
             {
-              "name": "argument"
+              "name": "argument",
+              "provider": "tmux-sessions"
             }
           ]
         }
@@ -2899,7 +2907,8 @@
           "takesValue": true,
           "args": [
             {
-              "name": "argument"
+              "name": "argument",
+              "provider": "tmux-windows"
             }
           ]
         }
@@ -3913,7 +3922,8 @@
           "takesValue": true,
           "args": [
             {
-              "name": "argument"
+              "name": "argument",
+              "provider": "tmux-sessions"
             }
           ]
         }
@@ -3957,7 +3967,8 @@
           "takesValue": true,
           "args": [
             {
-              "name": "argument"
+              "name": "argument",
+              "provider": "tmux-windows"
             }
           ]
         }
@@ -4458,7 +4469,8 @@
           "takesValue": true,
           "args": [
             {
-              "name": "argument"
+              "name": "argument",
+              "provider": "tmux-windows"
             }
           ]
         }
@@ -4853,7 +4865,8 @@
           "takesValue": true,
           "args": [
             {
-              "name": "argument"
+              "name": "argument",
+              "provider": "tmux-windows"
             }
           ]
         }
@@ -5569,7 +5582,8 @@
           "takesValue": true,
           "args": [
             {
-              "name": "argument"
+              "name": "argument",
+              "provider": "tmux-windows"
             }
           ]
         }
@@ -5691,7 +5705,8 @@
           "takesValue": true,
           "args": [
             {
-              "name": "argument"
+              "name": "argument",
+              "provider": "tmux-sessions"
             }
           ]
         },
@@ -5817,7 +5832,8 @@
           "takesValue": true,
           "args": [
             {
-              "name": "argument"
+              "name": "argument",
+              "provider": "tmux-windows"
             }
           ]
         }
