@@ -69,6 +69,20 @@ These are **proposed** decisions. Status moves from `Proposed` to `Accepted` onl
 - **Cost:** a generator step in CI; terminal-resolved colours bypass the file at runtime and must still satisfy the contrast rules.
 - **Validation:** generated output matches the file; contrast check runs on all fallback themes and on derived palettes for the four test terminals.
 
+## ADR-011 — The inline menu is drawn by ZLE, never by escape codes behind the shell
+
+- **Status:** Accepted · **Decision:** where the native popup cannot draw, the zsh adapter frames the inline menu as a
+  box in `POSTDISPLAY` with `region_highlight`, anchored at the word's column. goh does not proxy the PTY or write
+  cursor-movement sequences of its own.
+- **Why:** ZLE owns those lines, so clearing, scrolling, resizing, tmux and ssh stay correct with no terminal-specific
+  code and no permission. A PTY proxy (the approach of ghost-complete) draws the same kind of floating box in the
+  empty rows under the prompt, but ties goh to one platform, breaks over ssh and puts every byte of the session
+  through goh.
+- **Cost:** like any menu drawn in the terminal, the box uses the empty rows under the prompt; at the bottom of the
+  screen the terminal scrolls up to make room. The column comes from measuring the prompt, so an unusual prompt
+  shifts it.
+- **Validation:** `zsh_pty.rs` box tests; manual check in Ghostty, Kitty, WezTerm and tmux.
+
 ## ADR template for future records
 
 ```markdown

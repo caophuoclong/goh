@@ -6,8 +6,8 @@ since: 1.0.0
 updated: 2026-10-31
 area: shells
 shells: [zsh]
-settings: [display.live, display.maxSuggestions, display.mode, display.enterRuns]
-env: [GOH_LIVE, GOH_LIMIT, GOH_DISPLAY, GOH_ENTER_RUNS]
+settings: [display.live, display.maxSuggestions, display.mode, display.enterRuns, display.inlineStyle]
+env: [GOH_LIVE, GOH_LIMIT, GOH_DISPLAY, GOH_ENTER_RUNS, GOH_INLINE_STYLE]
 ---
 
 # zsh: menus as you type
@@ -28,6 +28,9 @@ in an IDE. Load it with `goh setup` or `eval "$(goh init zsh)"`.
   only insert (a second Enter runs). With several untouched candidates Enter runs the line as typed. Ctrl+C closes
   the menu at the next prompt.
 - Ghost text: the best line is shown after the cursor; → takes it.
+- Where the popup cannot draw (Ghostty, Kitty, WezTerm, tmux, ssh, ...), the menu is a floating framed box under the word you
+  are completing, in the terminal's own colours; no permission is needed. `display.inlineStyle: "flat"` draws plain
+  rows instead, which a screen reader reads more easily.
 - Fail-open: any problem falls through to the widget Tab had before; `goh-unload` restores it.
 - Works next to zsh-autosuggestions and plugins that replace `zle-line-init`.
 
@@ -38,6 +41,7 @@ in an IDE. Load it with `goh setup` or `eval "$(goh init zsh)"`.
 
 ## Changes
 
+- unreleased: the inline menu is a floating framed box under the word being completed (`display.inlineStyle`, `box` by default; `flat` is the old look).
 - unreleased: Esc closes the menu at once instead of after `KEYTIMEOUT` (0.4 s).
 - unreleased: Enter on a picked suggestion runs the line (`display.enterRuns`, on); an option that wants its value or a folder is only inserted.
 - unreleased: warnings on risky suggestions in bold red; `ssh` runs through `goh ssh` (see ssh-popup).
