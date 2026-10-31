@@ -866,7 +866,7 @@ _goh_hook_precmd() {
   return 0
 }
 
-# What the shell knows (aliases, functions, builtins, PATH), so `g checkout ` completes as `git checkout ` and
+# What the shell knows (aliases, functions, builtins, PATH, HISTFILE), so `g checkout ` completes as `git checkout ` and
 # the command word completes from what is installed. Sent after a command changed any of it, never per keystroke.
 # Each send is numbered: two of them can both wait for gohd to start, and gohd keeps the higher number.
 typeset -g _goh_ctx_sig
@@ -874,7 +874,7 @@ typeset -gi _goh_ctx_seq
 _goh_sync_context() {
   # Names of exported variables only (for `$NA` and `export NA`), never their values.
   local -a exported=(${(k)parameters[(R)*export*]})
-  local sig="$PATH|${CDPATH-}|${(kv)aliases}|${(k)functions}|${(j: :)exported}"
+  local sig="$PATH|${CDPATH-}|${HISTFILE-}|${(kv)aliases}|${(k)functions}|${(j: :)exported}"
   [[ $sig == "$_goh_ctx_sig" ]] && return 0
   _goh_ctx_sig=$sig
   (( ++_goh_ctx_seq ))
@@ -882,6 +882,8 @@ _goh_sync_context() {
     local k T=$'\t'   # a real tab: inside double quotes `\t` would stay two characters
     print -r -- "P$T$PATH"
     [[ -n ${CDPATH-} ]] && print -r -- "C$T$CDPATH"
+    # Where this shell keeps its history; zsh does not export it, so gohd cannot see it otherwise.
+    [[ ${HISTFILE-} == /* ]] && print -r -- "H$T$HISTFILE"
     for k in ${(k)aliases}; do [[ ${aliases[$k]} == *[$'\t\n']* ]] || print -r -- "A$T$k$T${aliases[$k]}"; done
     for k in ${(k)functions}; do [[ $k == [_.]* ]] || print -r -- "F$T$k"; done
     for k in ${(k)builtins}; do print -r -- "B$T$k"; done
