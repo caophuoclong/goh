@@ -1,0 +1,2521 @@
+{
+  "schemaVersion": 1,
+  "name": "firebase",
+  "subcommands": [
+    {
+      "name": "appdistribution:distribute",
+      "description": "Upload a distribution",
+      "options": [
+        {
+          "name": "--app",
+          "description": "The app id of your Firebase app",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--release-notes",
+          "description": "Release notes to include with this distribution",
+          "takesValue": false
+        },
+        {
+          "name": "--release-notes-file",
+          "description": "Path to file with release notes to include with this distribution",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--testers",
+          "description": "A comma separated list of tester emails to distribute to",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument",
+              "isVariadic": true
+            }
+          ]
+        },
+        {
+          "name": "--testers-file",
+          "description": "Path to file with a comma separated list of tester emails to distribute to",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--groups",
+          "description": "A comma separated list of group aliases to distribute to",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument",
+              "isVariadic": true
+            }
+          ]
+        },
+        {
+          "name": "--groups-file",
+          "description": "Path to file with a comma separated list of group aliases to distribute to",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument",
+              "isVariadic": true
+            }
+          ]
+        },
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "distribution-file"
+        }
+      ]
+    },
+    {
+      "name": "apps:android:sha:create",
+      "description": "Add a SHA certificate hash for a given app id",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "appId"
+        },
+        {
+          "name": "shaHash"
+        }
+      ]
+    },
+    {
+      "name": "apps:android:sha:delete",
+      "description": "Delete a SHA certificate hash for a given app id",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "appId"
+        },
+        {
+          "name": "shaId"
+        }
+      ]
+    },
+    {
+      "name": "apps:create",
+      "description": "Create a new Firebase app",
+      "options": [
+        {
+          "name": "-a",
+          "description": "Required package name for the Android app",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--package-name",
+          "description": "Required package name for the Android app",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "-b",
+          "description": "Required bundle id for the iOS app",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--bundle-id",
+          "description": "Required bundle id for the iOS app",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "-s",
+          "description": "(optional) app store id for the iOS app",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--app-store-id",
+          "description": "(optional) app store id for the iOS app",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "platform"
+        },
+        {
+          "name": "displayName"
+        }
+      ]
+    },
+    {
+      "name": "auth:export",
+      "description": "Export accounts from your Firebase project into a data file",
+      "options": [
+        {
+          "name": "--format",
+          "description": "Format of exported data (csv, json). Ignored if [dataFile] has format extension",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument",
+              "suggestions": [
+                {
+                  "name": "csv"
+                },
+                {
+                  "name": "json"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "dataFile",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "auth:import",
+      "description": "Import users into your Firebase project from a data file(.csv or .json)",
+      "options": [
+        {
+          "name": "--hash-algo",
+          "description": "Specify the hash algorithm used in password for these accounts",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--hash-key",
+          "description": "Specify the key used in hash algorithm",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--salt-separator",
+          "description": "Specify the salt separator which will be appended to salt when verifying password. only used by SCRYPT now",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--rounds",
+          "description": "Specify how many rounds for hash calculation",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--mem-cost",
+          "description": "Specify the memory cost for firebase scrypt, or cpu/memory cost for standard scrypt",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--parallelization",
+          "description": "Specify the parallelization for standard scrypt",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--block-size",
+          "description": "Specify the block size (normally is 8) for standard scrypt",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--dk-len",
+          "description": "Specify derived key length for standard scrypt",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--hash-input-order",
+          "description": "Specify the order of password and salt. Possible values are SALT_FIRST and PASSWORD_FIRST. MD5, SHA1, SHA256, SHA512, HMAC_MD5, HMAC_SHA1, HMAC_SHA256, HMAC_SHA512 support this flag",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "dataFile",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "database:get",
+      "description": "Fetch and print JSON data at the specified path",
+      "args": [
+        {
+          "name": "path"
+        }
+      ]
+    },
+    {
+      "name": "database:instances:create",
+      "description": "Create a realtime database instance",
+      "options": [
+        {
+          "name": "-l",
+          "description": "(optional) location for the database instance, defaults to us-central1",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--location",
+          "description": "(optional) location for the database instance, defaults to us-central1",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "instanceName"
+        }
+      ]
+    },
+    {
+      "name": "database:instances:list",
+      "description": "List realtime database instances, optionally filtered by a specified location",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "database:profile",
+      "description": "Profile the Realtime Database and generate a usage report",
+      "options": [
+        {
+          "name": "-o",
+          "description": "Save the output to the specified file",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--output",
+          "description": "Save the output to the specified file",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "-d",
+          "description": "Collect database usage information for the specified number of seconds",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--duration",
+          "description": "Collect database usage information for the specified number of seconds",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--raw",
+          "description": "Output the raw stats collected as newline delimited json",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--no-collapse",
+          "description": "Prevent collapsing similar paths into $wildcard locations",
+          "takesValue": false
+        },
+        {
+          "name": "-i",
+          "description": "Generate the report based on the specified file instead of streaming logs from the database",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--input",
+          "description": "Generate the report based on the specified file instead of streaming logs from the database",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--instance",
+          "description": "Use the database <instance>.firebaseio.com (if omitted, use default database instance)",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "database:push",
+      "description": "Add a new JSON object to a list of data in your Firebase",
+      "options": [
+        {
+          "name": "-d",
+          "description": "Specify escaped JSON directly",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--data",
+          "description": "Specify escaped JSON directly",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--instance",
+          "description": "Use the database <instance>.firebaseio.com (if omitted, use default database instance)",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "path",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "database:remove",
+      "description": "Remove data from your Firebase at the specified path",
+      "options": [
+        {
+          "name": "-y",
+          "description": "Pass this option to bypass confirmation prompt",
+          "takesValue": false
+        },
+        {
+          "name": "--confirm",
+          "description": "Pass this option to bypass confirmation prompt",
+          "takesValue": false
+        },
+        {
+          "name": "--instance",
+          "description": "Use the database <instance>.firebaseio.com (if omitted, use default database instance)",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "path",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "database:set",
+      "description": "Store JSON data at the specified path via STDIN, arg, or file",
+      "options": [
+        {
+          "name": "-d",
+          "description": "Specify escaped JSON directly",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--data",
+          "description": "Specify escaped JSON directly",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "-y",
+          "description": "Pass this option to bypass confirmation prompt",
+          "takesValue": false
+        },
+        {
+          "name": "--confirm",
+          "description": "Pass this option to bypass confirmation prompt",
+          "takesValue": false
+        },
+        {
+          "name": "--instance",
+          "description": "Use the database <instance>.firebaseio.com (if omitted, use default database instance)",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "path",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "database:settings:get",
+      "description": "Store JSON data at the specified path via STDIN, arg, or file",
+      "options": [
+        {
+          "name": "--instance",
+          "description": "Use the database <instance>.firebaseio.com (if omitted, uses default database instance)",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "path",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "database:settings:set",
+      "description": "Set the realtime database setting at path",
+      "options": [
+        {
+          "name": "--instance",
+          "description": "Use the database <instance>.firebaseio.com (if omitted, use default database instance)",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "path"
+        },
+        {
+          "name": "value"
+        }
+      ]
+    },
+    {
+      "name": "database:update",
+      "description": "Update some of the keys for the defined path in your Firebase",
+      "options": [
+        {
+          "name": "-d",
+          "description": "Specify escaped JSON directly",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--data",
+          "description": "Specify escaped JSON directly",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "-y",
+          "description": "Pass this option to bypass confirmation prompt",
+          "takesValue": false
+        },
+        {
+          "name": "--confirm",
+          "description": "Pass this option to bypass confirmation prompt",
+          "takesValue": false
+        },
+        {
+          "name": "--instance",
+          "description": "Use the database <instance>.firebaseio.com (if omitted, use default database instance)",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "path",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "deploy",
+      "description": "Deploy code and assets to your Firebase project",
+      "options": [
+        {
+          "name": "-p",
+          "description": "Override the Hosting public directory specified in firebase.json",
+          "takesValue": false
+        },
+        {
+          "name": "--public",
+          "description": "Override the Hosting public directory specified in firebase.json",
+          "takesValue": false
+        },
+        {
+          "name": "-m",
+          "description": "An optional message describing this deploy",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--message",
+          "description": "An optional message describing this deploy",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "-f",
+          "description": "Delete Cloud Functions missing from the current working directory without confirmation",
+          "takesValue": false
+        },
+        {
+          "name": "--force",
+          "description": "Delete Cloud Functions missing from the current working directory without confirmation",
+          "takesValue": false
+        },
+        {
+          "name": "--only",
+          "description": "Only deploy to specified, comma-separated targets (e.g. \"hosting,storage\"). For functions, can specify filters with colons to scope function deploys to only those functions (e.g. \"--only functions:func1,functions:func2\"). When filtering based on export groups (the exported module object keys), use dots to specify group names (e.g. \"--only functions:group1.subgroup1,functions:group2)\"",
+          "takesValue": false
+        },
+        {
+          "name": "--except",
+          "description": "Deploy to all targets except specified (e.g. \"database\")",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "emulators:exec",
+      "description": "Start the local Firebase emulators, run a test script, then shut down the emulators",
+      "options": [
+        {
+          "name": "--only",
+          "description": "Only specific emulators. This is a comma separated list of emulator names. Valid options are: [\"auth\",\"functions\",\"firestore\",\"database\",\"hosting\",\"pubsub\"]",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--inspect-functions",
+          "description": "Emulate Cloud Functions in debug mode with the node inspector on the given port (9229 if not specified)",
+          "takesValue": false
+        },
+        {
+          "name": "--import",
+          "description": "Import emulator data from a previous export (see emulators:export)",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--export-on-exit",
+          "description": "Automatically export emulator data (emulators:export) when the emulators make a clean exit (SIGINT), when no dir is provided the location of --import [dir] is used",
+          "takesValue": false
+        },
+        {
+          "name": "--ui",
+          "description": "Run the Emulator UI",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "script"
+        }
+      ]
+    },
+    {
+      "name": "emulators:export",
+      "description": "Export data from running emulators",
+      "options": [
+        {
+          "name": "--only",
+          "description": "Only specific emulators. This is a comma separated list of emulator names. Valid options are: [\"auth\",\"functions\",\"firestore\",\"database\",\"hosting\",\"pubsub\"]",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--force",
+          "description": "Overwrite any export data in the target directory",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "path",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "emulators:start",
+      "description": "Start the local Firebase emulators",
+      "options": [
+        {
+          "name": "--only",
+          "description": "Only specific emulators. This is a comma separated list of emulator names. Valid options are: [\"auth\",\"functions\",\"firestore\",\"database\",\"hosting\",\"pubsub\"]",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--inspect-functions",
+          "description": "Emulate Cloud Functions in debug mode with the node inspector on the given port (9229 if not specified)",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--import",
+          "description": "Import emulator data from a previous export (see emulators:export)",
+          "takesValue": false
+        },
+        {
+          "name": "--export-on-exit",
+          "description": "Automatically export emulator data (emulators:export) when the emulators make a clean exit (SIGINT), when no dir is provided the location of --import [dir] is used",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "experimental:functions:shell",
+      "description": "Launch full Node shell with emulated functions",
+      "options": [
+        {
+          "name": "-p",
+          "description": "The port on which to emulate functions (default: 5000) (default: 5000)",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--port",
+          "description": "The port on which to emulate functions (default: 5000) (default: 5000)",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "ext:configure",
+      "description": "Configure an existing extension instance",
+      "options": [
+        {
+          "name": "--params",
+          "description": "Path of params file with .env format",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "extensionInstanceId"
+        }
+      ]
+    },
+    {
+      "name": "ext:info",
+      "description": "List all the extensions that are installed in your Firebase project",
+      "options": [
+        {
+          "name": "--markdown",
+          "description": "Output info in Markdown suitable for constructing a README file",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "extensionName"
+        }
+      ]
+    },
+    {
+      "name": "ext:uninstall",
+      "description": "Uninstall an extension that is installed in your Firebase project by instance ID",
+      "options": [
+        {
+          "name": "-f",
+          "description": "No confirmation. Otherwise, a confirmation prompt will appear",
+          "takesValue": false
+        },
+        {
+          "name": "--force",
+          "description": "No confirmation. Otherwise, a confirmation prompt will appear",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "extensionInstanceId"
+        }
+      ]
+    },
+    {
+      "name": "ext:update",
+      "description": "Update an existing extension instance to the latest version",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "extensionInstanceId"
+        }
+      ]
+    },
+    {
+      "name": "firestore:delete",
+      "description": "Delete data from Cloud Firestore",
+      "options": [
+        {
+          "name": "-r",
+          "description": "Recursive. Delete all documents and subcollections at and under the specified level. May not be passed along with",
+          "takesValue": false
+        },
+        {
+          "name": "--recursive",
+          "description": "Recursive. Delete all documents and subcollections at and under the specified level. May not be passed along with",
+          "takesValue": false
+        },
+        {
+          "name": "--shallow",
+          "description": "Shallow. Delete only documents at the specified level and ignore documents in subcollections. This action can potentially orphan documents nested in subcollections. May not be passed along with -r",
+          "takesValue": false
+        },
+        {
+          "name": "--all-collections",
+          "description": "Delete all. Deletes the entire Firestore database, including all collections and documents. Any other flags or arguments will be ignored",
+          "takesValue": false
+        },
+        {
+          "name": "-y",
+          "description": "No confirmation. Otherwise, a confirmation prompt will appear",
+          "takesValue": false
+        },
+        {
+          "name": "--yes",
+          "description": "No confirmation. Otherwise, a confirmation prompt will appear",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "path"
+        }
+      ]
+    },
+    {
+      "name": "firestore:indexes",
+      "description": "List indexes in your project's Cloud Firestore database",
+      "options": [
+        {
+          "name": "--pretty",
+          "description": "Pretty print. When not specified the indexes are printed in the JSON specification format",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "functions:config:clone",
+      "description": "Clone environment config from another project",
+      "options": [
+        {
+          "name": "--from",
+          "description": "The project from which to clone configuration",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--only",
+          "description": "A comma-separated list of keys to clone",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--except",
+          "description": "A comma-separated list of keys to not clone",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "functions:config:get",
+      "description": "Fetch environment config stored at the given path",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "path"
+        }
+      ]
+    },
+    {
+      "name": "functions:config:set",
+      "description": "Set environment config with key=value syntax",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "values",
+          "description": "Key=value",
+          "isVariadic": true
+        }
+      ]
+    },
+    {
+      "name": "functions:log",
+      "description": "Read logs from deployed functions",
+      "options": [
+        {
+          "name": "--only",
+          "description": "Only show logs of specified, comma-separated functions (e.g. \"funcA,funcB\")",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "-n",
+          "description": "Specify number of log lines to fetch",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--lines",
+          "description": "Specify number of log lines to fetch",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--open",
+          "description": "Open logs page in web browser",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "functions:shell",
+      "description": "Launch full Node shell with emulated functions",
+      "options": [
+        {
+          "name": "-p",
+          "description": "The port on which to emulate functions",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--port",
+          "description": "The port on which to emulate functions",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--inspect-functions",
+          "description": "Emulate Cloud Functions in debug mode with the node inspector on the given port (9229 if not specified)",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "help",
+      "description": "Display help information",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "hosting:channel:create",
+      "description": "Create a Firebase Hosting channel",
+      "options": [
+        {
+          "name": "-e",
+          "description": "Duration string (e.g. 12h or 30d) for channel expiration, max 30d",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--expires",
+          "description": "Duration string (e.g. 12h or 30d) for channel expiration, max 30d",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--site",
+          "description": "Site for which to create the channel",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "channelId"
+        }
+      ]
+    },
+    {
+      "name": "hosting:channel:delete",
+      "description": "Delete a Firebase Hosting channel",
+      "options": [
+        {
+          "name": "--site",
+          "description": "Site in which the channel exists",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "-f",
+          "description": "Delete without confirmation",
+          "takesValue": false
+        },
+        {
+          "name": "--force",
+          "description": "Delete without confirmation",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "channelId"
+        }
+      ]
+    },
+    {
+      "name": "hosting:channel:deploy",
+      "description": "Deploy to a specific Firebase Hosting channel",
+      "options": [
+        {
+          "name": "-e",
+          "description": "Duration string (e.g. 12h, 30d) for channel expiration, max 30d; defaults to 7d",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--expires",
+          "description": "Duration string (e.g. 12h, 30d) for channel expiration, max 30d; defaults to 7d",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--only",
+          "description": "Only create previews for specified targets",
+          "takesValue": false
+        },
+        {
+          "name": "--open",
+          "description": "Open a browser to the channel after deploying",
+          "takesValue": false
+        },
+        {
+          "name": "--no-authorized-domains",
+          "description": "Do not sync channel domains with Firebase Auth",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "channelId"
+        }
+      ]
+    },
+    {
+      "name": "hosting:channel:list",
+      "description": "List all Firebase Hosting channels for your project",
+      "options": [
+        {
+          "name": "--site",
+          "description": "List channels for the specified site",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "hosting:channel:open",
+      "description": "Opens the URL for a Firebase Hosting channel",
+      "options": [
+        {
+          "name": "--site",
+          "description": "The site to which the channel belongs",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "channelId"
+        }
+      ]
+    },
+    {
+      "name": "hosting:clone",
+      "description": "Clone a version from one site to another",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "source"
+        },
+        {
+          "name": "targetChannel"
+        }
+      ]
+    },
+    {
+      "name": "hosting:disable",
+      "description": "Stop serving web traffic to your Firebase Hosting site",
+      "options": [
+        {
+          "name": "-y",
+          "description": "Skip confirmation",
+          "takesValue": false
+        },
+        {
+          "name": "--confirm",
+          "description": "Skip confirmation",
+          "takesValue": false
+        },
+        {
+          "name": "-s",
+          "description": "The site to disable",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--site",
+          "description": "The site to disable",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "hosting:sites:create",
+      "description": "Create a Firebase Hosting site",
+      "options": [
+        {
+          "name": "--app",
+          "description": "Specify an existing Firebase Web App ID",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "siteId"
+        }
+      ]
+    },
+    {
+      "name": "hosting:sites:delete",
+      "description": "Delete a Firebase Hosting site",
+      "options": [
+        {
+          "name": "-f",
+          "description": "Delete without confirmation",
+          "takesValue": false
+        },
+        {
+          "name": "--force",
+          "description": "Delete without confirmation",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "siteId"
+        }
+      ]
+    },
+    {
+      "name": "hosting:sites:get",
+      "description": "Print info about a Firebase Hosting site",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "siteId"
+        }
+      ]
+    },
+    {
+      "name": "hosting:sites:list",
+      "description": "List Firebase Hosting sites",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "init",
+      "description": "Setup a Firebase project in the current directory",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "login",
+      "description": "Log the CLI into Firebase",
+      "options": [
+        {
+          "name": "--no-localhost",
+          "description": "Copy and paste a code instead of starting a local server for authentication",
+          "takesValue": false
+        },
+        {
+          "name": "--reauth",
+          "description": "Force reauthentication even if already logged in",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "login:add",
+      "description": "Authorize the CLI for an additional account",
+      "options": [
+        {
+          "name": "--no-localhost",
+          "description": "Copy and paste a code instead of starting a local server for authentication",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "email"
+        }
+      ]
+    },
+    {
+      "name": "login:ci",
+      "description": "Generate an access token for use in non-interactive environments",
+      "options": [
+        {
+          "name": "--no-localhost",
+          "description": "Copy and paste a code instead of starting a local server for authentication",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "login:list",
+      "description": "List authorized CLI accounts",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "login:use",
+      "description": "Set the default account to use for this project directory",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "email"
+        }
+      ]
+    },
+    {
+      "name": "logout",
+      "description": "Log the CLI out of Firebase",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "email"
+        }
+      ]
+    },
+    {
+      "name": "open",
+      "description": "Quickly open a browser to relevant project resources",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "link"
+        }
+      ]
+    },
+    {
+      "name": "projects:addfirebase",
+      "description": "Add Firebase resources to a Google Cloud Platform project",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "projectId"
+        }
+      ]
+    },
+    {
+      "name": "projects:create",
+      "description": "Creates a new Google Cloud Platform project, then adds Firebase resources to the project",
+      "options": [
+        {
+          "name": "-n",
+          "description": "(optional) display name for the project",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--display-name",
+          "description": "(optional) display name for the project",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "-o",
+          "description": "(optional) ID of the parent Google Cloud Platform organization under which to create this project",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--organization",
+          "description": "(optional) ID of the parent Google Cloud Platform organization under which to create this project",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "-f",
+          "description": "(optional) ID of the parent Google Cloud Platform folder in which to create this project",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--folder",
+          "description": "(optional) ID of the parent Google Cloud Platform folder in which to create this project",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "projectId"
+        }
+      ]
+    },
+    {
+      "name": "projects:list",
+      "description": "List all Firebase projects you have access to",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "remoteconfig:get",
+      "description": "Get a Firebase project's Remote Config template",
+      "options": [
+        {
+          "name": "-v",
+          "description": "Grabs the specified version of the template",
+          "takesValue": false
+        },
+        {
+          "name": "--version-number",
+          "description": "Grabs the specified version of the template",
+          "takesValue": false
+        },
+        {
+          "name": "-o",
+          "description": "Write config output to a filename (if omitted, will use the default file path)",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--output",
+          "description": "Write config output to a filename (if omitted, will use the default file path)",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "remoteconfig:rollback",
+      "description": "Roll back a project's published Remote Config template to the one specified by the provided version number",
+      "options": [
+        {
+          "name": "-v",
+          "description": "Rollback to the specified version of the template",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--version-number",
+          "description": "Rollback to the specified version of the template",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--force",
+          "description": "Rollback template to the specified version without confirmation",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "remoteconfig:versions:list",
+      "description": "Get a list of Remote Config template versions that have been published for a Firebase project",
+      "options": [
+        {
+          "name": "--limit",
+          "description": "Limit the number of versions being returned. Pass '0' to fetch all versions",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "serve",
+      "description": "Start a local server for your static assets",
+      "options": [
+        {
+          "name": "-p",
+          "description": "The port on which to listen (default: 5000) (default: 5000)",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--port",
+          "description": "The port on which to listen (default: 5000) (default: 5000)",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "-o",
+          "description": "The host on which to listen (default: localhost) (default: \"localhost\")",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--host",
+          "description": "The host on which to listen (default: localhost) (default: \"localhost\")",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--only",
+          "description": "Only serve specified targets (valid targets are: hosting, functions)",
+          "takesValue": false
+        },
+        {
+          "name": "--except",
+          "description": "Serve all except specified targets (valid targets are: hosting, functions)",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "setup:emulators:database",
+      "description": "Downloads the database emulator",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "setup:emulators:firestore",
+      "description": "Downloads the firestore emulator",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "setup:emulators:pubsub",
+      "description": "Downloads the pubsub emulator",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "setup:emulators:ui",
+      "description": "Downloads the ui emulator",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ]
+    },
+    {
+      "name": "target",
+      "description": "Display configured deploy targets for the current project",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "type"
+        }
+      ]
+    },
+    {
+      "name": "target:apply",
+      "description": "Apply a deploy target to a resource",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "type"
+        },
+        {
+          "name": "name"
+        },
+        {
+          "name": "resources",
+          "isVariadic": true
+        }
+      ]
+    },
+    {
+      "name": "target:clear",
+      "description": "Clear all resources from a named resource target",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "type"
+        },
+        {
+          "name": "target"
+        }
+      ]
+    },
+    {
+      "name": "target:remove",
+      "description": "Remove a resource target",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "type"
+        },
+        {
+          "name": "resource"
+        }
+      ]
+    },
+    {
+      "name": "use",
+      "description": "Set an active Firebase project for your working directory",
+      "options": [
+        {
+          "name": "--add",
+          "description": "Create a new project alias interactively",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--alias",
+          "description": "Create a new alias for the provided project id",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--unalias",
+          "description": "Remove an already created project alias",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "argument"
+            }
+          ]
+        },
+        {
+          "name": "--clear",
+          "description": "Clear the active project selection",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Output usage information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Output usage information",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "alias or project id"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "name": "kubens",
+  "description": "Switch between Kubernetes-namespaces",
+  "options": [
+    {
+      "name": "--help",
+      "description": "Show help for kubens",
+      "takesValue": false
+    },
+    {
+      "name": "-h",
+      "description": "Show help for kubens",
+      "takesValue": false
+    },
+    {
+      "name": "--current",
+      "description": "Show current namespace",
+      "takesValue": false
+    },
+    {
+      "name": "-c",
+      "description": "Show current namespace",
+      "takesValue": false
+    }
+  ],
+  "args": [
+    {
+      "name": "namespace",
+      "isOptional": true
+    }
+  ]
+}

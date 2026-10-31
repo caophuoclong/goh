@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "name": "kill",
+  "description": "Terminate or signal a process",
+  "options": [
+    {
+      "name": "-s",
+      "description": "A symbolic signal name specifying the signal to be sent",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "signal_name"
+        }
+      ]
+    },
+    {
+      "name": "-l",
+      "description": "If no operand is given, list the signal names; otherwise, write the signal name corresponding to exit_status",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "exit_status",
+          "isOptional": true
+        }
+      ]
+    }
+  ],
+  "args": [
+    {
+      "name": "pid",
+      "isVariadic": true
+    }
+  ]
+}

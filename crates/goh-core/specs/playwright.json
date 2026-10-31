@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "name": "playwright",
+  "options": [
+    {
+      "name": "--version",
+      "description": "Output the version number",
+      "takesValue": false
+    },
+    {
+      "name": "-V",
+      "description": "Output the version number",
+      "takesValue": false
+    },
+    {
+      "name": "--help",
+      "description": "Display help for command",
+      "takesValue": false
+    },
+    {
+      "name": "-h",
+      "description": "Display help for command",
+      "takesValue": false
+    }
+  ],
+  "subcommands": [
+    {
+      "name": "test",
+      "description": "Run tests with Playwright Test",
+      "options": [
+        {
+          "name": "-g",
+          "description": "Run the test with the title",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "title"
+            }
+          ]
+        },
+        {
+          "name": "--headed",
+          "description": "Run tests in headed browsers",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Display help for command",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Display help for command",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "tests",
+          "description": "Test files to run",
+          "isVariadic": true,
+          "isOptional": true,
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "install",
+      "description": "Running without arguments will install default browsers",
+      "options": [
+        {
+          "name": "--with-deps",
+          "description": "Install system dependencies for browsers",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Display help for command",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Display help for command",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "browsers",
+          "description": "Browser to install",
+          "isVariadic": true,
+          "isOptional": true,
+          "suggestions": [
+            {
+              "name": "chromium"
+            },
+            {
+              "name": "chrome"
+            },
+            {
+              "name": "chrome-beta"
+            },
+            {
+              "name": "msedge"
+            },
+            {
+              "name": "msedge-beta"
+            },
+            {
+              "name": "msedge-dev"
+            },
+            {
+              "name": "firefox"
+            },
+            {
+              "name": "webkit"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,142 @@
+{
+  "schemaVersion": 1,
+  "name": "nmap",
+  "description": "Network exploration tool and security / port scanner",
+  "options": [
+    {
+      "name": "-iL",
+      "description": "Input from list of hosts/networks",
+      "takesValue": false
+    },
+    {
+      "name": "-iR",
+      "description": "Choose random targets",
+      "takesValue": false
+    },
+    {
+      "name": "--exclude",
+      "description": "Excluide hosts/networks",
+      "takesValue": false
+    },
+    {
+      "name": "--excludefile",
+      "description": "Exclude list from file",
+      "takesValue": false
+    },
+    {
+      "name": "-sS",
+      "description": "TCP SYN scan",
+      "takesValue": false
+    },
+    {
+      "name": "-sT",
+      "description": "TCP scan",
+      "takesValue": false
+    },
+    {
+      "name": "-sA",
+      "description": "TCP ACK scan",
+      "takesValue": false
+    },
+    {
+      "name": "-sW",
+      "description": "TCP Window scan",
+      "takesValue": false
+    },
+    {
+      "name": "-sM",
+      "description": "TCP Maimon scan",
+      "takesValue": false
+    },
+    {
+      "name": "-sU",
+      "description": "UDP scan",
+      "takesValue": false
+    },
+    {
+      "name": "-sP",
+      "description": "Ping scan",
+      "takesValue": false
+    },
+    {
+      "name": "-sN",
+      "description": "TCP Null scan",
+      "takesValue": false
+    },
+    {
+      "name": "-sF",
+      "description": "FIN scan",
+      "takesValue": false
+    },
+    {
+      "name": "-sX",
+      "description": "Xmas scan",
+      "takesValue": false
+    },
+    {
+      "name": "-sO",
+      "description": "IP protocol scan",
+      "takesValue": false
+    },
+    {
+      "name": "-p",
+      "description": "Scan specified ports",
+      "takesValue": false
+    },
+    {
+      "name": "-v",
+      "description": "Increase verbosity level",
+      "takesValue": false
+    },
+    {
+      "name": "-vv",
+      "description": "Increase verbosity level",
+      "takesValue": false
+    },
+    {
+      "name": "-O",
+      "description": "Enable OS detection",
+      "takesValue": false
+    },
+    {
+      "name": "--osscan-limit",
+      "description": "Limit OS detection to promising targets",
+      "takesValue": false
+    },
+    {
+      "name": "-A",
+      "description": "Enable a full detection",
+      "takesValue": false
+    },
+    {
+      "name": "-6",
+      "description": "Enable IPV6 scanning",
+      "takesValue": false
+    },
+    {
+      "name": "-V",
+      "description": "Print version number",
+      "takesValue": false
+    },
+    {
+      "name": "-privileged",
+      "description": "Assume that user is fully privileges",
+      "takesValue": false
+    },
+    {
+      "name": "-unprivileged",
+      "description": "Assume that user lacks raw socket privileges",
+      "takesValue": false
+    },
+    {
+      "name": "--help",
+      "description": "Show help for nmap",
+      "takesValue": false
+    },
+    {
+      "name": "-h",
+      "description": "Show help for nmap",
+      "takesValue": false
+    }
+  ]
+}

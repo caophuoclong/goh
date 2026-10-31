@@ -49,7 +49,10 @@ mod tests {
             ("uv sy", "sync"), ("cargo bu", "build"), ("kubectl ge", "get"),
             ("terraform pl", "plan"), ("gh pr cr", "create"), ("aws s", "s3"),
             ("aws s3 c", "cp"), ("gcloud run dep", "deploy"),
-            ("gcloud co", "compute"), ("curl --con", "--connect-timeout"), ("ssh -", "-p")] {
+            ("gcloud co", "compute"), ("curl --con", "--connect-timeout"), ("ssh -", "-p"),
+            ("kill -", "-s"), ("lsof -", "-i"), ("ollama r", "run"), ("pytest --co", "--collect-only"),
+            ("cmake --pre", "--preset"), ("pod ins", "install"), ("adb dev", "devices"),
+            ("podman p", "ps"), ("pulumi u", "up"), ("conda ins", "install")] {
             let result = engine.complete_full(line, line.len(), cwd.path()).unwrap();
             assert!(result.valid && result.candidates.iter().any(|c| c.label == label), "{line:?}: {result:?}");
         }

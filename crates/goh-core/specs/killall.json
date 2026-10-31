@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "name": "killall",
+  "description": "Kill processes by name",
+  "options": [
+    {
+      "name": "-d",
+      "description": "Be verbose (dry run) and display number of user processes",
+      "takesValue": false
+    },
+    {
+      "name": "-e",
+      "description": "Use the effective user ID instead of the real user ID for matching processes with -u",
+      "takesValue": false
+    },
+    {
+      "name": "-help",
+      "description": "Display help and exit",
+      "takesValue": false
+    },
+    {
+      "name": "-I",
+      "description": "Request confirmation before killing each process",
+      "takesValue": false
+    },
+    {
+      "name": "-l",
+      "description": "List the names of the available signals and exit",
+      "takesValue": false
+    },
+    {
+      "name": "-m",
+      "description": "Match the process name as a regular expression",
+      "takesValue": false
+    },
+    {
+      "name": "-v",
+      "description": "Be verbose",
+      "takesValue": false
+    },
+    {
+      "name": "-s",
+      "description": "Be verbose (dry run)",
+      "takesValue": false
+    },
+    {
+      "name": "-u",
+      "description": "Limit potentially matching processes to those belonging to the user",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "user"
+        }
+      ]
+    },
+    {
+      "name": "-t",
+      "description": "Limit matching processes to those running on the specified TTY",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "tty"
+        }
+      ]
+    },
+    {
+      "name": "-c",
+      "description": "Limit matching processes to those matching the given name",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "name"
+        }
+      ]
+    },
+    {
+      "name": "-q",
+      "description": "Suppress error message if no processes are matched",
+      "takesValue": false
+    },
+    {
+      "name": "-z",
+      "description": "Do not skip zombies",
+      "takesValue": false
+    }
+  ],
+  "args": [
+    {
+      "name": "process_name",
+      "isVariadic": true
+    }
+  ]
+}

@@ -1,0 +1,334 @@
+{
+  "schemaVersion": 1,
+  "name": "zoxide",
+  "description": "A smarter cd command for your terminal",
+  "options": [
+    {
+      "name": "-h",
+      "description": "Print help information",
+      "takesValue": false
+    },
+    {
+      "name": "--help",
+      "description": "Print help information",
+      "takesValue": false
+    },
+    {
+      "name": "-V",
+      "description": "Print version information",
+      "takesValue": false
+    },
+    {
+      "name": "--version",
+      "description": "Print version information",
+      "takesValue": false
+    }
+  ],
+  "subcommands": [
+    {
+      "name": "add",
+      "description": "Add a new directory or increment its rank",
+      "options": [
+        {
+          "name": "-h",
+          "description": "Print help information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Print help information",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Print version information",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Print version information",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "paths",
+          "isVariadic": true,
+          "template": "folders"
+        }
+      ]
+    },
+    {
+      "name": "import",
+      "description": "Import entries from another application",
+      "options": [
+        {
+          "name": "--from",
+          "description": "Application to import from",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "from",
+              "suggestions": [
+                {
+                  "name": "autojump"
+                },
+                {
+                  "name": "z"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--merge",
+          "description": "Merge into existing database",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Print help information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Print help information",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Print version information",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Print version information",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "path",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "init",
+      "description": "Generate shell configuration",
+      "options": [
+        {
+          "name": "--cmd",
+          "description": "Changes the prefix of the `z` and `zi` commands",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "cmd",
+              "isOptional": true
+            }
+          ]
+        },
+        {
+          "name": "--hook",
+          "description": "Changes how often zoxide increments a directory's score",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "hook",
+              "isOptional": true,
+              "suggestions": [
+                {
+                  "name": "none"
+                },
+                {
+                  "name": "prompt"
+                },
+                {
+                  "name": "pwd"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "--no-cmd",
+          "description": "Prevents zoxide from defining the `z` and `zi` commands",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Print help information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Print help information",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Print version information",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Print version information",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "shell",
+          "suggestions": [
+            {
+              "name": "bash"
+            },
+            {
+              "name": "elvish"
+            },
+            {
+              "name": "fish"
+            },
+            {
+              "name": "nushell"
+            },
+            {
+              "name": "posix"
+            },
+            {
+              "name": "powershell"
+            },
+            {
+              "name": "xonsh"
+            },
+            {
+              "name": "zsh"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "query",
+      "description": "Search for a directory in the database",
+      "options": [
+        {
+          "name": "--exclude",
+          "description": "Exclude a path from results",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "exclude",
+              "isOptional": true,
+              "template": "folders"
+            }
+          ]
+        },
+        {
+          "name": "--all",
+          "description": "Show deleted directories",
+          "takesValue": false
+        },
+        {
+          "name": "-i",
+          "description": "Use interactive selection",
+          "takesValue": false
+        },
+        {
+          "name": "--interactive",
+          "description": "Use interactive selection",
+          "takesValue": false
+        },
+        {
+          "name": "-l",
+          "description": "List all matching directories",
+          "takesValue": false
+        },
+        {
+          "name": "--list",
+          "description": "List all matching directories",
+          "takesValue": false
+        },
+        {
+          "name": "-s",
+          "description": "Print score with results",
+          "takesValue": false
+        },
+        {
+          "name": "--score",
+          "description": "Print score with results",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Print help information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Print help information",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Print version information",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Print version information",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "keywords",
+          "isOptional": true
+        }
+      ]
+    },
+    {
+      "name": "remove",
+      "description": "Remove a directory from the database",
+      "options": [
+        {
+          "name": "-i",
+          "description": "Use interactive selection",
+          "takesValue": false
+        },
+        {
+          "name": "--interactive",
+          "description": "Use interactive selection",
+          "takesValue": false
+        },
+        {
+          "name": "-h",
+          "description": "Print help information",
+          "takesValue": false
+        },
+        {
+          "name": "--help",
+          "description": "Print help information",
+          "takesValue": false
+        },
+        {
+          "name": "-V",
+          "description": "Print version information",
+          "takesValue": false
+        },
+        {
+          "name": "--version",
+          "description": "Print version information",
+          "takesValue": false
+        }
+      ],
+      "args": [
+        {
+          "name": "paths",
+          "isOptional": true,
+          "template": "folders"
+        }
+      ]
+    }
+  ]
+}

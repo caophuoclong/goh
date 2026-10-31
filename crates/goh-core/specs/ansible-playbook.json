@@ -1,0 +1,474 @@
+{
+  "schemaVersion": 1,
+  "name": "ansible-playbook",
+  "description": "Runs Ansible playbooks, executing the defined tasks on the targeted hosts",
+  "options": [
+    {
+      "name": "--ask-vault-pass",
+      "description": "Ask for vault password",
+      "takesValue": false
+    },
+    {
+      "name": "--flush-cache",
+      "description": "Clears the fact cache for every host in inventory",
+      "takesValue": false
+    },
+    {
+      "name": "--force-handlers",
+      "description": "Run handlers even if a task fails",
+      "takesValue": false
+    },
+    {
+      "name": "--list-hosts",
+      "description": "Outputs a list of matching hosts; does not execute",
+      "takesValue": false
+    },
+    {
+      "name": "--list-tags",
+      "description": "List all available tags",
+      "takesValue": false
+    },
+    {
+      "name": "--list-tasks",
+      "description": "List all tasks that would be executed",
+      "takesValue": false
+    },
+    {
+      "name": "--skip-tags",
+      "description": "Only run plays and tasks whose tags do not match these values",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "tags"
+        }
+      ]
+    },
+    {
+      "name": "--start-at-task",
+      "description": "Start the playbook at the task matching this name one-step-at-a-time",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "task name"
+        }
+      ]
+    },
+    {
+      "name": "--step",
+      "description": "Execute one-step-at-a-time",
+      "takesValue": false
+    },
+    {
+      "name": "--syntax-check",
+      "description": "Perform a syntax check on the playbook, but do not execute it",
+      "takesValue": false
+    },
+    {
+      "name": "--vault-id",
+      "description": "Specify the vault identity to use",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "vault ID"
+        }
+      ]
+    },
+    {
+      "name": "--vault-password-file",
+      "description": "Specify a vault password file",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "vault password file",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "--version",
+      "description": "Show program's version number, config file location, configured module search path, module location and executable location",
+      "takesValue": false
+    },
+    {
+      "name": "--check",
+      "description": "Don't make any changes; instead, try to predict some of the changes that may occur",
+      "takesValue": false
+    },
+    {
+      "name": "-C",
+      "description": "Don't make any changes; instead, try to predict some of the changes that may occur",
+      "takesValue": false
+    },
+    {
+      "name": "--diff",
+      "description": "When changing (small) files and templates, show the differences in those files",
+      "takesValue": false
+    },
+    {
+      "name": "-D",
+      "description": "When changing (small) files and templates, show the differences in those files",
+      "takesValue": false
+    },
+    {
+      "name": "--module-path",
+      "description": "Prepend colon-separated path(s) to module library",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "module path",
+          "template": "folders"
+        }
+      ]
+    },
+    {
+      "name": "-M",
+      "description": "Prepend colon-separated path(s) to module library",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "module path",
+          "template": "folders"
+        }
+      ]
+    },
+    {
+      "name": "--extra-vars",
+      "description": "Set additional variables as key=value or YAML/JSON, if filename prepend with @",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "extra vars"
+        }
+      ]
+    },
+    {
+      "name": "-e",
+      "description": "Set additional variables as key=value or YAML/JSON, if filename prepend with @",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "extra vars"
+        }
+      ]
+    },
+    {
+      "name": "--forks",
+      "description": "Specify number of parallel processes to use",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "forks"
+        }
+      ]
+    },
+    {
+      "name": "-f",
+      "description": "Specify number of parallel processes to use",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "forks"
+        }
+      ]
+    },
+    {
+      "name": "--help",
+      "description": "Show help for ansible",
+      "takesValue": false
+    },
+    {
+      "name": "-h",
+      "description": "Show help for ansible",
+      "takesValue": false
+    },
+    {
+      "name": "--inventory",
+      "description": "Specify inventory host path or comma separated host list",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "inventory"
+        }
+      ]
+    },
+    {
+      "name": "-i",
+      "description": "Specify inventory host path or comma separated host list",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "inventory"
+        }
+      ]
+    },
+    {
+      "name": "--limit",
+      "description": "Limit selected hosts to an additional pattern",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "subset"
+        }
+      ]
+    },
+    {
+      "name": "-l",
+      "description": "Limit selected hosts to an additional pattern",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "subset"
+        }
+      ]
+    },
+    {
+      "name": "--tags",
+      "description": "Only run plays and tasks tagged with these values",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "tags"
+        }
+      ]
+    },
+    {
+      "name": "-t",
+      "description": "Only run plays and tasks tagged with these values",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "tags"
+        }
+      ]
+    },
+    {
+      "name": "--verbose",
+      "description": "Enable verbose mode",
+      "takesValue": false
+    },
+    {
+      "name": "-v",
+      "description": "Enable verbose mode",
+      "takesValue": false
+    },
+    {
+      "name": "-vvv",
+      "description": "Enable very verbose mode",
+      "takesValue": false
+    },
+    {
+      "name": "-vvvv",
+      "description": "Enable connection debug mode",
+      "takesValue": false
+    },
+    {
+      "name": "--become-method",
+      "description": "Privilege escalation method to use",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "become method",
+          "suggestions": [
+            {
+              "name": "sudo"
+            },
+            {
+              "name": "su"
+            },
+            {
+              "name": "pbrun"
+            },
+            {
+              "name": "pfexec"
+            },
+            {
+              "name": "doas"
+            },
+            {
+              "name": "dzdo"
+            },
+            {
+              "name": "ksu"
+            },
+            {
+              "name": "runas"
+            },
+            {
+              "name": "machinectl"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "--become-user",
+      "description": "Privilege escalation user to use",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "become user"
+        }
+      ]
+    },
+    {
+      "name": "--ask-become-pass",
+      "description": "Prompt for privilege escalation password",
+      "takesValue": false
+    },
+    {
+      "name": "-K",
+      "description": "Prompt for privilege escalation password",
+      "takesValue": false
+    },
+    {
+      "name": "--become",
+      "description": "Run operations with become",
+      "takesValue": false
+    },
+    {
+      "name": "-b",
+      "description": "Run operations with become",
+      "takesValue": false
+    },
+    {
+      "name": "--private-key",
+      "description": "Use this fole to authenticate the connection",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "private key",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "--key-file",
+      "description": "Use this fole to authenticate the connection",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "private key",
+          "template": "filepaths"
+        }
+      ]
+    },
+    {
+      "name": "--scp-extra-args",
+      "description": "Extra arguments to pass to (only) scp",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "SCP extra args"
+        }
+      ]
+    },
+    {
+      "name": "--sftp-extra-args",
+      "description": "Extra arguments to pass to (only) sftp",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "SFTP extra args"
+        }
+      ]
+    },
+    {
+      "name": "-ssh-extra-args",
+      "description": "Extra arguments to pass to (only) ssh",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "SSH extra args"
+        }
+      ]
+    },
+    {
+      "name": "--ssh-common-args",
+      "description": "Extra arguments to pass to sftp/scp/ssh",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "SSH common args"
+        }
+      ]
+    },
+    {
+      "name": "--timeout",
+      "description": "Override the connection timeout in seconds",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "timeout"
+        }
+      ]
+    },
+    {
+      "name": "-T",
+      "description": "Override the connection timeout in seconds",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "timeout"
+        }
+      ]
+    },
+    {
+      "name": "--connection",
+      "description": "Connection type to use",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "connection type"
+        }
+      ]
+    },
+    {
+      "name": "-c",
+      "description": "Connection type to use",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "connection type"
+        }
+      ]
+    },
+    {
+      "name": "--ask-pass",
+      "description": "Ask for connection password",
+      "takesValue": false
+    },
+    {
+      "name": "-k",
+      "description": "Ask for connection password",
+      "takesValue": false
+    },
+    {
+      "name": "--user",
+      "description": "Connect as this user",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "user"
+        }
+      ]
+    },
+    {
+      "name": "-u",
+      "description": "Connect as this user",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "user"
+        }
+      ]
+    }
+  ],
+  "args": [
+    {
+      "name": "playbook",
+      "description": "Playbook(s)",
+      "isVariadic": true,
+      "template": "filepaths"
+    }
+  ]
+}

@@ -1,0 +1,416 @@
+{
+  "schemaVersion": 1,
+  "name": "fd",
+  "description": "A simple, fast and user-friendly alternative to 'find'",
+  "options": [
+    {
+      "name": "-H",
+      "description": "Search hidden files and directories",
+      "takesValue": false
+    },
+    {
+      "name": "--hidden",
+      "description": "Search hidden files and directories",
+      "takesValue": false
+    },
+    {
+      "name": "-I",
+      "description": "Do not respect .(git|fd)ignore files",
+      "takesValue": false
+    },
+    {
+      "name": "--no-ignore",
+      "description": "Do not respect .(git|fd)ignore files",
+      "takesValue": false
+    },
+    {
+      "name": "-s",
+      "description": "Case-sensitive search (default: smart case)",
+      "takesValue": false
+    },
+    {
+      "name": "--case-sensitive",
+      "description": "Case-sensitive search (default: smart case)",
+      "takesValue": false
+    },
+    {
+      "name": "-i",
+      "description": "Case-insensitive search (default: smart case)",
+      "takesValue": false
+    },
+    {
+      "name": "--ignore-case",
+      "description": "Case-insensitive search (default: smart case)",
+      "takesValue": false
+    },
+    {
+      "name": "-g",
+      "description": "Glob-based search (default: regular expression)",
+      "takesValue": false
+    },
+    {
+      "name": "--glob",
+      "description": "Glob-based search (default: regular expression)",
+      "takesValue": false
+    },
+    {
+      "name": "-a",
+      "description": "Show absolute instead of relative paths",
+      "takesValue": false
+    },
+    {
+      "name": "--absolute-path",
+      "description": "Show absolute instead of relative paths",
+      "takesValue": false
+    },
+    {
+      "name": "-l",
+      "description": "Use a long listing format with file metadata",
+      "takesValue": false
+    },
+    {
+      "name": "--list-details",
+      "description": "Use a long listing format with file metadata",
+      "takesValue": false
+    },
+    {
+      "name": "-L",
+      "description": "Follow symbolic links",
+      "takesValue": false
+    },
+    {
+      "name": "--follow",
+      "description": "Follow symbolic links",
+      "takesValue": false
+    },
+    {
+      "name": "-p",
+      "description": "Search full path (default: file-/dirname only)",
+      "takesValue": false
+    },
+    {
+      "name": "--full-path",
+      "description": "Search full path (default: file-/dirname only)",
+      "takesValue": false
+    },
+    {
+      "name": "-0",
+      "description": "Separate results by the null character",
+      "takesValue": false
+    },
+    {
+      "name": "--print0",
+      "description": "Separate results by the null character",
+      "takesValue": false
+    },
+    {
+      "name": "-h",
+      "description": "Prints help information",
+      "takesValue": false
+    },
+    {
+      "name": "--help",
+      "description": "Prints help information",
+      "takesValue": false
+    },
+    {
+      "name": "-V",
+      "description": "Prints version information",
+      "takesValue": false
+    },
+    {
+      "name": "--version",
+      "description": "Prints version information",
+      "takesValue": false
+    },
+    {
+      "name": "-d",
+      "description": "Set maximum search depth",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "depth"
+        }
+      ]
+    },
+    {
+      "name": "--max-depth",
+      "description": "Set maximum search depth",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "depth"
+        }
+      ]
+    },
+    {
+      "name": "-t",
+      "description": "Filter by type",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "filetype",
+          "suggestions": [
+            {
+              "name": "f",
+              "description": "File"
+            },
+            {
+              "name": "d",
+              "description": "Directory"
+            },
+            {
+              "name": "l",
+              "description": "Symlink"
+            },
+            {
+              "name": "x",
+              "description": "Executable"
+            },
+            {
+              "name": "e",
+              "description": "Empty"
+            },
+            {
+              "name": "s",
+              "description": "Socket"
+            },
+            {
+              "name": "p",
+              "description": "Pipe"
+            }
+          ]
+        }
+      ],
+      "isRepeatable": true
+    },
+    {
+      "name": "--type",
+      "description": "Filter by type",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "filetype",
+          "suggestions": [
+            {
+              "name": "f",
+              "description": "File"
+            },
+            {
+              "name": "d",
+              "description": "Directory"
+            },
+            {
+              "name": "l",
+              "description": "Symlink"
+            },
+            {
+              "name": "x",
+              "description": "Executable"
+            },
+            {
+              "name": "e",
+              "description": "Empty"
+            },
+            {
+              "name": "s",
+              "description": "Socket"
+            },
+            {
+              "name": "p",
+              "description": "Pipe"
+            }
+          ]
+        }
+      ],
+      "isRepeatable": true
+    },
+    {
+      "name": "-e",
+      "description": "Filter by file extension",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "file extension"
+        }
+      ],
+      "isRepeatable": true
+    },
+    {
+      "name": "--extension",
+      "description": "Filter by file extension",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "file extension"
+        }
+      ],
+      "isRepeatable": true
+    },
+    {
+      "name": "-x",
+      "description": "Execute a command for each search result",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "cmd",
+          "isVariadic": true,
+          "isCommand": true
+        }
+      ]
+    },
+    {
+      "name": "--exec",
+      "description": "Execute a command for each search result",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "cmd",
+          "isVariadic": true,
+          "isCommand": true
+        }
+      ]
+    },
+    {
+      "name": "-X",
+      "description": "Execute a command with all search results at once",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "cmd",
+          "isVariadic": true,
+          "isCommand": true
+        }
+      ]
+    },
+    {
+      "name": "--exec-batch",
+      "description": "Execute a command with all search results at once",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "cmd",
+          "isVariadic": true,
+          "isCommand": true
+        }
+      ]
+    },
+    {
+      "name": "-E",
+      "description": "Exclude entries that match the given glob pattern",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "pattern"
+        }
+      ],
+      "isRepeatable": true
+    },
+    {
+      "name": "--exclude",
+      "description": "Exclude entries that match the given glob pattern",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "pattern"
+        }
+      ],
+      "isRepeatable": true
+    },
+    {
+      "name": "-c",
+      "description": "When to use colors",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "when",
+          "suggestions": [
+            {
+              "name": "never"
+            },
+            {
+              "name": "auto"
+            },
+            {
+              "name": "always"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "--color",
+      "description": "When to use colors",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "when",
+          "suggestions": [
+            {
+              "name": "never"
+            },
+            {
+              "name": "auto"
+            },
+            {
+              "name": "always"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "-S",
+      "description": "Limit results based on the size of files",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "size"
+        }
+      ]
+    },
+    {
+      "name": "--size",
+      "description": "Limit results based on the size of files",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "size"
+        }
+      ]
+    },
+    {
+      "name": "--changed-within",
+      "description": "Filter by file modification time (newer than)",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "date"
+        }
+      ]
+    },
+    {
+      "name": "--changed-before",
+      "description": "Filter by file modification time (older than)",
+      "takesValue": true,
+      "args": [
+        {
+          "name": "date"
+        }
+      ]
+    }
+  ],
+  "args": [
+    {
+      "name": "pattern",
+      "description": "The search pattern - a regular expression unless '--glob' is used (optional)"
+    },
+    {
+      "name": "path",
+      "description": "The root directories for the filesystem search",
+      "isVariadic": true,
+      "isOptional": true,
+      "template": "folders"
+    }
+  ]
+}

@@ -1,0 +1,241 @@
+{
+  "schemaVersion": 1,
+  "name": "ng",
+  "description": "CLI interface for Angular",
+  "options": [
+    {
+      "name": "--version",
+      "description": "View your Angular CLI version",
+      "takesValue": false
+    }
+  ],
+  "subcommands": [
+    {
+      "name": "new",
+      "description": "Create a new Angular app",
+      "options": [
+        {
+          "name": "--create-application",
+          "description": "Create a default application?",
+          "takesValue": true,
+          "args": [
+            {
+              "name": "project",
+              "suggestions": [
+                {
+                  "name": "true"
+                },
+                {
+                  "name": "false"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "name"
+        }
+      ]
+    },
+    {
+      "name": "generate",
+      "description": "Generate new files",
+      "args": [
+        {
+          "name": "schematic"
+        }
+      ],
+      "subcommands": [
+        {
+          "name": "application",
+          "description": "Generates a new application",
+          "options": [
+            {
+              "name": "--style",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "extension",
+                  "suggestions": [
+                    {
+                      "name": "css"
+                    },
+                    {
+                      "name": "scss"
+                    },
+                    {
+                      "name": "sass"
+                    },
+                    {
+                      "name": "less"
+                    },
+                    {
+                      "name": "styl"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "args": [
+            {
+              "name": "name",
+              "description": "Name of the new app"
+            }
+          ]
+        },
+        {
+          "name": "component",
+          "description": "Generate a new component",
+          "options": [
+            {
+              "name": "--project",
+              "description": "Project name",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "argument"
+                }
+              ]
+            },
+            {
+              "name": "--change-detection",
+              "description": "The change detection strategy to use",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "strategy",
+                  "suggestions": [
+                    {
+                      "name": "Default"
+                    },
+                    {
+                      "name": "OnPush"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "-c",
+              "description": "The change detection strategy to use",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "strategy",
+                  "suggestions": [
+                    {
+                      "name": "Default"
+                    },
+                    {
+                      "name": "OnPush"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "--display-block",
+              "description": "Add :host block to styles",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "boolean",
+                  "suggestions": [
+                    {
+                      "name": "true"
+                    },
+                    {
+                      "name": "false"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "-b",
+              "description": "Add :host block to styles",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "boolean",
+                  "suggestions": [
+                    {
+                      "name": "true"
+                    },
+                    {
+                      "name": "false"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "--flat",
+              "description": "Create at the top level",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "boolean",
+                  "suggestions": [
+                    {
+                      "name": "true"
+                    },
+                    {
+                      "name": "false"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "args": [
+            {
+              "name": "name",
+              "description": "Component name",
+              "isOptional": true
+            }
+          ]
+        },
+        {
+          "name": "library",
+          "description": "Generates a new library",
+          "args": [
+            {
+              "name": "name",
+              "isOptional": true
+            }
+          ]
+        },
+        {
+          "name": "class",
+          "description": "Generates a class",
+          "options": [
+            {
+              "name": "--project",
+              "description": "Project name",
+              "takesValue": true,
+              "args": [
+                {
+                  "name": "argument"
+                }
+              ]
+            }
+          ],
+          "args": [
+            {
+              "name": "name",
+              "isOptional": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "version",
+      "description": "View your Angular CLI version (update for Angular 14+)"
+    }
+  ]
+}
