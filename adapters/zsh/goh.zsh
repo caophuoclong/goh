@@ -616,18 +616,23 @@ _goh_render() {
     framed+=("$lead╰$edge╯")
     local last=$#framed sel_row=$(( _goh_sel - _goh_win + 2 ))
     for (( k = 1; k <= last; k++ )); do clen[k]=${#framed[k]}; done
-    # Fills first, so the row styles that follow combine with them.
+    # Fills first, then the row styles. zsh 5.9 does not keep an earlier entry's background under a later entry
+    # that sets a colour, so every style drawn on a fill repeats that fill's background.
     if [[ -n $surface ]]; then
       for (( k = 1; k <= last; k++ )); do moved+=("$k $indent $clen[k] $surface"); done
     fi
     [[ -n $selected ]] && moved+=("$sel_row $(( indent + 1 )) $(( clen[sel_row] - 1 )) $selected")
     if [[ -n $border ]]; then
-      moved+=("1 $indent $clen[1] $border" "$last $indent $clen[last] $border")
-      for (( k = 2; k < last; k++ )); do moved+=("$k $indent $(( indent + 1 )) $border" "$k $(( clen[k] - 1 )) $clen[k] $border"); done
+      local b=$border${surface:+,$surface}
+      moved+=("1 $indent $clen[1] $b" "$last $indent $clen[last] $b")
+      for (( k = 2; k < last; k++ )); do moved+=("$k $indent $(( indent + 1 )) $b" "$k $(( clen[k] - 1 )) $clen[k] $b"); done
     fi
+    local fill
     for h in "${hl[@]}"; do
       f=(${=h})
-      moved+=("$(( f[1] + 1 )) $(( f[2] + indent + 1 )) $(( f[3] + indent + 1 ))${f[4]:+ $f[4]}")
+      fill=$surface
+      [[ -n $selected ]] && (( f[1] + 1 == sel_row )) && fill=$selected
+      moved+=("$(( f[1] + 1 )) $(( f[2] + indent + 1 )) $(( f[3] + indent + 1 ))${f[4]:+ ${fill:+$fill,}$f[4]}")
     done
     rows=("${framed[@]}") hl=("${moved[@]}")
   fi

@@ -31,8 +31,8 @@ in an IDE. Load it with `goh setup` or `eval "$(goh init zsh)"`.
 - Where the popup cannot draw (Ghostty, Kitty, WezTerm, tmux, ssh, ...), the menu is a floating framed box under the word you
   are completing, in the terminal's own colours; no permission is needed. `display.inlineStyle: "flat"` draws plain
   rows instead, which a screen reader reads more easily. The box finds the word's column by measuring your prompt,
-  including one that uses `prompt_subst` parameters (oh-my-zsh themes, powerlevel10k, starship); row borders stay
-  straight with wide characters (CJK, emoji).
+  including one built from `prompt_subst` parameters (powerlevel10k); row borders stay straight with wide characters
+  (CJK, emoji), and the selected row and the border keep the box's background.
 - A program still answering (a slow Docker, a cluster) shows `…` in the footer; its values appear when they arrive. The
   wait stops when you close the menu (Esc, Left) or move in it, and gives up after about 5 s; each new prompt starts
   the count again, so the same line typed later is asked again.
@@ -43,14 +43,16 @@ in an IDE. Load it with `goh setup` or `eval "$(goh init zsh)"`.
 
 - Needs zsh; the menu is drawn by [popup](popup.md) where the caret is verified, else inline.
 - A prompt that runs a command (`$(...)` or a backtick under `prompt_subst`) is not run again to measure it: the box
-  anchors as if the prompt had no width, so it sits left of the word by the prompt's width.
+  anchors as if the prompt had no width, so it sits left of the word by the prompt's width (2 columns for starship's
+  `❯ `, more for an oh-my-zsh theme that keeps the folder on the same line).
 - With the menu open, Esc pressed by hand and then a key more than 20 ms later counts as Esc, then that key.
 
 ## Changes
 
 - unreleased: Ctrl+C pressed while a slow program is still answering aborts the line at once, instead of seeming to do nothing until the next key.
 - unreleased: a line that gave up waiting for a slow program no longer makes the same line at a later prompt give up at once; `goh-unload` stops a pending wait.
-- unreleased: the box lands under the word with `prompt_subst` prompts (oh-my-zsh, powerlevel10k, starship), and its right border stays straight with wide characters.
+- unreleased: the selected row's marker, glyph and label, and the box's border, keep the box's background (zsh 5.9 showed the terminal's background through them).
+- unreleased: the box lands under the word with prompts built from `prompt_subst` parameters (powerlevel10k); a prompt that runs a command (starship, oh-my-zsh) no longer throws it to a far column: it anchors as if the prompt had no width. Its right border stays straight with wide characters.
 - unreleased: late values from slow programs appear without another key.
 - unreleased: the inline menu is a floating framed box under the word being completed (`display.inlineStyle`, `box` by default; `flat` is the old look).
 - unreleased: Esc closes the menu at once instead of after `KEYTIMEOUT` (0.4 s).

@@ -1406,6 +1406,21 @@ fn the_box_frames_the_rows_under_the_word_being_completed() {
     assert!(styles_at(&h, marker, marker + inner).any(|st| st.starts_with("bg=")), "the selected row's fill spans the inside of the box, P{marker} to P{}: {h}", marker + inner);
     let top_at = row_offset(&rows, 1, 5) + indent;
     assert!(styles_at(&h, top_at, top_at + inner + 2).any(|st| st.starts_with("fg=")), "the top border starts at the corner (P{top_at}): {h}");
+    // zsh 5.9 drops a fill's background under a later style that sets a colour, so each style on a fill repeats it:
+    // otherwise the marker, glyph and label of the selected row show the terminal's background through the fill.
+    let fill = styles_at(&h, marker, marker + inner).find(|st| st.starts_with("bg=")).unwrap();
+    let fill = fill.split([',', ' ']).next().unwrap().to_string();
+    let on_selected: Vec<&str> = h
+        .split(';')
+        .filter(|e| {
+            let mut n = e.trim_start_matches('P').split(' ').map(|x| x.parse::<usize>().unwrap_or(usize::MAX));
+            let (s, end) = (n.next().unwrap(), n.next().unwrap_or(usize::MAX));
+            s >= marker && end <= marker + inner && e.contains("memo=goh-ghost")
+        })
+        .collect();
+    assert!(on_selected.len() > 1, "the selected row has styles over its fill: {h}");
+    assert!(on_selected.iter().all(|e| e.contains(&fill)), "every style on the selected row keeps {fill}: {on_selected:?}");
+    assert!(styles_at(&h, top_at, top_at + inner + 2).filter(|st| st.starts_with("fg=")).all(|st| st.contains(",bg=")), "the border keeps the box's fill: {h}");
 }
 
 #[test]
