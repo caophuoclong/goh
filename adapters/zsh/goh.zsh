@@ -281,10 +281,18 @@ _goh_late_stop() {
   _goh_late_fd=-1
 }
 
+# Stop waiting: the footer's `…` goes away (the menu is drawn again if it is still open).
+_goh_late_giveup() {
+  _goh_late_stop
+  (( _goh_late )) || return 0
+  _goh_late=0
+  if _goh_valid; then _goh_render; _goh_pop_show; fi
+}
+
 _goh_late_wait() {
   if [[ $_goh_late_line != "$CURSOR:$BUFFER" ]]; then _goh_late_line="$CURSOR:$BUFFER" _goh_late_tries=0; fi
   (( _goh_late_fd >= 0 )) && return 0
-  (( ++_goh_late_tries > 16 )) && return 0
+  if (( ++_goh_late_tries > 16 )); then _goh_late_giveup; return 0; fi
   exec {_goh_late_fd}< <(command sleep 0.3; print)
   zle -F -w $_goh_late_fd _goh_on_late
 }
@@ -293,6 +301,8 @@ _goh_on_late() {
   emulate -L zsh
   _goh_late_stop
   [[ $_goh_late_line == "$CURSOR:$BUFFER" && $CONTEXT == start ]] || return 0
+  # A refresh would put the selection back on the first row: once the user has moved in the menu, stop asking.
+  if (( _goh_on && _goh_navigated )); then _goh_late_giveup; zle -R; return 0; fi
   _goh_live_refresh
   zle -R
 }
@@ -690,7 +700,7 @@ _goh_esc() {
   case ${_goh_menu_keys[$seq]-} in
     (_goh_up|_goh_down) zle ${_goh_menu_keys[$seq]} ;;
     (_goh_take) _goh_take || { _goh_close; zle -U -- $raw } ;;
-    (*) _goh_close; if [[ $seq == '^[' ]]; then zle -R; else zle -U -- $raw; fi ;;
+    (*) _goh_close; if [[ $seq == '^[' ]]; then _goh_late_giveup; zle -R; else zle -U -- $raw; fi ;;
   esac
 }
 
@@ -752,6 +762,7 @@ _goh_left() {
   local key=${(V)KEYS}
   local original=${_goh_saved[$key]:-backward-char}
   _goh_close
+  _goh_late_giveup
   zle $original
 }
 

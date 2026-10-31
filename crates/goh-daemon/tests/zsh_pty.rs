@@ -1523,3 +1523,46 @@ fn a_slow_docker_fills_the_open_menu_without_another_key() {
     kill_socket_holder(&fx.socket);
     assert!(rows.iter().any(|r| r.contains("web-1")), "the late container shows by itself: {rows:?}");
 }
+
+/// A shell whose `docker` waits `delay` seconds before answering with one container, `web-1`.
+fn slow_docker_shell(fx: &Fixture, delay: &str) -> Pty {
+    let bin = fx.path("slowbin");
+    fs::create_dir_all(&bin).unwrap();
+    let docker = bin.join("docker");
+    fs::write(&docker, format!("#!/bin/sh\nsleep {delay}\necho '{{\"Names\":\"web-1\",\"Image\":\"nginx\"}}'\n")).unwrap();
+    fs::set_permissions(&docker, std::os::unix::fs::PermissionsExt::from_mode(0o700)).unwrap();
+    let goh_dir = Path::new(env!("CARGO_BIN_EXE_goh")).parent().unwrap().display().to_string();
+    let path = format!("{}:{goh_dir}:/usr/bin:/bin", bin.display());
+    let mut sh = fx.shell(&[("GOH_LIVE", "on"), ("PATH", &path)], true);
+    menu_dump(fx, &mut sh);
+    sh
+}
+
+#[test]
+fn a_late_answer_does_not_reopen_a_menu_closed_with_esc() {
+    let fx = Fixture::new(require_env!(), false);
+    let mut sh = slow_docker_shell(&fx, "2.5");
+    sh.send("docker exec ", 800);
+    sh.send("\x1b", 200);
+    sh.drain(Duration::from_millis(1500), Duration::from_secs(6));
+    let state = fx.state(&mut sh);
+    let (rows, _) = menu(&fx, &mut sh);
+    kill_socket_holder(&fx.socket);
+    assert!(state.contains("on=0"), "Esc keeps the menu closed: {state}");
+    assert!(!rows.iter().any(|r| r.contains("web-1")), "{rows:?}");
+}
+
+#[test]
+fn a_late_answer_leaves_the_users_selection_alone() {
+    let fx = Fixture::new(require_env!(), false);
+    let mut sh = slow_docker_shell(&fx, "2.5");
+    sh.send("docker exec ", 800);
+    sh.send("\x1b[B", 200);
+    sh.drain(Duration::from_millis(1500), Duration::from_secs(6));
+    let state = fx.state(&mut sh);
+    let (rows, _) = menu(&fx, &mut sh);
+    kill_socket_holder(&fx.socket);
+    assert!(state.contains("on=1 sel=2"), "the highlight stays on the second row: {state}");
+    assert!(rows.iter().any(|r| r.starts_with("❯ ") && r.contains("-d")), "{rows:?}");
+    assert!(!rows.iter().any(|r| r.contains("web-1") || r.contains('…')), "nothing reshuffled after the user moved: {rows:?}");
+}
