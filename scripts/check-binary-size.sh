@@ -6,6 +6,7 @@ cd "$(dirname "$0")/.."
 status=0
 while read -r name budget; do
   case $name in '' | '#'*) continue ;; esac
+  [ -f "target/release/$name" ] || { echo "$name: target/release/$name not found, build first"; status=1; continue; }
   size=$(wc -c < "target/release/$name" | tr -d ' ')
   if [ "$size" -gt "$budget" ]; then
     echo "$name: $size bytes, over its budget of $budget"
