@@ -24,3 +24,5 @@ Adapters for fish, PowerShell, Nushell, elvish and xonsh complete through each s
 ## Changes
 
 - 1.0.0: first release.
+- unreleased: the fish adapter is tested in a real fish.
+- unreleased: fish completion produced no candidates because the adapter measured byte offsets with an option `string length` does not have; fixed.

@@ -18,8 +18,9 @@ function __goh_complete
     set -l buffer (commandline -cp)
     set -l cur (commandline -ct)
     test -n "$buffer"; or return 0
-    set -l point (string length --bytes -- $buffer)
-    set -l cur_bytes (string length --bytes -- $cur)
+    # fish's `string length` counts characters (it has no byte mode), and goh's offsets are bytes.
+    set -l point (printf '%s' $buffer | wc -c | string trim)
+    set -l cur_bytes (printf '%s' $cur | wc -c | string trim)
     set -l sep (printf '\x1f')
     command $GOH_CTL menu --session $_goh_session --cwd $PWD --limit 50 \
         --cursor-byte $point --buffer $buffer 2>/dev/null | while read -l line

@@ -6,4 +6,4 @@ ghost text stay fish's. Source `goh.fish` from `config.fish` (or copy it to `con
 `cd` also suggests frequently used directories once a word is typed: zoxide when it is installed and has
 entries, otherwise goh's own history (`~/.local/share/goh/dirs`), which the adapter fills on every directory change.
 
-Not yet verified against a real fish session (no fish on the machine where this was written).
+Checked in CI by crates/goh-daemon/tests/fish_adapter.rs.
