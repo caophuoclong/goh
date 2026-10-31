@@ -8,7 +8,7 @@ It reproduces what Fig was useful for, not its branding, and has no dependency o
 ## What it does
 
 - Suggests subcommands, flags, arguments and paths as you type, with descriptions.
-- Is driven by declarative JSON completion specs (114 bundled: `git`, `docker`, `npm`, `pnpm`, `cargo`, `kubectl`, `just`, `task`, `brew`, `aws`, `deno`, `gradle`, `flutter`, `jq`, `tmux`, `systemctl`, ...; a command with none gets one from its `--help`, see `goh spec gen`).
+- Is driven by declarative JSON completion specs (191 bundled: `git`, `docker`, `npm`, `pnpm`, `cargo`, `kubectl`, `just`, `task`, `brew`, `aws`, `deno`, `gradle`, `flutter`, `jq`, `tmux`, `systemctl`, `pytest`, `ruff`, `podman`, `lsof`, ...; a command with none gets one from its `--help`, see `goh spec gen`).
 - Completes the command after `sudo`, `time`, `env`, `xargs`, `watch`, `nohup`, `npx` and `FOO=1` by that command's own spec, skips options you already gave, reads `ls -la` as `-l -a` and offers `-` for the previous branch or directory.
 - Shows an overlay popup anchored near the cursor, with an inline fallback where the terminal can't support one.
 - Inherits your terminal's colors instead of imposing its own theme.
