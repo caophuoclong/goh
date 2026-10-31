@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.1.0](https://github.com/caophuoclong/goh/compare/v2.0.0...v2.1.0) (2026-10-31)
+
+
+### Features
+
+* **history:** offer zsh history lines with their secrets masked ([bef8b64](https://github.com/caophuoclong/goh/commit/bef8b64faf4a1343b3f48aae6aea1474fab43e2e))
+* **zsh:** close the menu on Esc at once and offer history secrets masked ([a8fab80](https://github.com/caophuoclong/goh/commit/a8fab8049bcd6ddc0be8a1b5e302e60403d36407))
+
+
+### Bug fixes
+
+* **zsh:** close the menu on Esc at once ([b1b63d6](https://github.com/caophuoclong/goh/commit/b1b63d65063436ffdbba84506a8903aeee59dfb7))
+
 ## [2.0.0](https://github.com/caophuoclong/goh/compare/v1.11.0...v2.0.0) (2026-10-31)
 
 
