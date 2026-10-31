@@ -18,7 +18,7 @@ Arguments come from the project you are in and the tools you use: branches, scri
 - Makefile, justfile and Taskfile targets; compose services; Cargo bins, examples, features and workspace packages.
 - `$CDPATH` folders; kubectl pods and namespaces; Docker containers, images, networks and volumes; tmux sessions
   and windows (`tmux attach-session -t`); systemd units (`systemctl restart`); running processes for `kill` (by pid)
-  and `pkill`/`killall` (by name).
+  and `pkill`/`killall` (by name; a Linux kernel thread keeps its whole name, `kworker/0:1`).
 - Programs asked for values (docker, git, zoxide, tmux, systemctl, ps) get 120 ms per keystroke; a slower one finishes
   in the background (up to 5 s). In zsh its values join the open menu when they arrive, with no key pressed (the
   footer shows `…` while one is still answering); other shells see them from the next key. kubectl is never waited for.
@@ -32,6 +32,7 @@ Arguments come from the project you are in and the tools you use: branches, scri
 
 ## Changes
 
+- unreleased: `pkill` and `killall` on Linux suggest kernel threads by their whole name (`kworker/0:1`, not `0:1`).
 - unreleased: in zsh, values from a slow program join the open menu by themselves.
 - unreleased: Docker networks and volumes, tmux sessions and windows, systemd units and running processes are suggested.
 - unreleased: a Docker (or git, zoxide) slower than 120 ms is asked in the background, so `docker exec` lists the

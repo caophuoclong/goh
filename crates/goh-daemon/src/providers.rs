@@ -325,14 +325,16 @@ fn parse(provider: Provider, text: &str) -> Vec<Suggestion> {
             .collect();
     }
     if matches!(provider, Provider::Processes | Provider::ProcessNames) {
-        // `  PID COMMAND`: the command is a name on Linux and a path on macOS; its last part is the name.
+        // `  PID COMMAND`: the command is a name on Linux (kernel threads have a `/` in it: `kworker/0:1`) and an absolute
+        // path on macOS; only a path is cut down to its last part.
         let mut seen = std::collections::HashSet::new();
         return text
             .lines()
             .take(10000)
             .filter_map(|l| {
                 let (pid, command) = l.trim_start().split_once(char::is_whitespace)?;
-                let name = command.trim().rsplit('/').next()?;
+                let command = command.trim();
+                let name = if command.starts_with('/') { command.rsplit('/').next()? } else { command };
                 let ok = !pid.is_empty() && pid.bytes().all(|b| b.is_ascii_digit()) && !name.is_empty() && !name.starts_with('-') && name.len() <= 256 && !name.chars().any(char::is_control);
                 if !ok {
                     return None;
@@ -624,6 +626,10 @@ mod tests {
             [("1", "launchd"), ("812", "Google Chrome"), ("900", "zsh"), ("901", "zsh")]
         );
         assert_eq!(parse(Provider::ProcessNames, ps).iter().map(|s| s.name.as_str()).collect::<Vec<_>>(), ["launchd", "Google Chrome", "zsh"]);
+        // Linux names a kernel thread `kworker/0:1`; only an absolute path loses its directory part.
+        let linux = "    2 kthreadd\n   55 kworker/0:1\n   56 ksoftirqd/3\n  300 /usr/lib/systemd/systemd-journald\n";
+        assert_eq!(parse(Provider::ProcessNames, linux).iter().map(|s| s.name.as_str()).collect::<Vec<_>>(), ["kthreadd", "kworker/0:1", "ksoftirqd/3", "systemd-journald"]);
+        assert_eq!(parse(Provider::Processes, linux)[1].description.as_deref(), Some("kworker/0:1"));
     }
 
     #[test]
