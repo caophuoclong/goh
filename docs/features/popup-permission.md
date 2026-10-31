@@ -32,6 +32,7 @@ per terminal app. Signed builds keep it across updates and rebuilds.
 
 ## Changes
 
+- unreleased: Goh.app has its own icon (a cream pixel "g" and a yellow square on black), drawn in `packaging/macos/Goh.svg`.
 - unreleased: the app is named Goh (`Goh.app`, was `goh-popup.app`), with an icon slot (`packaging/macos/Goh.png`); its identifier, so the permission, is unchanged.
 - unreleased: goh-popup checks its permission again for about a second before asking, so a just-started popup does not prompt when it is allowed.
 - unreleased: local builds signed with goh's certificate (`scripts/macos-sign.sh`, `scripts/macos-popup-app.sh`).
