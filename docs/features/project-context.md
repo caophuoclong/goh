@@ -19,9 +19,9 @@ Arguments come from the project you are in and the tools you use: branches, scri
 - `$CDPATH` folders; kubectl pods and namespaces; Docker containers, images, networks and volumes; tmux sessions
   and windows (`tmux attach-session -t`); systemd units (`systemctl restart`); running processes for `kill` (by pid)
   and `pkill`/`killall` (by name).
-- Programs asked for values (docker, git, zoxide) get 120 ms per keystroke; a slower one finishes in the background
-  (up to 5 s) and its answer shows from the next keystroke, so a slow Docker host still lists its containers.
-  kubectl is never waited for.
+- Programs asked for values (docker, git, zoxide, tmux, systemctl, ps) get 120 ms per keystroke; a slower one finishes
+  in the background (up to 5 s). In zsh its values join the open menu when they arrive, with no key pressed (the
+  footer shows `…` while one is still answering); other shells see them from the next key. kubectl is never waited for.
 - Package names for brew, npm, pnpm, yarn, bun, cargo, pip and uv.
 - ssh, scp, rsync hosts from `~/.ssh/config`, known hosts and history.
 
@@ -32,6 +32,7 @@ Arguments come from the project you are in and the tools you use: branches, scri
 
 ## Changes
 
+- unreleased: in zsh, values from a slow program join the open menu by themselves.
 - unreleased: Docker networks and volumes, tmux sessions and windows, systemd units and running processes are suggested.
 - unreleased: a Docker (or git, zoxide) slower than 120 ms is asked in the background, so `docker exec` lists the
   containers from the next keystroke instead of never.

@@ -31,6 +31,8 @@ in an IDE. Load it with `goh setup` or `eval "$(goh init zsh)"`.
 - Where the popup cannot draw (Ghostty, Kitty, WezTerm, tmux, ssh, ...), the menu is a floating framed box under the word you
   are completing, in the terminal's own colours; no permission is needed. `display.inlineStyle: "flat"` draws plain
   rows instead, which a screen reader reads more easily.
+- A program still answering (a slow Docker, a cluster) shows `…` in the footer; its values appear when they arrive. The
+  wait stops when you close the menu (Esc, Left) or move in it, and gives up after about 5 s.
 - Fail-open: any problem falls through to the widget Tab had before; `goh-unload` restores it.
 - Works next to zsh-autosuggestions and plugins that replace `zle-line-init`.
 
@@ -41,6 +43,7 @@ in an IDE. Load it with `goh setup` or `eval "$(goh init zsh)"`.
 
 ## Changes
 
+- unreleased: late values from slow programs appear without another key.
 - unreleased: the inline menu is a floating framed box under the word being completed (`display.inlineStyle`, `box` by default; `flat` is the old look).
 - unreleased: Esc closes the menu at once instead of after `KEYTIMEOUT` (0.4 s).
 - unreleased: Enter on a picked suggestion runs the line (`display.enterRuns`, on); an option that wants its value or a folder is only inserted.
