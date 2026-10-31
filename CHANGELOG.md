@@ -1,5 +1,45 @@
 # Changelog
 
+## [2.2.0](https://github.com/caophuoclong/goh/compare/v2.1.1...v2.2.0) (2026-10-31)
+
+
+### Features
+
+* **bash:** a menu with descriptions as you type under ble.sh ([f65a0b0](https://github.com/caophuoclong/goh/commit/f65a0b0160d3c8edf4d50aa4622f7a05cd7b2ca6))
+* **cli:** goh menu --late marks a menu still waiting for a program ([f0f9731](https://github.com/caophuoclong/goh/commit/f0f97316a4bd0c748f3fb1c1c553fb8d258a75cb))
+* **config:** add display.inlineStyle (box or flat) ([56c2eef](https://github.com/caophuoclong/goh/commit/56c2eef8bff7f07f99952b70635c1289dbc265ee))
+* **daemon:** providers for docker networks and volumes, tmux, systemd units and processes ([51bcccc](https://github.com/caophuoclong/goh/commit/51bcccc2fa30b901335146f01cacbbfdd8e6f79d))
+* **daemon:** tell the client when a program's answer is still coming ([85df4a9](https://github.com/caophuoclong/goh/commit/85df4a90d2715455551b0b6d2e8efb46a8e5d185))
+* expand completion sources and shell menus ([975c63b](https://github.com/caophuoclong/goh/commit/975c63be1cc3c4f5f2ea2b8c7aa0d3dd902e9cd4))
+* **goh:** implement quality gates for daemon behavior, performance, and binary size ([dffcd1e](https://github.com/caophuoclong/goh/commit/dffcd1e08509542876818974a4658f8f23d53c7b))
+* **nu:** a bordered menu of goh's candidates as you type ([dbacdbd](https://github.com/caophuoclong/goh/commit/dbacdbdaa4f5c079cb312d4ae4fe88967b429e1c))
+* **pwsh:** suggestions as you type in PSReadLine's list ([d87f5a3](https://github.com/caophuoclong/goh/commit/d87f5a38ccc80aff3df54dfb0bbf83609b0742eb))
+* **spec:** bundle about 85 more commands ([2fbbd87](https://github.com/caophuoclong/goh/commit/2fbbd8714398e78e9e5bd146f38e606e343fc235))
+* **spec:** suggest networks, volumes, tmux targets, units and processes ([31842ae](https://github.com/caophuoclong/goh/commit/31842ae2dc21bbd0abeb408341157e1931762467))
+* **zsh:** draw the inline menu as a box under the word ([7b734d7](https://github.com/caophuoclong/goh/commit/7b734d746f095fbbfbae201044e7d58fc6a3637e))
+* **zsh:** show a slow program's values when they arrive ([89703ec](https://github.com/caophuoclong/goh/commit/89703ec0edc3be5d2605fe18b3c88c365c079075))
+
+
+### Bug fixes
+
+* **bash:** yield to ble.sh in the user's locale ([eadd1a5](https://github.com/caophuoclong/goh/commit/eadd1a519e20a7239b37f80f5435a7b1038c531f))
+* **build:** fail the size check when a binary is missing ([11de7c0](https://github.com/caophuoclong/goh/commit/11de7c033e31254733d5a047b93aca9bb86a2bde))
+* **daemon:** exit when the socket is removed or replaced ([37f65f9](https://github.com/caophuoclong/goh/commit/37f65f94a7f81786c81fbd28468b1ba3ceed10ac))
+* **daemon:** keep Linux kernel thread names whole ([7394e7e](https://github.com/caophuoclong/goh/commit/7394e7e645d86078411fd93347b409e7574c8e82))
+* **daemon:** stricter systemd and tmux provider parsing ([fec1ac8](https://github.com/caophuoclong/goh/commit/fec1ac88954a65def016f07d5dea893be4742bc7))
+* **nushell:** fail open when goh is missing or answers badly ([ebac6bf](https://github.com/caophuoclong/goh/commit/ebac6bf8f05630a7e1f62928a3414a5f250891be))
+* **nu:** use valid session IDs for small process IDs ([c8d2c68](https://github.com/caophuoclong/goh/commit/c8d2c68c5100b62c2985d4d85ed2922975063fb3))
+* **powershell:** check the predictor's suggestions like the goh client does ([b2ccb5b](https://github.com/caophuoclong/goh/commit/b2ccb5bdf6cf34cb9b4ffd495ff38fa71521026c))
+* **pwsh:** honour display.live from the config file ([0a38bcb](https://github.com/caophuoclong/goh/commit/0a38bcbad9317e04e6a9c3c7b12977f41de9fe84))
+* **pwsh:** keep the predictor alive after Tab and fail open ([8d7c5a8](https://github.com/caophuoclong/goh/commit/8d7c5a8ddd8a4cf9cef2d6741fe70914e6f5030f))
+* **zsh:** anchor the box at the word and test its highlights ([fe2d99a](https://github.com/caophuoclong/goh/commit/fe2d99a50fbadb237750c3a9903bda094a5405fa))
+* **zsh:** clear the menu after Ctrl-C and close it at once beside bindkey -s keys ([b04d061](https://github.com/caophuoclong/goh/commit/b04d06121c0f6d13c840ec72cf7bb77cdb6ce8f8))
+* **zsh:** keep the box's background under the selected row's styles ([1ba9aa3](https://github.com/caophuoclong/goh/commit/1ba9aa34fb988dc2e24db09e5544d5d2046084db))
+* **zsh:** late values respect Esc and the user's selection ([96280c9](https://github.com/caophuoclong/goh/commit/96280c98973256fe2676022ea7aba94fe05d0a9f))
+* **zsh:** let Ctrl-C abort the line while a late answer is pending ([925b011](https://github.com/caophuoclong/goh/commit/925b0118128575b4b343300b1b2f169c62d148e0))
+* **zsh:** place the box correctly under prompt_subst prompts ([5569155](https://github.com/caophuoclong/goh/commit/5569155d3e514004eb84a14afae80c42a6a07641))
+* **zsh:** reset the late-answer retry count at each new line ([7b0fa35](https://github.com/caophuoclong/goh/commit/7b0fa357742f8102ffda345a637a1d543a1fbe69))
+
 ## [2.1.1](https://github.com/caophuoclong/goh/compare/v2.1.0...v2.1.1) (2026-10-31)
 
 
