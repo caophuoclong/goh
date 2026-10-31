@@ -342,3 +342,29 @@ fn menu_late_prints_pending_while_docker_has_not_answered() {
     assert!(!plain.contains("pending"), "only --late prints it");
     assert!(later.contains("web-1") && !later.contains("pending"), "{later}");
 }
+
+#[test]
+fn a_daemon_whose_socket_is_removed_exits() {
+    let dir = tempfile::Builder::new().prefix("fo").tempdir_in("/tmp").unwrap();
+    let socket = dir.path().join("run/s");
+    let mut child = Command::new(env!("CARGO_BIN_EXE_gohd"))
+        .args(["--socket", socket.to_str().unwrap(), "--spec-dir", dir.path().to_str().unwrap()])
+        .env("GOH_CONFIG", "/nonexistent")
+        .spawn()
+        .unwrap();
+    let up = Instant::now() + Duration::from_secs(5);
+    while !socket.exists() && Instant::now() < up {
+        std::thread::sleep(Duration::from_millis(20));
+    }
+    assert!(socket.exists(), "the daemon came up");
+    fs::remove_file(&socket).unwrap();
+    let gone = Instant::now() + Duration::from_secs(6);
+    while child.try_wait().unwrap().is_none() && Instant::now() < gone {
+        std::thread::sleep(Duration::from_millis(50));
+    }
+    let status = child.try_wait().unwrap();
+    if status.is_none() {
+        let _ = child.kill();
+    }
+    assert!(status.is_some_and(|s| s.success()), "it exits on its own once nobody can reach it");
+}

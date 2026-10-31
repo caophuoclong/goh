@@ -19,6 +19,7 @@ env: [GOH_LOG]
   terminal and popup path, Accessibility, config, auto specs, updates, zoxide.
 - `--fix` starts or restarts the daemon and opens the Accessibility settings; `--test` times a real completion;
   `--report` prints a summary for an issue (home shown as `~`, no command text).
+- A daemon nobody can reach any more (its socket removed or replaced) exits by itself.
 - Over ssh it says whether menus reach the popup through [ssh-popup](ssh-popup.md).
 
 ## Limits
@@ -27,5 +28,6 @@ env: [GOH_LOG]
 
 ## Changes
 
+- unreleased: a daemon whose socket was removed or taken over exits by itself within 2 s.
 - unreleased: reports the `goh ssh` relay.
 - 1.3.0: version check, `--test`, `--report`, `goh logs`.
