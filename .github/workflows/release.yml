@@ -77,7 +77,11 @@ jobs:
           keychain=$RUNNER_TEMP/goh-signing.keychain-db
           password=$(openssl rand -hex 24)
           security create-keychain -p "$password" "$keychain"
+          security set-keychain-settings "$keychain" # no auto-lock while the build runs
           security unlock-keychain -p "$password" "$keychain"
+          # codesign finds the private key only in a keychain on the search list, even when --keychain names it.
+          # shellcheck disable=SC2046 # the current list, one path per word
+          security list-keychains -d user -s "$keychain" $(security list-keychains -d user | tr -d '"')
           printf '%s' "$P12" | base64 --decode > "$RUNNER_TEMP/goh-signing.p12"
           security import "$RUNNER_TEMP/goh-signing.p12" -k "$keychain" -P "$P12_PASSWORD" -T /usr/bin/codesign
           rm -f "$RUNNER_TEMP/goh-signing.p12"
