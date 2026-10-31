@@ -178,14 +178,10 @@ impl Fixture {
     }
 }
 
-/// Stop the daemon holding the fixture's socket (one started on demand by goh). Only a process named `gohd` is
-/// signalled: `lsof` also lists every other process with the socket open, and a test must never signal itself.
+/// Stop only the daemon connected to this fixture's socket, leaving its stale socket file for recovery tests.
+/// Peer credentials avoid matching another test's unlinked socket when its filesystem inode is reused.
 pub fn kill_socket_holder(socket: &Path) {
-    let Ok(out) = Command::new("lsof").args(["-t"]).arg(socket).output() else { return };
-    for pid in String::from_utf8_lossy(&out.stdout).split_whitespace() {
-        let name = Command::new("ps").args(["-o", "comm=", "-p", pid]).output().map(|o| String::from_utf8_lossy(&o.stdout).trim().to_string()).unwrap_or_default();
-        if pid != std::process::id().to_string() && name.rsplit('/').next() == Some("gohd") {
-            let _ = Command::new("kill").arg(pid).status();
-        }
+    if let Some(pid) = goh_daemon::control::running(socket) {
+        let _ = Command::new("kill").arg(pid.to_string()).status();
     }
 }
