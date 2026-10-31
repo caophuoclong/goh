@@ -1503,3 +1503,23 @@ fn the_box_stays_under_the_word_when_the_selection_moves_onto_a_history_line() {
     assert!(on_history, "the selection did reach the history line");
     kill_socket_holder(&fx.socket);
 }
+
+#[test]
+fn a_slow_docker_fills_the_open_menu_without_another_key() {
+    let fx = Fixture::new(require_env!(), false);
+    let bin = fx.path("slowbin");
+    fs::create_dir_all(&bin).unwrap();
+    let docker = bin.join("docker");
+    fs::write(&docker, "#!/bin/sh\nsleep 0.6\necho '{\"Names\":\"web-1\",\"Image\":\"nginx\"}'\n").unwrap();
+    fs::set_permissions(&docker, std::os::unix::fs::PermissionsExt::from_mode(0o700)).unwrap();
+    let goh_dir = Path::new(env!("CARGO_BIN_EXE_goh")).parent().unwrap().display().to_string();
+    let path = format!("{}:{goh_dir}:/usr/bin:/bin", bin.display());
+    let mut sh = fx.shell(&[("GOH_LIVE", "on"), ("PATH", &path)], true);
+    menu_dump(&fx, &mut sh);
+    sh.send("docker exec ", 1500); // the first key also starts the daemon
+    // No key after this: the answer must arrive through the adapter's own re-ask.
+    sh.drain(Duration::from_millis(1500), Duration::from_secs(3));
+    let (rows, _) = menu(&fx, &mut sh);
+    kill_socket_holder(&fx.socket);
+    assert!(rows.iter().any(|r| r.contains("web-1")), "the late container shows by itself: {rows:?}");
+}

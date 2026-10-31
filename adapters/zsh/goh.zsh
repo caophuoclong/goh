@@ -268,6 +268,35 @@ _goh_pop_hide() {
   _goh_pop_alive && (( _goh_pin >= 0 )) && print -r -u $_goh_pin -- '{"type":"hide"}' 2>/dev/null
 }
 
+# ---- late answers ----------------------------------------------------------------------------
+# A program the menu asked (Docker, a cluster, tmux, ...) had not answered: ask again in 300 ms while the line stays
+# the same, so its values show without another key. One timer at a time, at most 16 tries (about 5 s) per line.
+typeset -gi _goh_late_fd=-1 _goh_late_tries=0 _goh_late=0
+typeset -g _goh_late_line
+
+_goh_late_stop() {
+  (( _goh_late_fd >= 0 )) || return 0
+  zle -F $_goh_late_fd 2>/dev/null
+  exec {_goh_late_fd}<&-
+  _goh_late_fd=-1
+}
+
+_goh_late_wait() {
+  if [[ $_goh_late_line != "$CURSOR:$BUFFER" ]]; then _goh_late_line="$CURSOR:$BUFFER" _goh_late_tries=0; fi
+  (( _goh_late_fd >= 0 )) && return 0
+  (( ++_goh_late_tries > 16 )) && return 0
+  exec {_goh_late_fd}< <(command sleep 0.3; print)
+  zle -F -w $_goh_late_fd _goh_on_late
+}
+
+_goh_on_late() {
+  emulate -L zsh
+  _goh_late_stop
+  [[ $_goh_late_line == "$CURSOR:$BUFFER" && $CONTEXT == start ]] || return 0
+  _goh_live_refresh
+  zle -R
+}
+
 # ---- menu state ---------------------------------------------------------------------------
 
 # zsh-autosuggestions shows its suggestion in POSTDISPLAY, where the menu and its ghost text are, and its answer
@@ -513,6 +542,7 @@ _goh_render() {
   local pos="$_goh_sel/$#_goh_label" accept_hint="Tab/→"
   (( _goh_ghost_line && _goh_ghost_line != _goh_sel )) && accept_hint="→ line · Tab"
   (( $#_goh_label >= 50 )) && pos+='+'   # menus ask for 50: there may be more
+  (( _goh_late )) && pos+=' …'   # a program has not answered yet: more may come
   local run_hint=
   if _goh_enter_takes; then
     if _goh_enter_runs; then run_hint=" · Enter run"; else accept_hint="Tab/Enter/→"; fi
@@ -850,8 +880,10 @@ _goh_live_refresh() {
     local out was_on=$_goh_on cb
     if [[ $CONTEXT != start || -z ${BUFFER//[[:space:]]/} ]]; then _goh_close; return 0; fi
     _goh_bytes "${BUFFER[1,CURSOR]}"; cb=$REPLY
-    out=$(command $_GOH_CTL menu --labels --live --session $_GOH_SESSION --cwd $PWD --limit 50 \
+    out=$(command $_GOH_CTL menu --labels --live --late --session $_GOH_SESSION --cwd $PWD --limit 50 \
           --cursor-byte $cb --buffer "$BUFFER" 2>/dev/null) || out=
+    _goh_late=0
+    [[ ${out##*$'\n'} == pending ]] && _goh_late=1
     [[ -n $out ]] && _goh_parse_menu "$out" || REPLY=0
     if (( REPLY >= 1 )); then
       # Nothing to offer: too few characters typed, or a lone candidate that is just the finished word.
@@ -870,6 +902,7 @@ _goh_live_refresh() {
     else
       _goh_close
     fi
+    (( _goh_late )) && _goh_late_wait
   } always {
     _goh_busy=0
   }
@@ -900,7 +933,7 @@ _goh_hook_redraw() {
   (( _goh_on )) && ! _goh_valid && _goh_close       # the line changed some other way: the menu is stale
   return 0
 }
-_goh_hook_finish() { _goh_close no-redisplay; _goh_drop_pred; _goh_seen_cur=-1; return 0 }
+_goh_hook_finish() { _goh_late_stop; _goh_close no-redisplay; _goh_drop_pred; _goh_seen_cur=-1; return 0 }
 
 # Ctrl+C ends the line without zle-line-finish, so the zle-line-init hook is what closes the menu at the next
 # prompt. A plugin that defines its own zle-line-init (or -finish, -pre-redraw) after this adapter loaded replaces
@@ -1021,6 +1054,7 @@ goh-load() {
   zle -N _goh_tab
   zle -N _goh_up; zle -N _goh_down; zle -N _goh_esc
   zle -N _goh_enter; zle -N _goh_left
+  zle -N _goh_on_late
   bindkey '^I' _goh_tab
   if [[ ${GOH_RECORD-} == on ]]; then
     # Right takes a prediction when one is showing and is the user's own Right otherwise.
