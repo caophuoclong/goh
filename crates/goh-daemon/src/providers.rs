@@ -169,8 +169,8 @@ fn query(docker: &Path, provider: Provider, timeout: Duration, dir: &Path) -> Op
         Provider::DockerImages => &["image", "ls", "--format", "{{json .}}"],
         Provider::DockerNetworks => &["network", "ls", "--format", "{{json .}}"],
         Provider::DockerVolumes => &["volume", "ls", "--format", "{{json .}}"],
-        Provider::TmuxSessions => &["list-sessions", "-F", "#{session_name}\x1f#{session_windows} windows#{?session_attached, attached,}"],
-        Provider::TmuxWindows => &["list-windows", "-a", "-F", "#{session_name}:#{window_index}\x1f#{window_name}"],
+        Provider::TmuxSessions => &["list-sessions", "-F", "#{session_name}:#{session_windows} windows#{?session_attached, attached,}"],
+        Provider::TmuxWindows => &["list-windows", "-a", "-F", "#{session_name}:#{window_index} #{window_name}"],
         Provider::SystemdUnits => &["list-units", "--all", "--plain", "--no-legend", "--no-pager", "--full"],
         Provider::Processes | Provider::ProcessNames => &["-A", "-o", "pid=,comm="],
         Provider::FrecentDirs => &["query", "--list"],
@@ -285,14 +285,22 @@ fn parse(provider: Provider, text: &str) -> Vec<Suggestion> {
             .collect();
     }
     if matches!(provider, Provider::TmuxSessions | Provider::TmuxWindows) {
-        // `name<US>about`, one per line, from tmux's own -F format.
+        // Sessions: `name:3 windows attached`. Windows: `session:index window name`. A session name cannot contain `:`
+        // (tmux rewrites it), so the first `:` ends it; a window's target ends at the first space after that.
         let mut seen = std::collections::HashSet::new();
         return text
             .lines()
             .take(5000)
-            .filter_map(|l| l.split_once('\x1f'))
-            .filter(|(n, _)| !n.is_empty() && n.len() <= 256 && !n.starts_with('-') && !n.chars().any(char::is_control) && seen.insert(n.to_string()))
-            .map(|(n, about)| Suggestion { name: n.to_owned(), description: Some(about.chars().filter(|c| !c.is_control()).take(80).collect()), insert_value: None })
+            .filter_map(|l| {
+                let (session, rest) = l.split_once(':')?;
+                if provider == Provider::TmuxSessions {
+                    return Some((session.to_owned(), rest));
+                }
+                let (index, window) = rest.split_once(' ').unwrap_or((rest, ""));
+                Some((format!("{session}:{index}"), window))
+            })
+            .filter(|(n, _)| !n.is_empty() && n.len() <= 256 && !n.starts_with('-') && !n.chars().any(char::is_control) && seen.insert(n.clone()))
+            .map(|(n, about)| Suggestion { name: n, description: Some(about.chars().filter(|c| !c.is_control()).take(80).collect()), insert_value: None })
             .collect();
     }
     if provider == Provider::SystemdUnits {
@@ -305,7 +313,7 @@ fn parse(provider: Provider, text: &str) -> Vec<Suggestion> {
                 let mut f = l.split_whitespace();
                 let (unit, _load, active, _sub) = (f.next()?, f.next()?, f.next()?, f.next()?);
                 let about = f.collect::<Vec<_>>().join(" ");
-                let ok = unit.contains('.') && unit.len() <= 256 && unit.bytes().all(|b| b.is_ascii_alphanumeric() || b"@._:\\-".contains(&b)) && seen.insert(unit.to_string());
+                let ok = unit.contains('.') && !unit.starts_with('-') && unit.len() <= 256 && unit.bytes().all(|b| b.is_ascii_alphanumeric() || b"@._:\\-".contains(&b)) && seen.insert(unit.to_string());
                 ok.then(|| Suggestion { name: unit.to_owned(), description: Some(format!("{active} · {about}").chars().filter(|c| !c.is_control()).take(80).collect()), insert_value: None })
             })
             .collect();
@@ -578,11 +586,13 @@ mod tests {
         assert_eq!(nets.iter().map(|s| (s.name.as_str(), s.description.as_deref())).collect::<Vec<_>>(), [("bridge", Some("bridge"))]);
         assert_eq!(parse(Provider::DockerVolumes, "{\"Name\":\"pgdata\",\"Driver\":\"local\"}\n")[0].name, "pgdata");
 
-        let sessions = parse(Provider::TmuxSessions, "work\x1f3 windows attached\n-x\x1f1 windows\nwork\x1fagain\nbell\x07\x1f1 windows\n");
+        let sessions = parse(Provider::TmuxSessions, "work:3 windows attached\n-x:1 windows\nwork:again\nbell\x07:1 windows\nnocolon\n");
         assert_eq!(sessions.iter().map(|s| (s.name.as_str(), s.description.as_deref().unwrap())).collect::<Vec<_>>(), [("work", "3 windows attached")]);
-        assert_eq!(parse(Provider::TmuxWindows, "work:1\x1fvim\n")[0].name, "work:1");
+        assert_eq!(parse(Provider::TmuxWindows, "work:1 vim\n")[0].name, "work:1");
+        let windows = parse(Provider::TmuxWindows, "work:1 my editor\n-x:2 vim\nwork:1 dup\nwork:3\nbell\x07:4 x\n");
+        assert_eq!(windows.iter().map(|s| (s.name.as_str(), s.description.as_deref().unwrap())).collect::<Vec<_>>(), [("work:1", "my editor"), ("work:3", "")]);
 
-        let units = parse(Provider::SystemdUnits, "nginx.service loaded active running A high performance web server\nnot-a-unit\nssh.socket loaded inactive dead OpenBSD Secure Shell socket\n");
+        let units = parse(Provider::SystemdUnits, "nginx.service loaded active running A high performance web server\n-.mount loaded active mounted Root Mount\nnot-a-unit\nssh.socket loaded inactive dead OpenBSD Secure Shell socket\n");
         assert_eq!(units.iter().map(|s| s.name.as_str()).collect::<Vec<_>>(), ["nginx.service", "ssh.socket"]);
         assert_eq!(units[0].description.as_deref(), Some("active · A high performance web server"));
 
@@ -597,7 +607,7 @@ mod tests {
     #[test]
     fn tmux_sessions_are_asked_from_tmux() {
         let dir = tempfile::tempdir().unwrap();
-        let tmux = script(dir.path(), "[ \"$1\" = list-sessions ] || exit 1\nprintf 'work\\037%s\\n' '3 windows'");
+        let tmux = script(dir.path(), "[ \"$1\" = list-sessions ] || exit 1\nprintf 'work:%s\\n' '3 windows'");
         let providers = Providers { tmux, ..Providers::default() };
         let deadline = Instant::now() + Duration::from_secs(5);
         while providers.values(Provider::TmuxSessions, Path::new("/")).is_empty() && Instant::now() < deadline {
