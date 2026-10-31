@@ -1,5 +1,23 @@
 # Changelog
 
+## [2.0.0](https://github.com/caophuoclong/goh/compare/v1.11.0...v2.0.0) (2026-10-31)
+
+
+### ⚠ BREAKING CHANGES
+
+* **zsh:** Enter on a suggestion you moved to, or on a lone one, now runs the line instead of only inserting the suggestion. Set display.enterRuns to false in `goh config` to keep the old behaviour.
+
+### Features
+
+* **popup:** give Goh.app its icon ([432c533](https://github.com/caophuoclong/goh/commit/432c533b07aeb9f3c578b453b990a7a4fc548cce))
+* **popup:** name the macOS app Goh, with a slot for its icon ([7241a6a](https://github.com/caophuoclong/goh/commit/7241a6a4b0e524504f8644bd794a5d17d372fad3))
+* **zsh:** Enter takes the picked suggestion and runs the line ([49c6194](https://github.com/caophuoclong/goh/commit/49c6194c9170869bd9ca477702aad162dd3c3837))
+
+
+### Bug fixes
+
+* **popup:** check the permission again before asking for it ([190e208](https://github.com/caophuoclong/goh/commit/190e208cbb7baa5a7067c1638e0670e588a42a8a))
+
 ## [1.11.0](https://github.com/caophuoclong/goh/compare/v1.10.2...v1.11.0) (2026-10-31)
 
 
