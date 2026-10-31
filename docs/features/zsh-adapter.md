@@ -22,11 +22,12 @@ in an IDE. Load it with `goh setup` or `eval "$(goh init zsh)"`.
 - Tab/→ insert the highlighted candidate; ↑↓ and Shift+Tab move, wrapping; Esc closes; Left closes and moves.
   Navigation keys are bound only while the menu is open.
 - Esc closes at once, without zsh's `KEYTIMEOUT` wait: while the menu is open goh reads what follows Esc itself, and
-  Alt+key, a paste or any other key starting with Esc closes the menu and does what it did before.
+  Alt+key, a paste or any other key starting with Esc closes the menu and does what it did before, including one bound
+  to type text (`bindkey -s`, as oh-my-zsh's Alt+L).
 - Enter takes the highlighted candidate after you moved in the menu, or the only one when there is just one, and runs
   the line; an option that wants its value, or a folder, is only inserted. `display.enterRuns: false` makes Enter
-  only insert (a second Enter runs). With several untouched candidates Enter runs the line as typed. Ctrl+C closes
-  the menu at the next prompt.
+  only insert (a second Enter runs). With several untouched candidates Enter runs the line as typed. Ctrl+C ends
+  the line and takes the inline menu off the screen before the next prompt; the line itself, with any ghost text, stays.
 - Ghost text: the best line is shown after the cursor; → takes it.
 - Where the popup cannot draw (Ghostty, Kitty, WezTerm, tmux, ssh, ...), the menu is a floating framed box under the word you
   are completing, in the terminal's own colours; no permission is needed. `display.inlineStyle: "flat"` draws plain
@@ -49,6 +50,8 @@ in an IDE. Load it with `goh setup` or `eval "$(goh init zsh)"`.
 
 ## Changes
 
+- unreleased: Ctrl+C with the inline menu open no longer leaves the menu on the screen above the next prompt.
+- unreleased: Esc closes the menu at once next to a key bound to type text that starts with Esc (`bindkey -s`, as oh-my-zsh's Alt+L), instead of after `KEYTIMEOUT` (0.4 s); that key types its text again once the menu closes.
 - unreleased: Ctrl+C pressed while a slow program is still answering aborts the line at once, instead of seeming to do nothing until the next key.
 - unreleased: a line that gave up waiting for a slow program no longer makes the same line at a later prompt give up at once; `goh-unload` stops a pending wait.
 - unreleased: the selected row's marker, glyph and label, and the box's border, keep the box's background (zsh 5.9 showed the terminal's background through them).

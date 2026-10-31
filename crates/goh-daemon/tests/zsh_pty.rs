@@ -1569,6 +1569,48 @@ fn the_box_stays_under_the_word_when_the_selection_moves_onto_a_history_line() {
 }
 
 #[test]
+fn ctrl_c_takes_the_box_off_the_screen() {
+    let fx = Fixture::new(require_env!(), true);
+    let mut sh = fx.shell(BOX, true);
+    menu_dump(&fx, &mut sh);
+    sh.send("git c", 400);
+    let (rows, _) = menu(&fx, &mut sh);
+    // rows[0] is the ghost text on the line itself; the box takes the rows under it.
+    let erase = format!("\x1b[{}A\r\x1b[J", rows.len() - 1);
+    // zsh ends the line without zle-line-finish and leaves what was drawn under it; before the next prompt the
+    // adapter moves up over the box's rows and clears them, and the prompt is drawn where the box was.
+    let out = sh.send("\x03", 800);
+    let at = out.find(&erase).unwrap_or_else(|| panic!("Ctrl+C clears the {} box rows: {out:?}", rows.len() - 1));
+    assert!(out[at..].contains("READY> "), "the next prompt follows: {out:?}");
+    // A line that ended normally leaves nothing to clear.
+    sh.send("git c", 400);
+    sh.send("\x1b", 200);
+    sh.send("\x15", 100);
+    let out = sh.send("true\n", 800);
+    assert!(!out.contains(&erase), "nothing is cleared after a normal line: {out:?}");
+}
+
+#[test]
+fn esc_closes_at_once_next_to_a_bindkey_s_esc_key() {
+    let fx = Fixture::new(require_env!(), true);
+    let mut sh = fx.shell(&[], true);
+    // oh-my-zsh binds Alt+L to type `ls` (`bindkey -s`). Left bound while the menu is open, it makes ZLE wait
+    // KEYTIMEOUT (0.4 s) after Esc.
+    sh.send("bindkey -s '^[l' 'ls^J'\n", 300);
+    let keymap_before = fx.keymap(&mut sh, 0);
+    assert!(keymap_before.contains(r#"bindkey -s "^[l" "ls^J""#), "{keymap_before}");
+    sh.send("git c", 150);
+    sh.send("\t", 500);
+    let open = fx.keymap(&mut sh, 1);
+    assert!(!open.contains(r#""^[l""#), "Alt+L is reached through _goh_esc while the menu is open: {open}");
+    assert!(fx.state(&mut sh).contains("on=1"), "the menu is still open");
+    let closed = sh.send("\x1b", 150);
+    assert!(!closed.is_empty(), "Esc closes the menu within 150 ms");
+    assert!(fx.state(&mut sh).contains("on=0"));
+    assert_eq!(fx.keymap(&mut sh, 1), keymap_before, "the `bindkey -s` key types its text again after the menu closes");
+}
+
+#[test]
 fn a_slow_docker_fills_the_open_menu_without_another_key() {
     let fx = Fixture::new(require_env!(), false);
     let bin = fx.path("slowbin");
