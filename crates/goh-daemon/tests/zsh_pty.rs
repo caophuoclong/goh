@@ -810,6 +810,23 @@ fn the_best_line_from_the_zsh_history_is_ghost_text_that_right_arrow_takes() {
 }
 
 #[test]
+fn a_secret_in_the_zsh_history_is_shown_masked_and_taken_whole() {
+    let fx = Fixture::new(require_env!(), false);
+    let now = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_secs();
+    fs::write(fx.path(".zsh_history"), format!(": {}:0;git push https://me:hunter2@example.com/r.git main\n", now - 300)).unwrap();
+    let mut sh = fx.shell(&[("GOH_LIVE", "on"), ("GOH_RECORD", "on")], true);
+    menu_dump(&fx, &mut sh);
+    let drawn = sh.send("git pu", 1500);
+    let (rows, _) = menu(&fx, &mut sh);
+    assert_eq!(rows[0], "sh https://me:****@example.com/r.git main", "the ghost is the masked line: {rows:?}");
+    assert!(!drawn.contains("hunter2") && !rows.iter().any(|r| r.contains("hunter2")), "the secret is never drawn: {rows:?}");
+    sh.send("\x1b[C", 800);
+    let s = fx.state(&mut sh);
+    assert!(s.starts_with("BUF[git push https://me:hunter2@example.com/r.git main]"), "→ takes the line itself: {s}");
+    kill_socket_holder(&fx.socket);
+}
+
+#[test]
 fn rows_show_kind_glyphs_learned_badges_and_every_rows_warning() {
     let fx = Fixture::new(require_env!(), false);
     let push = serde_json::json!({"schemaVersion":1,"name":"git","subcommands":[{"name":"push","options":[

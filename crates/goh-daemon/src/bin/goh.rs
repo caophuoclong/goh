@@ -627,27 +627,33 @@ fn run() -> Option<()> {
     if sub == "specs" {
         return list_specs(&rest);
     }
-    let (mut session, mut cwd, mut cursor, mut buffer, mut limit, mut live) = (None, None, None, None, 8usize, false);
+    let (mut session, mut cwd, mut cursor, mut buffer, mut limit) = (None, None, None, None, 8usize);
+    let (mut live, mut labels) = (false, false);
     while let Some(flag) = args.next() {
-        if flag == "--live" {
-            live = true; // a flag with no value
-            continue;
-        }
-        let v = args.next()?;
         match flag.as_str() {
-            "--session" => session = Some(v),
-            "--cwd" => cwd = Some(v),
-            "--cursor-byte" => cursor = Some(v.parse::<usize>().ok()?),
-            "--buffer" => buffer = Some(v),
-            "--limit" => limit = v.parse().ok()?,
-            _ => return None,
+            // Flags with no value. `--labels`: the adapter shows labels, so a history line with its secret masked in
+            // its label may be offered; an adapter that shows what it inserts never gets one.
+            "--live" => live = true,
+            "--labels" => labels = true,
+            _ => {
+                let v = args.next()?;
+                match flag.as_str() {
+                    "--session" => session = Some(v),
+                    "--cwd" => cwd = Some(v),
+                    "--cursor-byte" => cursor = Some(v.parse::<usize>().ok()?),
+                    "--buffer" => buffer = Some(v),
+                    "--limit" => limit = v.parse().ok()?,
+                    _ => return None,
+                }
+            }
         }
     }
     let (session, cwd, cursor, buffer) = (session?, cwd?, cursor?, buffer?);
     let sock = paths::socket_path();
 
     let attempt = || match sub.as_str() {
-        "menu" => client::menu(&sock, &session, &cwd, &buffer, cursor, limit, live).map(|items| {
+        "menu" => client::menu(&sock, &session, &cwd, &buffer, cursor, limit, live).map(|mut items| {
+            items.retain(|i| labels || i.kind != "history" || i.label == i.edit.insert);
             (!items.is_empty()).then(|| {
                 for i in items {
                     let e = i.edit;

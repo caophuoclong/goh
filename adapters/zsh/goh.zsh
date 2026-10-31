@@ -476,12 +476,13 @@ _goh_render() {
   hl+=("$#rows 0 ${#desc} $muted")
 
   # Until you move in the menu, the best whole line from history shows as ghost text, as with zsh-autosuggestions:
-  # → takes that line, Tab the selected suggestion.
+  # → takes that line, Tab the selected suggestion. A history line's ghost is its label: a secret in it is masked
+  # there (`TOKEN=****`), and only taking it inserts the line itself.
   _goh_ghost_line=0
   if (( ! _goh_navigated && CURSOR == ${#BUFFER} )); then
     _goh_bytes "$BUFFER"
     for (( i = 1; i <= $#_goh_kind; i++ )); do
-      if [[ ${_goh_kind[i]} == history && ${_goh_start[i]} == 0 && ${_goh_end[i]} == $REPLY && ${_goh_insert[i]} == "$BUFFER"?* ]]; then
+      if [[ ${_goh_kind[i]} == history && ${_goh_start[i]} == 0 && ${_goh_end[i]} == $REPLY && ${_goh_label[i]} == "$BUFFER"?* ]]; then
         _goh_ghost_line=$i
         break
       fi
@@ -515,11 +516,13 @@ _goh_render() {
   _goh_clear_ghost
   local ghost= buflen
   _goh_bytes "$BUFFER"; buflen=$REPLY
-  if (( _goh_end[_goh_sel] == buflen && CURSOR == ${#BUFFER} )); then
+  if [[ ${_goh_kind[_goh_sel]} == history ]]; then
+    [[ ${_goh_label[_goh_sel]} == "$BUFFER"?* && CURSOR -eq ${#BUFFER} ]] && ghost=${_goh_label[_goh_sel]#"$BUFFER"}
+  elif (( _goh_end[_goh_sel] == buflen && CURSOR == ${#BUFFER} )); then
     _goh_tail "$BUFFER" ${_goh_start[_goh_sel]} "${_goh_insert[_goh_sel]}"
     ghost=$_goh_tail_out
   fi
-  (( _goh_ghost_line )) && ghost=${_goh_insert[_goh_ghost_line]#"$BUFFER"}
+  (( _goh_ghost_line )) && ghost=${_goh_label[_goh_ghost_line]#"$BUFFER"}
 
   # Inline menu: drawn as part of the line (POSTDISPLAY, below the cursor) with real styles, so it looks the
   # same in any terminal, including the ones that cannot host the overlay (VS Code, JetBrains, Claude).
@@ -698,7 +701,7 @@ _goh_tab() {
   if [[ $CONTEXT == start && -n ${BUFFER//[[:space:]]/} ]]; then
     _goh_bytes "${BUFFER[1,CURSOR]}"
     local out
-    out=$(command $_GOH_CTL menu --session $_GOH_SESSION --cwd $PWD --limit 50 \
+    out=$(command $_GOH_CTL menu --labels --session $_GOH_SESSION --cwd $PWD --limit 50 \
           --cursor-byte $REPLY --buffer "$BUFFER" 2>/dev/null) || out=
     if [[ -n $out ]]; then
       _goh_parse_menu "$out"
@@ -790,7 +793,7 @@ _goh_live_refresh() {
     local out was_on=$_goh_on cb
     if [[ $CONTEXT != start || -z ${BUFFER//[[:space:]]/} ]]; then _goh_close; return 0; fi
     _goh_bytes "${BUFFER[1,CURSOR]}"; cb=$REPLY
-    out=$(command $_GOH_CTL menu --live --session $_GOH_SESSION --cwd $PWD --limit 50 \
+    out=$(command $_GOH_CTL menu --labels --live --session $_GOH_SESSION --cwd $PWD --limit 50 \
           --cursor-byte $cb --buffer "$BUFFER" 2>/dev/null) || out=
     [[ -n $out ]] && _goh_parse_menu "$out" || REPLY=0
     if (( REPLY >= 1 )); then
@@ -915,7 +918,7 @@ _goh_hook_predict() {
   [[ ${GOH_RECORD-} == on && ${GOH_PREDICT-off} == on && $_GOH_LIVE == on && -z $BUFFER ]] || return 0
   (( _goh_busy )) && return 0
   local out
-  out=$(command $_GOH_CTL menu --live --session $_GOH_SESSION --cwd $PWD --limit 1 --cursor-byte 0 --buffer '' 2>/dev/null) || return 0
+  out=$(command $_GOH_CTL menu --labels --live --session $_GOH_SESSION --cwd $PWD --limit 1 --cursor-byte 0 --buffer '' 2>/dev/null) || return 0
   [[ -n $out ]] || return 0
   local -a f
   f=("${(@ps:\x1f:)${out%%$'\n'*}}")
