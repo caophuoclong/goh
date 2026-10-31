@@ -3,7 +3,7 @@
 //! The rest is what the shell adapters call.
 //!
 //! Adapter helper.
-//!   goh menu     --session S --cwd D --cursor-byte N --buffer B [--limit N] [--live]
+//!   goh menu     --session S --cwd D --cursor-byte N --buffer B [--limit N] [--live] [--late]
 //!       --live: as-you-type; no output unless the line is a recognised command in progress
 //!       -> one line per candidate: start US end US cursor US kind US label US insert US description US ranges US value US used
 //!          (ranges = `s-e,s-e` byte ranges of the label that matched; may be empty)
@@ -642,13 +642,16 @@ fn run() -> Option<()> {
         return list_specs(&rest);
     }
     let (mut session, mut cwd, mut cursor, mut buffer, mut limit) = (None, None, None, None, 8usize);
-    let (mut live, mut labels) = (false, false);
+    let (mut live, mut labels, mut late) = (false, false, false);
     while let Some(flag) = args.next() {
         match flag.as_str() {
             // Flags with no value. `--labels`: the adapter shows labels, so a history line with its secret masked in
             // its label may be offered; an adapter that shows what it inserts never gets one.
             "--live" => live = true,
             "--labels" => labels = true,
+            // `--late`: print a last line `pending` while a program asked for values has not answered, so the
+            // adapter can ask again; other adapters never see it.
+            "--late" => late = true,
             _ => {
                 let v = args.next()?;
                 match flag.as_str() {
@@ -666,19 +669,22 @@ fn run() -> Option<()> {
     let sock = paths::socket_path();
 
     let attempt = || match sub.as_str() {
-        "menu" => client::menu(&sock, &session, &cwd, &buffer, cursor, limit, live).map(|mut items| {
+        "menu" => client::menu(&sock, &session, &cwd, &buffer, cursor, limit, live).map(|(mut items, pending)| {
             items.retain(|i| labels || i.kind != "history" || i.label == i.edit.insert);
-            (!items.is_empty()).then(|| {
-                for i in items {
-                    let e = i.edit;
-                    let ranges: Vec<String> = i.matches.iter().map(|r| format!("{}-{}", r[0], r[1])).collect();
-                    let flag = |b: bool| if b { "1" } else { "" };
-                    println!(
-                        "{}\x1f{}\x1f{}\x1f{}\x1f{}\x1f{}\x1f{}\x1f{}\x1f{}\x1f{}",
-                        e.start, e.end, e.cursor, i.kind, i.label, e.insert, i.description, ranges.join(","), flag(i.takes_value), flag(i.used)
-                    );
-                }
-            })
+            let pending = pending && late;
+            for i in &items {
+                let e = &i.edit;
+                let ranges: Vec<String> = i.matches.iter().map(|r| format!("{}-{}", r[0], r[1])).collect();
+                let flag = |b: bool| if b { "1" } else { "" };
+                println!(
+                    "{}\x1f{}\x1f{}\x1f{}\x1f{}\x1f{}\x1f{}\x1f{}\x1f{}\x1f{}",
+                    e.start, e.end, e.cursor, i.kind, i.label, e.insert, i.description, ranges.join(","), flag(i.takes_value), flag(i.used)
+                );
+            }
+            if pending {
+                println!("pending");
+            }
+            (!items.is_empty() || pending).then_some(())
         }),
         "complete" => client::complete(&sock, &session, &cwd, &buffer, cursor, live).map(|(_, _, r)| {
             matches!(r, Reply::Results { .. }).then(|| println!("{}", serde_json::to_string_pretty(&r).unwrap_or_default()))

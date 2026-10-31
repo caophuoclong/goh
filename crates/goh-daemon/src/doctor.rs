@@ -207,7 +207,7 @@ pub fn round_trip(sock: &Path) -> RoundTrip {
     let reply = crate::client::menu(sock, &session, "/", TEST_LINE, TEST_LINE.len(), 20, false);
     let millis = start.elapsed().as_millis();
     match reply {
-        Ok(items) if items.iter().any(|i| i.label == TEST_EXPECT) => RoundTrip::Offered { millis },
+        Ok((items, _)) if items.iter().any(|i| i.label == TEST_EXPECT) => RoundTrip::Offered { millis },
         Ok(_) => RoundTrip::Nothing { millis },
         Err(e) => RoundTrip::Failed(e.to_string()),
     }
