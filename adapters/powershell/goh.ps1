@@ -206,11 +206,24 @@ function Import-GohPredictor {
     }
 }
 
+# GOH_LIVE as the shell sees it: the environment variable if you set one, else display.live from the config file
+# (`goh config env` prints NAME=value lines, as zsh and bash read them). Empty when neither says. Never throws.
+function Get-GohLive {
+    try {
+        if ($env:GOH_LIVE) { return $env:GOH_LIVE }
+        foreach ($line in @(& goh config env 2>$null)) {
+            if ([string]$line -match '^GOH_LIVE=(.*)$') { return $Matches[1].Trim() }
+        }
+    } catch { }
+    return ''
+}
+
 # Show the predictor's list as you type: add goh to PSReadLine's prediction sources and use the list view. Nothing
-# at all when GOH_LIVE=off (display.live). The user's own choice of source is kept, only widened. Never throws.
+# at all when GOH_LIVE=off or display.live is false. The user's own choice of source is kept, only widened. Never
+# throws.
 function Enable-GohPredictor {
     try {
-        if ($env:GOH_LIVE -eq 'off') { return }
+        if ((Get-GohLive) -eq 'off') { return }
         $psrl = Get-Module PSReadLine
         if (-not $psrl -or $psrl.Version -lt [version]'2.2.2') { return }
         if (-not (Import-GohPredictor)) { return }

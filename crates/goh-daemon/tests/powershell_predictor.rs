@@ -136,6 +136,25 @@ fn live_off_does_nothing_and_live_on_widens_the_prediction_source() {
 }
 
 #[test]
+fn display_live_false_in_the_config_file_turns_the_predictor_off() {
+    let Some((pwsh, locale)) = setup() else { return };
+    let fx = Fixture::new(locale, true);
+    let config = fx.path("config.json");
+    fs::write(&config, r#"{"display":{"live":false}}"#).unwrap();
+    let script = format!("{WITH_PSREADLINE}. '{}'\n{LOADED}", adapter().display());
+    let args = ["-NoProfile", "-NonInteractive", "-Command", script.as_str()];
+    // The fixture sets GOH_LIVE=off for the Tab tests; here only the config file says so.
+    let mut cmd = fx.command(pwsh.to_str().unwrap(), &args, &[("GOH_CONFIG", config.to_str().unwrap())]);
+    let t = text(&cmd.env_remove("GOH_LIVE").output().unwrap());
+    assert!(t.contains("LOADED False History InlineView"), "display.live: false leaves PSReadLine alone: {t}");
+    assert!(!fx.path(".cache/goh/powershell").exists(), "and compiles nothing: {t}");
+    // The environment variable still wins over the file.
+    let env = [("GOH_CONFIG", config.to_str().unwrap()), ("GOH_LIVE", "on")];
+    let on = text(&dot_source_with_psreadline(&fx, &pwsh, LOADED, &env));
+    assert!(on.contains("LOADED True HistoryAndPlugin ListView"), "{on}");
+}
+
+#[test]
 fn the_daemon_is_started_only_when_its_socket_is_missing() {
     let Some((pwsh, locale)) = setup() else { return };
     let fx = Fixture::new(locale, true);
