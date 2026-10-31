@@ -1587,6 +1587,33 @@ fn slow_docker_shell(fx: &Fixture, delay: &str) -> Pty {
     sh
 }
 
+/// Presses Ctrl-C and waits (up to 3 s) for the fresh `READY> ` prompt.
+fn ctrl_c_returns_the_prompt(sh: &mut Pty) -> bool {
+    sh.write_all_keys(b"\x03");
+    let (start, mut out) = (Instant::now(), String::new());
+    while start.elapsed() < Duration::from_secs(3) && !out.contains("READY> ") {
+        out.push_str(&String::from_utf8_lossy(&sh.drain(Duration::from_millis(20), Duration::from_millis(100))));
+    }
+    out.contains("READY> ")
+}
+
+#[test]
+fn ctrl_c_while_a_late_answer_is_pending_aborts_the_line_at_once() {
+    let locale = require_env!();
+    // The adapter asks again every ~0.4 s while a program is slow, and each ask holds the shell for a moment: a
+    // Ctrl-C landing in that moment used to be acted on only at the next key. A fresh shell each time (the daemon
+    // remembers how long a program has been slow) and a Ctrl-C a few seconds in make that about a third of the tries.
+    for _ in 0..6 {
+        let fx = Fixture::new(locale.clone(), false);
+        let mut sh = slow_docker_shell(&fx, "20");
+        sh.send("docker exec ", 800);
+        sh.drain(Duration::from_millis(1800), Duration::from_millis(1800));
+        let back = ctrl_c_returns_the_prompt(&mut sh);
+        kill_socket_holder(&fx.socket);
+        assert!(back, "Ctrl-C was swallowed until the next key");
+    }
+}
+
 #[test]
 fn a_new_prompt_starts_the_late_answer_count_again() {
     let fx = Fixture::new(require_env!(), false);
@@ -1598,7 +1625,7 @@ fn a_new_prompt_starts_the_late_answer_count_again() {
     assert!(!asked.starts_with("TRIES=0 "), "the line has been re-asked a few times: {asked}");
     // Without the reset, the same line typed at a later prompt would carry the count over and give up at once once
     // it had passed 16.
-    sh.send("\x03", 500);
+    assert!(ctrl_c_returns_the_prompt(&mut sh), "Ctrl-C brings the prompt back");
     let fresh = fx.state_file(&mut sh, "\x18l", "late.txt");
     kill_socket_holder(&fx.socket);
     assert_eq!(fresh, "TRIES=0 LINE[]", "a new prompt counts again from nothing");

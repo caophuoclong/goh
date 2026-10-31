@@ -297,8 +297,19 @@ _goh_late_wait() {
   zle -F -w $_goh_late_fd _goh_on_late
 }
 
+# zle does not look at a Ctrl-C that arrives while a handler runs (the re-ask below waits on `goh` for a moment,
+# several times a second): it would act on it only at the next key, so Ctrl-C seemed to do nothing. Catch it here and
+# raise it again once zle is waiting for input, where it aborts the line as usual.
 _goh_on_late() {
   emulate -L zsh
+  setopt localtraps
+  local interrupted=0
+  trap 'interrupted=1' INT
+  _goh_on_late_ask
+  (( interrupted )) && { command sleep 0.05; kill -INT $$ } &!
+}
+
+_goh_on_late_ask() {
   _goh_late_stop
   [[ $_goh_late_line == "$CURSOR:$BUFFER" && $CONTEXT == start ]] || return 0
   # A refresh would put the selection back on the first row: once the user has moved in the menu, stop asking.

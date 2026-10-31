@@ -48,6 +48,7 @@ in an IDE. Load it with `goh setup` or `eval "$(goh init zsh)"`.
 
 ## Changes
 
+- unreleased: Ctrl+C pressed while a slow program is still answering aborts the line at once, instead of seeming to do nothing until the next key.
 - unreleased: a line that gave up waiting for a slow program no longer makes the same line at a later prompt give up at once; `goh-unload` stops a pending wait.
 - unreleased: the box lands under the word with `prompt_subst` prompts (oh-my-zsh, powerlevel10k, starship), and its right border stays straight with wide characters.
 - unreleased: late values from slow programs appear without another key.
