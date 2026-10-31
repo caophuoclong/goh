@@ -946,13 +946,12 @@ fn ghost_color_is_removed_after_refresh_accept_and_dismissal() {
         ),
         300,
     );
-    for key in ["\t", "\r", "\x1b[C"] {
+    for key in ["\t", "\x1b[C"] {
         sh.send("git c", 300);
         sh.send("\x18h", 100); // unrelated highlighting must survive our cleanup
         sh.send("h", 300); // redraw the ghost at a new span
         let s = fx.state_file(&mut sh, "\x18c", "colors.txt");
         assert_eq!(s.matches(";P6 ").count(), 1, "refresh must replace, not accumulate, ghost colors: {s}");
-        if key == "\r" { sh.send("\x1b[B\x1b[A", 200); } // Enter selects only after navigation.
         sh.send(key, 300);
         let s = fx.state_file(&mut sh, "\x18c", "colors.txt");
         assert_eq!(s, "BUF[git checkout ] POST[] H:[0 1 bold]", "{key:?}: accepted text has no ghost color");
@@ -1115,7 +1114,7 @@ fn accepted_text_is_not_left_in_another_plugins_suggestion_highlight() {
 }
 
 #[test]
-fn enter_accepts_after_navigation_or_a_lone_candidate_and_executes_an_untouched_menu() {
+fn enter_takes_after_navigation_or_a_lone_candidate_and_runs_the_line() {
     let fx = Fixture::new(require_env!(), true);
     let mut sh = fx.shell(LIVE, true);
     let ran = fx.path("ran.txt");
@@ -1145,9 +1144,8 @@ fn enter_accepts_after_navigation_or_a_lone_candidate_and_executes_an_untouched_
         assert!(fx.state(&mut sh).starts_with("BUF[] CUR=0 on=0"), "untouched Enter runs the typed line");
         sh.send("git c", 400);
         sh.send("\x1b[B", 200);
-        sh.send(key, 300);
-        assert!(fx.state(&mut sh).starts_with("BUF[git cherry-pick ] CUR=16 on=0"), "navigated Enter inserts without running");
         sh.send(key, 400);
+        assert!(fx.state(&mut sh).starts_with("BUF[] CUR=0 on=0"), "navigated Enter takes the candidate and runs the line");
         assert_eq!(fx.keymap(&mut sh, 1), keys);
     }
     // Editing starts a new query and removes Enter's navigation intent.
@@ -1156,14 +1154,26 @@ fn enter_accepts_after_navigation_or_a_lone_candidate_and_executes_an_untouched_
     sh.send("h", 300);
     sh.send("\r", 400);
     assert!(fx.state(&mut sh).starts_with("BUF[] CUR=0 on=0"));
-    // A lone candidate needs no navigation: Enter inserts it without running, and the next Enter runs.
+    // A lone candidate needs no navigation: Enter takes it and runs the line.
     sh.send("git chec", 400);
     assert_eq!(fx.state(&mut sh), "BUF[git chec] CUR=8 on=1 sel=1 post[kout ]");
     sh.send("\r", 400);
-    assert!(fx.state(&mut sh).starts_with("BUF[git checkout ] CUR=13 on=0"), "Enter takes the only candidate");
+    assert!(fx.state(&mut sh).starts_with("BUF[] CUR=0 on=0"), "Enter takes the only candidate and runs it");
+    assert_eq!(fs::read_to_string(&ran).unwrap(), "c\ncherry-pick\nc\ncherry-pick\nch\ncheckout\n");
+    // A line that cannot be complete yet is only inserted: an option that wants its value.
+    sh.send("git -", 500);
+    let s = fx.state(&mut sh);
+    sh.send("\r", 600);
+    let after = fx.state(&mut sh);
+    assert!(after.starts_with("BUF[git -C "), "Enter inserts an option that takes a value without running: {s} -> {after}");
+    sh.send(CLEAR, 100);
+    // display.enterRuns off: Enter only inserts, and the next Enter runs.
+    sh.send("GOH_ENTER_RUNS=off\n", 300);
+    sh.send("git chec", 400);
+    sh.send("\r", 400);
+    assert!(fx.state(&mut sh).starts_with("BUF[git checkout ] CUR=13 on=0"), "with enterRuns off Enter only inserts");
     sh.send("\r", 400);
     assert!(fx.state(&mut sh).starts_with("BUF[] CUR=0 on=0"));
-    assert_eq!(fs::read_to_string(ran).unwrap(), "c\ncherry-pick\nc\ncherry-pick\nch\ncheckout\n");
 }
 
 #[test]

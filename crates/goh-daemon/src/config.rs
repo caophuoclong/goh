@@ -157,7 +157,7 @@ pub fn validate(text: &str) -> Result<(), String> {
             return Err(format!("display.live must be true or false, not {live}"));
         }
     }
-    for (path, name) in [("/display/predict", "display.predict"), ("/privacy/recordCommands", "privacy.recordCommands"), ("/completion/autoSpecs", "completion.autoSpecs"), ("/updates/check", "updates.check"), ("/popup/ownPermission", "popup.ownPermission"), ("/popup/overSsh", "popup.overSsh")] {
+    for (path, name) in [("/display/predict", "display.predict"), ("/display/enterRuns", "display.enterRuns"), ("/privacy/recordCommands", "privacy.recordCommands"), ("/completion/autoSpecs", "completion.autoSpecs"), ("/updates/check", "updates.check"), ("/popup/ownPermission", "popup.ownPermission"), ("/popup/overSsh", "popup.overSsh")] {
         if let Some(value) = v.pointer(path).filter(|value| !value.is_boolean()) {
             return Err(format!("{name} must be true or false, not {value}"));
         }
@@ -182,7 +182,7 @@ pub fn env_lines(v: &Value) -> Vec<String> {
     if let Some(live) = v.pointer("/display/live").and_then(Value::as_bool) {
         out.push(format!("GOH_LIVE={}", if live { "on" } else { "off" }));
     }
-    for (path, name) in [("/display/predict", "GOH_PREDICT"), ("/privacy/recordCommands", "GOH_RECORD"), ("/updates/check", "GOH_UPDATE_CHECK"), ("/popup/ownPermission", "GOH_POPUP_OWN_PERMISSION"), ("/popup/overSsh", "GOH_POPUP_SSH")] {
+    for (path, name) in [("/display/predict", "GOH_PREDICT"), ("/display/enterRuns", "GOH_ENTER_RUNS"), ("/privacy/recordCommands", "GOH_RECORD"), ("/updates/check", "GOH_UPDATE_CHECK"), ("/popup/ownPermission", "GOH_POPUP_OWN_PERMISSION"), ("/popup/overSsh", "GOH_POPUP_SSH")] {
         if let Some(on) = v.pointer(path).and_then(Value::as_bool) {
             out.push(format!("{name}={}", if on { "on" } else { "off" }));
         }
@@ -224,7 +224,7 @@ mod tests {
         let v = goh_theme::parse_config(TEMPLATE).unwrap();
         let example: Value = serde_json::from_str(include_str!("../../../docs/examples/config.json")).unwrap();
         assert_eq!(v, example, "the commented template and the schema-checked example say the same");
-        assert_eq!(env_lines(&v), ["GOH_DISPLAY=auto", "GOH_LIMIT=8", "GOH_LIVE=on", "GOH_PREDICT=off", "GOH_RECORD=off", "GOH_UPDATE_CHECK=off", "GOH_POPUP_OWN_PERMISSION=off", "GOH_POPUP_SSH=on"]);
+        assert_eq!(env_lines(&v), ["GOH_DISPLAY=auto", "GOH_LIMIT=8", "GOH_LIVE=on", "GOH_PREDICT=off", "GOH_ENTER_RUNS=on", "GOH_RECORD=off", "GOH_UPDATE_CHECK=off", "GOH_POPUP_OWN_PERMISSION=off", "GOH_POPUP_SSH=on"]);
     }
 
     #[test]

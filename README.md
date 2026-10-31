@@ -23,8 +23,9 @@ It reproduces what Fig was useful for, not its branding, and has no dependency o
   `git checkout -b fix`), shows the command that usually comes next, and remembers the values you gave an option (see
   [Privacy](#privacy)). The best of those lines is shown as ghost text after the cursor, as zsh-autosuggestions does:
   → takes the whole line, Tab the selected suggestion.
-- Enter inserts the highlighted suggestion once you have moved in the menu (↑↓), or the only one when the menu shows
-  just one; press Enter again to run. With several untouched suggestions, Enter runs the line as typed.
+- Enter takes the highlighted suggestion once you have moved in the menu (↑↓), or the only one when the menu shows
+  just one, and runs the line; an option that wants its value, or a folder, is only inserted. With several untouched
+  suggestions, Enter runs the line as typed. `display.enterRuns: false` makes Enter only insert (a second Enter runs).
 - Never executes anything for you: it only inserts the candidate you pick.
 - Runs fully local. Command text is not sent over the network (the one optional request is the update check, see [Privacy](#privacy)).
 
