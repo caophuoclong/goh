@@ -62,7 +62,16 @@ pub enum Request {
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum Reply {
-    Results { v: u32, session_id: String, generation: u64, suggestions: Vec<Candidate> },
+    Results {
+        v: u32,
+        session_id: String,
+        generation: u64,
+        suggestions: Vec<Candidate>,
+        /// A program asked for these suggestions (Docker, a cluster, ...) has not answered yet; asking again soon
+        /// may bring more.
+        #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+        pending: bool,
+    },
     Edit {
         v: u32,
         session_id: String,

@@ -65,7 +65,8 @@
       "required": ["type", "suggestions"],
       "properties": {
         "type": { "const": "results" },
-        "suggestions": { "type": "array", "maxItems": 50, "items": { "$ref": "#/$defs/suggestion" } }
+        "suggestions": { "type": "array", "maxItems": 50, "items": { "$ref": "#/$defs/suggestion" } },
+        "pending": { "type": "boolean", "description": "A program asked for values has not answered yet; asking again soon may bring more." }
       }
     },
     "accept": {

@@ -70,6 +70,11 @@ impl Default for Providers {
 
 impl Providers {
     pub fn values(&self, provider: Provider, cwd: &Path) -> Vec<Suggestion> {
+        self.values_or_pending(provider, cwd).0
+    }
+
+    /// Like `values`, with `true` while a program has been asked for them and has never answered.
+    pub fn values_or_pending(&self, provider: Provider, cwd: &Path) -> (Vec<Suggestion>, bool) {
         if matches!(provider, Provider::KubePods | Provider::KubeNamespaces) {
             // Nothing until the first answer, and nothing once it fails (another context's pods would be wrong).
             let context = crate::sources::values(Provider::KubeContexts, &self.home)
@@ -92,23 +97,24 @@ impl Providers {
                 Provider::Processes | Provider::ProcessNames => (&self.ps, String::new(), Path::new("/")),
                 _ => (&self.docker, String::new(), Path::new("/")),
             };
-            let values = self.ask(provider, key, bin, dir, TTL, DEADLINE);
+            let (values, pending) = self.ask(provider, key, bin, dir, TTL, DEADLINE);
             if provider == Provider::FrecentDirs && values.is_empty() {
                 // zoxide missing, failing, slow or empty: use goh's own history.
-                return crate::visits::ranked(&self.visits, crate::visits::now())
+                let own = crate::visits::ranked(&self.visits, crate::visits::now())
                     .into_iter()
                     .map(|name| Suggestion { name, description: None, insert_value: None })
                     .collect();
+                return (own, false);
             }
-            return values;
+            return (values, pending);
         }
         let key = (provider, if project { cwd.to_path_buf() } else { PathBuf::new() });
         // Never queue input behind another refresh.
         let Ok(mut cache) = self.cache.try_lock() else {
-            return vec![];
+            return (vec![], false);
         };
         if let Some((_, values)) = cache.get(&key).filter(|(at, _)| at.elapsed() < TTL) {
-            return values.clone();
+            return (values.clone(), false);
         }
         let values = if crate::packages::reads(provider) {
             crate::packages::values(provider, &self.home, cwd)
@@ -118,15 +124,15 @@ impl Providers {
             crate::sources::values(provider, &self.home)
         };
         cache.insert(key, (Instant::now(), values.clone()));
-        values
+        (values, false)
     }
 
     /// What `bin` answers for `provider`: asked again in the background once its last answer is `ttl` old, waiting
     /// up to `wait` for it unless it was slower than that last time; what it said last otherwise (nothing before its
-    /// first answer).
-    fn ask(&self, provider: Provider, key: String, bin: &Path, dir: &Path, ttl: Duration, wait: Duration) -> Vec<Suggestion> {
+    /// first answer). `true` with the values while it has been asked and has never answered: an answer is on its way.
+    fn ask(&self, provider: Provider, key: String, bin: &Path, dir: &Path, ttl: Duration, wait: Duration) -> (Vec<Suggestion>, bool) {
         let (lock, arrived) = &*self.asked;
-        let Ok(mut asked) = lock.lock() else { return vec![] };
+        let Ok(mut asked) = lock.lock() else { return (vec![], false) };
         let key = (provider, key);
         let answer = asked.entry(key.clone()).or_default();
         let wait = if answer.slow { Duration::ZERO } else { wait };
@@ -144,10 +150,10 @@ impl Providers {
             });
         }
         if !wait.is_zero() {
-            let Ok((waited, _)) = arrived.wait_timeout_while(asked, wait, |a| a.get(&key).is_some_and(|x| x.asking)) else { return vec![] };
+            let Ok((waited, _)) = arrived.wait_timeout_while(asked, wait, |a| a.get(&key).is_some_and(|x| x.asking)) else { return (vec![], false) };
             asked = waited;
         }
-        asked.get(&key).map(|a| a.values.clone()).unwrap_or_default()
+        asked.get(&key).map(|a| (a.values.clone(), a.asking && a.at.is_none())).unwrap_or_default()
     }
 }
 
@@ -418,6 +424,22 @@ mod tests {
             }
         }
         p
+    }
+
+    #[test]
+    fn a_first_slow_answer_is_reported_as_pending() {
+        let dir = tempfile::tempdir().unwrap();
+        let docker = script(dir.path(), "sleep 0.5\necho '{\"Names\":\"web-1\",\"Image\":\"nginx\"}'");
+        let providers = Providers { docker, home: dir.path().to_path_buf(), ..Providers::default() };
+        let (values, pending) = providers.values_or_pending(Provider::DockerContainers, Path::new("/"));
+        assert!(values.is_empty() && pending, "nothing yet, and an answer is on its way");
+        let deadline = Instant::now() + Duration::from_secs(5);
+        while providers.values(Provider::DockerContainers, Path::new("/")).is_empty() && Instant::now() < deadline {
+            std::thread::sleep(Duration::from_millis(20));
+        }
+        let (values, pending) = providers.values_or_pending(Provider::DockerContainers, Path::new("/"));
+        assert_eq!((values[0].name.as_str(), pending), ("web-1", false));
+        assert!(!providers.values_or_pending(Provider::SshHosts, Path::new("/")).1, "files are read at once");
     }
 
     #[test]
