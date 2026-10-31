@@ -10,6 +10,10 @@
     //   "overlay": always try the popup
     //   "inline":  always in the terminal, under the line (no popup, no Accessibility permission)
     "mode": "auto",
+    // How the menu looks when it is drawn in the terminal (not in the popup).
+    //   "box":  a framed box under the word you are completing, like a popup
+    //   "flat": plain rows under the line, with no frame (easier for a screen reader)
+    "inlineStyle": "box",
     // How many suggestions the menu shows at once (1-50); more are reached with Up/Down.
     "maxSuggestions": 8,
     // true: the menu opens by itself as you type. false: only when you press Tab.

@@ -147,6 +147,11 @@ pub fn validate(text: &str) -> Result<(), String> {
             return Err(format!("display.mode must be \"auto\", \"overlay\" or \"inline\", not {mode}"));
         }
     }
+    if let Some(style) = v.pointer("/display/inlineStyle") {
+        if !matches!(style.as_str(), Some("box" | "flat")) {
+            return Err(format!("display.inlineStyle must be \"box\" or \"flat\", not {style}"));
+        }
+    }
     if let Some(n) = v.pointer("/display/maxSuggestions") {
         if !n.as_u64().is_some_and(|n| (1..=50).contains(&n)) {
             return Err(format!("display.maxSuggestions must be a whole number from 1 to 50, not {n}"));
@@ -175,6 +180,9 @@ pub fn env_lines(v: &Value) -> Vec<String> {
     let mut out = Vec::new();
     if let Some(m) = v.pointer("/display/mode").and_then(Value::as_str).filter(|m| matches!(*m, "auto" | "overlay" | "inline")) {
         out.push(format!("GOH_DISPLAY={m}"));
+    }
+    if let Some(s) = v.pointer("/display/inlineStyle").and_then(Value::as_str).filter(|s| matches!(*s, "box" | "flat")) {
+        out.push(format!("GOH_INLINE_STYLE={s}"));
     }
     if let Some(n) = v.pointer("/display/maxSuggestions").and_then(Value::as_u64).filter(|n| (1..=50).contains(n)) {
         out.push(format!("GOH_LIMIT={n}"));
@@ -224,7 +232,7 @@ mod tests {
         let v = goh_theme::parse_config(TEMPLATE).unwrap();
         let example: Value = serde_json::from_str(include_str!("../../../docs/examples/config.json")).unwrap();
         assert_eq!(v, example, "the commented template and the schema-checked example say the same");
-        assert_eq!(env_lines(&v), ["GOH_DISPLAY=auto", "GOH_LIMIT=8", "GOH_LIVE=on", "GOH_PREDICT=off", "GOH_ENTER_RUNS=on", "GOH_RECORD=off", "GOH_UPDATE_CHECK=off", "GOH_POPUP_OWN_PERMISSION=off", "GOH_POPUP_SSH=on"]);
+        assert_eq!(env_lines(&v), ["GOH_DISPLAY=auto", "GOH_INLINE_STYLE=box", "GOH_LIMIT=8", "GOH_LIVE=on", "GOH_PREDICT=off", "GOH_ENTER_RUNS=on", "GOH_RECORD=off", "GOH_UPDATE_CHECK=off", "GOH_POPUP_OWN_PERMISSION=off", "GOH_POPUP_SSH=on"]);
     }
 
     #[test]
@@ -243,7 +251,7 @@ mod tests {
         let v = goh_theme::parse_config(&new).unwrap();
         assert_eq!(v.pointer("/theme/background"), Some(&Value::from("#111111")), "settings the template does not name stay");
         assert_eq!((v.pointer("/$schema"), v.pointer("/display/live")), (Some(&Value::from("x")), Some(&Value::Bool(true))));
-        assert_eq!(env_lines(&v)[..2], ["GOH_DISPLAY=inline", "GOH_LIMIT=5"]);
+        assert_eq!(env_lines(&v)[..3], ["GOH_DISPLAY=inline", "GOH_INLINE_STYLE=box", "GOH_LIMIT=5"], "a missing setting gets its default");
 
         assert!(commented(&new).is_none(), "a file with comments is left alone");
         assert!(commented("{ nope").is_none() && commented(r#"{"display":{"mode":"popup"}}"#).is_none(), "nor one that does not check out");
@@ -273,6 +281,14 @@ mod tests {
         assert!(validate(r#"{"display":{"predict":null}}"#).unwrap_err().contains("display.predict"));
         assert!(validate(r#"{"popup":{"ownPermission":"yes"}}"#).unwrap_err().contains("popup.ownPermission"));
         validate("{}").unwrap();
+    }
+
+    #[test]
+    fn the_inline_style_is_box_or_flat() {
+        assert!(validate(r#"{"display":{"inlineStyle":"flat"}}"#).is_ok());
+        assert!(validate(r#"{"display":{"inlineStyle":"round"}}"#).unwrap_err().contains("display.inlineStyle"));
+        let v: Value = serde_json::from_str(r#"{"display":{"inlineStyle":"round"}}"#).unwrap();
+        assert!(env_lines(&v).iter().all(|l| !l.starts_with("GOH_INLINE_STYLE")), "a bad value is not exported");
     }
 
     #[test]
