@@ -1,0 +1,29 @@
+name: Feature specs
+
+# docs/features holds one spec per feature; release notes and docs are written from it. Every spec must be well
+# formed and indexed, and a feat/fix/perf pull request that changes what goh does must update one (the `no-spec`
+# label skips that). Runs again when the title or the labels change, since both decide the result.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited, labeled, unlabeled]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  feature-specs:
+    name: Feature specs
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Check docs/features
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          TITLE: ${{ github.event.pull_request.title }}
+          NO_SPEC: ${{ contains(github.event.pull_request.labels.*.name, 'no-spec') }}
+        run: scripts/check-feature-specs.sh

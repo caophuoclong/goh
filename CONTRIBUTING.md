@@ -24,9 +24,17 @@ a `goh` and a `gohd` of the same version, the crates' Rust APIs) are not.
 Pull requests are squash-merged, so **the PR title is the commit message**; a check fails the PR when it does not
 follow the format.
 
+## Feature specs
+
+[docs/features](docs/features/README.md) holds one spec per feature; release notes and docs are written from it.
+A change a user can notice updates its feature's spec in the same pull request (the text, `updated`, and a line
+under `## Changes`); a new feature adds a spec and a row in the index. CI fails a `feat`/`fix`/`perf` pull request
+that changes what goh does without touching a spec, unless it carries the `no-spec` label.
+
 ## Before you push
 
 ```bash
 cargo test --workspace --locked      # the whole suite, including real zsh/bash on a pseudo-terminal
 shellcheck install.sh scripts/*.sh
+scripts/check-feature-specs.sh       # the specs in docs/features are well formed and indexed
 ```
