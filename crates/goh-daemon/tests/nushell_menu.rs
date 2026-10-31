@@ -4,6 +4,7 @@
 mod common;
 
 use std::path::{Path, PathBuf};
+use std::process::Command;
 use std::time::{Duration, Instant};
 
 use common::{utf8_locale, Fixture, Pty};
@@ -61,6 +62,24 @@ fn type_keys(sh: &mut Pty, keys: &str, quiet_ms: u64) -> Vec<u8> {
     pump(sh, quiet_ms, 4000)
 }
 
+fn shell(mut command: Command) -> Pty {
+    let setup = format!(
+        "source '{}'; goh-ui; $env.PROMPT_COMMAND = {{|| 'READY> '}}; $env.PROMPT_COMMAND_RIGHT = {{|| ''}}",
+        adapter().display(),
+    );
+    command.args(["-n", "-e", &setup]);
+    let mut sh = Pty::spawn(command);
+    let start = Instant::now();
+    let mut output = Vec::new();
+    while start.elapsed() < Duration::from_secs(10) {
+        output.extend(pump(&mut sh, 100, 500));
+        if screen(&output).contains("READY> ") {
+            return sh;
+        }
+    }
+    panic!("Nushell did not load the adapter and reach its prompt: {}", screen(&output));
+}
+
 #[test]
 fn space_opens_a_box_of_goh_candidates() {
     let (Some(nu), Some(locale)) = (nu(), utf8_locale()) else {
@@ -68,10 +87,7 @@ fn space_opens_a_box_of_goh_candidates() {
         return;
     };
     let fx = Fixture::new(locale, true);
-    let mut sh = Pty::spawn(fx.command(nu.to_str().unwrap(), &["-n"], &[]));
-    pump(&mut sh, 800, 5000);
-    type_keys(&mut sh, &format!("source '{}'\r", adapter().display()), 800);
-    type_keys(&mut sh, "goh-ui\r", 800);
+    let mut sh = shell(fx.command(nu.to_str().unwrap(), &[], &[]));
     type_keys(&mut sh, "git", 300);
     let shown = screen(&type_keys(&mut sh, " ", 800));
     assert!(shown.contains("checkout"), "the box lists git's subcommands: {shown}");
@@ -107,10 +123,7 @@ fn space_inserts_a_space_without_goh() {
         return;
     };
     let fx = Fixture::new(locale, false);
-    let mut sh = Pty::spawn(without_goh(&fx, &nu, &["-n"]));
-    pump(&mut sh, 800, 5000);
-    type_keys(&mut sh, &format!("source '{}'\r", adapter().display()), 800);
-    type_keys(&mut sh, "goh-ui\r", 800);
+    let mut sh = shell(without_goh(&fx, &nu, &[]));
     type_keys(&mut sh, "echo", 300);
     let shown = screen(&type_keys(&mut sh, " ", 800));
     assert!(!shown.contains("Error") && !shown.contains("External command failed"), "no error on Space: {shown}");
