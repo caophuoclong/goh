@@ -1399,6 +1399,25 @@ fn the_box_frames_the_rows_under_the_word_being_completed() {
     assert_eq!(body[0].trim_start(), format!("│{:inner$}│", "❯ ↳ checkout"));
     assert!(rows.iter().any(|r| r.trim_start().starts_with('╰')), "closed at the bottom: {rows:?}");
     assert!(h.contains("bold"), "the selected row stays bold: {h}");
+    // Highlights are `P<start> <end> <style>` counted from the start of the line; they must land on the box.
+    let row = row_offset(&rows, 2, 5);
+    let marker = row + indent + 1;
+    assert!(styles_at(&h, marker, marker + 1).any(|st| st.contains("bold")), "the bold `❯` sits on the selected row's marker (P{marker}): {h}");
+    assert!(styles_at(&h, marker, marker + inner).any(|st| st.starts_with("bg=")), "the selected row's fill spans the inside of the box, P{marker} to P{}: {h}", marker + inner);
+    let top_at = row_offset(&rows, 1, 5) + indent;
+    assert!(styles_at(&h, top_at, top_at + inner + 2).any(|st| st.starts_with("fg=")), "the top border starts at the corner (P{top_at}): {h}");
+}
+
+/// Offset, from the start of the line, of the first character of dumped row `i` (row 0 is the ghost text) when the
+/// line is `from` characters long: the ghost, a newline, then every row and its newline.
+fn row_offset(rows: &[String], i: usize, from: usize) -> usize {
+    from + rows[0].chars().count() + 1 + rows[1..i].iter().map(|r| r.chars().count() + 1).sum::<usize>()
+}
+
+/// The styles of the highlights spanning exactly `start..end` in a dumped `region_highlight`.
+fn styles_at(h: &str, start: usize, end: usize) -> impl Iterator<Item = String> + '_ {
+    let key = format!("P{start} {end} ");
+    h.split(';').filter_map(move |e| e.strip_prefix(key.as_str()).map(|st| st.to_string()))
 }
 
 #[test]
@@ -1440,4 +1459,47 @@ fn the_box_moves_left_to_stay_inside_a_narrow_terminal() {
     assert!(indent < 11, "{rows:?}");
     assert!(rows[1..].iter().all(|r| r.chars().count() <= 29), "every row fits the 30 columns: {rows:?}");
     assert!(top.trim_start().starts_with('╭') && top.ends_with('╮'), "{rows:?}");
+}
+
+#[test]
+fn the_selection_highlight_follows_the_selected_row_when_the_window_scrolls() {
+    let fx = Fixture::new(require_env!(), false);
+    let subcommands: Vec<_> = (0..12).map(|i| serde_json::json!({"name": format!("item-{i:02}")})).collect();
+    fs::write(fx.path("specs/git.json"), serde_json::json!({"schemaVersion":1,"name":"git","subcommands":subcommands}).to_string()).unwrap();
+    let mut sh = fx.shell(&[("GOH_LIVE", "on"), ("GOH_INLINE_STYLE", "box"), ("GOH_LIMIT", "2")], true);
+    menu_dump(&fx, &mut sh);
+    sh.send("git ", 400);
+    sh.send(&"\x1b[B".repeat(3), 400);
+    // Selection 4 of 12 with two rows showing: the window starts at item 3, so the selected row is the second.
+    let (rows, h) = menu(&fx, &mut sh);
+    assert!(rows[2].contains("│  ↳ item-02") && rows[3].contains("│❯ ↳ item-03"), "{rows:?}");
+    let indent = rows[1].chars().take_while(|c| *c == ' ').count();
+    let inner = rows[1].trim_start().chars().count() - 2;
+    let (first, second) = (row_offset(&rows, 2, 4) + indent + 1, row_offset(&rows, 3, 4) + indent + 1);
+    assert!(styles_at(&h, second, second + inner).any(|st| st.starts_with("bg=")), "the selected fill is on the second row (P{second}): {h}");
+    assert!(!styles_at(&h, first, first + inner).any(|st| st.starts_with("bg=")), "and not on the first (P{first}): {h}");
+    assert!(styles_at(&h, second, second + 1).any(|st| st.contains("bold")), "the bold `❯` is on the second row: {h}");
+}
+
+#[test]
+fn the_box_stays_under_the_word_when_the_selection_moves_onto_a_history_line() {
+    let fx = Fixture::new(require_env!(), false);
+    let now = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_secs();
+    fs::write(fx.path(".zsh_history"), format!(": {}:0;git commit -m wip\n: {}:0;git checkout -b done-once\n", now - 300, now - 200)).unwrap();
+    let mut sh = fx.shell(&[("GOH_LIVE", "on"), ("GOH_RECORD", "on"), ("GOH_INLINE_STYLE", "box")], true);
+    menu_dump(&fx, &mut sh);
+    // 50 columns keep the box narrow enough that it is never pushed left: only the anchor decides its column.
+    sh.send("COLUMNS=50\n", 300);
+    sh.send("git c", 1500);
+    let mut on_history = false;
+    for step in 0..4 {
+        let (rows, _) = menu(&fx, &mut sh);
+        let indent = rows[1].chars().take_while(|c| *c == ' ').count();
+        // `READY> git ` is 11 columns, and a history line starts at the beginning of the line (column 7).
+        assert_eq!(indent, 11, "step {step}: {rows:?}");
+        on_history |= rows.iter().any(|r| r.contains("│❯ ↺ git commit -m wip"));
+        sh.send("\x1b[B", 400);
+    }
+    assert!(on_history, "the selection did reach the history line");
+    kill_socket_holder(&fx.socket);
 }

@@ -392,11 +392,16 @@ _goh_byte_prefix() { local LC_ALL=C; REPLY=${1[1,$2]} }
 _goh_word_column() {
   emulate -L zsh
   setopt extended_glob
-  local p=${(%)PS1} before
+  local p=${(%)PS1} before i start=0
+  # The word being completed starts where the first non-history candidate starts: a history line starts at 0,
+  # and the box must not jump when the selection moves onto one.
+  for (( i = 1; i <= $#_goh_kind; i++ )); do
+    [[ ${_goh_kind[i]} == history ]] || { start=${_goh_start[i]:-0}; break }
+  done
   p=${p//$'\e'\[[0-9;?]#[@-~]/}            # colours and other CSI sequences take no room
   p=${p//$'\e'\][^$'\a']#$'\a'/}           # nor do OSC sequences (titles, marks)
   p=${p##*$'\n'}
-  _goh_byte_prefix "$BUFFER" ${_goh_start[_goh_sel]:-0}; before=$REPLY
+  _goh_byte_prefix "$BUFFER" $start; before=$REPLY
   if [[ $before == *$'\n'* ]]; then p= before=${before##*$'\n'}; fi
   REPLY=$(( (${(m)#p} + ${(m)#before}) % ${COLUMNS:-80} ))
 }
