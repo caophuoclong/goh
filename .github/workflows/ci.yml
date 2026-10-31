@@ -25,7 +25,21 @@ jobs:
           persist-credentials: false
       - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
       - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+      - run: brew install fish
       - run: cargo test --workspace --locked
+
+  budgets:
+    name: Speed and size budgets (release, macOS)
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+      - run: cargo build --release --locked -p goh-daemon -p goh-popup
+      - run: scripts/check-binary-size.sh
+      - run: cargo run --release --locked -p goh-core --example bench
 
   scripts:
     name: Lint scripts and workflows
