@@ -394,7 +394,7 @@ _goh_render() {
   local i k n p s e row label shown risk desc room pad
   local -a rows hl
   local width=$(( ${COLUMNS:-80} - 1 ))
-  local muted=$_goh_ghost_style accent=fg=cyan match=bold,underline warn=bold,fg=yellow
+  local muted=$_goh_ghost_style accent=fg=cyan match=bold,underline warn=bold,fg=red
   [[ ${_goh_theme[accent]-} =~ '^#[0-9a-f]{6}$' ]] && accent="fg=${_goh_theme[accent]}"
   [[ ${_goh_theme[text-match]-} =~ '^#[0-9a-f]{6}$' ]] && match+=",fg=${_goh_theme[text-match]}"
   local color=1

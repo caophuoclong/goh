@@ -32,6 +32,7 @@ Where the caret cannot be verified, the menu is drawn inline instead; nothing pr
 
 ## Changes
 
+- unreleased: warnings on risky suggestions drawn in red.
 - 1.8.0: Linux X11/AT-SPI caret and X11 surfaces.
 - 1.7.1: VS Code's accessibility tree.
 - 1.1.3: the Claude app's host fallback.

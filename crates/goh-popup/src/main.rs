@@ -112,6 +112,8 @@ struct Colors {
     muted: Color32,
     accent: Color32,
     matched: Color32,
+    /// Warnings on risky suggestions: a red that reads on this surface.
+    warning: Color32,
 }
 
 impl Colors {
@@ -130,8 +132,15 @@ impl Colors {
             muted: pick("text-muted", fallback.text_muted),
             accent: pick("accent", fallback.accent),
             matched: pick("text-match", fallback.text_match),
+            warning: warning_on(pick("surface-base", fallback.surface_base)),
         }
     }
+}
+
+/// Light red on a dark surface, dark red on a light one.
+fn warning_on(base: Color32) -> Color32 {
+    let luma = 0.2126 * f32::from(base.r()) + 0.7152 * f32::from(base.g()) + 0.0722 * f32::from(base.b());
+    if luma < 128.0 { Color32::from_rgb(0xff, 0x6b, 0x6b) } else { Color32::from_rgb(0xc6, 0x28, 0x28) }
 }
 
 struct Shown {
@@ -431,7 +440,21 @@ fn draw(ui: &mut egui::Ui, v: &View, c: &Colors, enter_accepts: bool, icons: &Ha
             x += w;
         }
         if let Some(d) = &row.description {
-            painter.text(Pos2::new(x + 2.0 * cell_width(), mid), Align2::LEFT_CENTER, d, font.clone(), c.muted);
+            let x = x + 2.0 * cell_width();
+            // A warning (`⚠ what it does — description`) is drawn in red, to be seen before it is picked.
+            match d.strip_prefix('⚠').map(|_| d.split_once(" — ").unwrap_or((d.as_str(), ""))) {
+                Some((warning, rest)) => {
+                    let galley = painter.layout_no_wrap(warning.to_string(), font.clone(), c.warning);
+                    let w = galley.size().x;
+                    painter.galley_with_override_text_color(Pos2::new(x, mid - galley.size().y / 2.0), galley, c.warning);
+                    if !rest.is_empty() {
+                        painter.text(Pos2::new(x + w, mid), Align2::LEFT_CENTER, format!(" — {rest}"), font.clone(), c.muted);
+                    }
+                }
+                None => {
+                    painter.text(Pos2::new(x, mid), Align2::LEFT_CENTER, d, font.clone(), c.muted);
+                }
+            }
         }
 
         let id = ui.scope_id().with(&row.dom_id);

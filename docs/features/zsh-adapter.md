@@ -33,6 +33,7 @@ in an IDE. Load it with `goh setup` or `eval "$(goh init zsh)"`.
 
 ## Changes
 
+- unreleased: warnings on risky suggestions in bold red; `ssh` runs through `goh ssh` (see ssh-popup).
 - 1.10.0: Enter accepts a lone suggestion.
 - 1.4.0: inline menu with kind glyphs, warnings on every row and a detail line.
 - 1.4.1, 1.5.0, 1.6.0: zsh-autosuggestions and plugin widget fixes.
