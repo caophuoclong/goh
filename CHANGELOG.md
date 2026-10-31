@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.1.1](https://github.com/caophuoclong/goh/compare/v2.1.0...v2.1.1) (2026-10-31)
+
+
+### Bug fixes
+
+* **daemon:** list slow Docker containers and read the shell's own HISTFILE ([fe665f4](https://github.com/caophuoclong/goh/commit/fe665f464988315c914af207e771fc387014a6bd))
+* **daemon:** list slow Docker containers and read the shell's own HISTFILE ([173725d](https://github.com/caophuoclong/goh/commit/173725dbc60ea1e9a6916b562dbcc295d5322cfe))
+
 ## [2.1.0](https://github.com/caophuoclong/goh/compare/v2.0.0...v2.1.0) (2026-10-31)
 
 
