@@ -1,0 +1,5 @@
+# Release binary budgets in bytes (macOS arm64, the CI runner): measured size + 15%. Raise one only with a reason
+# in the commit message.
+goh 16000000
+gohd 16300000
+goh-popup 7900000
