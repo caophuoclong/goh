@@ -162,6 +162,16 @@ install_source() {
   fi
   for b in $bins; do
     [ -x "$src/target/release/$b" ] || die "the build did not produce $b"
+    if [ "$b" = goh-popup ] && [ "$(uname -s)" = Darwin ]; then
+      # As in a release: a signed app bundle (scripts/macos-sign.sh), so the permission stays through rebuilds.
+      ver=$("$src/target/release/goh" version | sed 's/^goh //')
+      mkdir -p "$LIB"
+      "$src/scripts/macos-popup-app.sh" "$src/target/release/goh-popup" "$ver" "$LIB/.goh-popup.app.new" ||
+        die "could not make goh-popup.app"
+      rm -rf "$LIB/goh-popup.app" && mv "$LIB/.goh-popup.app.new" "$LIB/goh-popup.app"
+      ln -sf "$LIB/goh-popup.app/Contents/MacOS/goh-popup" "$BIN/.goh-popup.new" && mv -f "$BIN/.goh-popup.new" "$BIN/goh-popup"
+      continue
+    fi
     cp "$src/target/release/$b" "$BIN/.$b.new" && mv -f "$BIN/.$b.new" "$BIN/$b"
   done
   say "built and installed in $BIN"

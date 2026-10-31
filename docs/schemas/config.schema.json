@@ -65,6 +65,11 @@
           "type": "boolean",
           "default": false,
           "description": "macOS: ask for the Accessibility permission once, for goh-popup itself, instead of once per terminal app (experimental). The release packages keep it through updates; a build from source must be allowed again after each rebuild."
+        },
+        "overSsh": {
+          "type": "boolean",
+          "default": true,
+          "description": "Run `ssh` through `goh ssh` in shells with the zsh adapter, so a zsh host's menus are drawn by the popup here; a host without goh is offered a copy, loaded for the session only (asked once per host). false = plain ssh."
         }
       }
     },

@@ -45,13 +45,115 @@ const RISKS: &[(&str, &str, &str, Target)] = &[
     ("helm", "rollback", "changes the cluster", Target::Kube),
     ("terraform", "apply", "changes real infrastructure", Target::Terraform),
     ("terraform", "destroy", "destroys real infrastructure", Target::Terraform),
+    ("git push", "--force-with-lease", "overwrites the remote branch", Target::None),
+    ("git push", "--mirror", "makes the remote match, deleting what it lacks", Target::None),
+    ("git push", "--prune", "deletes remote branches you do not have", Target::None),
+    ("git checkout", "-f", "discards local changes", Target::None),
+    ("git checkout", "--force", "discards local changes", Target::None),
+    ("git tag", "-d", "deletes the tag", Target::None),
+    ("git tag", "--delete", "deletes the tag", Target::None),
+    ("git reflog", "expire", "drops what recovers lost commits", Target::None),
+    ("git gc", "--prune", "deletes unreachable commits for good", Target::None),
+    ("git", "filter-branch", "rewrites the whole history", Target::None),
+    ("docker", "rm", "deletes containers", Target::None),
+    ("docker", "rmi", "deletes images", Target::None),
+    ("docker container", "rm", "deletes containers", Target::None),
+    ("docker container", "prune", "removes stopped containers", Target::None),
+    ("docker image", "rm", "deletes images", Target::None),
+    ("docker image", "prune", "removes unused images", Target::None),
+    ("docker volume", "rm", "deletes volumes and their data", Target::None),
+    ("docker network", "prune", "removes unused networks", Target::None),
+    ("docker builder", "prune", "clears the build cache", Target::None),
+    ("docker system prune", "--volumes", "also deletes unused volumes and their data", Target::None),
+    ("docker system prune", "-a", "removes every unused image too", Target::None),
+    ("docker system prune", "--all", "removes every unused image too", Target::None),
+    ("docker compose", "down", "stops and removes the containers", Target::None),
+    ("docker compose down", "-v", "deletes the volumes and their data", Target::None),
+    ("docker compose down", "--volumes", "deletes the volumes and their data", Target::None),
+    ("terraform state", "rm", "Terraform stops managing these resources", Target::Terraform),
+    ("terraform workspace", "delete", "deletes the workspace's state", Target::Terraform),
+    ("terraform apply", "-auto-approve", "applies without asking", Target::Terraform),
+    ("terraform destroy", "-auto-approve", "destroys without asking", Target::Terraform),
+    // Databases.
+    ("prisma migrate", "reset", "drops the database and all its data", Target::None),
+    ("prisma migrate", "deploy", "changes the database schema", Target::None),
+    ("prisma db push", "--force-reset", "drops the database and all its data first", Target::None),
+    ("prisma db push", "--accept-data-loss", "applies changes that lose data", Target::None),
+    ("prisma db", "execute", "runs SQL on the database", Target::None),
+    ("supabase db", "reset", "deletes all data in the local database", Target::None),
+    ("supabase db", "push", "changes the linked remote database", Target::None),
+    ("rake", "db:drop", "drops the database", Target::None),
+    ("rake", "db:reset", "drops the database and recreates it", Target::None),
+    ("rake", "db:schema:load", "replaces the schema, deleting the data", Target::None),
+    ("psql", "-c", "runs the SQL at once, with no undo", Target::None),
+    ("psql", "--command", "runs the SQL at once, with no undo", Target::None),
+    // Files and machines.
+    ("find", "-delete", "deletes every match", Target::None),
+    ("rsync", "--delete", "deletes what the source lacks at the destination", Target::None),
+    ("rsync", "--delete-after", "deletes what the source lacks at the destination", Target::None),
+    ("rsync", "--delete-excluded", "deletes excluded files at the destination", Target::None),
+    ("rclone", "sync", "deletes what the source lacks at the destination", Target::None),
+    ("rclone", "purge", "deletes the path and everything in it", Target::None),
+    ("tar", "--remove-files", "deletes the files once archived", Target::None),
+    ("chmod", "-R", "changes every file below", Target::None),
+    ("chown", "-R", "changes every file below", Target::None),
+    ("mv", "-f", "overwrites without asking", Target::None),
+    ("cp", "-f", "overwrites without asking", Target::None),
+    ("systemctl", "stop", "stops the service", Target::None),
+    ("systemctl", "disable", "keeps the service from starting", Target::None),
+    ("systemctl", "mask", "keeps the service from starting at all", Target::None),
+    ("systemctl", "poweroff", "turns the machine off", Target::None),
+    ("systemctl", "reboot", "restarts the machine", Target::None),
+    ("apt", "purge", "removes packages and their settings", Target::None),
+    ("apt", "autoremove", "removes packages nothing needs any more", Target::None),
+    ("gpg", "--delete-secret-keys", "deletes secret keys for good", Target::None),
+    ("gpg", "--delete-keys", "deletes keys", Target::None),
+    // What others can see.
+    ("npm", "publish", "publishes to the registry", Target::None),
+    ("pnpm", "publish", "publishes to the registry", Target::None),
+    ("yarn", "publish", "publishes to the registry", Target::None),
+    ("bun", "publish", "publishes to the registry", Target::None),
+    ("npm", "unpublish", "removes a published version", Target::None),
+    ("cargo", "publish", "publishes to crates.io, for good", Target::None),
+    ("gh repo", "delete", "deletes the repository and its issues", Target::None),
+    ("gh release", "delete", "deletes the release", Target::None),
+    ("aws s3", "rm", "deletes objects", Target::None),
+    ("aws s3", "rb", "removes the bucket", Target::None),
+    ("aws s3 rm", "--recursive", "deletes everything under the prefix", Target::None),
+    ("aws s3 rb", "--force", "deletes every object first", Target::None),
+    ("aws s3 sync", "--delete", "deletes what the source lacks at the destination", Target::None),
+    ("serverless", "remove", "removes the service and its resources", Target::None),
+];
+
+/// Subcommands whose name says they destroy something, in any command not listed above (`gcloud ... delete`,
+/// `minikube delete`, `redis-cli flushall`). git is left out: its subcommands are named differently.
+const VERBS: &[(&str, &str)] = &[
+    ("delete", "deletes it for good"),
+    ("destroy", "destroys it for good"),
+    ("drop", "deletes it for good"),
+    ("purge", "deletes it for good"),
+    ("wipe", "deletes it for good"),
+    ("erase", "deletes it for good"),
+    ("remove", "removes it"),
+    ("rm", "removes it"),
+    ("uninstall", "removes it"),
+    ("prune", "removes what is unused"),
+    ("flush", "erases its data"),
+    ("flushall", "erases all data"),
+    ("flushdb", "erases the database"),
+    ("truncate", "erases its data"),
 ];
 
 /// The warning for `label` after the command words in `before` (`git push ` + `--force`), if there is one.
-fn note(before: &str, label: &str) -> Option<(&'static str, Target)> {
+fn note(before: &str, label: &str, kind: Kind) -> Option<(&'static str, Target)> {
     let words: Vec<&str> = before.split_whitespace().filter(|w| !w.starts_with('-')).collect();
     let path = words.join(" ");
-    RISKS.iter().find(|(p, l, _, _)| *p == path && *l == label).map(|(_, _, text, target)| (*text, *target))
+    let listed = RISKS.iter().find(|(p, l, _, _)| *p == path && *l == label).map(|(_, _, text, target)| (*text, *target));
+    listed.or_else(|| {
+        (kind == Kind::Subcommand && words.first().is_some_and(|w| *w != "git"))
+            .then(|| VERBS.iter().find(|(v, _)| *v == label).map(|(_, text)| (*text, Target::None)))
+            .flatten()
+    })
 }
 
 /// Put the warnings into the descriptions of `candidates`. `expanded` is the line as the engine saw it
@@ -60,7 +162,7 @@ fn note(before: &str, label: &str) -> Option<(&'static str, Target)> {
 pub fn annotate(candidates: &mut [Candidate], expanded: &str, delta: isize, target: &dyn Fn(Target) -> Option<String>) {
     for c in candidates.iter_mut().filter(|c| matches!(c.kind, Kind::Subcommand | Kind::Option)) {
         let end = (c.replace_start_byte as isize + delta).max(0) as usize;
-        let Some((text, at)) = expanded.get(..end).and_then(|before| note(before, &c.label)) else { continue };
+        let Some((text, at)) = expanded.get(..end).and_then(|before| note(before, &c.label, c.kind)) else { continue };
         let place = if at == Target::None { None } else { target(at) };
         let mut shown = format!("⚠ {text}");
         if let Some(place) = place {
@@ -109,6 +211,24 @@ mod tests {
         annotate(&mut c, "kubectl ", 0, &acts_on);
         assert_eq!(c[0].description.as_deref(), Some("⚠ deletes cluster resources · context: prod-eu — Delete resources"));
         assert_eq!(c[1].description.as_deref(), Some("Display"));
+    }
+
+    #[test]
+    fn databases_and_destructive_subcommands_are_flagged() {
+        let mut c = [candidate("reset", Kind::Subcommand, 15, None), candidate("status", Kind::Subcommand, 15, None)];
+        annotate(&mut c, "prisma migrate ", 0, &|_| None);
+        assert_eq!(c[0].description.as_deref(), Some("⚠ drops the database and all its data"));
+        assert_eq!(c[1].description, None);
+        // Any command's `delete`, by its name; not git's, and not an option or a file called that.
+        let mut c = [candidate("delete", Kind::Subcommand, 25, Some("Delete an instance"))];
+        annotate(&mut c, "gcloud compute instances ", 0, &|_| None);
+        assert_eq!(c[0].description.as_deref(), Some("⚠ deletes it for good — Delete an instance"));
+        let mut c = [candidate("rm", Kind::Subcommand, 4, None)];
+        annotate(&mut c, "git ", 0, &|_| None);
+        assert_eq!(c[0].description, None);
+        let mut c = [candidate("--volumes", Kind::Option, 20, None)];
+        annotate(&mut c, "docker compose down ", 0, &|_| None);
+        assert_eq!(c[0].description.as_deref(), Some("⚠ deletes the volumes and their data"));
     }
 
     #[test]

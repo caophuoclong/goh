@@ -69,6 +69,8 @@ pub struct Inputs {
     /// The shell's startup file and whether it holds the block `goh setup` writes. `None`: no such file for this shell.
     pub rc: Option<(PathBuf, bool)>,
     pub remote: bool,
+    /// Connected with `goh ssh`: the popup is drawn on the machine the terminal runs on.
+    pub relay: bool,
     pub multiplexer: Option<&'static str>,
     /// `None`: no such permission on this platform.
     pub accessibility: Option<bool>,
@@ -136,8 +138,10 @@ pub fn evaluate(i: &Inputs) -> Vec<Check> {
         None => check(Level::Warn, "shell", "$SHELL is not set", None),
     });
     let term = i.term_program.as_deref().unwrap_or("unknown");
-    if i.remote {
-        out.push(check(Level::Info, "terminal", "over ssh: the menu is drawn inline (the popup cannot know where the caret is)", None));
+    if i.remote && i.relay && i.multiplexer.is_none() {
+        out.push(check(Level::Ok, "terminal", "over `goh ssh`: the popup is drawn by the machine you connected from", None));
+    } else if i.remote {
+        out.push(check(Level::Info, "terminal", "over ssh: the menu is drawn inline; connect with `goh ssh` for the popup", None));
     } else if let Some(m) = i.multiplexer {
         out.push(check(Level::Info, "terminal", format!("inside {m}: the menu is drawn inline"), None));
     } else if OVERLAY_TERMINALS.contains(&term) {
@@ -302,6 +306,7 @@ pub fn gather() -> Inputs {
         term_program: std::env::var("TERM_PROGRAM").ok(),
         shell,
         remote: env_set("SSH_CONNECTION") || env_set("SSH_TTY"),
+        relay: std::env::var_os(crate::relay::VAR).is_some_and(|p| std::fs::metadata(p).is_ok_and(|m| std::os::unix::fs::FileTypeExt::is_socket(&m.file_type()))),
         multiplexer: if env_set("TMUX") { Some("tmux") } else if env_set("STY") { Some("screen") } else { None },
         accessibility: goh_anchor::accessibility_trusted(),
         zoxide: find_binary("zoxide", None).is_some(),

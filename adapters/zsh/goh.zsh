@@ -57,7 +57,7 @@ typeset -g _GOH_DISPLAY=${GOH_DISPLAY:-auto}   # auto | overlay | inline
 typeset -g _GOH_LIVE=${GOH_LIVE:-on}           # on | off (as-you-type suggestions)
 typeset -gi _GOH_LIVE_MIN=${GOH_LIVE_MIN:-0}   # characters of the current word before the menu may open by itself
 typeset -g _goh_seen_buf
-typeset -gi _goh_seen_cur=-1 _goh_busy=0 _goh_told_permission=0
+typeset -gi _goh_seen_cur=-1 _goh_busy=0 _goh_told_permission=0 _goh_ssh_wrapped=0
 # Widgets after which an edit counts as the user typing (not history recall, autosuggest accept, ...).
 typeset -ga _goh_typing_widgets=(self-insert magic-space backward-delete-char delete-char vi-backward-delete-char vi-delete-char backward-kill-word kill-word bracketed-paste quoted-insert)
 typeset -g _GOH_POPUP=${GOH_POPUP:-goh-popup}
@@ -200,13 +200,16 @@ _goh_pop_start() {
   [[ -n $_goh_pop_pid ]] && return 1  # retry a failed popup on the next menu, not every navigation key
   _goh_pop_stop
   [[ $_GOH_DISPLAY == inline ]] && return 1
-  command -v $_GOH_POPUP >/dev/null 2>&1 || return 1
+  local -a pop=($_GOH_POPUP)
+  # Connected with `goh ssh`: the popup runs on the machine the terminal is on, reached through a forwarded socket.
+  [[ -S ${LC_GOH_POPUP-} && -z ${TMUX-}${STY-} ]] && pop=($_GOH_CTL popup-bridge $LC_GOH_POPUP)
+  command -v $pop[1] >/dev/null 2>&1 || return 1
   local dir
   dir=$(mktemp -d "${TMPDIR:-/tmp}/goh-popup.XXXXXX" 2>/dev/null) || return 1
   mkfifo $dir/in $dir/out 2>/dev/null || { rm -rf -- $dir; return 1 }
   local errf=/dev/null; [[ -n ${GOH_DEBUG-} ]] && errf=$dir/err   # GOH_DEBUG=1 keeps the popup's stderr
   # The config sets this as a shell variable, not exported: hand it to the popup, which reads it at start.
-  GOH_POPUP_OWN_PERMISSION=${GOH_POPUP_OWN_PERMISSION-} command $_GOH_POPUP <$dir/in >$dir/out 2>$errf &!
+  GOH_POPUP_OWN_PERMISSION=${GOH_POPUP_OWN_PERMISSION-} command $pop <$dir/in >$dir/out 2>$errf &!
   _goh_pop_pid=$!
   _goh_pop_dir=$dir
   # Read-write opens never block, and keep a reader on `in` so a dead popup cannot raise SIGPIPE.
@@ -391,7 +394,7 @@ _goh_render() {
   local i k n p s e row label shown risk desc room pad
   local -a rows hl
   local width=$(( ${COLUMNS:-80} - 1 ))
-  local muted=$_goh_ghost_style accent=fg=cyan match=bold,underline warn=bold,fg=yellow
+  local muted=$_goh_ghost_style accent=fg=cyan match=bold,underline warn=bold,fg=red
   [[ ${_goh_theme[accent]-} =~ '^#[0-9a-f]{6}$' ]] && accent="fg=${_goh_theme[accent]}"
   [[ ${_goh_theme[text-match]-} =~ '^#[0-9a-f]{6}$' ]] && match+=",fg=${_goh_theme[text-match]}"
   local color=1
@@ -934,6 +937,13 @@ goh-load() {
     precmd_functions=(_goh_run_done ${precmd_functions:#_goh_run_done})
   fi
   _goh_sync_context
+  # `ssh` through `goh ssh` (popup.overSsh, on unless set off): a zsh host's menus are drawn by the popup here. Not
+  # where no popup can draw them (over ssh, in a multiplexer, inline only), and never over your own `ssh`.
+  if [[ ${GOH_POPUP_SSH:-on} == on && $_GOH_DISPLAY != inline && -z ${SSH_CONNECTION-}${SSH_TTY-}${TMUX-}${STY-} ]] &&
+     (( ! ${+aliases[ssh]} && ! ${+functions[ssh]} )); then
+    ssh() { command $_GOH_CTL ssh "$@" }
+    _goh_ssh_wrapped=1
+  fi
 }
 
 goh-unload() {
@@ -951,6 +961,7 @@ goh-unload() {
   add-zsh-hook -d chpwd _goh_visit 2>/dev/null
   add-zsh-hook -d precmd _goh_sync_context 2>/dev/null
   add-zsh-hook -d precmd _goh_hook_precmd 2>/dev/null
+  (( _goh_ssh_wrapped )) && { unfunction ssh 2>/dev/null; _goh_ssh_wrapped=0 }
   zle -D _goh_tab _goh_up _goh_down _goh_esc _goh_accept_key _goh_enter _goh_left _goh_right _goh_on_decision 2>/dev/null
   unset _GOH_ORIG_TAB
 }

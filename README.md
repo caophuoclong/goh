@@ -43,8 +43,11 @@ Everything runs locally. Three things are **off unless you turn them on** in `go
 
 - `updates.check`: once a day goh runs `curl` to read the version number of the latest release from GitHub's public
   release page, and prints one line when a shell starts if a newer one exists (`goh update` does the same once,
-  whenever you ask). It is the only network request goh makes. Nothing about you, your machine or your commands is
-  sent beyond what any web request carries (your IP address and a `goh/<version>` user agent).
+  whenever you ask). Nothing about you, your machine or your commands is sent beyond what any web request carries
+  (your IP address and a `goh/<version>` user agent).
+
+The only other request is the one you answer yes to in `ssh` (below): downloading this version's package for the
+host's system from the same release page, once, checked against its `SHA256SUMS`.
 
 Your snippets go in `~/.config/goh/snippets.json`: `[{"name":"gcm","template":"git commit -m \"{{cursor}}\""}]`.
 
@@ -67,8 +70,12 @@ session prints a one-line note instead of silently drawing inline.
 macOS gives the permission to the terminal app the popup runs in, so each terminal is allowed on its own. To allow
 goh once instead, for every terminal (experimental), set `"popup": { "ownPermission": true }` with `goh config` and open
 a new shell: at its first menu macOS asks for **goh-popup** itself. The macOS packages ship it as `goh-popup.app`, signed
-with goh's own certificate, so the permission stays through updates. A build from source is a new program to macOS
-after each rebuild: remove its old **goh-popup** entries under Privacy & Security > Accessibility (−) and allow it again.
+with goh's own certificate, so the permission stays through updates. A build from source keeps it too when it is
+signed with that certificate: `./install.sh --from-source` and `scripts/package.sh` use it by themselves when
+`../macos-sign/goh-signing.p12` sits beside the checkout (or `GOH_MACOS_SIGN_P12` names it), and after a plain
+`cargo build` run `scripts/macos-sign.sh target/debug/goh-popup`. Otherwise it is signed ad hoc and is a new program
+to macOS after each rebuild: remove its old **goh-popup** entries under Privacy & Security > Accessibility (−) and
+allow it again.
 `goh doctor` still reports the terminal's own permission.
 
 ## Layout
@@ -122,6 +129,21 @@ Homebrew on Linux works too (`brew install caophuoclong/goh/goh && goh setup`). 
 the floating popup at the cursor needs X11 or XWayland, a terminal that exports `WINDOWID` and exposes AT-SPI
 accessibility over D-Bus, and the `libxkbcommon-x11` and EGL/OpenGL libraries. Native Wayland, SSH, tmux and screen
 use the inline menu. `goh-popup --probe` explains the choice; see [Linux popup support](docs/linux-popup.md).
+
+Over SSH the popup works too: in a shell with the zsh adapter, `ssh` runs through `goh ssh` (`popup.overSsh` in
+`goh config` turns that off; your own `ssh` alias or function always wins), and the remote zsh's menus are drawn
+here, at the caret of the terminal you typed it in. One connection does everything, so you sign in once:
+- A host with goh uses its own; it needs this version or newer, and its sshd must accept `LC_*` variables (Debian
+  and Ubuntu do; the forwarded socket's path travels in `LC_GOH_POPUP`).
+- A host whose login shell is zsh and that has no goh is offered a copy, in a highlighted question asked once per
+  destination (the answer is kept in `~/.local/share/goh/ssh-hosts`; delete its line to be asked again):
+  **k** keeps it in `~/.local/share/goh/ssh/<version>` there, sent once; **s** sends it for this session only, to a
+  private folder in `$XDG_RUNTIME_DIR` (or `/tmp`) that is removed with everything goh wrote when you leave (a host
+  whose temporary folders may not run programs gets no **s**); **N**, Enter or no answer is plain ssh. Either copy
+  is loaded for the session only: your startup files on the host are read as usual and none of them is changed. The
+  package is downloaded once for the host's system and kept in `~/.cache/goh/ssh`.
+- `ssh host command`, `-N`, `-f` and the like are plain ssh, as are hosts with another login shell (bash only
+  completes on Tab). Inside tmux or screen on the host the menu stays inline.
 
 Homebrew and manual installs do not edit your shell files (Homebrew never does). Run once, then open a new terminal:
 

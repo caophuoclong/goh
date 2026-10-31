@@ -27,7 +27,10 @@
     "fontSize": 13,
     // macOS: ask for the Accessibility permission once, for goh-popup itself, instead of once per terminal app.
     // Experimental; the release packages keep it through updates, a build from source must be allowed again.
-    "ownPermission": false
+    "ownPermission": false,
+    // Run `ssh` through `goh ssh` in shells with the zsh adapter: a zsh host's menus are drawn here, and a host
+    // without goh is offered a copy for the session (asked once per host). false = plain ssh.
+    "overSsh": true
   },
 
   "theme": {
