@@ -21,6 +21,8 @@ in an IDE. Load it with `goh setup` or `eval "$(goh init zsh)"`.
   when nothing matches. Esc hides it until the line changes.
 - Tab/→ insert the highlighted candidate; ↑↓ and Shift+Tab move, wrapping; Esc closes; Left closes and moves.
   Navigation keys are bound only while the menu is open.
+- Esc closes at once, without zsh's `KEYTIMEOUT` wait: while the menu is open goh reads what follows Esc itself, and
+  Alt+key, a paste or any other key starting with Esc closes the menu and does what it did before.
 - Enter takes the highlighted candidate after you moved in the menu, or the only one when there is just one, and runs
   the line; an option that wants its value, or a folder, is only inserted. `display.enterRuns: false` makes Enter
   only insert (a second Enter runs). With several untouched candidates Enter runs the line as typed. Ctrl+C closes
@@ -32,9 +34,11 @@ in an IDE. Load it with `goh setup` or `eval "$(goh init zsh)"`.
 ## Limits
 
 - Needs zsh; the menu is drawn by [popup](popup.md) where the caret is verified, else inline.
+- With the menu open, Esc pressed by hand and then a key more than 20 ms later counts as Esc, then that key.
 
 ## Changes
 
+- unreleased: Esc closes the menu at once instead of after `KEYTIMEOUT` (0.4 s).
 - unreleased: Enter on a picked suggestion runs the line (`display.enterRuns`, on); an option that wants its value or a folder is only inserted.
 - unreleased: warnings on risky suggestions in bold red; `ssh` runs through `goh ssh` (see ssh-popup).
 - 1.10.0: Enter accepts a lone suggestion.

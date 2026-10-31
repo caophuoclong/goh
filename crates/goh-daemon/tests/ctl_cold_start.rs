@@ -251,6 +251,36 @@ fn what_you_pick_comes_first_next_time_and_forget_clears_it() {
 }
 
 #[test]
+fn a_masked_secret_goes_only_to_an_adapter_that_shows_labels() {
+    let dir = tempfile::Builder::new().prefix("fc").tempdir_in("/tmp").unwrap();
+    fs::create_dir(dir.path().join("specs")).unwrap();
+    fs::write(dir.path().join("specs/git.json"), common::GIT).unwrap();
+    let (socket, specs, history) = (dir.path().join("run/s"), dir.path().join("specs"), dir.path().join("zsh_history"));
+    fs::write(&history, ": 100:0;git push https://me:hunter2@example.com/r.git main\n").unwrap();
+    let menu = |labels: bool| {
+        let mut args = vec!["menu", "--session", "test-session-secret", "--cwd", "/", "--cursor-byte", "6", "--buffer", "git pu"];
+        if labels {
+            args.insert(1, "--labels");
+        }
+        let out = Command::new(env!("CARGO_BIN_EXE_goh"))
+            .args(&args)
+            .env("GOH_SOCKET", &socket)
+            .env("GOH_SPEC_DIR", &specs)
+            .env("GOH_CONFIG", "/nonexistent")
+            .env("GOH_RECORD", "on")
+            .env("GOH_RUNS", dir.path().join("runs"))
+            .env("GOH_SHELL_HISTORY", &history)
+            .output()
+            .unwrap();
+        String::from_utf8_lossy(&out.stdout).lines().map(|l| l.split('\x1f').map(str::to_string).collect::<Vec<_>>()).filter(|r| r[3] == "history").collect::<Vec<_>>()
+    };
+    let rows = menu(true);
+    assert_eq!(rows.iter().map(|r| (r[4].as_str(), r[5].as_str())).collect::<Vec<_>>(), [("git push https://me:****@example.com/r.git main", "git push https://me:hunter2@example.com/r.git main")]);
+    assert!(menu(false).is_empty(), "an adapter that shows what it inserts would show the secret");
+    kill_socket_holder(&socket);
+}
+
+#[test]
 fn spec_gen_reads_a_commands_help_and_refuses_to_clobber() {
     use std::os::unix::fs::PermissionsExt;
     let dir = tempfile::Builder::new().prefix("fc").tempdir_in("/tmp").unwrap();

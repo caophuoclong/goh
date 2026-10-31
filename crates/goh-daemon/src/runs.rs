@@ -3,7 +3,9 @@
 //! usually follows the last one in this folder, and remembering the values you gave an option.
 //!
 //! The shell's own history (`~/.zsh_history`) counts too while recording is on, for what was run before goh kept its
-//! record: the same filters apply, and its lines are never "this folder" (it does not say where they ran).
+//! record: the same filters apply, and its lines are never "this folder" (it does not say where they ran). A line
+//! there that looks secret is still offered while typing, shown with the secret as `****` ([`masked`]); taking it
+//! inserts it whole, as the shell has it. goh never writes it anywhere.
 //!
 //! One appended line per successful command: `epoch TAB cwd TAB command`. The file is private to you (0600), local,
 //! bounded, and lines that look like they carry a secret are never written (see [`looks_secret`]), nor are lines that
@@ -81,7 +83,7 @@ fn parse_shell_history(bytes: &[u8], modified: u64) -> Vec<Run> {
             Some((stamp, command)) => (stamp.split(':').next().and_then(|t| t.parse().ok()), command),
             None => (None, line),
         };
-        if let Some(command) = accept(command) {
+        if let Some(command) = plain(command).filter(|l| !looks_secret(l) || masked(l).is_some()) {
             entries.push((at, command));
         }
     }
@@ -91,7 +93,7 @@ fn parse_shell_history(bytes: &[u8], modified: u64) -> Vec<Run> {
         .into_iter()
         .enumerate()
         .skip(skip)
-        .map(|(i, (at, line))| Run { at: at.unwrap_or_else(|| modified.saturating_sub(n - i as u64)), cwd: String::new(), line })
+        .map(|(i, (at, line))| Run { at: at.unwrap_or_else(|| modified.saturating_sub(n - i as u64)), cwd: String::new(), secret: looks_secret(&line), line })
         .collect()
 }
 
@@ -138,14 +140,95 @@ pub fn looks_secret(line: &str) -> bool {
 /// The line as it will be kept, or `None` when it must not be: empty, multi-line, long, secret-looking, started
 /// with a space, or one of goh's own.
 pub fn accept(command: &str) -> Option<String> {
+    plain(command).filter(|l| !looks_secret(l))
+}
+
+/// [`accept`] without the secret check: what the shell's history may offer once its secret is masked.
+fn plain(command: &str) -> Option<String> {
     if command.starts_with(' ') {
         return None;
     }
     let line = command.trim();
-    if line.chars().count() < 2 || line.len() > MAX_LINE || line.chars().any(char::is_control) || looks_secret(line) {
+    if line.chars().count() < 2 || line.len() > MAX_LINE || line.chars().any(char::is_control) {
         return None;
     }
     (line.split_whitespace().next()? != "goh").then(|| line.to_string())
+}
+
+const MASK: &str = "****";
+
+/// The line with its secrets shown as `****`: the value of a secret-named variable or option (`TOKEN=…`,
+/// `--password=…`, `--token …`), what follows `Bearer`, `Basic` or `token`, a URL's password, and opaque tokens.
+/// `None` when nothing like that is found: a line that [`looks_secret`] without one is not offered at all.
+pub fn masked(line: &str) -> Option<String> {
+    let (mut out, mut last, mut prev, mut hid) = (String::with_capacity(line.len()), 0, "", false);
+    // The quote open after each word, and the one a masked value opened: its words up to the closing quote are
+    // part of the value (`KEY="a b"`), so they go too.
+    let (mut quote, mut swallow) = (None::<char>, None::<char>);
+    for (start, word) in line.split_whitespace().map(|w| (w.as_ptr() as usize - line.as_ptr() as usize, w)) {
+        let before = quote;
+        for c in word.chars() {
+            match quote {
+                Some(q) if c == q => quote = None,
+                None if c == '"' || c == '\'' => quote = Some(c),
+                _ => {}
+            }
+        }
+        if let Some(q) = swallow {
+            if quote.is_none() {
+                out.push_str(&word[word.rfind(q).unwrap_or(0)..]);
+                swallow = None;
+            }
+        } else {
+            out.push_str(&line[last..start]);
+            match mask_word(prev, word) {
+                Some(shown) => {
+                    out.push_str(&shown);
+                    hid = true;
+                    swallow = quote.filter(|_| before.is_none());
+                }
+                None => out.push_str(word),
+            }
+        }
+        (last, prev) = (start + word.len(), word);
+    }
+    out.push_str(&line[last..]);
+    hid.then_some(out)
+}
+
+fn mask_word(prev: &str, word: &str) -> Option<String> {
+    if let Some(i) = word.find("://") {
+        let authority = word[i + 3..].split(['/', '?', '#']).next().unwrap_or("");
+        if let Some((user, _)) = authority.split_once('@') {
+            if let Some((name, _)) = user.split_once(':') {
+                return Some(format!("{}{name}:{MASK}{}", &word[..i + 3], &word[i + 3 + user.len()..]));
+            }
+        }
+    }
+    if let Some((name, value)) = word.split_once('=') {
+        if secret_name(name) && !value.trim_matches(['"', '\'']).is_empty() {
+            return Some(format!("{name}={}", hide(value)));
+        }
+    }
+    let prev = prev.trim_start_matches(['"', '\'']).to_lowercase();
+    if (prev.starts_with('-') && !prev.contains('=') && secret_name(&prev)) || matches!(prev.as_str(), "bearer" | "basic" | "token") || opaque(word) {
+        return Some(match word.rsplit_once('=') {
+            Some((name, value)) if opaque(word) => format!("{name}={}", hide(value)),
+            _ => hide(word),
+        });
+    }
+    None
+}
+
+/// `****` in place of a value, keeping the quotes around it.
+fn hide(value: &str) -> String {
+    let inner = value.trim_matches(['"', '\'']);
+    if inner.is_empty() {
+        return value.to_string();
+    }
+    let lead = value.len() - value.trim_start_matches(['"', '\'']).len();
+    let trail = value.len() - value.trim_end_matches(['"', '\'']).len();
+    format!("{}{MASK}{}", &value[..lead], &value[value.len() - trail..])
 }
 
 pub fn record(file: &Path, cwd: &str, command: &str, at: u64) -> std::io::Result<()> {
@@ -286,6 +369,8 @@ struct Run {
     at: u64,
     cwd: String,
     line: String,
+    /// From the shell's history and [`looks_secret`]: only ever offered masked, while typing.
+    secret: bool,
 }
 
 /// A line seen before, with how much it has been used.
@@ -310,7 +395,7 @@ impl Runs {
             .lines()
             .filter_map(|l| {
                 let mut f = l.splitn(3, '\t');
-                Some(Run { at: f.next()?.parse().ok()?, cwd: f.next()?.to_string(), line: f.next()?.to_string() })
+                Some(Run { at: f.next()?.parse().ok()?, cwd: f.next()?.to_string(), line: f.next()?.to_string(), secret: false })
             })
             .collect();
         let skip = runs.len().saturating_sub(KEEP_LINES);
@@ -323,10 +408,11 @@ impl Runs {
     }
 
     /// Put the shell's history before goh's own record, keeping only what is older than the record's first line:
-    /// from then on goh has the same commands, with their folders.
+    /// from then on goh has the same commands, with their folders. Secret lines are kept whenever they ran, since
+    /// goh's record never has them.
     fn with_shell_history(mut self, shell: &[Run]) -> Runs {
         let since = self.runs.first().map_or(u64::MAX, |r| r.at);
-        let mut all: Vec<Run> = shell.iter().filter(|r| r.at < since).cloned().collect();
+        let mut all: Vec<Run> = shell.iter().filter(|r| r.at < since || r.secret).cloned().collect();
         all.append(&mut self.runs);
         Runs { runs: all }
     }
@@ -402,7 +488,7 @@ impl Runs {
         }
         let inline = format!("{option}=");
         let mut found: HashMap<String, f64> = HashMap::new();
-        for r in self.runs.iter().rev().take(2000) {
+        for r in self.runs.iter().rev().filter(|r| !r.secret).take(2000) {
             let words = words_of(&r.line);
             if words.first().map(String::as_str) != Some(command) {
                 continue;
@@ -420,23 +506,31 @@ impl Runs {
     }
 }
 
-fn candidate(seen: &Seen, start: usize, end: usize, typed_len: usize, note: String) -> Candidate {
-    Candidate {
-        id: format!("history:{}", seen.line),
-        label: seen.line.clone(),
+/// What the menu shows for a line: the line, or with its secrets masked; `None` when they cannot be.
+fn shown(line: &str) -> Option<String> {
+    if looks_secret(line) { masked(line) } else { Some(line.to_string()) }
+}
+
+fn candidate(seen: &Seen, n: usize, start: usize, end: usize, typed_len: usize, note: String) -> Option<Candidate> {
+    let label = shown(&seen.line)?;
+    let typed = typed_len > 0 && label.get(..typed_len) == seen.line.get(..typed_len);
+    Some(Candidate {
+        // Two lines can look the same masked, and the full line is never sent where only the label goes.
+        id: if label == seen.line { format!("history:{label}") } else { format!("history:{n}:{label}") },
+        match_ranges: if typed { vec![[0, typed_len]] } else { vec![] },
+        label,
         description: Some(note),
         kind: Kind::History,
         insert_text: seen.line.clone(),
         replace_start_byte: start,
         replace_end_byte: end,
-        match_ranges: if typed_len > 0 { vec![[0, typed_len]] } else { vec![] },
         // Below every suggestion from a spec: these come after them in the menu.
         score: 20.0 + seen.score.min(15.0),
         source: Source::Local,
         cursor_offset: None,
         takes_value: false,
         used: false,
-    }
+    })
 }
 
 /// Whole lines for the menu: at an empty prompt, what usually comes next here; mid-line at its end, the lines you
@@ -450,12 +544,14 @@ pub fn candidates(runs: &Runs, buffer: &str, cursor: usize, cwd: &str, now: u64)
         return runs
             .next_after(cwd, now, 3)
             .iter()
-            .map(|s| candidate(s, 0, 0, 0, format!("usually next here · {}", times(s.count))))
+            .enumerate()
+            .filter_map(|(n, s)| candidate(s, n, 0, 0, 0, format!("usually next here · {}", times(s.count))))
             .collect();
     }
     runs.lines_starting(buffer, cwd, now, 3)
         .iter()
-        .map(|s| candidate(s, 0, buffer.len(), buffer.len(), format!("history · {}{}", times(s.count), if s.here { " · this folder" } else { "" })))
+        .enumerate()
+        .filter_map(|(n, s)| candidate(s, n, 0, buffer.len(), buffer.len(), format!("history · {}{}", times(s.count), if s.here { " · this folder" } else { "" })))
         .collect()
 }
 
@@ -520,7 +616,7 @@ mod tests {
     const NOW: u64 = 10_000_000;
 
     fn runs(lines: &[(u64, &str, &str)]) -> Runs {
-        Runs { runs: lines.iter().map(|(at, cwd, line)| Run { at: *at, cwd: cwd.to_string(), line: line.to_string() }).collect() }
+        Runs { runs: lines.iter().map(|(at, cwd, line)| Run { at: *at, cwd: cwd.to_string(), line: line.to_string(), secret: false }).collect() }
     }
 
     #[test]
@@ -688,8 +784,39 @@ mod tests {
         let lines: Vec<(u64, &str, &str)> = runs.iter().map(|r| (r.at, r.cwd.as_str(), r.line.as_str())).collect();
         assert_eq!(lines[..2], [(1_700_000_000, "", "git status"), (1_700_000_100, "", "brew install jq")]);
         assert_eq!(lines[2].2, "echo ạ", "unmetafied back to UTF-8");
-        assert_eq!(lines[3], (1_799_999_999, "", "git log --oneline"), "a plain line is dated just before the file's time");
-        assert_eq!(lines.len(), 4, "secrets and commands over several lines are left out: {lines:?}");
+        assert_eq!(lines[3], (1_700_000_300, "", "export API_KEY=abc"), "a secret is kept here, to be shown masked");
+        assert!(runs[3].secret && !runs[0].secret);
+        assert_eq!(lines[4], (1_799_999_999, "", "git log --oneline"), "a plain line is dated just before the file's time");
+        assert_eq!(lines.len(), 5, "commands over several lines are left out: {lines:?}");
+    }
+
+    #[test]
+    fn secrets_are_masked_and_a_line_with_nothing_to_mask_is_not_offered() {
+        for (line, shown) in [
+            ("export GITHUB_TOKEN=ghp_abc", "export GITHUB_TOKEN=****"),
+            ("mysql --password=hunter2 -u me", "mysql --password=**** -u me"),
+            ("aws s3 ls --token abc", "aws s3 ls --token ****"),
+            ("curl -H 'Authorization: Bearer abc.def' https://x", "curl -H 'Authorization: Bearer ****' https://x"),
+            ("git clone https://me:pw@host/repo.git", "git clone https://me:****@host/repo.git"),
+            ("deploy ghp1234567890abcdefghijklmnopqrstuvwx", "deploy ****"),
+            ("env API_KEY=\"a b\" x", "env API_KEY=\"****\" x"),
+        ] {
+            assert!(looks_secret(line), "{line}");
+            assert_eq!(masked(line).as_deref(), Some(shown), "{line}");
+        }
+        assert_eq!(shown("kubectl get secret web -o yaml"), None, "looks secret, but there is nothing to mask");
+        assert_eq!(shown("git status").as_deref(), Some("git status"));
+    }
+
+    #[test]
+    fn a_secret_from_the_shell_history_is_offered_masked_and_inserted_whole() {
+        let shell = parse_shell_history(b": 100:0;export GITHUB_TOKEN=ghp_abc\n: 300:0;export GITHUB_USER=me\n", 0);
+        let all = runs(&[(200, "/a", "git status")]).with_shell_history(&shell);
+        let c = candidates(&all, "export G", 8, "/a", 400);
+        let shown: Vec<(&str, &str)> = c.iter().map(|c| (c.label.as_str(), c.insert_text.as_str())).collect();
+        assert_eq!(shown, [("export GITHUB_TOKEN=****", "export GITHUB_TOKEN=ghp_abc")], "kept although older lines from after the record began are not: {shown:?}");
+        assert!(!c[0].id.contains("ghp_abc") && c[0].match_ranges == [[0, 8]]);
+        assert!(all.values_for("export", "GITHUB_TOKEN", "/a", 400).is_empty());
     }
 
     #[test]
