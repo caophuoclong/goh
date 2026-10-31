@@ -1,5 +1,5 @@
-//! adapters/bash/goh.bash in a real bash on a pseudo-terminal (whatever `bash` is first on PATH,
-//! including macOS's 3.2). Candidates arrive through bash's own programmable completion, so Tab
+//! adapters/bash/goh.bash in a real bash on a pseudo-terminal: `$GOH_TEST_BASH`, else `/bin/bash` (macOS's 3.2,
+//! the oldest bash we support, even when a newer one leads PATH), else the first `bash` on PATH. Candidates arrive through bash's own programmable completion, so Tab
 //! and the candidate list are native; we check what ends up on the line by running it.
 
 mod common;
@@ -15,8 +15,16 @@ fn adapter() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("../../adapters/bash/goh.bash")
 }
 
+fn bash_program() -> String {
+    match std::env::var("GOH_TEST_BASH") {
+        Ok(p) if !p.is_empty() => p,
+        _ if Path::new("/bin/bash").is_file() => "/bin/bash".into(),
+        _ => "bash".into(),
+    }
+}
+
 fn bash(fx: &Fixture) -> Pty {
-    let mut sh = Pty::spawn(fx.command("bash", &["--noprofile", "--norc", "-i"], &[]));
+    let mut sh = Pty::spawn(fx.command(&bash_program(), &["--noprofile", "--norc", "-i"], &[]));
     sh.drain(Duration::from_millis(400), Duration::from_secs(3));
     sh.send("PS1='READY> '; git() { echo \"RAN:$*\"; }\n", 300);
     sh.send(&format!("source {}\n", adapter().display()), 500);
@@ -25,7 +33,7 @@ fn bash(fx: &Fixture) -> Pty {
 
 macro_rules! require_env {
     () => {
-        match (Command::new("bash").arg("--version").output().is_ok(), utf8_locale()) {
+        match (Command::new(bash_program()).arg("--version").output().is_ok(), utf8_locale()) {
             (true, Some(l)) => l,
             _ => {
                 eprintln!("skipping: needs bash and a UTF-8 locale");

@@ -36,6 +36,7 @@ jobs:
           curl -fsSL -o "$RUNNER_TEMP/blesh.tar.xz" "https://github.com/akinomyoga/ble.sh/releases/download/${BLESH_TAG}/${BLESH_ASSET}"
           echo "${SHA256}  $RUNNER_TEMP/blesh.tar.xz" | shasum -a 256 -c -
           tar -xJf "$RUNNER_TEMP/blesh.tar.xz" -C "$RUNNER_TEMP"
+          test -f "$RUNNER_TEMP/ble-0.4.0-devel3/ble.sh"
           echo "GOH_TEST_BLESH=$RUNNER_TEMP/ble-0.4.0-devel3/ble.sh" >> "$GITHUB_ENV"
       - run: cargo test --workspace --locked
 
