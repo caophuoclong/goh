@@ -35,7 +35,7 @@ Everything runs locally. Three things are **off unless you turn them on** in `go
 
 - `privacy.recordCommands`: keeps the successful lines you run in a private file (`~/.local/share/goh/runs`, mode
   0600) to finish a started line, predict the next command at an empty prompt and remember option values. It also
-  reads your zsh history (`$HISTFILE` if exported, else `~/.zsh_history`) for what you ran before, with the same
+  reads your zsh history (your shell's `$HISTFILE`, else `~/.zsh_history`) for what you ran before, with the same
   filters; that file is only read, never changed. Lines that
   look like they hold a secret (`password`, `token`, `user:pass@host`, long opaque keys) and lines starting with a
   space are never written. `goh forget` deletes it.

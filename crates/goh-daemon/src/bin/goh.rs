@@ -548,13 +548,14 @@ fn utility(sub: &str, rest: &[String]) -> Option<bool> {
 }
 
 /// `goh context --session S [--seq N]`, lines on stdin from the adapter: `A name TAB value`, `F name`, `B name`,
-/// `E name`, `P $PATH`, `C $CDPATH`. `N` counts the session's sends, so a late older one never replaces a newer one.
+/// `E name`, `P $PATH`, `C $CDPATH`, `H $HISTFILE`. `N` counts the session's sends, so a late older one never replaces a newer one.
 fn shell_context(args: Vec<String>) -> Option<()> {
     use std::io::BufRead;
     let flag = |name: &str| args.iter().position(|a| a == name).and_then(|i| args.get(i + 1));
     let session = flag("--session")?.clone();
     let seq = flag("--seq").map_or(Some(0), |n| n.parse().ok())?;
-    let (mut aliases, mut functions, mut builtins, mut env, mut path, mut cdpath) = (vec![], vec![], vec![], vec![], String::new(), String::new());
+    let (mut aliases, mut functions, mut builtins, mut env) = (vec![], vec![], vec![], vec![]);
+    let (mut path, mut cdpath, mut history) = (String::new(), String::new(), String::new());
     for line in std::io::stdin().lock().lines().map_while(Result::ok) {
         let mut parts = line.splitn(3, '\t');
         match (parts.next()?, parts.next(), parts.next()) {
@@ -564,11 +565,24 @@ fn shell_context(args: Vec<String>) -> Option<()> {
             ("E", Some(name), _) => env.push(name.to_string()),
             ("P", Some(p), _) => path = p.to_string(),
             ("C", Some(p), _) => cdpath = p.to_string(),
+            ("H", Some(p), _) => history = p.to_string(),
             _ => {}
         }
     }
     let sock = paths::socket_path();
-    let send = || client::context(&sock, &session, aliases.clone(), functions.clone(), builtins.clone(), path.clone(), env.clone(), cdpath.clone(), seq);
+    let req = || goh_daemon::wire::Request::Context {
+        v: 1,
+        session_id: session.clone(),
+        aliases: aliases.clone(),
+        functions: functions.clone(),
+        builtins: builtins.clone(),
+        path: path.clone(),
+        env: env.clone(),
+        cdpath: cdpath.clone(),
+        history: history.clone(),
+        seq,
+    };
+    let send = || client::context(&sock, req());
     // Sent at shell start, when the daemon may not be up yet: start it, as a menu request would.
     match send() {
         Err(e) if matches!(e.kind(), ErrorKind::NotFound | ErrorKind::ConnectionRefused) => {

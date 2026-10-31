@@ -198,7 +198,10 @@ fn live_requests_drop_fuzzy_matches_when_a_prefix_matches() {
 fn an_older_shell_context_arriving_late_does_not_replace_a_newer_one() {
     // At a cold start two sends both wait for the daemon, and the older one can land last.
     let (_d, sock) = start();
-    let send = |aliases: Vec<[String; 2]>, seq| client::context(&sock, SESSION, aliases, vec![], vec![], String::new(), vec![], String::new(), seq).unwrap();
+    let send = |aliases: Vec<[String; 2]>, seq| {
+        let req = Request::Context { v: 1, session_id: SESSION.into(), aliases, functions: vec![], builtins: vec![], path: String::new(), env: vec![], cdpath: String::new(), history: String::new(), seq };
+        client::context(&sock, req).unwrap()
+    };
     let labels = || -> Vec<String> { client::menu(&sock, SESSION, "/", "gg ch", 5, 8, false).unwrap().into_iter().map(|i| i.label).collect() };
     send(vec![["gg".into(), "git".into()]], 2);
     send(vec![], 1);

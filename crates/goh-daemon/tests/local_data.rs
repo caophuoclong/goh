@@ -83,7 +83,7 @@ fn local_data_reaches_the_menu() {
     assert!(force.description.as_deref().is_some_and(|d| d.starts_with("⚠ overwrites the remote branch")), "{:?}", force.description);
 
     // Variables of the shell, and a slip in a subcommand.
-    assert_eq!(d.server.handle(Request::Context { v: 1, session_id: SESSION.into(), aliases: vec![], functions: vec![], builtins: vec![], path: String::new(), env: vec!["HOME".into(), "HISTSIZE".into()], cdpath: String::new(), seq: 0 }).map(|r| matches!(r, Reply::Ack { .. })), Some(true));
+    assert_eq!(d.server.handle(Request::Context { v: 1, session_id: SESSION.into(), aliases: vec![], functions: vec![], builtins: vec![], path: String::new(), env: vec!["HOME".into(), "HISTSIZE".into()], cdpath: String::new(), history: String::new(), seq: 0 }).map(|r| matches!(r, Reply::Ack { .. })), Some(true));
     assert_eq!(d.ask("echo $HOM", false).iter().map(|c| c.label.as_str()).collect::<Vec<_>>(), ["HOME"]);
     assert_eq!(d.ask("git chekcout", false).first().map(|c| c.label.as_str()), Some("checkout"));
 

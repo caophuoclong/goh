@@ -5,29 +5,35 @@ use std::io::{ErrorKind, Read};
 use std::os::fd::AsRawFd;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc, Condvar, Mutex};
 use std::time::{Duration, Instant};
 
 use goh_core::spec::{Provider, Suggestion};
 
+/// How long a request waits for a program to answer. A slower one finishes in the background, and its answer is used
+/// from the next keystroke on (its last answer meanwhile).
 const DEADLINE: Duration = Duration::from_millis(120);
 const TTL: Duration = Duration::from_secs(2);
 const MAX_BYTES: usize = 512 * 1024;
-/// A cluster can take seconds to answer: it is asked in the background, and what it said last is used meanwhile.
-const CLUSTER_DEADLINE: Duration = Duration::from_secs(5);
+/// A program asked in the background (Docker on a loaded host, a cluster) may take this long before it is killed.
+const BACKGROUND_DEADLINE: Duration = Duration::from_secs(5);
+/// A cluster can take seconds to answer: no request waits for it, and what it said last is used for longer.
 const CLUSTER_TTL: Duration = Duration::from_secs(15);
 
 /// Keyed by provider and, for the ones that depend on the project, the working directory.
 type Cache = HashMap<(Provider, PathBuf), (Instant, Vec<Suggestion>)>;
 
-/// What a cluster said, per provider and kubectl context.
+/// What a program said last.
 #[derive(Default)]
 struct Answer {
     at: Option<Instant>,
     asking: bool,
+    /// It took longer than a request waits: later requests take the last answer at once.
+    slow: bool,
     values: Vec<Suggestion>,
 }
-type Cluster = HashMap<(Provider, String), Answer>;
+/// Per provider and what its answer depends on: the working directory for git, the kubectl context for a cluster.
+type Asked = HashMap<(Provider, String), Answer>;
 
 pub(crate) struct Providers {
     docker: PathBuf,
@@ -37,7 +43,8 @@ pub(crate) struct Providers {
     visits: PathBuf,
     home: PathBuf,
     cache: Mutex<Cache>,
-    cluster: Arc<Mutex<Cluster>>,
+    /// Answers of the programs, and the signal that one arrived.
+    asked: Arc<(Mutex<Asked>, Condvar)>,
 }
 
 impl Default for Providers {
@@ -50,7 +57,7 @@ impl Default for Providers {
             visits: crate::visits::path(),
             home: std::env::var_os("HOME").map(PathBuf::from).unwrap_or_default(),
             cache: Mutex::new(HashMap::new()),
-            cluster: Arc::default(),
+            asked: Arc::default(),
         }
     }
 }
@@ -58,73 +65,80 @@ impl Default for Providers {
 impl Providers {
     pub fn values(&self, provider: Provider, cwd: &Path) -> Vec<Suggestion> {
         if matches!(provider, Provider::KubePods | Provider::KubeNamespaces) {
-            return self.cluster_values(provider);
+            // Nothing until the first answer, and nothing once it fails (another context's pods would be wrong).
+            let context = crate::sources::values(Provider::KubeContexts, &self.home)
+                .into_iter()
+                .find(|s| s.description.as_deref() == Some("current context"))
+                .map(|s| s.name)
+                .unwrap_or_default();
+            return self.ask(provider, context, &self.kubectl, Path::new("/"), CLUSTER_TTL, Duration::ZERO);
         }
         let status = matches!(provider, Provider::GitChangedFiles | Provider::GitStagedFiles | Provider::GitCommits);
         let project = status || crate::project::reads_project(provider) || crate::packages::reads_cwd(provider);
+        let local = matches!(provider, Provider::SshHosts | Provider::SshRemotes | Provider::KubeContexts | Provider::AwsProfiles);
+        if !local && !crate::packages::reads(provider) && !(project && !status) {
+            // Only git works where you are; the other programs are asked from `/`.
+            let (bin, key, dir) = match provider {
+                Provider::FrecentDirs => (&self.zoxide, String::new(), Path::new("/")),
+                _ if status => (&self.git, cwd.to_string_lossy().into_owned(), cwd),
+                _ => (&self.docker, String::new(), Path::new("/")),
+            };
+            let values = self.ask(provider, key, bin, dir, TTL, DEADLINE);
+            if provider == Provider::FrecentDirs && values.is_empty() {
+                // zoxide missing, failing, slow or empty: use goh's own history.
+                return crate::visits::ranked(&self.visits, crate::visits::now())
+                    .into_iter()
+                    .map(|name| Suggestion { name, description: None, insert_value: None })
+                    .collect();
+            }
+            return values;
+        }
         let key = (provider, if project { cwd.to_path_buf() } else { PathBuf::new() });
-        // Never queue input behind another refresh; another session may be using a slow Docker host.
+        // Never queue input behind another refresh.
         let Ok(mut cache) = self.cache.try_lock() else {
             return vec![];
         };
         if let Some((_, values)) = cache.get(&key).filter(|(at, _)| at.elapsed() < TTL) {
             return values.clone();
         }
-        let local = matches!(provider, Provider::SshHosts | Provider::SshRemotes | Provider::KubeContexts | Provider::AwsProfiles);
-        if local || crate::packages::reads(provider) || (project && !status) {
-            let values = if crate::packages::reads(provider) {
-                crate::packages::values(provider, &self.home, cwd)
-            } else if project {
-                crate::project::values(provider, cwd)
-            } else {
-                crate::sources::values(provider, &self.home)
-            };
-            cache.insert(key, (Instant::now(), values.clone()));
-            return values;
-        }
-        let bin = match provider {
-            Provider::FrecentDirs => &self.zoxide,
-            _ if status => &self.git,
-            _ => &self.docker,
+        let values = if crate::packages::reads(provider) {
+            crate::packages::values(provider, &self.home, cwd)
+        } else if project {
+            crate::project::values(provider, cwd)
+        } else {
+            crate::sources::values(provider, &self.home)
         };
-        // Only git works where you are; the other programs are asked from `/`.
-        let dir = if status { cwd } else { Path::new("/") };
-        let mut values = query(bin, provider, DEADLINE, dir)
-            .map(|text| parse(provider, &text))
-            .unwrap_or_default();
-        if provider == Provider::FrecentDirs && values.is_empty() {
-            // zoxide missing, failing or empty: use goh's own history.
-            values = crate::visits::ranked(&self.visits, crate::visits::now())
-                .into_iter()
-                .map(|name| Suggestion { name, description: None, insert_value: None })
-                .collect();
-        }
         cache.insert(key, (Instant::now(), values.clone()));
         values
     }
 
-    /// What the current kubectl context answered last; asks it again in the background when that is old.
-    /// Nothing until the first answer, and nothing once it fails (another context's pods would be wrong).
-    fn cluster_values(&self, provider: Provider) -> Vec<Suggestion> {
-        let context = crate::sources::values(Provider::KubeContexts, &self.home)
-            .into_iter()
-            .find(|s| s.description.as_deref() == Some("current context"))
-            .map(|s| s.name)
-            .unwrap_or_default();
-        let Ok(mut cluster) = self.cluster.lock() else { return vec![] };
-        let key = (provider, context);
-        let answer = cluster.entry(key.clone()).or_default();
-        if !answer.asking && answer.at.is_none_or(|at| at.elapsed() >= CLUSTER_TTL) {
+    /// What `bin` answers for `provider`: asked again in the background once its last answer is `ttl` old, waiting
+    /// up to `wait` for it unless it was slower than that last time; what it said last otherwise (nothing before its
+    /// first answer).
+    fn ask(&self, provider: Provider, key: String, bin: &Path, dir: &Path, ttl: Duration, wait: Duration) -> Vec<Suggestion> {
+        let (lock, arrived) = &*self.asked;
+        let Ok(mut asked) = lock.lock() else { return vec![] };
+        let key = (provider, key);
+        let answer = asked.entry(key.clone()).or_default();
+        let wait = if answer.slow { Duration::ZERO } else { wait };
+        if !answer.asking && answer.at.is_none_or(|at| at.elapsed() >= ttl) {
             answer.asking = true;
-            let (kubectl, store) = (self.kubectl.clone(), Arc::clone(&self.cluster));
+            let (bin, dir, store, key) = (bin.to_path_buf(), dir.to_path_buf(), Arc::clone(&self.asked), key.clone());
             std::thread::spawn(move || {
-                let values = query(&kubectl, provider, CLUSTER_DEADLINE, Path::new("/")).map(|text| parse(provider, &text)).unwrap_or_default();
-                if let Ok(mut cluster) = store.lock() {
-                    *cluster.entry(key).or_default() = Answer { at: Some(Instant::now()), asking: false, values };
+                let start = Instant::now();
+                let values = query(&bin, provider, BACKGROUND_DEADLINE, &dir).map(|text| parse(provider, &text)).unwrap_or_default();
+                let (lock, arrived) = &*store;
+                if let Ok(mut asked) = lock.lock() {
+                    *asked.entry(key).or_default() = Answer { at: Some(Instant::now()), asking: false, slow: start.elapsed() > wait, values };
                 }
+                arrived.notify_all();
             });
         }
-        answer.values.clone()
+        if !wait.is_zero() {
+            let Ok((waited, _)) = arrived.wait_timeout_while(asked, wait, |a| a.get(&key).is_some_and(|x| x.asking)) else { return vec![] };
+            asked = waited;
+        }
+        asked.get(&key).map(|a| a.values.clone()).unwrap_or_default()
     }
 }
 
@@ -353,11 +367,11 @@ mod tests {
             kubectl: PathBuf::from("kubectl"),
             visits: dir.path().join("none"),
             home: dir.path().to_path_buf(),
-            cache: Mutex::new(HashMap::from([(
-                (Provider::DockerContainers, PathBuf::new()),
-                (Instant::now(), values),
-            )])),
-            cluster: Arc::default(),
+            cache: Mutex::default(),
+            asked: Arc::new((
+                Mutex::new(HashMap::from([((Provider::DockerContainers, String::new()), Answer { at: Some(Instant::now()), asking: false, slow: false, values })])),
+                Condvar::new(),
+            )),
         };
         std::fs::remove_file(docker).unwrap();
         assert_eq!(
@@ -453,6 +467,25 @@ mod tests {
             std::thread::sleep(Duration::from_millis(20));
         }
         assert_eq!(providers.values(Provider::KubePods, Path::new("/"))[0].name, "web-1");
+    }
+
+    #[test]
+    fn a_slow_docker_answers_from_the_next_request_on() {
+        let dir = tempfile::tempdir().unwrap();
+        let docker = script(dir.path(), "sleep 0.3\necho '{\"Names\":\"web-1\",\"Image\":\"nginx\"}'");
+        let providers = Providers { docker, home: dir.path().to_path_buf(), ..Providers::default() };
+        let at = Instant::now();
+        assert!(providers.values(Provider::DockerContainers, Path::new("/")).is_empty(), "past the deadline: nothing yet");
+        assert!(at.elapsed() < Duration::from_millis(250), "a slow Docker cannot block typing");
+        let deadline = Instant::now() + Duration::from_secs(5);
+        while providers.values(Provider::DockerContainers, Path::new("/")).is_empty() && Instant::now() < deadline {
+            std::thread::sleep(Duration::from_millis(20));
+        }
+        assert_eq!(providers.values(Provider::DockerContainers, Path::new("/"))[0].name, "web-1");
+        std::thread::sleep(TTL);
+        let at = Instant::now();
+        assert_eq!(providers.values(Provider::DockerContainers, Path::new("/"))[0].name, "web-1", "the last answer while it is asked again");
+        assert!(at.elapsed() < Duration::from_millis(50), "a Docker known to be slow is not waited for again");
     }
 
     #[test]

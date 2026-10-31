@@ -16,7 +16,10 @@ Arguments come from the project you are in and the tools you use: branches, scri
 - git: branches, tags, stashes, recent commits, changed files, your `[alias]`es.
 - `package.json` scripts and `node_modules/.bin`; `pyproject.toml`/`Pipfile` scripts; `deno.json` tasks.
 - Makefile, justfile and Taskfile targets; compose services; Cargo bins, examples, features and workspace packages.
-- `$CDPATH` folders; kubectl pods and namespaces (asked in the background).
+- `$CDPATH` folders; kubectl pods and namespaces, Docker containers and images.
+- Programs asked for values (docker, git, zoxide) get 120 ms per keystroke; a slower one finishes in the background
+  (up to 5 s) and its answer shows from the next keystroke, so a slow Docker host still lists its containers.
+  kubectl is never waited for.
 - Package names for brew, npm, pnpm, yarn, bun, cargo, pip and uv.
 - ssh, scp, rsync hosts from `~/.ssh/config`, known hosts and history.
 
@@ -27,5 +30,7 @@ Arguments come from the project you are in and the tools you use: branches, scri
 
 ## Changes
 
+- unreleased: a Docker (or git, zoxide) slower than 120 ms is asked in the background, so `docker exec` lists the
+  containers from the next keystroke instead of never.
 - 1.7.0: kubectl, project scripts.
 - 1.2.0: package names.

@@ -46,7 +46,8 @@ pub fn path() -> PathBuf {
     base.join("goh/runs")
 }
 
-/// The zsh history file: `$GOH_SHELL_HISTORY`, `$HISTFILE` when exported, else `.zsh_history` in `$ZDOTDIR` or home.
+/// The zsh history file until a shell reports its `$HISTFILE` ([`RunsCache::use_shell_history`]):
+/// `$GOH_SHELL_HISTORY`, `$HISTFILE` when exported, else `.zsh_history` in `$ZDOTDIR` or home.
 pub fn shell_history_path() -> Option<PathBuf> {
     for var in ["GOH_SHELL_HISTORY", "HISTFILE"] {
         if let Some(p) = std::env::var_os(var).filter(|p| !p.is_empty()) {
@@ -562,7 +563,9 @@ type ShellHistory = Option<((PathBuf, u64, u64), Arc<Vec<Run>>)>;
 /// recording is off.
 pub struct RunsCache {
     file: PathBuf,
-    shell_history: Option<PathBuf>,
+    shell_history: Mutex<Option<PathBuf>>,
+    /// Named by `$GOH_SHELL_HISTORY` or a test: what a shell reports does not move it.
+    pinned: bool,
     /// Fixed on or off, ignoring the setting (tests); `None` asks [`enabled`] each time the file is re-read.
     forced: Option<bool>,
     inner: Mutex<(Instant, Arc<Runs>)>,
@@ -571,17 +574,36 @@ pub struct RunsCache {
 
 impl RunsCache {
     pub fn new(file: PathBuf) -> Self {
-        Self { file, shell_history: shell_history_path(), forced: None, inner: Mutex::new((Instant::now() - TTL, Arc::default())), shell: Mutex::new(None) }
+        let pinned = std::env::var_os("GOH_SHELL_HISTORY").is_some_and(|p| !p.is_empty());
+        Self { file, shell_history: Mutex::new(shell_history_path()), pinned, forced: None, inner: Mutex::new((Instant::now() - TTL, Arc::default())), shell: Mutex::new(None) }
     }
 
     /// Fixed on or off, reading `shell_history` (if any) instead of the user's own.
     pub fn forced(file: PathBuf, on: bool, shell_history: Option<PathBuf>) -> Self {
-        Self { forced: Some(on), shell_history, ..Self::new(file) }
+        Self { forced: Some(on), shell_history: Mutex::new(shell_history), pinned: true, ..Self::new(file) }
+    }
+
+    /// The history file a shell reported (its `$HISTFILE`, which zsh does not export): read from the next request
+    /// on. With several shells the last one to report wins.
+    pub fn use_shell_history(&self, path: PathBuf) {
+        if self.pinned {
+            return;
+        }
+        {
+            let Ok(mut current) = self.shell_history.lock() else { return };
+            if current.as_ref() == Some(&path) {
+                return;
+            }
+            *current = Some(path);
+        }
+        if let Ok(mut inner) = self.inner.lock() {
+            inner.0 = Instant::now() - TTL;
+        }
     }
 
     fn shell_runs(&self) -> Arc<Vec<Run>> {
-        let Some(path) = &self.shell_history else { return Arc::default() };
-        let Ok(meta) = fs::metadata(path) else { return Arc::default() };
+        let Some(path) = self.shell_history.lock().ok().and_then(|p| p.clone()) else { return Arc::default() };
+        let Ok(meta) = fs::metadata(&path) else { return Arc::default() };
         let modified = meta.modified().ok().and_then(|t| t.duration_since(UNIX_EPOCH).ok()).map_or(0, |d| d.as_secs());
         let stamp = (path.clone(), meta.len(), modified);
         let Ok(mut cached) = self.shell.lock() else { return Arc::default() };
@@ -788,6 +810,21 @@ mod tests {
         assert!(runs[3].secret && !runs[0].secret);
         assert_eq!(lines[4], (1_799_999_999, "", "git log --oneline"), "a plain line is dated just before the file's time");
         assert_eq!(lines.len(), 5, "commands over several lines are left out: {lines:?}");
+    }
+
+    #[test]
+    fn the_history_file_a_shell_reports_is_read_unless_one_was_named() {
+        let dir = tempfile::tempdir().unwrap();
+        let histfile = dir.path().join(".histfile");
+        fs::write(&histfile, ": 1700000000:0;git status\n").unwrap();
+        let lines = |cache: &RunsCache| cache.get().runs.iter().map(|r| r.line.clone()).collect::<Vec<_>>();
+        let cache = RunsCache { pinned: false, ..RunsCache::forced(dir.path().join("runs"), true, None) };
+        assert!(lines(&cache).is_empty());
+        cache.use_shell_history(histfile.clone());
+        assert_eq!(lines(&cache), ["git status"], "read at once, not after the record's TTL");
+        let named = RunsCache::forced(dir.path().join("runs"), true, Some(dir.path().join("none")));
+        named.use_shell_history(histfile);
+        assert!(lines(&named).is_empty(), "$GOH_SHELL_HISTORY (or a test) keeps its own file");
     }
 
     #[test]

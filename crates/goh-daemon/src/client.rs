@@ -66,13 +66,13 @@ pub fn hello(sock: &Path) -> io::Result<(String, u32)> {
     }
 }
 
-/// Tell the daemon what this shell knows. Frames are small, so the lists are cut to fit.
-#[allow(clippy::too_many_arguments)]
-pub fn context(sock: &Path, session: &str, aliases: Vec<[String; 2]>, functions: Vec<String>, builtins: Vec<String>, path: String, env: Vec<String>, cdpath: String, seq: u64) -> io::Result<()> {
-    let mut req = Request::Context { v: 1, session_id: session.into(), aliases, functions, builtins, path, env, cdpath, seq };
+/// Tell the daemon what this shell knows (a [`Request::Context`]). Frames are small, so the lists are cut to fit.
+pub fn context(sock: &Path, mut req: Request) -> io::Result<()> {
     // The frame limit is 16 KiB: drop from the end until it fits (variables first, then functions, then aliases).
     while serde_json::to_vec(&req).map_or(0, |b| b.len()) > crate::wire::MAX_FRAME {
-        let Request::Context { aliases, functions, env, .. } = &mut req else { unreachable!() };
+        let Request::Context { aliases, functions, env, .. } = &mut req else {
+            return Err(io::Error::new(io::ErrorKind::InvalidInput, "not a context"));
+        };
         if !env.is_empty() {
             env.truncate(env.len() / 2);
         } else if !functions.is_empty() {

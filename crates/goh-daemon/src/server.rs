@@ -142,9 +142,12 @@ impl Server {
                 Some(Reply::Results { v: 1, session_id, generation, suggestions: candidates })
             }
             Request::Hello { v } => (v == 1).then(|| Reply::Hello { v: 1, version: env!("CARGO_PKG_VERSION").to_string(), pid: std::process::id() }),
-            Request::Context { v, session_id, aliases, functions, builtins, path, env, cdpath, seq } => {
+            Request::Context { v, session_id, aliases, functions, builtins, path, env, cdpath, history, seq } => {
                 if v != 1 || !valid_session(&session_id) {
                     return None;
+                }
+                if Path::new(&history).is_absolute() {
+                    self.runs.use_shell_history(history.into());
                 }
                 let mut ctx = self.shells.context(&aliases, &functions, &builtins, &path, &env);
                 ctx.cdpath = crate::shell::cdpath_dirs(&cdpath);

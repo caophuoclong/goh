@@ -48,6 +48,9 @@ pub enum Request {
         /// `$CDPATH`, where `cd name` also looks.
         #[serde(default)]
         cdpath: String,
+        /// The shell's `$HISTFILE`, exported or not (zsh does not export it), where its history is read from.
+        #[serde(default)]
+        history: String,
         /// Counts up with each context a session sends. Sends can arrive out of order (two of them waiting for the
         /// daemon to start), so the daemon keeps the context with the highest one; equal counts replace each
         /// other, so a sender that leaves it out (0) always replaces.
