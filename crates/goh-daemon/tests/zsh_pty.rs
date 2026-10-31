@@ -1588,6 +1588,23 @@ fn slow_docker_shell(fx: &Fixture, delay: &str) -> Pty {
 }
 
 #[test]
+fn a_new_prompt_starts_the_late_answer_count_again() {
+    let fx = Fixture::new(require_env!(), false);
+    let mut sh = slow_docker_shell(&fx, "20");
+    sh.send(&format!("latew() {{ print -r -- \"TRIES=$_goh_late_tries LINE[$_goh_late_line]\" >> {}; }}; zle -N latew; bindkey '^Xl' latew\n", fx.path("late.txt").display()), 300);
+    sh.send("docker exec ", 800);
+    sh.drain(Duration::from_millis(3500), Duration::from_secs(4));
+    let asked = fx.state_file(&mut sh, "\x18l", "late.txt");
+    assert!(!asked.starts_with("TRIES=0 "), "the line has been re-asked a few times: {asked}");
+    // Without the reset, the same line typed at a later prompt would carry the count over and give up at once once
+    // it had passed 16.
+    sh.send("\x03", 500);
+    let fresh = fx.state_file(&mut sh, "\x18l", "late.txt");
+    kill_socket_holder(&fx.socket);
+    assert_eq!(fresh, "TRIES=0 LINE[]", "a new prompt counts again from nothing");
+}
+
+#[test]
 fn a_late_answer_does_not_reopen_a_menu_closed_with_esc() {
     let fx = Fixture::new(require_env!(), false);
     let mut sh = slow_docker_shell(&fx, "2.5");

@@ -34,7 +34,8 @@ in an IDE. Load it with `goh setup` or `eval "$(goh init zsh)"`.
   including one that uses `prompt_subst` parameters (oh-my-zsh themes, powerlevel10k, starship); row borders stay
   straight with wide characters (CJK, emoji).
 - A program still answering (a slow Docker, a cluster) shows `…` in the footer; its values appear when they arrive. The
-  wait stops when you close the menu (Esc, Left) or move in it, and gives up after about 5 s.
+  wait stops when you close the menu (Esc, Left) or move in it, and gives up after about 5 s; each new prompt starts
+  the count again, so the same line typed later is asked again.
 - Fail-open: any problem falls through to the widget Tab had before; `goh-unload` restores it.
 - Works next to zsh-autosuggestions and plugins that replace `zle-line-init`.
 
@@ -47,6 +48,7 @@ in an IDE. Load it with `goh setup` or `eval "$(goh init zsh)"`.
 
 ## Changes
 
+- unreleased: a line that gave up waiting for a slow program no longer makes the same line at a later prompt give up at once; `goh-unload` stops a pending wait.
 - unreleased: the box lands under the word with `prompt_subst` prompts (oh-my-zsh, powerlevel10k, starship), and its right border stays straight with wide characters.
 - unreleased: late values from slow programs appear without another key.
 - unreleased: the inline menu is a floating framed box under the word being completed (`display.inlineStyle`, `box` by default; `flat` is the old look).

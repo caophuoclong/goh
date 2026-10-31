@@ -956,7 +956,7 @@ _goh_hook_redraw() {
   (( _goh_on )) && ! _goh_valid && _goh_close       # the line changed some other way: the menu is stale
   return 0
 }
-_goh_hook_finish() { _goh_late_stop; _goh_close no-redisplay; _goh_drop_pred; _goh_seen_cur=-1; return 0 }
+_goh_hook_finish() { _goh_late_stop; _goh_late_tries=0 _goh_late_line=; _goh_close no-redisplay; _goh_drop_pred; _goh_seen_cur=-1; return 0 }
 
 # Ctrl+C ends the line without zle-line-finish, so the zle-line-init hook is what closes the menu at the next
 # prompt. A plugin that defines its own zle-line-init (or -finish, -pre-redraw) after this adapter loaded replaces
@@ -1114,6 +1114,7 @@ goh-load() {
 }
 
 goh-unload() {
+  _goh_late_stop 2>/dev/null
   _goh_close 2>/dev/null
   _goh_pop_stop 2>/dev/null
   [[ -n $_GOH_ORIG_TAB ]] && bindkey '^I' $_GOH_ORIG_TAB
@@ -1129,7 +1130,7 @@ goh-unload() {
   add-zsh-hook -d precmd _goh_sync_context 2>/dev/null
   add-zsh-hook -d precmd _goh_hook_precmd 2>/dev/null
   (( _goh_ssh_wrapped )) && { unfunction ssh 2>/dev/null; _goh_ssh_wrapped=0 }
-  zle -D _goh_tab _goh_up _goh_down _goh_esc _goh_enter _goh_left _goh_right _goh_on_decision 2>/dev/null
+  zle -D _goh_tab _goh_up _goh_down _goh_esc _goh_enter _goh_left _goh_right _goh_on_decision _goh_on_late 2>/dev/null
   unset _GOH_ORIG_TAB
 }
 
