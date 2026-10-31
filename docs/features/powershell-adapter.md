@@ -22,6 +22,8 @@ type, marked `[goh]`. Load it with `. /path/to/goh.ps1` in `$PROFILE`.
 - When history is one of PSReadLine's prediction sources, the list shows goh's suggestions next to your history.
 - Each suggestion is the whole line with the current word completed; ↑↓ pick one, Enter runs it. Its description
   shows as the tooltip.
+- A suggestion whose text holds a control character (an escape sequence, a newline) is dropped, and control characters in
+  a tooltip show as spaces: what the daemon sends is checked, as in the other shells.
 - goh adds `Plugin` to PSReadLine's prediction source (`None` becomes `Plugin`, `History` becomes
   `HistoryAndPlugin`) and switches the view to the list view. F2 switches views.
 - `display.live: false` (`GOH_LIVE=off`) turns this off: nothing is compiled or loaded, and PSReadLine's prediction
@@ -41,3 +43,4 @@ type, marked `[goh]`. Load it with `. /path/to/goh.ps1` in `$PROFILE`.
 ## Changes
 
 - unreleased: first release.
+- unreleased: suggestions containing control characters are dropped and tooltips are cleaned, as in the other shells.

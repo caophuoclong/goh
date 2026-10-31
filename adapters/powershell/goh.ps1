@@ -126,14 +126,30 @@ namespace Goh
                 int start = c.GetProperty("replace_start_byte").GetInt32();
                 int end = c.GetProperty("replace_end_byte").GetInt32();
                 string insert = c.GetProperty("insert_text").GetString() ?? "";
-                if (start < 0 || start > end || end > typed.Length || insert.IndexOfAny(new[] { '\n', '\r' }) >= 0) continue;
+                if (start < 0 || start > end || end > typed.Length || insert.Length == 0 || HasControl(insert)) continue;
                 string whole = Encoding.UTF8.GetString(typed, 0, start) + insert + Encoding.UTF8.GetString(typed, end, typed.Length - end);
                 if (whole == line || !seen.Add(whole)) continue;
-                string tip = c.TryGetProperty("description", out var d) ? d.GetString() : null;
+                string tip = c.TryGetProperty("description", out var d) ? SingleLine(d.GetString()) : null;
                 found.Add(new PredictiveSuggestion(whole, tip));
                 if (found.Count == MaxSuggestions) break;
             }
             return found;
+        }
+
+        // Never trust the wire: like the goh client, drop an insertion with a control character in it (an escape sequence
+        // or a newline would act on the terminal or run the line) and blank them out of the tooltip.
+        private static bool HasControl(string s)
+        {
+            foreach (char ch in s) if (char.IsControl(ch)) return true;
+            return false;
+        }
+
+        private static string SingleLine(string s)
+        {
+            if (s == null || !HasControl(s)) return s;
+            var chars = s.ToCharArray();
+            for (int i = 0; i < chars.Length; i++) if (char.IsControl(chars[i])) chars[i] = ' ';
+            return new string(chars);
         }
 
         private static byte[] Read(Socket socket, int count)

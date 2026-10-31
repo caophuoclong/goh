@@ -130,13 +130,18 @@ pub struct Fixture {
 impl Fixture {
     /// Short paths: Unix socket paths are limited to ~104 bytes.
     pub fn new(locale: String, daemon: bool) -> Fixture {
+        Fixture::with_git_spec(locale, daemon, GIT)
+    }
+
+    /// Like `new`, with `git_spec` (JSON) as the one spec the daemon and the spec directory hold.
+    pub fn with_git_spec(locale: String, daemon: bool, git_spec: &str) -> Fixture {
         let dir = tempfile::Builder::new().prefix("fz").tempdir_in("/tmp").unwrap();
         fs::create_dir(dir.path().join("specs")).unwrap();
-        fs::write(dir.path().join("specs/git.json"), GIT).unwrap();
+        fs::write(dir.path().join("specs/git.json"), git_spec).unwrap();
         let socket = dir.path().join("run/s");
         if daemon {
             let listener = paths::bind(&socket).unwrap().unwrap();
-            let server = isolated_server(Engine::new(vec![Spec::from_json(GIT).unwrap()]), dir.path());
+            let server = isolated_server(Engine::new(vec![Spec::from_json(git_spec).unwrap()]), dir.path());
             std::thread::spawn(move || Arc::new(server).serve(listener));
         }
         Fixture { dir, socket, locale }

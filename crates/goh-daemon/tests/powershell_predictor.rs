@@ -186,3 +186,20 @@ fn a_missing_goh_never_breaks_profile_load() {
     let t = text(&out);
     assert!(t.contains("DONE") && !t.contains("THREW"), "{t}");
 }
+
+#[test]
+fn suggestions_with_control_characters_are_dropped_and_tooltips_are_cleaned() {
+    let Some((pwsh, locale)) = setup() else { return };
+    // `checkout`'s name carries an ESC (a terminal escape in the line it would build); `checkin`'s description does.
+    let spec = serde_json::json!({"schemaVersion":1,"name":"git","subcommands":[
+        {"name":"chec\u{1b}kout","description":"Bad"},
+        {"name":"checkin","description":"red\u{1b}[31m\ttext\u{7}"}]})
+    .to_string();
+    let fx = Fixture::with_git_spec(locale, true, &spec);
+    let out = run(&fx, &pwsh, ASK, &[]);
+    let t = text(&out);
+    assert!(out.status.success(), "{t}");
+    assert!(!t.contains('\u{1b}') && !t.contains('\u{7}'), "no control character reaches PSReadLine: {t:?}");
+    assert_eq!(t.lines().filter(|l| l.starts_with("git ")).count(), 1, "only the clean suggestion is offered: {t:?}");
+    assert!(t.lines().any(|l| l.starts_with("git checkin") && l.ends_with("red [31m text ")), "the tooltip has spaces for controls: {t:?}");
+}
