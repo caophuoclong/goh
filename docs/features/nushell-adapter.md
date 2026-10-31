@@ -21,6 +21,8 @@ descriptions. In `config.nu`: `source /path/to/goh.nu`, then `goh-ui`.
 - With `completions.persistent_menus` on, erasing keeps the menu open; `goh-ui` turns it on when your Nushell has the
   setting.
 - Tab still completes through goh's external completer, as before (`goh-complete`).
+- Without `goh` on the path, or when it answers something unreadable, the menu stays empty and Space just types a space;
+  Tab falls back to Nushell's own completion.
 - Your own menus and key bindings stay; goh only appends `goh_menu` and a Space binding.
 
 ## Limits
@@ -35,3 +37,4 @@ descriptions. In `config.nu`: `source /path/to/goh.nu`, then `goh-ui`.
 
 - unreleased: first release.
 - unreleased: the Tab completer (`goh-complete`) did not load on Nushell 0.116 because `str length --bytes` was removed; it loads again.
+- unreleased: a missing `goh` (or a malformed answer) no longer raises "External command failed" from Space or Tab; both give no candidates.

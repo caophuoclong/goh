@@ -78,3 +78,42 @@ fn space_opens_a_box_of_goh_candidates() {
     assert!(shown.contains("Switch branches"), "with their descriptions: {shown}");
     assert!(["╭", "┌", "│"].iter().any(|b| shown.contains(b)), "inside a border: {shown}");
 }
+
+/// `fx.command` with `goh` off PATH: GOH_CTL points at nothing and only the system directories are searched.
+fn without_goh(fx: &Fixture, nu: &Path, args: &[&str]) -> std::process::Command {
+    let mut cmd = fx.command(nu.to_str().unwrap(), args, &[("GOH_CTL", "/nonexistent/goh")]);
+    cmd.env("PATH", "/usr/bin:/bin");
+    cmd
+}
+
+#[test]
+fn menu_source_and_completer_fail_open_without_goh() {
+    let (Some(nu), Some(locale)) = (nu(), utf8_locale()) else {
+        eprintln!("skipping: needs nu and a UTF-8 locale");
+        return;
+    };
+    let fx = Fixture::new(locale, false);
+    let script = format!("source '{}'; print (goh-menu-source 'git ' 4 | to nuon); print (goh-complete ['git' ''] | to nuon)", adapter().display());
+    let out = without_goh(&fx, &nu, &["-n", "-c", &script]).output().unwrap();
+    let (stdout, stderr) = (String::from_utf8_lossy(&out.stdout), String::from_utf8_lossy(&out.stderr));
+    assert!(out.status.success(), "no error escapes: {stderr}");
+    assert_eq!(stdout.lines().map(str::trim).collect::<Vec<_>>(), ["[]", "null"], "nothing offered: {stdout}");
+}
+
+#[test]
+fn space_inserts_a_space_without_goh() {
+    let (Some(nu), Some(locale)) = (nu(), utf8_locale()) else {
+        eprintln!("skipping: needs nu and a UTF-8 locale");
+        return;
+    };
+    let fx = Fixture::new(locale, false);
+    let mut sh = Pty::spawn(without_goh(&fx, &nu, &["-n"]));
+    pump(&mut sh, 800, 5000);
+    type_keys(&mut sh, &format!("source '{}'\r", adapter().display()), 800);
+    type_keys(&mut sh, "goh-ui\r", 800);
+    type_keys(&mut sh, "echo", 300);
+    let shown = screen(&type_keys(&mut sh, " ", 800));
+    assert!(!shown.contains("Error") && !shown.contains("External command failed"), "no error on Space: {shown}");
+    let shown = screen(&type_keys(&mut sh, "fine\r", 800));
+    assert!(shown.contains("echo fine") && shown.matches("fine").count() >= 2, "the space was typed and the line ran: {shown}");
+}
