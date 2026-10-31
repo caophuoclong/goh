@@ -1,6 +1,6 @@
 # 12 — Architecture Decision Records (ADRs)
 
-These are **proposed** decisions. Status moves from `Proposed` to `Accepted` only after R0 spikes and review. Record all reversals.
+Each record's status says whether it is proposed or accepted. Record all reversals.
 
 ## ADR-001 — Rust core, shared across platforms
 
@@ -45,7 +45,7 @@ These are **proposed** decisions. Status moves from `Proposed` to `Accepted` onl
 - **Status:** Proposed · **Decision:** obtain state from shell itself and edit via native shell APIs; no system-wide keylogger.
 - **Reason:** privacy, correctness, least privilege.
 - **Open risk:** Bash event hooks insufficient for real-time suggestions; use Tab-triggered inline mode on failure.
-- **Open:** `crates/goh-popup/src/scroll.rs` creates a macOS `CGEventTap` (scroll-wheel events only, no key events), so the check for "no event tap" does not come back empty; the record needs to say that the one tap is for scroll-wheel input only.
+- **Open:** goh-popup installs an active `CGEventTap` for scroll-wheel events only (no key events), which swallows scroll events over the popup (`crates/goh-popup/src/scroll.rs`); the record needs to say so.
 
 ## ADR-007 — Theme is resolved per terminal session
 
@@ -74,10 +74,11 @@ These are **proposed** decisions. Status moves from `Proposed` to `Accepted` onl
 
 ## ADR-010 — `tokens.json` is the single source for visual values
 
-- **Status:** Accepted (2.1.0) · **Decision:** colours, type, spacing, radii, sizes and shadows live in `design-system/tokens.json`. `tokens.css` and Rust constants are generated; nothing hard-codes a visual value.
+- **Status:** Proposed · **Decision:** colours, type, spacing, radii, sizes and shadows live in `design-system/tokens.json`. `tokens.css` and Rust constants are generated; nothing hard-codes a visual value.
 - **Why:** the runtime theme resolver must override a small set of tokens and derive the rest; one source keeps overlay, inline and docs consistent.
 - **Cost:** a generator step in CI; terminal-resolved colours bypass the file at runtime and must still satisfy the contrast rules.
 - **Validation:** generated output matches the file; contrast check runs on all fallback themes and on derived palettes for the four test terminals.
+- **Open:** only tokens.css is generated (docs/design-system/tools/gen_tokens_css.py); Rust reads tokens.json (goh-theme) or copies values by hand (goh-popup/src/model.rs); the CI step (DS-01) is not in place.
 
 ## ADR-011 — The inline menu is drawn by ZLE, never by escape codes behind the shell
 
