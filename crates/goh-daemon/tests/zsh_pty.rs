@@ -143,7 +143,9 @@ fn keyboard_flow() {
     sh.send("\x1b[Z", 200);
     assert!(fx.state(&mut sh).contains("sel=2"), "Shift+Tab moves back");
 
-    sh.send("\x1b", 900); // lone Esc waits for KEYTIMEOUT
+    // At once, not after KEYTIMEOUT (0.4 s): nothing that starts with Esc is bound while the menu is open.
+    let closed = sh.send("\x1b", 150);
+    assert!(!closed.is_empty(), "Esc closes the menu within 150 ms");
     let s = fx.state(&mut sh);
     assert!(s.starts_with("BUF[git c] CUR=5 on=0") && s.ends_with("post[]"), "Esc closes without editing: {s}");
     assert_eq!(fx.keymap(&mut sh, 1), keymap_before, "keymap is restored after the menu closes");
@@ -179,6 +181,43 @@ fn keyboard_flow() {
     assert!(fx.state(&mut sh).starts_with("BUF[] CUR=0 on=0"));
     assert_eq!(fx.keymap(&mut sh, 1), keymap_before);
 
+}
+
+#[test]
+fn keys_starting_with_esc_still_work_while_the_menu_is_open() {
+    let fx = Fixture::new(require_env!(), true);
+    let mut sh = fx.shell(&[], true);
+    let keymap_before = fx.keymap(&mut sh, 0);
+
+    // Alt+B (backward-word) closes the menu and does what it does without it.
+    sh.send("git c", 150);
+    sh.send("\t", 500);
+    sh.send("\x1bb", 300);
+    assert!(fx.state(&mut sh).starts_with("BUF[git c] CUR=4 on=0"));
+    assert_eq!(fx.keymap(&mut sh, 1), keymap_before);
+    sh.send(CLEAR, 100);
+
+    // Left closes and moves.
+    sh.send("git c", 150);
+    sh.send("\t", 500);
+    sh.send("\x1b[D", 300);
+    assert!(fx.state(&mut sh).starts_with("BUF[git c] CUR=4 on=0"));
+    sh.send(CLEAR, 100);
+
+    // A bracketed paste is pasted.
+    sh.send("git c", 150);
+    sh.send("\t", 500);
+    sh.send("\x1b[200~ommit -m x\x1b[201~", 500);
+    let s = fx.state(&mut sh);
+    assert!(s.starts_with("BUF[git commit -m x] CUR=15"), "{s}");
+    sh.send(CLEAR, 100);
+
+    // Down and Right in one write: the menu moves, then takes the highlighted candidate.
+    sh.send("git c", 150);
+    sh.send("\t", 500);
+    sh.send("\x1b[B\x1b[C", 400);
+    assert!(fx.state(&mut sh).starts_with("BUF[git cherry-pick ] CUR=16 on=0"));
+    assert_eq!(fx.keymap(&mut sh, 1), keymap_before);
 }
 
 #[test]
