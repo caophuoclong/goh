@@ -4,8 +4,8 @@
 Output docs/media/demo.gif
 Set Shell zsh
 Set FontSize 18
-Set Width 960
-Set Height 480
+Set Width 1100
+Set Height 560
 Set Padding 16
 Set TypingSpeed 90ms
 Set Theme "Catppuccin Mocha"
@@ -13,7 +13,7 @@ Set Theme "Catppuccin Mocha"
 Hide
 Type "export LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8"
 Enter
-Type "d=${TMPDIR:-/tmp}/goh-demo; mkdir -m 700 -p $d && export GOH_SOCKET=$d/s GOH_CONFIG=/nonexistent GOH_USAGE=$d/usage GOH_VISITS=$d/dirs GOH_RUNS=$d/runs GOH_LOG=$d/log GOH_UPDATE_STATE=$d/update"
+Type "d=${TMPDIR:-/tmp}/goh-demo; mkdir -m 700 -p $d && export GOH_SOCKET=$d/s GOH_CONFIG=/nonexistent GOH_USAGE=$d/usage GOH_VISITS=$d/dirs GOH_RUNS=$d/runs GOH_LOG=$d/log GOH_UPDATE_STATE=$d/update GOH_SPEC_DIR=$d/specs"
 Enter
 Type "export GOH_CTL=$PWD/target/release/goh GOH_DISPLAY=inline GOH_LIVE=on PS1='%F{blue}~/project%f ❯ '"
 Enter
@@ -24,10 +24,12 @@ Show
 Sleep 600ms
 Type "git chec"
 Sleep 1s
-Tab
-Sleep 400ms
-Type "-"
+Type "ko"
 Sleep 1s
+Tab
+Sleep 600ms
+Type "--"
+Sleep 1800ms
 Ctrl+U
 Sleep 400ms
 
