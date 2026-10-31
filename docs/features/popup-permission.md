@@ -31,5 +31,6 @@ per terminal app. Signed builds keep it across updates and rebuilds.
 
 ## Changes
 
+- unreleased: goh-popup checks its permission again for about a second before asking, so a just-started popup does not prompt when it is allowed.
 - unreleased: local builds signed with goh's certificate (`scripts/macos-sign.sh`, `scripts/macos-popup-app.sh`).
 - 1.6.0: first release.

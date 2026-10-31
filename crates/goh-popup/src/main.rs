@@ -725,9 +725,18 @@ fn run_as_own_responsible_process() {
 /// is not allowed yet. The terminal's own permission no longer counts for it.
 #[cfg(target_os = "macos")]
 fn ask_for_own_permission() {
-    if std::env::var_os("GOH_POPUP_RESPONSIBLE").is_some() && goh_anchor::accessibility_trusted() == Some(false) {
-        goh_anchor::request_accessibility();
+    if std::env::var_os("GOH_POPUP_RESPONSIBLE").is_none() {
+        return;
     }
+    // Just after it starts, a process that answers for itself can be reported untrusted for a moment although it is
+    // allowed; asking then would show macOS's prompt for nothing. Ask only if it stays untrusted for about a second.
+    for _ in 0..5 {
+        if goh_anchor::accessibility_trusted() != Some(false) {
+            return;
+        }
+        std::thread::sleep(std::time::Duration::from_millis(200));
+    }
+    goh_anchor::request_accessibility();
 }
 
 fn main() -> eframe::Result {
