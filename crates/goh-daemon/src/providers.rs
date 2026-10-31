@@ -1,5 +1,5 @@
-//! Fixed read-only Docker, git (changed files, commits), kubectl (pods, namespaces), zoxide and directory-history
-//! queries. No shell, spec scripts, or buffer text reaches a subprocess.
+//! Fixed read-only Docker, git (changed files, commits), kubectl (pods, namespaces), tmux, systemctl, ps, zoxide and
+//! directory-history queries. No shell, spec scripts, or buffer text reaches a subprocess.
 use std::collections::HashMap;
 use std::io::{ErrorKind, Read};
 use std::os::fd::AsRawFd;
@@ -40,6 +40,9 @@ pub(crate) struct Providers {
     git: PathBuf,
     zoxide: PathBuf,
     kubectl: PathBuf,
+    tmux: PathBuf,
+    systemctl: PathBuf,
+    ps: PathBuf,
     visits: PathBuf,
     home: PathBuf,
     cache: Mutex<Cache>,
@@ -54,6 +57,9 @@ impl Default for Providers {
             git: PathBuf::from("git"),
             zoxide: PathBuf::from("zoxide"),
             kubectl: PathBuf::from("kubectl"),
+            tmux: PathBuf::from("tmux"),
+            systemctl: PathBuf::from("systemctl"),
+            ps: PathBuf::from("ps"),
             visits: crate::visits::path(),
             home: std::env::var_os("HOME").map(PathBuf::from).unwrap_or_default(),
             cache: Mutex::new(HashMap::new()),
@@ -81,6 +87,9 @@ impl Providers {
             let (bin, key, dir) = match provider {
                 Provider::FrecentDirs => (&self.zoxide, String::new(), Path::new("/")),
                 _ if status => (&self.git, cwd.to_string_lossy().into_owned(), cwd),
+                Provider::TmuxSessions | Provider::TmuxWindows => (&self.tmux, String::new(), Path::new("/")),
+                Provider::SystemdUnits => (&self.systemctl, String::new(), Path::new("/")),
+                Provider::Processes | Provider::ProcessNames => (&self.ps, String::new(), Path::new("/")),
                 _ => (&self.docker, String::new(), Path::new("/")),
             };
             let values = self.ask(provider, key, bin, dir, TTL, DEADLINE);
@@ -158,6 +167,12 @@ fn query(docker: &Path, provider: Provider, timeout: Duration, dir: &Path) -> Op
         Provider::DockerContainers => &["ps", "--format", "{{json .}}"],
         Provider::DockerAllContainers => &["ps", "--all", "--format", "{{json .}}"],
         Provider::DockerImages => &["image", "ls", "--format", "{{json .}}"],
+        Provider::DockerNetworks => &["network", "ls", "--format", "{{json .}}"],
+        Provider::DockerVolumes => &["volume", "ls", "--format", "{{json .}}"],
+        Provider::TmuxSessions => &["list-sessions", "-F", "#{session_name}\x1f#{session_windows} windows#{?session_attached, attached,}"],
+        Provider::TmuxWindows => &["list-windows", "-a", "-F", "#{session_name}:#{window_index}\x1f#{window_name}"],
+        Provider::SystemdUnits => &["list-units", "--all", "--plain", "--no-legend", "--no-pager", "--full"],
+        Provider::Processes | Provider::ProcessNames => &["-A", "-o", "pid=,comm="],
         Provider::FrecentDirs => &["query", "--list"],
         // Read from files by `sources`, never queried through a program.
         Provider::SshHosts | Provider::SshRemotes | Provider::KubeContexts | Provider::AwsProfiles => return None,
@@ -269,6 +284,53 @@ fn parse(provider: Provider, text: &str) -> Vec<Suggestion> {
             .map(|p| Suggestion { name: p.to_owned(), description: Some(note.to_owned()), insert_value: None })
             .collect();
     }
+    if matches!(provider, Provider::TmuxSessions | Provider::TmuxWindows) {
+        // `name<US>about`, one per line, from tmux's own -F format.
+        let mut seen = std::collections::HashSet::new();
+        return text
+            .lines()
+            .take(5000)
+            .filter_map(|l| l.split_once('\x1f'))
+            .filter(|(n, _)| !n.is_empty() && n.len() <= 256 && !n.starts_with('-') && !n.chars().any(char::is_control) && seen.insert(n.to_string()))
+            .map(|(n, about)| Suggestion { name: n.to_owned(), description: Some(about.chars().filter(|c| !c.is_control()).take(80).collect()), insert_value: None })
+            .collect();
+    }
+    if provider == Provider::SystemdUnits {
+        // `UNIT LOAD ACTIVE SUB DESCRIPTION...` with --plain --no-legend.
+        let mut seen = std::collections::HashSet::new();
+        return text
+            .lines()
+            .take(5000)
+            .filter_map(|l| {
+                let mut f = l.split_whitespace();
+                let (unit, _load, active, _sub) = (f.next()?, f.next()?, f.next()?, f.next()?);
+                let about = f.collect::<Vec<_>>().join(" ");
+                let ok = unit.contains('.') && unit.len() <= 256 && unit.bytes().all(|b| b.is_ascii_alphanumeric() || b"@._:\\-".contains(&b)) && seen.insert(unit.to_string());
+                ok.then(|| Suggestion { name: unit.to_owned(), description: Some(format!("{active} · {about}").chars().filter(|c| !c.is_control()).take(80).collect()), insert_value: None })
+            })
+            .collect();
+    }
+    if matches!(provider, Provider::Processes | Provider::ProcessNames) {
+        // `  PID COMMAND`: the command is a name on Linux and a path on macOS; its last part is the name.
+        let mut seen = std::collections::HashSet::new();
+        return text
+            .lines()
+            .take(10000)
+            .filter_map(|l| {
+                let (pid, command) = l.trim_start().split_once(char::is_whitespace)?;
+                let name = command.trim().rsplit('/').next()?;
+                let ok = !pid.is_empty() && pid.bytes().all(|b| b.is_ascii_digit()) && !name.is_empty() && !name.starts_with('-') && name.len() <= 256 && !name.chars().any(char::is_control);
+                if !ok {
+                    return None;
+                }
+                if provider == Provider::Processes {
+                    Some(Suggestion { name: pid.to_owned(), description: Some(name.to_owned()), insert_value: None })
+                } else {
+                    seen.insert(name.to_owned()).then(|| Suggestion { name: name.to_owned(), description: Some("process".to_owned()), insert_value: None })
+                }
+            })
+            .collect();
+    }
     if provider == Provider::FrecentDirs {
         let mut seen = std::collections::HashSet::new();
         // One absolute path per line, most frecent first. The engine escapes them for the shell.
@@ -284,15 +346,17 @@ fn parse(provider: Provider, text: &str) -> Vec<Suggestion> {
         .take(5000)
         .filter_map(|line| {
             let row: serde_json::Value = serde_json::from_str(line).ok()?;
-            let name = if provider == Provider::DockerImages {
-                let repository = row["Repository"].as_str()?;
-                let tag = row["Tag"].as_str()?;
-                if repository == "<none>" || tag == "<none>" {
-                    return None;
+            let name = match provider {
+                Provider::DockerImages => {
+                    let repository = row["Repository"].as_str()?;
+                    let tag = row["Tag"].as_str()?;
+                    if repository == "<none>" || tag == "<none>" {
+                        return None;
+                    }
+                    format!("{repository}:{tag}")
                 }
-                format!("{repository}:{tag}")
-            } else {
-                row["Names"].as_str()?.to_owned()
+                Provider::DockerNetworks | Provider::DockerVolumes => row["Name"].as_str()?.to_owned(),
+                _ => row["Names"].as_str()?.to_owned(),
             };
             if !name
                 .bytes()
@@ -306,10 +370,10 @@ fn parse(provider: Provider, text: &str) -> Vec<Suggestion> {
             {
                 return None;
             }
-            let description = row[if provider == Provider::DockerImages {
-                "ID"
-            } else {
-                "Image"
+            let description = row[match provider {
+                Provider::DockerImages => "ID",
+                Provider::DockerNetworks | Provider::DockerVolumes => "Driver",
+                _ => "Image",
             }]
             .as_str()
             .filter(|s| s.len() <= 256 && !s.chars().any(char::is_control))
@@ -365,6 +429,9 @@ mod tests {
             git: PathBuf::from("git"),
             zoxide: PathBuf::from("zoxide"),
             kubectl: PathBuf::from("kubectl"),
+            tmux: PathBuf::from("tmux"),
+            systemctl: PathBuf::from("systemctl"),
+            ps: PathBuf::from("ps"),
             visits: dir.path().join("none"),
             home: dir.path().to_path_buf(),
             cache: Mutex::default(),
@@ -502,6 +569,53 @@ mod tests {
             let at = Instant::now();
             assert!(query(&docker, Provider::DockerContainers, DEADLINE, Path::new("/")).is_none());
             assert!(at.elapsed() < Duration::from_secs(1), "a provider cannot block typing");
+        }
+    }
+
+    #[test]
+    fn networks_volumes_sessions_units_and_processes_are_parsed_and_validated() {
+        let nets = parse(Provider::DockerNetworks, "{\"Name\":\"bridge\",\"Driver\":\"bridge\"}\n{\"Name\":\"-bad\",\"Driver\":\"x\"}\n");
+        assert_eq!(nets.iter().map(|s| (s.name.as_str(), s.description.as_deref())).collect::<Vec<_>>(), [("bridge", Some("bridge"))]);
+        assert_eq!(parse(Provider::DockerVolumes, "{\"Name\":\"pgdata\",\"Driver\":\"local\"}\n")[0].name, "pgdata");
+
+        let sessions = parse(Provider::TmuxSessions, "work\x1f3 windows attached\n-x\x1f1 windows\nwork\x1fagain\nbell\x07\x1f1 windows\n");
+        assert_eq!(sessions.iter().map(|s| (s.name.as_str(), s.description.as_deref().unwrap())).collect::<Vec<_>>(), [("work", "3 windows attached")]);
+        assert_eq!(parse(Provider::TmuxWindows, "work:1\x1fvim\n")[0].name, "work:1");
+
+        let units = parse(Provider::SystemdUnits, "nginx.service loaded active running A high performance web server\nnot-a-unit\nssh.socket loaded inactive dead OpenBSD Secure Shell socket\n");
+        assert_eq!(units.iter().map(|s| s.name.as_str()).collect::<Vec<_>>(), ["nginx.service", "ssh.socket"]);
+        assert_eq!(units[0].description.as_deref(), Some("active · A high performance web server"));
+
+        let ps = "  1 /sbin/launchd\n 812 /Applications/Google Chrome.app/Contents/MacOS/Google Chrome\n 900 zsh\n 901 zsh\nabc nope\n 902 -zsh\n";
+        assert_eq!(
+            parse(Provider::Processes, ps).iter().map(|s| (s.name.as_str(), s.description.as_deref().unwrap())).collect::<Vec<_>>(),
+            [("1", "launchd"), ("812", "Google Chrome"), ("900", "zsh"), ("901", "zsh")]
+        );
+        assert_eq!(parse(Provider::ProcessNames, ps).iter().map(|s| s.name.as_str()).collect::<Vec<_>>(), ["launchd", "Google Chrome", "zsh"]);
+    }
+
+    #[test]
+    fn tmux_sessions_are_asked_from_tmux() {
+        let dir = tempfile::tempdir().unwrap();
+        let tmux = script(dir.path(), "[ \"$1\" = list-sessions ] || exit 1\nprintf 'work\\037%s\\n' '3 windows'");
+        let providers = Providers { tmux, ..Providers::default() };
+        let deadline = Instant::now() + Duration::from_secs(5);
+        while providers.values(Provider::TmuxSessions, Path::new("/")).is_empty() && Instant::now() < deadline {
+            std::thread::sleep(Duration::from_millis(20));
+        }
+        assert_eq!(providers.values(Provider::TmuxSessions, Path::new("/"))[0].name, "work");
+    }
+
+    #[test]
+    fn a_missing_tmux_systemctl_or_ps_gives_nothing() {
+        let providers = Providers {
+            tmux: PathBuf::from("/nonexistent/tmux"),
+            systemctl: PathBuf::from("/nonexistent/systemctl"),
+            ps: PathBuf::from("/nonexistent/ps"),
+            ..Providers::default()
+        };
+        for p in [Provider::TmuxSessions, Provider::TmuxWindows, Provider::SystemdUnits, Provider::Processes, Provider::ProcessNames] {
+            assert!(providers.values(p, Path::new("/")).is_empty(), "{p:?}");
         }
     }
 }

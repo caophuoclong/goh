@@ -121,6 +121,20 @@ pub enum Provider {
     DenoTasks,
     /// Programs in the nearest `node_modules/.bin` (`npx`, `pnpm exec`, `yarn run`).
     NodeBins,
+    /// Docker networks (`docker network rm`, `connect`, `inspect`).
+    DockerNetworks,
+    /// Docker volumes (`docker volume rm`, `inspect`).
+    DockerVolumes,
+    /// tmux sessions of the default server (`tmux attach-session -t`, `kill-session -t`).
+    TmuxSessions,
+    /// tmux windows as `session:index` (`tmux select-window -t`).
+    TmuxWindows,
+    /// systemd units, loaded or not (`systemctl restart`, `status`, `enable`).
+    SystemdUnits,
+    /// Running processes by pid, described by their name (`kill`).
+    Processes,
+    /// Names of running processes (`pkill`, `killall`).
+    ProcessNames,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize)]
