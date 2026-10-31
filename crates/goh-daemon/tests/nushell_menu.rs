@@ -90,7 +90,14 @@ fn space_opens_a_box_of_goh_candidates() {
     let mut sh = shell(fx.command(nu.to_str().unwrap(), &[], &[]));
     type_keys(&mut sh, "git", 300);
     let shown = screen(&type_keys(&mut sh, " ", 800));
-    assert!(shown.contains("checkout"), "the box lists git's subcommands: {shown}");
+    if !shown.contains("checkout") {
+        let script = format!(
+            "source '{}'; print $nu.pid; print $env.PATH; print (which goh | to nuon); print (do {{ ^goh menu --live --session $\"nu-($nu.pid)\" --cwd $env.PWD --limit 50 --cursor-byte 4 --buffer 'git ' }} | complete | to nuon); print (goh-menu-source 'git ' 4 | to nuon)",
+            adapter().display(),
+        );
+        let diagnostic = fx.command(nu.to_str().unwrap(), &["-n", "-c", &script], &[]).output().unwrap();
+        panic!("the box lists git's subcommands: {shown}\ncompletion diagnostic: {diagnostic:?}");
+    }
     assert!(shown.contains("Switch branches"), "with their descriptions: {shown}");
     assert!(["╭", "┌", "│"].iter().any(|b| shown.contains(b)), "inside a border: {shown}");
 }
