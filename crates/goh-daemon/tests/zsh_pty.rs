@@ -1408,6 +1408,55 @@ fn the_box_frames_the_rows_under_the_word_being_completed() {
     assert!(styles_at(&h, top_at, top_at + inner + 2).any(|st| st.starts_with("fg=")), "the top border starts at the corner (P{top_at}): {h}");
 }
 
+#[test]
+fn the_box_measures_a_prompt_subst_prompt_after_expanding_its_parameters() {
+    let fx = Fixture::new(require_env!(), true);
+    let mut sh = fx.shell(BOX, true);
+    menu_dump(&fx, &mut sh);
+    sh.send("COLUMNS=100; setopt prompt_subst; GOH_PROMPT_LABEL=0123456789; PS1='${GOH_PROMPT_LABEL}> '\n", 300);
+    sh.send("git c", 400);
+    let (rows, _) = menu(&fx, &mut sh);
+    let top = &rows[1];
+    let indent = top.chars().take_while(|c| *c == ' ').count();
+    let inner = top.trim_start().chars().count() - 2;
+    // The prompt is 12 columns once `${GOH_PROMPT_LABEL}` is expanded, and `git ` 4 more: the word starts at column 16.
+    assert_eq!(indent, 16.min(99 - inner - 2), "{rows:?}");
+    assert_eq!(indent, 16, "the expanded prompt, not its source text, sets the column: {rows:?}");
+}
+
+#[test]
+fn a_command_in_a_prompt_is_not_run_again_and_counts_as_no_width() {
+    let fx = Fixture::new(require_env!(), true);
+    let mut sh = fx.shell(BOX, true);
+    menu_dump(&fx, &mut sh);
+    let counter = fx.path("prompt-runs");
+    sh.send(&format!("COLUMNS=100; setopt prompt_subst; PS1='$(echo . >> {})READY> '\n", counter.display()), 500);
+    let runs = |n: &str| fs::read_to_string(&counter).map(|s| s.lines().count().to_string()).unwrap_or_else(|_| n.into());
+    let before = runs("0");
+    sh.send("git c", 400);
+    let (rows, _) = menu(&fx, &mut sh);
+    sh.send("\x1b[B", 300);
+    let after_move = menu(&fx, &mut sh).0;
+    let indent = rows[1].chars().take_while(|c| *c == ' ').count();
+    assert_eq!(indent, 4, "anchored at `git ` as if the prompt had no width: {rows:?}");
+    assert_eq!(after_move[1].chars().take_while(|c| *c == ' ').count(), 4, "{after_move:?}");
+    assert_eq!(runs("0"), before, "the menu never ran the prompt's command (ran {before} before): {rows:?}");
+    assert_eq!(before, "1", "the prompt ran once when it was drawn");
+}
+
+#[test]
+fn the_boxs_right_border_follows_screen_cells_not_characters() {
+    let fx = Fixture::new(require_env!(), false);
+    fs::write(fx.path("specs/git.json"), serde_json::json!({"schemaVersion":1,"name":"git","subcommands":[{"name":"checkout","description":"日本語の説明です"}]}).to_string()).unwrap();
+    let mut sh = fx.shell(BOX, true);
+    menu_dump(&fx, &mut sh);
+    sh.send("git c", 400);
+    let (rows, _) = menu(&fx, &mut sh);
+    let cells = |r: &str| r.chars().map(|c| if ('\u{2e80}'..='\u{a4cf}').contains(&c) { 2 } else { 1 }).sum::<usize>();
+    let top = cells(&rows[1]);
+    assert!(rows[2..].iter().filter(|r| r.contains('│') || r.contains('╰')).all(|r| cells(r) == top), "every row ends in the same screen column {top}: {rows:?}");
+}
+
 /// Offset, from the start of the line, of the first character of dumped row `i` (row 0 is the ghost text) when the
 /// line is `from` characters long: the ghost, a newline, then every row and its newline.
 fn row_offset(rows: &[String], i: usize, from: usize) -> usize {

@@ -90,9 +90,12 @@ Each record's status says whether it is proposed or accepted. Record all reversa
   empty rows under the prompt, but ties goh to one platform, breaks over ssh and puts every byte of the session
   through goh.
 - **Cost:** like any menu drawn in the terminal, the box uses the empty rows under the prompt; at the bottom of the
-  screen the terminal scrolls up to make room. The column comes from measuring the prompt, so an unusual prompt
-  shifts it.
-- **Validation:** `zsh_pty.rs` box tests; manual check in Ghostty, Kitty, WezTerm and tmux.
+  screen the terminal scrolls up to make room. The column comes from measuring the prompt: `%` escapes are expanded;
+  with `prompt_subst`, parameters are expanded first (the order zsh uses); a prompt that runs a command (`$(...)`,
+  a backtick) is never run a second time and counts as no width, so the box anchors at the word's offset in the typed
+  line. Row widths are measured in screen cells, so wide and combining characters keep the border straight.
+- **Validation:** `zsh_pty.rs` box tests, including `prompt_subst` prompts. Pending: the manual check in Ghostty,
+  Kitty, WezTerm and tmux.
 
 ## ADR template for future records
 

@@ -30,7 +30,9 @@ in an IDE. Load it with `goh setup` or `eval "$(goh init zsh)"`.
 - Ghost text: the best line is shown after the cursor; → takes it.
 - Where the popup cannot draw (Ghostty, Kitty, WezTerm, tmux, ssh, ...), the menu is a floating framed box under the word you
   are completing, in the terminal's own colours; no permission is needed. `display.inlineStyle: "flat"` draws plain
-  rows instead, which a screen reader reads more easily.
+  rows instead, which a screen reader reads more easily. The box finds the word's column by measuring your prompt,
+  including one that uses `prompt_subst` parameters (oh-my-zsh themes, powerlevel10k, starship); row borders stay
+  straight with wide characters (CJK, emoji).
 - A program still answering (a slow Docker, a cluster) shows `…` in the footer; its values appear when they arrive. The
   wait stops when you close the menu (Esc, Left) or move in it, and gives up after about 5 s.
 - Fail-open: any problem falls through to the widget Tab had before; `goh-unload` restores it.
@@ -39,10 +41,13 @@ in an IDE. Load it with `goh setup` or `eval "$(goh init zsh)"`.
 ## Limits
 
 - Needs zsh; the menu is drawn by [popup](popup.md) where the caret is verified, else inline.
+- A prompt that runs a command (`$(...)` or a backtick under `prompt_subst`) is not run again to measure it: the box
+  anchors as if the prompt had no width, so it sits left of the word by the prompt's width.
 - With the menu open, Esc pressed by hand and then a key more than 20 ms later counts as Esc, then that key.
 
 ## Changes
 
+- unreleased: the box lands under the word with `prompt_subst` prompts (oh-my-zsh, powerlevel10k, starship), and its right border stays straight with wide characters.
 - unreleased: late values from slow programs appear without another key.
 - unreleased: the inline menu is a floating framed box under the word being completed (`display.inlineStyle`, `box` by default; `flat` is the old look).
 - unreleased: Esc closes the menu at once instead of after `KEYTIMEOUT` (0.4 s).

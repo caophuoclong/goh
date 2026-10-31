@@ -428,10 +428,19 @@ _goh_byte_prefix() { local LC_ALL=C; REPLY=${1[1,$2]} }
 
 # The screen column (from 0) where the word being completed starts: the width of the prompt's last line plus the
 # line typed before the word. A prompt this cannot measure only moves the box; nothing else depends on it.
+# With prompt_subst the prompt is measured as zsh draws it: parameters first, then `%` escapes. One that runs a
+# command (`$(...)`, a backtick) is never run again here (it may be slow or have side effects) and counts as no
+# width, so the box anchors at the word's offset in the typed line.
 _goh_word_column() {
+  local subst=${options[prompt_subst]}
   emulate -L zsh
   setopt extended_glob
-  local p=${(%)PS1} before i start=0
+  local p before i start=0
+  if [[ $subst == on ]]; then
+    if [[ $PS1 == *'$('* || $PS1 == *'`'* ]]; then p=; else p=${(%)${(e)PS1}}; fi
+  else
+    p=${(%)PS1}
+  fi
   # The word being completed starts where the first non-history candidate starts: a history line starts at 0,
   # and the box must not jump when the selection moves onto one.
   for (( i = 1; i <= $#_goh_kind; i++ )); do
@@ -578,7 +587,7 @@ _goh_render() {
   # completed, as far right as the terminal allows. Highlight offsets move with the rows.
   if (( box )); then
     local inner=1 r indent surface= selected= border=
-    for r in "${rows[@]}"; do (( ${#r} > inner )) && inner=${#r}; done
+    for r in "${rows[@]}"; do (( ${(m)#r} > inner )) && inner=${(m)#r}; done
     _goh_word_column; indent=$REPLY
     (( indent + inner + 2 > ${COLUMNS:-80} - 1 )) && indent=$(( ${COLUMNS:-80} - 1 - inner - 2 ))
     (( indent < 0 )) && indent=0
@@ -589,18 +598,21 @@ _goh_render() {
     fi
     local edge= lead=
     edge=${(l:inner::─:)edge} lead=${(l:indent:: :)lead}
-    local -a framed=("$lead╭$edge╮") moved=() f
-    for r in "${rows[@]}"; do framed+=("$lead│${(r:inner:)r}│"); done
+    local -a framed=("$lead╭$edge╮") moved=() clen=() f
+    # Padded to `inner` screen cells: a wide or combining character makes a row's character count differ from its
+    # width, so offsets on the right (the border, the fills) come from each framed row's own length.
+    for r in "${rows[@]}"; do framed+=("$lead│${(mr:inner:)r}│"); done
     framed+=("$lead╰$edge╯")
     local last=$#framed sel_row=$(( _goh_sel - _goh_win + 2 ))
+    for (( k = 1; k <= last; k++ )); do clen[k]=${#framed[k]}; done
     # Fills first, so the row styles that follow combine with them.
     if [[ -n $surface ]]; then
-      for (( k = 1; k <= last; k++ )); do moved+=("$k $indent $(( indent + inner + 2 )) $surface"); done
+      for (( k = 1; k <= last; k++ )); do moved+=("$k $indent $clen[k] $surface"); done
     fi
-    [[ -n $selected ]] && moved+=("$sel_row $(( indent + 1 )) $(( indent + 1 + inner )) $selected")
+    [[ -n $selected ]] && moved+=("$sel_row $(( indent + 1 )) $(( clen[sel_row] - 1 )) $selected")
     if [[ -n $border ]]; then
-      moved+=("1 $indent $(( indent + inner + 2 )) $border" "$last $indent $(( indent + inner + 2 )) $border")
-      for (( k = 2; k < last; k++ )); do moved+=("$k $indent $(( indent + 1 )) $border" "$k $(( indent + inner + 1 )) $(( indent + inner + 2 )) $border"); done
+      moved+=("1 $indent $clen[1] $border" "$last $indent $clen[last] $border")
+      for (( k = 2; k < last; k++ )); do moved+=("$k $indent $(( indent + 1 )) $border" "$k $(( clen[k] - 1 )) $clen[k] $border"); done
     fi
     for h in "${hl[@]}"; do
       f=(${=h})
