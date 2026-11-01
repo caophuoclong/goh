@@ -1275,9 +1275,10 @@ goh-load() {
   add-zsh-hook precmd _goh_erase_left
   precmd_functions=(_goh_erase_left ${precmd_functions:#_goh_erase_left})
   _goh_sync_context
-  # `ssh` through `goh ssh` (popup.overSsh, on unless set off): a zsh host's menus are drawn by the popup here. Not
-  # where no popup can draw them (over ssh, in a multiplexer, inline only), and never over your own `ssh`.
-  if [[ ${GOH_POPUP_SSH:-on} == on && $_GOH_DISPLAY != inline && -z ${SSH_CONNECTION-}${SSH_TTY-}${TMUX-}${STY-} ]] &&
+  # `ssh` through `goh ssh` (popup.overSsh, on unless set off): a zsh host's menus are drawn by the popup here, also
+  # when this shell draws its own inline. Not where no popup can draw them (over ssh, in a multiplexer), and never
+  # over your own `ssh`.
+  if [[ ${GOH_POPUP_SSH:-on} == on && -z ${SSH_CONNECTION-}${SSH_TTY-}${TMUX-}${STY-} ]] &&
      (( ! ${+aliases[ssh]} && ! ${+functions[ssh]} )); then
     ssh() { command $_GOH_CTL ssh "$@" }
     _goh_ssh_wrapped=1
