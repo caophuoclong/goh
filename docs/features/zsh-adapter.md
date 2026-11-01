@@ -3,11 +3,11 @@ id: zsh-adapter
 title: zsh: menus as you type
 status: stable
 since: 1.0.0
-updated: 2026-10-31
+updated: 2026-11-01
 area: shells
 shells: [zsh]
-settings: [display.live, display.maxSuggestions, display.mode, display.enterRuns, display.inlineStyle]
-env: [GOH_LIVE, GOH_LIMIT, GOH_DISPLAY, GOH_ENTER_RUNS, GOH_INLINE_STYLE]
+settings: [display.live, display.maxSuggestions, display.mode, display.enterRuns, display.inlineStyle, display.icons]
+env: [GOH_LIVE, GOH_LIMIT, GOH_DISPLAY, GOH_ENTER_RUNS, GOH_INLINE_STYLE, GOH_ICONS]
 ---
 
 # zsh: menus as you type
@@ -34,6 +34,11 @@ in an IDE. Load it with `goh setup` or `eval "$(goh init zsh)"`.
   rows instead, which a screen reader reads more easily. The box finds the word's column by measuring your prompt,
   including one built from `prompt_subst` parameters (powerlevel10k); row borders stay straight with wide characters
   (CJK, emoji), and the selected row and the border keep the box's background.
+- The box's top border names what you are completing (`git push · options`), each row has its description beside the
+  label, and the bottom border shows the position and keys. In a narrow terminal the descriptions go and a risky row
+  keeps its `⚠`; the selected row's warning and description move to a line under the rows.
+- `display.icons: "nerd"` draws Nerd Font icons: the command's logo in the title, an icon per kind and per file type.
+  It needs a Nerd Font Mono as the terminal's font; `"unicode"`, the default, works with any font.
 - A program still answering (a slow Docker, a cluster) shows `…` in the footer; its values appear when they arrive. The
   wait stops when you close the menu (Esc, Left) or move in it, and gives up after about 5 s; each new prompt starts
   the count again, so the same line typed later is asked again.
@@ -50,6 +55,8 @@ in an IDE. Load it with `goh setup` or `eval "$(goh init zsh)"`.
 
 ## Changes
 
+- unreleased: the box shows the command and kind in its top border, a description beside every label and the keys in its bottom border; a warning keeps its `⚠` in a narrow terminal, and wide labels no longer push the box past the edge. The ①②③ marks on suggestions picked before are gone; those suggestions still rank first.
+- unreleased: `display.icons: "nerd"` draws Nerd Font icons and command logos in the inline menu.
 - unreleased: Ctrl+C with the inline menu open no longer leaves the menu on the screen above the next prompt.
 - unreleased: Esc closes the menu at once next to a key bound to type text that starts with Esc (`bindkey -s`, as oh-my-zsh's Alt+L), instead of after `KEYTIMEOUT` (0.4 s); that key types its text again once the menu closes.
 - unreleased: Ctrl+C pressed while a slow program is still answering aborts the line at once, instead of seeming to do nothing until the next key.

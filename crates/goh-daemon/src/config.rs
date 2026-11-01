@@ -152,6 +152,11 @@ pub fn validate(text: &str) -> Result<(), String> {
             return Err(format!("display.inlineStyle must be \"box\" or \"flat\", not {style}"));
         }
     }
+    if let Some(icons) = v.pointer("/display/icons") {
+        if !matches!(icons.as_str(), Some("unicode" | "nerd")) {
+            return Err(format!("display.icons must be \"unicode\" or \"nerd\", not {icons}"));
+        }
+    }
     if let Some(n) = v.pointer("/display/maxSuggestions") {
         if !n.as_u64().is_some_and(|n| (1..=50).contains(&n)) {
             return Err(format!("display.maxSuggestions must be a whole number from 1 to 50, not {n}"));
@@ -183,6 +188,9 @@ pub fn env_lines(v: &Value) -> Vec<String> {
     }
     if let Some(s) = v.pointer("/display/inlineStyle").and_then(Value::as_str).filter(|s| matches!(*s, "box" | "flat")) {
         out.push(format!("GOH_INLINE_STYLE={s}"));
+    }
+    if let Some(s) = v.pointer("/display/icons").and_then(Value::as_str).filter(|s| matches!(*s, "unicode" | "nerd")) {
+        out.push(format!("GOH_ICONS={s}"));
     }
     if let Some(n) = v.pointer("/display/maxSuggestions").and_then(Value::as_u64).filter(|n| (1..=50).contains(n)) {
         out.push(format!("GOH_LIMIT={n}"));
@@ -232,7 +240,7 @@ mod tests {
         let v = goh_theme::parse_config(TEMPLATE).unwrap();
         let example: Value = serde_json::from_str(include_str!("../../../docs/examples/config.json")).unwrap();
         assert_eq!(v, example, "the commented template and the schema-checked example say the same");
-        assert_eq!(env_lines(&v), ["GOH_DISPLAY=auto", "GOH_INLINE_STYLE=box", "GOH_LIMIT=8", "GOH_LIVE=on", "GOH_PREDICT=off", "GOH_ENTER_RUNS=on", "GOH_RECORD=off", "GOH_UPDATE_CHECK=off", "GOH_POPUP_OWN_PERMISSION=off", "GOH_POPUP_SSH=on"]);
+        assert_eq!(env_lines(&v), ["GOH_DISPLAY=auto", "GOH_INLINE_STYLE=box", "GOH_ICONS=unicode", "GOH_LIMIT=8", "GOH_LIVE=on", "GOH_PREDICT=off", "GOH_ENTER_RUNS=on", "GOH_RECORD=off", "GOH_UPDATE_CHECK=off", "GOH_POPUP_OWN_PERMISSION=off", "GOH_POPUP_SSH=on"]);
     }
 
     #[test]
@@ -251,7 +259,7 @@ mod tests {
         let v = goh_theme::parse_config(&new).unwrap();
         assert_eq!(v.pointer("/theme/background"), Some(&Value::from("#111111")), "settings the template does not name stay");
         assert_eq!((v.pointer("/$schema"), v.pointer("/display/live")), (Some(&Value::from("x")), Some(&Value::Bool(true))));
-        assert_eq!(env_lines(&v)[..3], ["GOH_DISPLAY=inline", "GOH_INLINE_STYLE=box", "GOH_LIMIT=5"], "a missing setting gets its default");
+        assert_eq!(env_lines(&v)[..4], ["GOH_DISPLAY=inline", "GOH_INLINE_STYLE=box", "GOH_ICONS=unicode", "GOH_LIMIT=5"], "a missing setting gets its default");
 
         assert!(commented(&new).is_none(), "a file with comments is left alone");
         assert!(commented("{ nope").is_none() && commented(r#"{"display":{"mode":"popup"}}"#).is_none(), "nor one that does not check out");
@@ -289,6 +297,14 @@ mod tests {
         assert!(validate(r#"{"display":{"inlineStyle":"round"}}"#).unwrap_err().contains("display.inlineStyle"));
         let v: Value = serde_json::from_str(r#"{"display":{"inlineStyle":"round"}}"#).unwrap();
         assert!(env_lines(&v).iter().all(|l| !l.starts_with("GOH_INLINE_STYLE")), "a bad value is not exported");
+    }
+
+    #[test]
+    fn the_icons_are_unicode_or_nerd() {
+        assert!(validate(r#"{"display":{"icons":"nerd"}}"#).is_ok());
+        assert!(validate(r#"{"display":{"icons":"emoji"}}"#).unwrap_err().contains("display.icons"));
+        let v: Value = serde_json::from_str(r#"{"display":{"icons":"emoji"}}"#).unwrap();
+        assert!(env_lines(&v).iter().all(|l| !l.starts_with("GOH_ICONS")), "a bad value is not exported");
     }
 
     #[test]

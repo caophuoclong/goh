@@ -36,6 +36,11 @@
           "default": "box",
           "description": "How the menu looks when drawn in the terminal: a framed box under the word (box) or plain rows (flat)."
         },
+        "icons": {
+          "enum": ["unicode", "nerd"],
+          "default": "unicode",
+          "description": "Icons in the menu drawn in the terminal: plain symbols that work in any font (unicode), or command logos and file-type icons from a Nerd Font Mono (nerd)."
+        },
         "maxSuggestions": {
           "type": "integer",
           "minimum": 4,

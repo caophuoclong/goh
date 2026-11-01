@@ -3,7 +3,7 @@ id: risk-warnings
 title: Warnings on risky suggestions
 status: stable
 since: 1.4.0
-updated: 2026-10-31
+updated: 2026-11-01
 area: core
 ---
 
@@ -18,6 +18,8 @@ on. Nothing is blocked or run.
   `· workspace: <terraform workspace>` where that applies, then its own description.
 - The warning is drawn in red on every row, not only the selected one, so it is seen before it is picked: bold red
   in the inline menu (bold only with `NO_COLOR`), red in the popup (a light or dark red to suit the surface).
+  Where a narrow terminal has no room for its text, the row keeps a red `⚠` and the selected row's warning moves to the
+  line under the rows.
 - Listed per command (`crates/goh-daemon/src/risk.rs`):
   - git: `push --force|--force-with-lease|--mirror|--prune|--delete`, `reset --hard`, `clean -f`, `branch -D`,
     `checkout -f`, `tag -d`, `stash drop|clear`, `reflog expire`, `gc --prune`, `filter-branch`;
@@ -43,5 +45,6 @@ on. Nothing is blocked or run.
 
 ## Changes
 
+- unreleased: in a narrow terminal the inline menu keeps a `⚠` on a risky row and shows the warning under the rows, instead of dropping it.
 - unreleased: databases, docker, cloud, publishing and system commands, any destructive-named subcommand; drawn in red inline and in the popup.
 - 1.4.0: warnings on every row of the inline menu.

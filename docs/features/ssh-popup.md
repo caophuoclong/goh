@@ -3,7 +3,7 @@ id: ssh-popup
 title: Popup over ssh
 status: experimental
 since: unreleased
-updated: 2026-10-31
+updated: 2026-11-01
 area: ssh
 shells: [zsh]
 platforms: [macos, linux]
@@ -25,8 +25,9 @@ terminal you typed `ssh` in. In a shell with the zsh adapter, `ssh` runs through
   shell. Each connection gets its own local `goh-popup`.
 - iTerm2's cell height is asked locally before ssh starts and added to frames that lack it.
 - Without the relay the bridge answers inline. `goh doctor` on the host says which applies.
-- The wrapper is not defined over ssh, in tmux/screen, with `display.mode: inline`, or over your own `ssh` alias or
-  function. `popup.overSsh: false` turns it off.
+- The wrapper is not defined over ssh, in tmux/screen, or over your own `ssh` alias or function. It is defined with
+  `display.mode: inline` too: menus here stay inline, a host's are drawn by the popup. `popup.overSsh: false` turns
+  it off.
 - `ssh host command`, `-N`, `-f`, `-W`, `-O`, `-G`, `-V` are plain `exec ssh`.
 
 ## Limits
@@ -37,4 +38,5 @@ terminal you typed `ssh` in. In a shell with the zsh adapter, `ssh` runs through
 
 ## Changes
 
+- unreleased: `ssh` runs through `goh ssh` with `display.mode: inline` too; only `popup.overSsh: false` turns it off.
 - unreleased: first version (`goh ssh`, `goh popup-bridge`, `popup.overSsh`).

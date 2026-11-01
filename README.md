@@ -1,13 +1,83 @@
-# goh
+<p align="center">
+  <img src="packaging/macos/Goh.svg" width="112" alt="">
+</p>
 
-**goh** is a from-scratch rebuild of [Fig](https://fig.io), the terminal autocomplete that showed
-command suggestions right where you type. It brings IDE-style completion to your existing terminal: no new terminal, no account, no cloud.
+<h1 align="center">goh</h1>
 
-It reproduces what Fig was useful for, not its branding, and has no dependency on Amazon Q CLI.
+<p align="center">
+  <b>Fig-style autocomplete for the terminal you already use.</b><br>
+  Subcommands, flags, branches and files with descriptions, as you type. Local, no account, open source.
+</p>
+
+<p align="center">
+  <a href="https://github.com/caophuoclong/goh/releases"><img src="https://img.shields.io/github/v/release/caophuoclong/goh" alt="Latest release"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT License"></a>
+  <img src="https://img.shields.io/badge/platform-macOS%20%7C%20Linux-lightgrey" alt="macOS and Linux">
+</p>
+
+<p align="center">
+  <img src="docs/media/features.gif" width="860" alt="goh suggesting git subcommands and branches, Enter running the picked branch, and a red warning on git push --force">
+</p>
+
+## Why goh
+
+- **Suggestions as you type.** Subcommands, flags, arguments and paths, each with a description. 191 commands are
+  bundled, and any other one gets a spec from its own `--help`.
+- **It knows your project and your machine.** Git branches, `package.json` scripts, Makefile targets, compose
+  services, Docker volumes, tmux sessions, systemd units and running processes.
+- **Pick it and go.** Tab inserts the suggestion; Enter on the one you moved to inserts it and runs the line.
+- **A warning before the damage.** `git push --force` shows `⚠ overwrites the remote branch`, and `kubectl delete`
+  says which context it acts on.
+- **Forgives slips.** `git chekcout` still finds `checkout`.
+- **Works in your shell and terminal.** zsh, bash, PowerShell and Nushell, in your terminal's own colours. In zsh the
+  menu is a popup at the cursor where the terminal allows it, and a framed box under the word everywhere else.
+- **Stays on your machine.** No account, no cloud. Command text never leaves your computer, and history
+  suggestions are opt-in, with secrets shown as `****`.
+
+goh is a from-scratch rebuild of [Fig](https://fig.io), the terminal autocomplete that showed suggestions right where
+you type. It reproduces what Fig was useful for, not its branding, and has no dependency on Amazon Q CLI.
+
+## Get started
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/caophuoclong/goh/main/install.sh | sh
+```
+
+or with Homebrew:
+
+```bash
+brew install caophuoclong/goh/goh && goh setup
+```
+
+Open a new terminal and type `git ch`. On macOS the popup needs the Accessibility permission: `goh doctor --fix` opens
+the settings for it.
+More ways to install are in [Install](#install).
+
+## See it in a real terminal
+
+A recording of goh in zsh, drawing its menu inline (made with [VHS](https://github.com/charmbracelet/vhs) from
+[docs/media/demo.tape](docs/media/demo.tape)):
 
 ![goh completing git and docker commands in zsh](docs/media/demo.gif)
 
-## What it does
+## Where the menu appears
+
+| Where | How the menu is drawn | Needs |
+|---|---|---|
+| zsh in iTerm2, Terminal.app, VS Code, the Claude app (macOS) | a popup at the cursor, in the terminal's font and colours | the Accessibility permission (`goh doctor --fix`) |
+| zsh in Linux X11 / XWayland terminals that expose AT-SPI | a popup at the cursor | `libxkbcommon-x11`, EGL/OpenGL |
+| zsh in Ghostty, Kitty, WezTerm, or any terminal where the cursor cannot be located | a floating framed box under the word, drawn by the shell | nothing |
+| zsh in tmux, screen, native Wayland | the floating framed box | nothing |
+| zsh over ssh | the popup on the machine you connected from (`goh ssh`), else the floating box | goh on the machine you connect from, and on the host (`goh ssh` offers a copy) |
+| bash with ble.sh | ble.sh's menu with descriptions, opening as you type | bash 4+ and ble.sh |
+| PowerShell 7.2+ | PSReadLine's prediction list, as you type | PSReadLine 2.2.2+ |
+| Nushell | a bordered menu that opens at each new word | the `goh-ui` line in `config.nu` after `source goh.nu` |
+| bash without ble.sh, fish, elvish, xonsh | the shell's own completion list on Tab, filled by goh | nothing |
+
+`display.inlineStyle: "flat"` replaces the box with plain rows, which screen readers read more easily. `display.icons: "nerd"` draws command logos and file-type icons in it, for a terminal set to a
+Nerd Font Mono.
+
+## Features in detail
 
 - Suggests subcommands, flags, arguments and paths as you type, with descriptions.
 - Is driven by declarative JSON completion specs (191 bundled: `git`, `docker`, `npm`, `pnpm`, `cargo`, `kubectl`, `just`, `task`, `brew`, `aws`, `deno`, `gradle`, `flutter`, `jq`, `tmux`, `systemctl`, `pytest`, `ruff`, `podman`, `lsof`, ...; a command with none gets one from its `--help`, see `goh spec gen`).
@@ -31,22 +101,6 @@ It reproduces what Fig was useful for, not its branding, and has no dependency o
 - Never executes anything for you: it only inserts the candidate you pick.
 - Runs fully local. Command text is not sent over the network (the one optional request is the update check, see [Privacy](#privacy)).
 
-## Where the menu appears
-
-| Where | How the menu is drawn | Needs |
-|---|---|---|
-| zsh in iTerm2, Terminal.app, VS Code, the Claude app (macOS) | a popup at the cursor, in the terminal's font and colours | the Accessibility permission (`goh doctor --fix`) |
-| zsh in Linux X11 / XWayland terminals that expose AT-SPI | a popup at the cursor | `libxkbcommon-x11`, EGL/OpenGL |
-| zsh in Ghostty, Kitty, WezTerm, or any terminal where the cursor cannot be located | a floating framed box under the word, drawn by the shell | nothing |
-| zsh in tmux, screen, native Wayland | the floating framed box | nothing |
-| zsh over ssh | the popup on the machine you connected from (`goh ssh`), else the floating box | goh on the machine you connect from, and on the host (`goh ssh` offers a copy) |
-| bash with ble.sh | ble.sh's menu with descriptions, opening as you type | bash 4+ and ble.sh |
-| PowerShell 7.2+ | PSReadLine's prediction list, as you type | PSReadLine 2.2.2+ |
-| Nushell | a bordered menu that opens at each new word | the `goh-ui` line in `config.nu` after `source goh.nu` |
-| bash without ble.sh, fish, elvish, xonsh | the shell's own completion list on Tab, filled by goh | nothing |
-
-`display.inlineStyle: "flat"` replaces the box with plain rows, which screen readers read more easily.
-
 ## Privacy
 
 Everything runs locally. Three things are **off unless you turn them on** in `goh config`:
@@ -69,47 +123,6 @@ The only other request is the one you answer yes to in `ssh` (below): downloadin
 host's system from the same release page, once, checked against its `SHA256SUMS`.
 
 Your snippets go in `~/.config/goh/snippets.json`: `[{"name":"gcm","template":"git commit -m \"{{cursor}}\""}]`.
-
-## Troubleshooting
-
-```bash
-goh doctor            # what works and what does not, with the fix for each
-goh doctor --fix      # start or restart the daemon, open the macOS Accessibility settings
-goh doctor --test     # also ask the daemon to complete `git chec` and time the answer
-goh doctor --report   # a summary to paste into an issue: versions and checks, your home shown as ~, no command text
-goh logs              # the daemon's own log (starts, spec warnings, panics); it never holds what you typed
-goh specs --missing   # programs you ran that have no spec (needs privacy.recordCommands)
-```
-
-`doctor` says whether this shell loaded the adapter, whether your startup file has the block `goh setup` writes, and
-whether the running daemon is the same version as `goh` (an upgrade can leave the old one running: `goh doctor --fix`).
-In an iTerm2, Terminal.app or VS Code terminal that lacks the Accessibility permission, the first menu of a zsh
-session prints a one-line note instead of silently drawing inline.
-
-macOS gives the permission to the terminal app the popup runs in, so each terminal is allowed on its own. To allow
-goh once instead, for every terminal (experimental), set `"popup": { "ownPermission": true }` with `goh config` and open
-a new shell: at its first menu macOS asks for **Goh** (the popup) itself. The macOS packages ship it as `Goh.app`, signed
-with goh's own certificate, so the permission stays through updates. A build from source keeps it too when it is
-signed with that certificate: `./install.sh --from-source` and `scripts/package.sh` use it by themselves when
-`../macos-sign/goh-signing.p12` sits beside the checkout (or `GOH_MACOS_SIGN_P12` names it), and after a plain
-`cargo build` run `scripts/macos-sign.sh target/debug/goh-popup`. Otherwise it is signed ad hoc and is a new program
-to macOS after each rebuild: remove its old **Goh** (or **goh-popup**) entries under Privacy & Security > Accessibility (−) and
-allow it again.
-`goh doctor` still reports the terminal's own permission.
-
-## Layout
-
-| Path | Purpose |
-|---|---|
-| `crates/goh-core` | Spec model, parser and completion engine, plus the bundled `specs/` |
-| `crates/goh-daemon` | `gohd` background daemon and the `goh` client (Unix socket IPC) |
-| `crates/goh-popup` | Native overlay popup UI |
-| `crates/goh-anchor` | Finds the cursor position for popup placement |
-| `crates/goh-theme` | Terminal color detection |
-| `crates/goh-shells` | Shell integration helpers |
-| `adapters/zsh`, `adapters/bash` | Shell adapters |
-| `tools/import-specs` | Imports Fig-style specs into goh's format |
-| `docs/` | Vision, PRD, architecture, design system, spike results |
 
 ## Install
 
@@ -176,6 +189,33 @@ By hand instead: `eval "$(goh init zsh)"` in `~/.zshrc` after compinit (bash: `g
 
 Releases are versioned automatically from commit messages: see [CONTRIBUTING.md](CONTRIBUTING.md) and [RELEASING.md](RELEASING.md).
 
+## Troubleshooting
+
+```bash
+goh doctor            # what works and what does not, with the fix for each
+goh doctor --fix      # start or restart the daemon, open the macOS Accessibility settings
+goh doctor --test     # also ask the daemon to complete `git chec` and time the answer
+goh doctor --report   # a summary to paste into an issue: versions and checks, your home shown as ~, no command text
+goh logs              # the daemon's own log (starts, spec warnings, panics); it never holds what you typed
+goh specs --missing   # programs you ran that have no spec (needs privacy.recordCommands)
+```
+
+`doctor` says whether this shell loaded the adapter, whether your startup file has the block `goh setup` writes, and
+whether the running daemon is the same version as `goh` (an upgrade can leave the old one running: `goh doctor --fix`).
+In an iTerm2, Terminal.app or VS Code terminal that lacks the Accessibility permission, the first menu of a zsh
+session prints a one-line note instead of silently drawing inline.
+
+macOS gives the permission to the terminal app the popup runs in, so each terminal is allowed on its own. To allow
+goh once instead, for every terminal (experimental), set `"popup": { "ownPermission": true }` with `goh config` and open
+a new shell: at its first menu macOS asks for **Goh** (the popup) itself. The macOS packages ship it as `Goh.app`, signed
+with goh's own certificate, so the permission stays through updates. A build from source keeps it too when it is
+signed with that certificate: `./install.sh --from-source` and `scripts/package.sh` use it by themselves when
+`../macos-sign/goh-signing.p12` sits beside the checkout (or `GOH_MACOS_SIGN_P12` names it), and after a plain
+`cargo build` run `scripts/macos-sign.sh target/debug/goh-popup`. Otherwise it is signed ad hoc and is a new program
+to macOS after each rebuild: remove its old **Goh** (or **goh-popup**) entries under Privacy & Security > Accessibility (−) and
+allow it again.
+`goh doctor` still reports the terminal's own permission.
+
 ## Quick start (from source, without installing)
 
 ```bash
@@ -194,6 +234,20 @@ Then type `git ch` and press Tab, or just keep typing in zsh, where live mode is
 
 See the [zsh](adapters/zsh/README.md) and [bash](adapters/bash/README.md) adapter READMEs for key
 bindings and options, and [docs/docs/](docs/docs/00-vision.md) for design and status.
+
+## Layout
+
+| Path | Purpose |
+|---|---|
+| `crates/goh-core` | Spec model, parser and completion engine, plus the bundled `specs/` |
+| `crates/goh-daemon` | `gohd` background daemon and the `goh` client (Unix socket IPC) |
+| `crates/goh-popup` | Native overlay popup UI |
+| `crates/goh-anchor` | Finds the cursor position for popup placement |
+| `crates/goh-theme` | Terminal color detection |
+| `crates/goh-shells` | Shell integration helpers |
+| `adapters/zsh`, `adapters/bash` | Shell adapters |
+| `tools/import-specs` | Imports Fig-style specs into goh's format |
+| `docs/` | Vision, PRD, architecture, design system, spike results |
 
 ## Status
 

@@ -3,6 +3,7 @@
 //! A pure function from `(user mode, what the terminal told us)` to design tokens plus a report
 //! of which tokens had to be contrast-adjusted. A port of the prototype's `derive()`.
 
+mod brand;
 pub mod color;
 pub mod osc;
 
@@ -11,6 +12,7 @@ use std::path::PathBuf;
 use serde::Deserialize;
 use serde_json::{json, Value};
 
+pub use brand::brand;
 pub use color::Rgb;
 
 const TOKENS_JSON: &str = include_str!("../../../docs/design-system/tokens.json");

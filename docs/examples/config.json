@@ -3,6 +3,7 @@
   "display": {
     "mode": "auto",
     "inlineStyle": "box",
+    "icons": "unicode",
     "maxSuggestions": 8,
     "live": true,
     "predict": false,
