@@ -313,7 +313,8 @@ fn menu_late_prints_pending_while_docker_has_not_answered() {
     fs::create_dir_all(&specs).unwrap();
     fs::create_dir_all(&bin).unwrap();
     let docker = bin.join("docker");
-    fs::write(&docker, "#!/bin/sh\nsleep 1\necho '{\"Names\":\"web-1\",\"Image\":\"nginx\"}'\n").unwrap();
+    // Slower than a request waits, quicker than the daemon's 5 s limit for a program asked in the background.
+    fs::write(&docker, "#!/bin/sh\nsleep 3\necho '{\"Names\":\"web-1\",\"Image\":\"nginx\"}'\n").unwrap();
     fs::set_permissions(&docker, std::os::unix::fs::PermissionsExt::from_mode(0o700)).unwrap();
     let goh_dir = Path::new(env!("CARGO_BIN_EXE_goh")).parent().unwrap();
     let path = format!("{}:{}:/usr/bin:/bin", bin.display(), goh_dir.display());
@@ -336,10 +337,19 @@ fn menu_late_prints_pending_while_docker_has_not_answered() {
     let run = |late: bool| run_buffer("docker exec ", late);
     // Start the daemon first: a cold start and the wait for Docker together can outlast the client's 200 ms.
     run_buffer("git ", false);
-    let first = run(true);
+    // A request that outlasts the client's 200 ms on a loaded runner prints nothing; ask again, well before
+    // Docker answers.
+    let asked = Instant::now();
+    let mut first = run(true);
+    while first.is_empty() && asked.elapsed() < Duration::from_secs(2) {
+        first = run(true);
+    }
     let plain = run(false);
-    std::thread::sleep(Duration::from_millis(1500));
-    let later = run(true);
+    let mut later = run(true);
+    while !later.contains("web-1") && asked.elapsed() < Duration::from_secs(8) {
+        std::thread::sleep(Duration::from_millis(200));
+        later = run(true);
+    }
     // Stop the daemon before asserting, so a failure leaves none running.
     kill_socket_holder(&socket);
     assert_eq!(first.lines().last(), Some("pending"), "{first}");
