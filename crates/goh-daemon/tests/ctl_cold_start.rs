@@ -317,8 +317,9 @@ fn menu_late_prints_pending_while_docker_has_not_answered() {
     fs::set_permissions(&docker, std::os::unix::fs::PermissionsExt::from_mode(0o700)).unwrap();
     let goh_dir = Path::new(env!("CARGO_BIN_EXE_goh")).parent().unwrap();
     let path = format!("{}:{}:/usr/bin:/bin", bin.display(), goh_dir.display());
-    let run = |late: bool| {
-        let mut args = vec!["menu", "--session", "test-late-1", "--cwd", "/", "--cursor-byte", "12", "--buffer", "docker exec "];
+    let run_buffer = |buffer: &str, late: bool| {
+        let cursor = buffer.len().to_string();
+        let mut args = vec!["menu", "--session", "test-late-1", "--cwd", "/", "--cursor-byte", &cursor, "--buffer", buffer];
         if late {
             args.push("--late");
         }
@@ -332,6 +333,9 @@ fn menu_late_prints_pending_while_docker_has_not_answered() {
             .unwrap();
         String::from_utf8(out.stdout).unwrap()
     };
+    let run = |late: bool| run_buffer("docker exec ", late);
+    // Start the daemon first: a cold start and the wait for Docker together can outlast the client's 200 ms.
+    run_buffer("git ", false);
     let first = run(true);
     let plain = run(false);
     std::thread::sleep(Duration::from_millis(1500));
