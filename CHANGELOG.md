@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.4.1](https://github.com/caophuoclong/goh/compare/v2.4.0...v2.4.1) (2026-11-01)
+
+
+### Bug fixes
+
+* **popup:** hide the popup while the terminal is scrolled back ([7c6e883](https://github.com/caophuoclong/goh/commit/7c6e8836c7c6b22726be3177be341cb20258c6a2))
+
 ## [2.4.0](https://github.com/caophuoclong/goh/compare/v2.3.0...v2.4.0) (2026-11-01)
 
 
