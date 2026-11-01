@@ -36,6 +36,7 @@ Where the caret cannot be verified, the menu is drawn inline instead; nothing pr
 
 ## Changes
 
+- unreleased: the popup follows iTerm2's profile font again when iTerm2's preferences hold dates or data.
 - unreleased: Nerd Font icons per kind, the same set as the inline menu, replace the command logo on every row.
 - unreleased: where the popup cannot draw, zsh draws a floating framed box instead.
 - unreleased: warnings on risky suggestions drawn in red.

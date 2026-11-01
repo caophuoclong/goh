@@ -578,12 +578,15 @@ fn configured_font() -> Option<TermFont> {
     match std::env::var("TERM_PROGRAM").ok()?.as_str() {
         "vscode" => font::vscode(&std::fs::read_to_string(home.join("Library/Application Support/Code/User/settings.json")).ok()?),
         "iTerm.app" => {
-            let out = std::process::Command::new("plutil")
-                .args(["-convert", "json", "-o", "-"])
-                .arg(home.join("Library/Preferences/com.googlecode.iterm2.plist"))
-                .output()
-                .ok()?;
-            font::iterm(&String::from_utf8_lossy(&out.stdout), std::env::var("ITERM_PROFILE").ok().as_deref())
+            // Only the keys needed: the whole file often holds dates and data, which have no JSON form.
+            let prefs = home.join("Library/Preferences/com.googlecode.iterm2.plist");
+            let extract = |key: &str, format: &str| {
+                let out = std::process::Command::new("plutil").args(["-extract", key, format, "-o", "-"]).arg(&prefs).output().ok()?;
+                out.status.success().then(|| String::from_utf8_lossy(&out.stdout).trim().to_string())
+            };
+            let profiles = extract("New Bookmarks", "json")?;
+            let default_guid = extract("Default Bookmark Guid", "raw");
+            font::iterm(&profiles, default_guid.as_deref(), std::env::var("ITERM_PROFILE").ok().as_deref())
                 .map(|f| TermFont { size: f.size.or(size), ..f })
         }
         _ => None,
