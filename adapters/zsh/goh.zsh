@@ -232,15 +232,17 @@ _goh_json() { REPLY=${1//\\/\\\\}; REPLY=${REPLY//\"/\\\"} }
 
 # Static part of the frame: the items, built once per menu.
 _goh_build_items() {
-  local i l d r p
+  local i l d r p k
   local -a parts rp pairs
   for (( i = 1; i <= $#_goh_label; i++ )); do
     _goh_json "${_goh_label[i]}"; l=$REPLY
     _goh_json "${_goh_desc[i]:-${_goh_kind[i]}}"; d=$REPLY
+    # The popup's icon, as _goh_glyph picks it: an option without a value is a flag.
+    k=${_goh_kind[i]}; [[ $k == option && -z ${_goh_value[i]} ]] && k=flag
     pairs=()
     rp=("${(@s:,:)_goh_ranges[i]}")
     for p in $rp; do [[ $p == <->-<-> ]] && pairs+=("[${p/-/,}]"); done
-    parts+=("{\"label\":\"$l\",\"description\":\"$d\",\"match_ranges\":[${(j:,:)pairs}]}")
+    parts+=("{\"label\":\"$l\",\"description\":\"$d\",\"kind\":\"$k\",\"match_ranges\":[${(j:,:)pairs}]}")
   done
   _goh_items_json="[${(j:,:)parts}]"
 }
@@ -473,6 +475,7 @@ _goh_word_column() {
 
 # Kind glyph and colour of candidate $1 -> _goh_g, _goh_gs (docs/design-system/README.md, Iconography).
 # Nerd Font icons are single-cell Private Use Area glyphs, so they need a Nerd Font Mono as the terminal's font.
+# The tables are goh_theme::icons's, which the popup draws; a goh-theme test keeps them equal.
 typeset -g _goh_g _goh_gs
 typeset -gA _goh_nerd_brand=(
   docker $'' nodejs $'' go $'' git $'' npm $'' python $'' rust $''

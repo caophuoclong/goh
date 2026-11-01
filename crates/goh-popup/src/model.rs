@@ -13,7 +13,7 @@ pub const PAD: f32 = 8.0; // space-2
 /// Advance of one monospace cell at the 13 px popup font.
 pub const CELL_WIDTH: f32 = 7.8;
 
-const ICON_COLS: usize = 3;
+const ICON_COLS: usize = 2; // a one-cell glyph and a space
 const MARKER_COLS: usize = 2; // "❯ "
 const GAP_COLS: usize = 2;
 /// A description narrower than this is dropped entirely rather than shown as a stub.
@@ -28,6 +28,9 @@ pub struct Item {
     /// UTF-8 byte ranges of `label` that matched what the user typed (from the engine).
     #[serde(default)]
     pub match_ranges: Vec<[usize; 2]>,
+    /// The engine's kind (`flag` for an option without a value); picks the icon.
+    #[serde(default)]
+    pub kind: String,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -43,7 +46,7 @@ pub struct State {
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Row {
-    pub icon: Option<&'static str>,
+    pub icon: Option<crate::icons::Icon>,
     /// `<id>-opt-<index>`, with the absolute index.
     pub dom_id: String,
     pub selected: bool,
@@ -155,7 +158,7 @@ pub fn view_with(state: &State, max_rows: usize, available_width: f32, cell_widt
     // Width follows content between the min and max, never beyond the space available.
     let widest = state.items[start..start + rows_visible]
         .iter()
-        .map(|it| MARKER_COLS + if crate::icons::key(&state.context, &it.label).is_some() { ICON_COLS } else { 0 } + cols(&it.label) + it.description.as_deref().map_or(0, |d| GAP_COLS + cols(d)))
+        .map(|it| MARKER_COLS + if crate::icons::row(&it.kind, &it.label).is_some() { ICON_COLS } else { 0 } + cols(&it.label) + it.description.as_deref().map_or(0, |d| GAP_COLS + cols(d)))
         .max()
         .unwrap_or(0);
     let wanted = 2.0 * PAD + widest as f32 * cell_width;
@@ -166,7 +169,7 @@ pub fn view_with(state: &State, max_rows: usize, available_width: f32, cell_widt
     let rows = (start..start + rows_visible)
         .map(|i| {
             let it = &state.items[i];
-            let icon = crate::icons::key(&state.context, &it.label);
+            let icon = crate::icons::row(&it.kind, &it.label);
             let room = room.saturating_sub(if icon.is_some() { ICON_COLS } else { 0 });
             let full = snap_ranges(&it.label, &it.match_ranges);
             let (label, description, tooltip) = if cols(&it.label) > room {
@@ -222,7 +225,7 @@ mod tests {
     use super::*;
 
     fn item(label: &str, desc: &str) -> Item {
-        Item { label: label.into(), description: (!desc.is_empty()).then(|| desc.into()), match_ranges: vec![] }
+        Item { label: label.into(), description: (!desc.is_empty()).then(|| desc.into()), match_ranges: vec![], kind: "subcommand".into() }
     }
 
     fn state(n: usize, selected: usize, window_start: usize) -> State {

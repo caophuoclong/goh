@@ -33,6 +33,7 @@ use goh_anchor::{Caret, Outcome, Rect as Screen};
 use goh_popup::display::{self, Anchor as AnchorState, Capabilities, Display, Mode as DisplayMode};
 use goh_popup::model::{self, View, CELL_WIDTH, FOOTER_HEIGHT, PAD, ROW_HEIGHT};
 use goh_popup::font::{self, TermFont};
+use goh_popup::icons::Icon;
 use goh_popup::placement::{self, Placement};
 use goh_popup::watch::{plan_tick, TickAction};
 use goh_theme::{Mode, Rgb, Terminal};
@@ -159,7 +160,6 @@ struct Resolved {
 struct App {
     #[cfg(target_os = "macos")]
     scroll: Option<scroll::Monitor>,
-    icons: HashMap<&'static str, egui::TextureHandle>,
     frames: Receiver<Frame>,
     shown: Option<Shown>,
     /// The menu currently open (until `hide`), re-checked every TICK.
@@ -377,34 +377,16 @@ fn runs<'a>(label: &'a str, matches: &[[usize; 2]]) -> Vec<(&'a str, bool)> {
     out
 }
 
-fn load_icons(ctx: &egui::Context) -> HashMap<&'static str, egui::TextureHandle> {
-    goh_popup::icons::ASSETS.iter().filter_map(|&(name, bytes)| {
-        let mut reader = png::Decoder::new(std::io::Cursor::new(bytes)).read_info().ok()?;
-        let mut buf = vec![0; reader.output_buffer_size()?];
-        let info = reader.next_frame(&mut buf).ok()?;
-        if info.color_type != png::ColorType::Rgba { return None; }
-        let image = egui::ColorImage::from_rgba_unmultiplied([info.width as usize, info.height as usize], &buf[..info.buffer_size()]);
-        Some((name, ctx.load_texture(format!("command-{name}"), image, egui::TextureOptions::LINEAR)))
-    }).collect()
+/// An icon in its colour: a logo in its brand's (the text colour when the brand has none), the others muted.
+fn icon(painter: &egui::Painter, icon: Icon, x: f32, mid: f32, font: &FontId, colors: &Colors) {
+    let color = match icon.brand {
+        Some(brand) => goh_theme::icons::brand_color(brand).and_then(Rgb::from_hex).map_or(colors.primary, |c| Color32::from_rgb(c.0[0], c.0[1], c.0[2])),
+        None => colors.muted,
+    };
+    painter.text(Pos2::new(x, mid), Align2::LEFT_CENTER, icon.glyph, font.clone(), color);
 }
 
-fn logo(painter: &egui::Painter, icons: &HashMap<&str, egui::TextureHandle>, key: &str, x: f32, mid: f32, colors: &Colors) {
-    let rect = Rect::from_center_size(Pos2::new(x + 8.0, mid), vec2(16.0, 16.0));
-    if let Some(texture) = icons.get(key) {
-        let tint = if matches!(key, "rust" | "github") { colors.primary } else { Color32::WHITE };
-        painter.image(texture.id(), rect, Rect::from_min_max(Pos2::ZERO, Pos2::new(1.0, 1.0)), tint);
-    } else {
-        // Font-independent >_ fallback in the same 16-point slot as the branded logos.
-        let stroke = Stroke::new(1.2, colors.muted);
-        let point = |dx, dy| Pos2::new(rect.left() + dx, rect.top() + dy);
-        painter.rect_stroke(rect, 2, stroke, StrokeKind::Inside);
-        painter.line_segment([point(4.0, 5.0), point(7.0, 8.0)], stroke);
-        painter.line_segment([point(7.0, 8.0), point(4.0, 11.0)], stroke);
-        painter.line_segment([point(9.0, 11.0), point(12.0, 11.0)], stroke);
-    }
-}
-
-fn draw(ui: &mut egui::Ui, v: &View, c: &Colors, enter_accepts: bool, icons: &HashMap<&str, egui::TextureHandle>) {
+fn draw(ui: &mut egui::Ui, v: &View, c: &Colors, enter_accepts: bool) {
     let full = ui.max_rect();
     let font = FontId::monospace(font_size());
     let small = FontId::monospace(font_size() - 1.0);
@@ -424,9 +406,9 @@ fn draw(ui: &mut egui::Ui, v: &View, c: &Colors, enter_accepts: bool, icons: &Ha
         let mut x = full.left() + PAD; // the model's width assumes PAD on both sides
         painter.text(Pos2::new(x, mid), Align2::LEFT_CENTER, if row.selected { "❯" } else { " " }, font.clone(), c.accent);
         x += 2.0 * cell_width();
-        if let Some(key) = row.icon {
-            logo(&painter, icons, key, x, mid, c);
-            x += 3.0 * cell_width();
+        if let Some(i) = row.icon {
+            icon(&painter, i, x, mid, &font, c);
+            x += 2.0 * cell_width();
         }
 
         for (text, is_match) in runs(&row.label, &row.matches) {
@@ -472,9 +454,9 @@ fn draw(ui: &mut egui::Ui, v: &View, c: &Colors, enter_accepts: bool, icons: &Ha
     painter.hline(full.left() + 1.0..=full.right() - 1.0, fy, Stroke::new(1.0, c.border));
     let mid = fy + FOOTER_HEIGHT / 2.0;
     let mut context_x = full.left() + PAD + 4.0;
-    if let Some(key) = goh_popup::icons::key(&v.context, "") {
-        logo(&painter, icons, key, context_x, mid, c);
-        context_x += 22.0;
+    if let Some(i) = goh_popup::icons::context(&v.context) {
+        icon(&painter, i, context_x, mid, &small, c);
+        context_x += 2.0 * cell_width();
     }
     painter.text(Pos2::new(context_x, mid), Align2::LEFT_CENTER, &v.context, small.clone(), c.muted);
     let accept = if enter_accepts { "Tab/↵/→" } else { "Tab/→" };
@@ -523,7 +505,7 @@ impl eframe::App for App {
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
         let ctx = ui.ctx().clone();
         if let Some(s) = &self.shown {
-            egui::CentralPanel::default().frame(egui::Frame::NONE).show(ui, |ui| draw(ui, &s.view, &s.colors, s.enter_accepts, &self.icons));
+            egui::CentralPanel::default().frame(egui::Frame::NONE).show(ui, |ui| draw(ui, &s.view, &s.colors, s.enter_accepts));
             self.drawn += 1;
             if self.screenshot.is_some() && self.drawn == 6 && !self.shot_requested {
                 self.shot_requested = true;
@@ -596,12 +578,15 @@ fn configured_font() -> Option<TermFont> {
     match std::env::var("TERM_PROGRAM").ok()?.as_str() {
         "vscode" => font::vscode(&std::fs::read_to_string(home.join("Library/Application Support/Code/User/settings.json")).ok()?),
         "iTerm.app" => {
-            let out = std::process::Command::new("plutil")
-                .args(["-convert", "json", "-o", "-"])
-                .arg(home.join("Library/Preferences/com.googlecode.iterm2.plist"))
-                .output()
-                .ok()?;
-            font::iterm(&String::from_utf8_lossy(&out.stdout), std::env::var("ITERM_PROFILE").ok().as_deref())
+            // Only the keys needed: the whole file often holds dates and data, which have no JSON form.
+            let prefs = home.join("Library/Preferences/com.googlecode.iterm2.plist");
+            let extract = |key: &str, format: &str| {
+                let out = std::process::Command::new("plutil").args(["-extract", key, format, "-o", "-"]).arg(&prefs).output().ok()?;
+                out.status.success().then(|| String::from_utf8_lossy(&out.stdout).trim().to_string())
+            };
+            let profiles = extract("New Bookmarks", "json")?;
+            let default_guid = extract("Default Bookmark Guid", "raw");
+            font::iterm(&profiles, default_guid.as_deref(), std::env::var("ITERM_PROFILE").ok().as_deref())
                 .map(|f| TermFont { size: f.size.or(size), ..f })
         }
         _ => None,
@@ -657,6 +642,16 @@ fn install_terminal_font(ctx: &egui::Context) {
             vec![egui::epaint::text::InsertFontFamily { family: egui::FontFamily::Monospace, priority: egui::epaint::text::FontPriority::Highest }],
         ));
     }
+}
+
+/// The bundled icons, ahead of egui's own fonts (its icon font uses the same Private Use Area) and behind the
+/// terminal's, installed after it: a Nerd Font set as the popup's font draws them itself.
+fn install_icon_font(ctx: &egui::Context) {
+    ctx.add_font(egui::epaint::text::FontInsert::new(
+        "nerd-symbols",
+        egui::FontData::from_static(goh_popup::icons::FONT),
+        vec![egui::epaint::text::InsertFontFamily { family: egui::FontFamily::Monospace, priority: egui::epaint::text::FontPriority::Highest }],
+    ));
 }
 
 /// Opt-in (`popup.ownPermission` in the config, `GOH_POPUP_OWN_PERMISSION=on`): run the popup as its own
@@ -801,6 +796,7 @@ fn main() -> eframe::Result {
         Box::new(move |cc| {
             let (tx, frames) = channel();
             let ctx = cc.egui_ctx.clone();
+            install_icon_font(&cc.egui_ctx);
             install_terminal_font(&cc.egui_ctx);
             #[cfg(target_os = "linux")]
             cc.egui_ctx.set_zoom_factor(1.0);
@@ -825,7 +821,6 @@ fn main() -> eframe::Result {
             Ok(Box::new(App {
                 #[cfg(target_os = "macos")]
                 scroll: scroll::Monitor::new(cc.egui_ctx.clone()),
-                icons: load_icons(&cc.egui_ctx),
                 frames, shown: None, last: None, owner: None, visible: false, at: None, last_tick: Instant::now(), drawn: 0, screenshot, shot_rx, shot_tx, shot_requested: false }))
         }),
     )

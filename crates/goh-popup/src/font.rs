@@ -93,12 +93,12 @@ pub fn vscode(settings: &str) -> Option<TermFont> {
     Some(TermFont { families, size: Some(size) })
 }
 
-/// iTerm2's profile font from its preferences as JSON: `Normal Font` is `PostScriptName Size`.
-pub fn iterm(prefs: &str, profile_name: Option<&str>) -> Option<TermFont> {
-    let v: Value = serde_json::from_str(prefs).ok()?;
-    let profiles = v.get("New Bookmarks")?.as_array()?;
+/// iTerm2's profile font from its profiles (`New Bookmarks` as JSON) and the default profile's `Guid`:
+/// `Normal Font` is `PostScriptName Size`.
+pub fn iterm(profiles: &str, default_guid: Option<&str>, profile_name: Option<&str>) -> Option<TermFont> {
+    let v: Value = serde_json::from_str(profiles).ok()?;
+    let profiles = v.as_array()?;
     let by_name = profile_name.and_then(|n| profiles.iter().find(|p| p.get("Name").and_then(Value::as_str) == Some(n)));
-    let default_guid = v.get("Default Bookmark Guid").and_then(Value::as_str);
     let profile = by_name.or_else(|| profiles.iter().find(|p| p.get("Guid").and_then(Value::as_str) == default_guid)).or(profiles.first())?;
     let (name, size) = profile.get("Normal Font")?.as_str()?.rsplit_once(' ')?;
     Some(TermFont { families: vec![name.to_string()], size: size.parse().ok() })
@@ -149,12 +149,13 @@ mod tests {
 
     #[test]
     fn iterm_uses_the_named_profile_else_the_default() {
-        let prefs = r#"{"Default Bookmark Guid":"B","New Bookmarks":[
+        let profiles = r#"[
             {"Name":"Work","Guid":"A","Normal Font":"Menlo-Regular 12"},
-            {"Name":"Default","Guid":"B","Normal Font":"JetBrainsMonoNF-Regular 14"}]}"#;
-        assert_eq!(iterm(prefs, Some("Work")).unwrap(), TermFont { families: vec!["Menlo-Regular".into()], size: Some(12.0) });
-        assert_eq!(iterm(prefs, None).unwrap().families, ["JetBrainsMonoNF-Regular"]);
-        assert_eq!(iterm(prefs, Some("Missing")).unwrap().size, Some(14.0));
+            {"Name":"Default","Guid":"B","Normal Font":"JetBrainsMonoNF-Regular 14"}]"#;
+        assert_eq!(iterm(profiles, Some("B"), Some("Work")).unwrap(), TermFont { families: vec!["Menlo-Regular".into()], size: Some(12.0) });
+        assert_eq!(iterm(profiles, Some("B"), None).unwrap().families, ["JetBrainsMonoNF-Regular"]);
+        assert_eq!(iterm(profiles, Some("B"), Some("Missing")).unwrap().size, Some(14.0));
+        assert_eq!(iterm(profiles, None, None).unwrap().size, Some(12.0), "no default: the first profile");
     }
 
     #[test]
