@@ -14,6 +14,10 @@
     //   "box":  a framed box under the word you are completing, like a popup
     //   "flat": plain rows under the line, with no frame (easier for a screen reader)
     "inlineStyle": "box",
+    // Icons in the menu drawn in the terminal.
+    //   "unicode": one plain symbol per kind of suggestion (⚑ flag, ↳ subcommand, ▸ folder), in any font
+    //   "nerd":    command logos and file-type icons; needs a Nerd Font Mono set as the terminal's font
+    "icons": "unicode",
     // How many suggestions the menu shows at once (1-50); more are reached with Up/Down.
     "maxSuggestions": 8,
     // true: the menu opens by itself as you type. false: only when you press Tab.

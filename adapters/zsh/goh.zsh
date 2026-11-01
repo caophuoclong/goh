@@ -56,6 +56,7 @@ typeset -gi _GOH_LIMIT=${GOH_LIMIT:-8}
 (( _GOH_LIMIT < 1 )) && _GOH_LIMIT=1
 typeset -g _GOH_DISPLAY=${GOH_DISPLAY:-auto}   # auto | overlay | inline
 typeset -g _GOH_INLINE_STYLE=${GOH_INLINE_STYLE:-box}   # box | flat (how the menu looks when drawn in the terminal)
+typeset -g _GOH_ICONS=${GOH_ICONS:-unicode}   # unicode | nerd (Nerd Font logos and file icons in that menu)
 typeset -g _GOH_LIVE=${GOH_LIVE:-on}           # on | off (as-you-type suggestions)
 typeset -gi _GOH_LIVE_MIN=${GOH_LIVE_MIN:-0}   # characters of the current word before the menu may open by itself
 typeset -g _goh_seen_buf
@@ -73,7 +74,7 @@ typeset -gi _goh_on=0 _goh_sel=1 _goh_buf_cur=0 _goh_navigated=0
 # The history line shown as ghost text (its index in the menu), which → takes; 0 = none.
 typeset -gi _goh_ghost_line=0
 typeset -g _goh_buf
-typeset -ga _goh_start _goh_end _goh_cursor _goh_kind _goh_label _goh_insert _goh_desc _goh_value _goh_used
+typeset -ga _goh_start _goh_end _goh_cursor _goh_kind _goh_label _goh_insert _goh_desc _goh_value _goh_brand
 typeset -gA _goh_theme   # resolved design tokens (see goh-theme-refresh)
 typeset -g _goh_ghost_style='fg=8'
 typeset -gA _goh_saved   # key -> widget it was bound to before the menu opened ("" = unbound)
@@ -471,12 +472,45 @@ _goh_word_column() {
 }
 
 # Kind glyph and colour of candidate $1 -> _goh_g, _goh_gs (docs/design-system/README.md, Iconography).
+# Nerd Font icons are single-cell Private Use Area glyphs, so they need a Nerd Font Mono as the terminal's font.
 typeset -g _goh_g _goh_gs
+typeset -gA _goh_nerd_brand=(
+  docker $'' nodejs $'' go $'' git $'' npm $'' python $'' rust $''
+  kubernetes $'\U000F10FE' yarn $'' terraform $'' github $''
+)
+typeset -gA _goh_brand_color=(
+  docker '#2496ed' nodejs '#5fa04e' go '#00add8' git '#f05033' npm '#cb3837' python '#4b8bbe' rust '#ce422b'
+  kubernetes '#326ce5' yarn '#2c8ebb' terraform '#7b42bc'
+)
+typeset -gA _goh_nerd_ext=(
+  rs $'' go $'' py $'' js $'' ts $'' json $'' md $'' toml $''
+  yml $'' yaml $'' sh $'' zsh $'' lock $'' html $'' css $'' c $''
+  cpp $'' java $'' rb $'' lua $'' txt $''
+)
 _goh_glyph() {
-  case ${_goh_kind[$1]} in
+  local kind=${_goh_kind[$1]} b=${_goh_brand[$1]-}
+  [[ $kind == option && -z ${_goh_value[$1]} ]] && kind=flag
+  if [[ $_GOH_ICONS == nerd ]]; then
+    case $kind in
+      command)
+        _goh_g=${_goh_nerd_brand[$b]:-$''} _goh_gs=fg=cyan
+        [[ -n ${_goh_nerd_brand[$b]-} ]] && _goh_gs=${_goh_brand_color[$b]:+fg=${_goh_brand_color[$b]}} ;;
+      subcommand) _goh_g=$'\U000F060D' _goh_gs=fg=magenta ;;
+      option)     _goh_g=$'' _goh_gs=fg=blue ;;
+      flag)       _goh_g=$'' _goh_gs=fg=yellow ;;
+      argument)   _goh_g=$'' _goh_gs=fg=green ;;
+      directory)  _goh_g=$'' _goh_gs=fg=blue ;;
+      file)       _goh_g=${_goh_nerd_ext[${${_goh_label[$1]:t}:e:l}]:-$''} _goh_gs= ;;
+      history)    _goh_g=$'' _goh_gs=$_goh_ghost_style ;;
+      *)          _goh_g='·' _goh_gs= ;;
+    esac
+    return
+  fi
+  case $kind in
     command)    _goh_g='⌘' _goh_gs=fg=cyan ;;
     subcommand) _goh_g='↳' _goh_gs=fg=magenta ;;
-    option)     if [[ -n ${_goh_value[$1]} ]]; then _goh_g='◇' _goh_gs=fg=blue; else _goh_g='⚑' _goh_gs=fg=yellow; fi ;;
+    option)     _goh_g='◇' _goh_gs=fg=blue ;;
+    flag)       _goh_g='⚑' _goh_gs=fg=yellow ;;
     argument)   _goh_g='●' _goh_gs=fg=green ;;
     directory)  _goh_g='▸' _goh_gs=fg=blue ;;
     file)       _goh_g='◦' _goh_gs= ;;
@@ -485,11 +519,54 @@ _goh_glyph() {
   esac
 }
 
-# Inline menu layout (docs/design-system/README.md, Inline menu): rows of marker, glyph, label and any
-# warning; the selected suggestion's description; position and key hints. Shapes, not colour, carry
-# every cue, so NO_COLOR keeps all of it but the colours.
+# $1 cut to at most $2 screen cells, ending in … when shortened -> REPLY. Wide characters count twice.
+_goh_cut() {
+  if (( ${(m)#1} <= $2 )); then REPLY=$1; return; fi
+  (( $2 < 1 )) && { REPLY=; return }
+  local s=${1[1,$2-1]}
+  while (( ${(m)#s} > $2 - 1 )); do s=${s[1,-2]}; done
+  REPLY="$s…"
+}
+
+# The box's title -> REPLY: the command words before the word being completed (at most two; options and the word
+# after one are left out) and the kind of suggestions; its logo under Nerd Font icons -> _goh_title_g, _goh_title_gs.
+typeset -g _goh_title_g _goh_title_gs _goh_title_words
+_goh_title() {
+  emulate -L zsh
+  setopt extended_glob
+  local i k kind= start=0 brand= w after_opt=0
+  local -a names
+  local -A kinds=(command commands subcommand subcommands option options argument values directory folders file files history history mixed suggestions)
+  for (( i = 1; i <= $#_goh_kind; i++ )); do
+    k=${_goh_kind[i]}
+    [[ $k == history ]] && continue
+    if [[ -z $kind ]]; then
+      kind=$k start=${_goh_start[i]:-0}
+      [[ $k == command ]] || brand=${_goh_brand[i]-}
+    elif [[ $k != $kind ]]; then
+      if [[ $k$kind == (directoryfile|filedirectory) ]]; then kind=file; else kind=mixed; fi
+    fi
+  done
+  _goh_byte_prefix "$BUFFER" $start
+  for w in ${(z)REPLY}; do
+    if [[ $w == ('|'|'||'|'&&'|';'|'&') ]]; then names=() after_opt=0; continue; fi
+    if [[ $w == -* ]]; then [[ $w == *=* ]] || after_opt=1; continue; fi
+    if (( after_opt )) || [[ $#names -eq 0 && $w == [[:alpha:]_][[:alnum:]_]#=* ]]; then after_opt=0; continue; fi
+    (( $#names < 2 )) && names+=("${(Q)w}")
+  done
+  _goh_title_words=${(j: :)names}
+  REPLY=$_goh_title_words
+  REPLY+="${REPLY:+ · }${kinds[${kind:-history}]}"
+  _goh_title_g= _goh_title_gs=
+  if [[ $_GOH_ICONS == nerd && -n $brand && -n ${_goh_nerd_brand[$brand]-} ]]; then
+    _goh_title_g=${_goh_nerd_brand[$brand]} _goh_title_gs=${_goh_brand_color[$brand]:+fg=${_goh_brand_color[$brand]}}
+  fi
+}
+
+# Inline menu layout, box or flat rows (docs/design-system/README.md, Inline menu). Shapes, not colour, carry every
+# cue, so NO_COLOR keeps all of it but the colours.
 _goh_render() {
-  local i k n p s e h row label shown risk desc room pad
+  local i k n p s e h row label shown risk desc text room mid
   local -a rows hl
   local width=$(( ${COLUMNS:-80} - 1 )) box=0
   # The box needs room for its two sides and a menu worth reading.
@@ -503,30 +580,49 @@ _goh_render() {
   local end=$(( _goh_win + _GOH_LIMIT - 1 ))
   (( end > $#_goh_label )) && end=$#_goh_label
 
-  # One label column for the whole list, so it does not shift while scrolling.
-  local col=1
-  for label in "${_goh_label[@]}"; do (( ${#label} > col )) && col=${#label}; done
+  # One label column and one description column for the whole list, so the box does not change while scrolling.
+  local col=1 risky=0 need=0
+  local -a risks descs
+  for (( i = 1; i <= $#_goh_label; i++ )); do
+    (( ${(m)#_goh_label[i]} > col )) && col=${(m)#_goh_label[i]}
+    desc=${_goh_desc[i]} risk=
+    if [[ $desc == '⚠'* ]]; then
+      risky=1 risk=${desc%% — *}
+      if [[ $desc == *' — '* ]]; then desc=${desc#* — }; else desc=; fi
+    fi
+    risks[i]=$risk descs[i]=$desc
+    text=$risk${risk:+${desc:+ · }}$desc
+    (( ${(m)#text} > need )) && need=${(m)#text}
+  done
   (( col > 32 )) && col=32
-  (( col > width - 4 )) && col=$(( width - 4 ))
+  # A risky list keeps a cell after the labels in the box, so a warning with no room for its text keeps its ⚠.
+  local keep=$(( box && risky ? 2 : 0 ))
+  (( col > width - 4 - keep )) && col=$(( width - 4 - keep ))
   (( col < 1 )) && col=1
-
-  # The first three suggestions picked before (only ever set while learned choices are on).
-  local -A badge
-  local -a marks=('①' '②' '③')
-  n=0
-  for (( i = 1; i <= $#_goh_label && n < 3; i++ )); do [[ -n ${_goh_used[i]} ]] && badge[$i]=${marks[++n]}; done
+  mid=$(( width - 4 - col - 2 ))
+  # Under 12 cells a description says nothing; the detail line carries the selected one instead.
+  local wide=$(( mid >= 12 )) title= inner_w=$(( 4 + col ))
+  if (( box )); then
+    if (( wide && need )); then inner_w=$(( inner_w + 2 + (need < mid ? need : mid) ))
+    elif (( ! wide )); then inner_w=$(( inner_w + keep )); fi
+    _goh_title; title=${_goh_title_g:+$_goh_title_g }$REPLY
+    (( ${(m)#title} + 4 > inner_w )) && inner_w=$(( ${(m)#title} + 4 ))
+    (( inner_w < 24 )) && inner_w=24
+    (( inner_w > width )) && inner_w=$width
+  fi
+  local detail=$(( ! box || ! wide || need > mid )) risk_shown=1
 
   # hl entries: "ROW START END STYLE", character offsets within the row.
   for (( i = _goh_win; i <= end; i++ )); do
     k=$(( $#rows + 1 ))
     _goh_glyph $i
-    label=${_goh_label[i]} shown=${_goh_label[i]}
-    (( ${#shown} > col )) && shown="${shown[1,col-1]}…"
+    label=${_goh_label[i]}
+    _goh_cut "$label" $col; shown=$REPLY
     if (( i == _goh_sel )); then
-      row="❯ ${badge[$i]:-$_goh_g} $shown"
+      row="❯ $_goh_g $shown"
       hl+=("$k 0 1 bold${accent:+,$accent}" "$k 4 $(( 4 + ${#shown} )) bold${accent:+,$accent}")
     else
-      row="  ${badge[$i]:-$_goh_g} $shown"
+      row="  $_goh_g $shown"
     fi
     (( color )) && [[ -n $_goh_gs ]] && hl+=("$k 2 3 $_goh_gs")
     for p in ${(s:,:)_goh_ranges[i]}; do
@@ -536,30 +632,49 @@ _goh_render() {
       (( ${#shown} < ${#label} && e > ${#shown} - 1 )) && e=$(( ${#shown} - 1 ))
       (( s < e )) && hl+=("$k $(( 4 + s )) $(( 4 + e )) $match")
     done
+    risk=${risks[i]} desc=${descs[i]}
     # A warning shows on every row, not only the selected one: it should be seen before it is picked.
-    desc=${_goh_desc[i]}
-    if [[ $desc == '⚠'* ]]; then
-      risk=${desc%% — *}
-      pad=$(( 4 + col + 2 ))
-      room=$(( width - pad ))
+    if (( box && wide )) && [[ -n $risk$desc ]]; then
+      row=${(mr:4+col:)row}
+      s=$(( ${#row} + 2 ))
+      _goh_cut "$risk${risk:+${desc:+ · }}$desc" $mid
+      row+="  $REPLY"
+      e=$(( s + (${#risk} < ${#REPLY} ? ${#risk} : ${#REPLY}) ))
+      [[ -n $risk ]] && hl+=("$k $s $e $warn")
+      (( e < ${#row} )) && hl+=("$k $e ${#row} $muted")
+      (( i == _goh_sel && ${(m)#risk} > mid )) && risk_shown=0
+    elif (( box && ! wide && risky )); then
+      row=${(mr:4+col:)row}
+      [[ -n $risk ]] && { row+=" ⚠"; hl+=("$k $(( ${#row} - 1 )) ${#row} $warn") }
+      (( i == _goh_sel )) && [[ -n $risk ]] && risk_shown=0
+    elif (( ! box )) && [[ -n $risk ]]; then
+      row=${(mr:4+col:)row}
+      room=$(( width - ${(m)#row} - 2 ))
       if (( room > 3 )); then
-        (( ${#risk} > room )) && risk="${risk[1,room-1]}…"
-        row="${(r:pad:)row}$risk"
-        hl+=("$k $pad $(( pad + ${#risk} )) $warn")
+        _goh_cut "$risk" $room
+        s=$(( ${#row} + 2 ))
+        row+="  $REPLY"
+        hl+=("$k $s ${#row} $warn")
+        (( i == _goh_sel && ${(m)#risk} > room )) && risk_shown=0
+      elif (( i == _goh_sel )); then
+        risk_shown=0
       fi
     fi
-    rows+=("${row[1,width]}")
+    rows+=("$row")
   done
 
-  # The selected suggestion's description, without the warning already on its row.
-  desc=${_goh_desc[_goh_sel]}
-  if [[ $desc == '⚠'* ]]; then
-    if [[ $desc == *' — '* ]]; then desc=${desc#* — }; else desc=; fi
+  # The selected suggestion's description, after its warning when its row could not show all of it.
+  local detail_at=0
+  if (( detail )); then
+    risk=${risks[_goh_sel]} desc=${descs[_goh_sel]:-${_goh_kind[_goh_sel]}}
+    (( risk_shown )) && risk=
+    _goh_cut "$risk${risk:+ · }$desc" $(( (box ? inner_w : width) - 2 ))
+    rows+=("  $REPLY")
+    detail_at=$#rows
+    e=$(( 2 + (${#risk} < ${#REPLY} ? ${#risk} : ${#REPLY}) ))
+    [[ -n $risk ]] && hl+=("$detail_at 2 $e $warn")
+    hl+=("$detail_at $e $(( ${#REPLY} + 2 )) $muted")
   fi
-  desc="  ${desc:-${_goh_kind[_goh_sel]}}"
-  (( ${#desc} > width )) && desc="${desc[1,width-1]}…"
-  rows+=("$desc")
-  hl+=("$#rows 0 ${#desc} $muted")
 
   # Until you move in the menu, the best whole line from history shows as ghost text, as with zsh-autosuggestions:
   # → takes that line, Tab the selected suggestion. A history line's ghost is its label: a secret in it is masked
@@ -582,11 +697,14 @@ _goh_render() {
   if _goh_enter_takes; then
     if _goh_enter_runs; then run_hint=" · Enter run"; else accept_hint="Tab/Enter/→"; fi
   fi
-  row="  $pos · $accept_hint insert$run_hint · ↑↓ move · Esc/← close"
-  (( ${#row} > width )) && row="  $pos · ↑↓ $accept_hint Esc"
-  (( ${#row} > width )) && row="  $pos"
-  rows+=("${row[1,width]}")
-  hl+=("$#rows 0 ${#row} $muted")
+  # The box shows the keys in its bottom border, the flat rows in a footer.
+  local -a keys=("$pos · $accept_hint insert$run_hint · ↑↓ move · Esc/← close" "$pos · ↑↓ $accept_hint Esc" "$pos")
+  local room_keys=$(( box ? inner_w - 4 : width - 2 )) foot=$pos
+  for p in "${keys[@]}"; do (( ${(m)#p} <= room_keys )) && { foot=$p; break }; done
+  if (( ! box )); then
+    rows+=("  $foot")
+    hl+=("$#rows 0 $(( ${#foot} + 2 )) $muted")
+  fi
 
   # The notice, wrapped at word boundaries.
   if [[ -n $_goh_notice ]]; then
@@ -602,7 +720,7 @@ _goh_render() {
   # Box style: the same rows inside a frame, filled with the surface colour and moved under the word being
   # completed, as far right as the terminal allows. Highlight offsets move with the rows.
   if (( box )); then
-    local inner=1 r indent surface= selected= border=
+    local inner=$inner_w r indent surface= selected= border=
     for r in "${rows[@]}"; do (( ${(m)#r} > inner )) && inner=${(m)#r}; done
     _goh_word_column; indent=$REPLY
     (( indent + inner + 2 > ${COLUMNS:-80} - 1 )) && indent=$(( ${COLUMNS:-80} - 1 - inner - 2 ))
@@ -612,14 +730,21 @@ _goh_render() {
       [[ ${_goh_theme[surface-selected]-} =~ '^#[0-9a-f]{6}$' ]] && selected="bg=${_goh_theme[surface-selected]}"
       border=${muted:-fg=8}
     fi
-    local edge= lead=
+    local edge= lead= t= fill=
     edge=${(l:inner::─:)edge} lead=${(l:indent:: :)lead}
-    local -a framed=("$lead╭$edge╮") moved=() clen=() f
+    _goh_cut "$title" $(( inner - 4 )); t=$REPLY
+    n=$(( inner - 3 - ${(m)#t} )); fill=${(l:n::─:)fill}
+    local -a framed=("$lead╭─ $t $fill╮") moved=() clen=() rowat=() f
     # Padded to `inner` screen cells: a wide or combining character makes a row's character count differ from its
     # width, so offsets on the right (the border, the fills) come from each framed row's own length.
-    for r in "${rows[@]}"; do framed+=("$lead│${(mr:inner:)r}│"); done
-    framed+=("$lead╰$edge╯")
-    local last=$#framed sel_row=$(( _goh_sel - _goh_win + 2 ))
+    local sep=0
+    for (( k = 1; k <= $#rows; k++ )); do
+      (( k == detail_at )) && { framed+=("$lead├$edge┤"); sep=$#framed }
+      framed+=("$lead│${(mr:inner:)rows[k]}│"); rowat[k]=$#framed
+    done
+    n=$(( inner - 3 - ${(m)#foot} )); fill=; fill=${(l:n::─:)fill}
+    framed+=("$lead╰─ $foot $fill╯")
+    local last=$#framed sel_row=${rowat[_goh_sel - _goh_win + 1]}
     for (( k = 1; k <= last; k++ )); do clen[k]=${#framed[k]}; done
     # Fills first, then the row styles. zsh 5.9 does not keep an earlier entry's background under a later entry
     # that sets a colour, so every style drawn on a fill repeats that fill's background.
@@ -630,14 +755,24 @@ _goh_render() {
     if [[ -n $border ]]; then
       local b=$border${surface:+,$surface}
       moved+=("1 $indent $clen[1] $b" "$last $indent $clen[last] $b")
-      for (( k = 2; k < last; k++ )); do moved+=("$k $indent $(( indent + 1 )) $b" "$k $(( clen[k] - 1 )) $clen[k] $b"); done
+      (( sep )) && moved+=("$sep $indent $clen[sep] $b")
+      for k in "${rowat[@]}"; do moved+=("$k $indent $(( indent + 1 )) $b" "$k $(( clen[k] - 1 )) $clen[k] $b"); done
     fi
-    local fill
+    # The title sits on the border's muted colour: its words go back to the text colour, its logo takes the brand's.
+    s=$(( indent + 3 ))
+    if [[ -n $_goh_title_g && $t == "$_goh_title_g"* ]]; then
+      (( color )) && [[ -n $_goh_title_gs ]] && moved+=("1 $s $(( s + 1 )) $_goh_title_gs${surface:+,$surface}")
+      s=$(( s + 2 ))
+    fi
+    e=$(( s + ${#_goh_title_words} ))
+    (( e > indent + 3 + ${#t} )) && e=$(( indent + 3 + ${#t} ))
+    (( s < e )) && moved+=("1 $s $e bold${border:+,fg=default}${surface:+,$surface}")
+    local fill_bg
     for h in "${hl[@]}"; do
       f=(${=h})
-      fill=$surface
-      [[ -n $selected ]] && (( f[1] + 1 == sel_row )) && fill=$selected
-      moved+=("$(( f[1] + 1 )) $(( f[2] + indent + 1 )) $(( f[3] + indent + 1 ))${f[4]:+ ${fill:+$fill,}$f[4]}")
+      fill_bg=$surface
+      [[ -n $selected ]] && (( rowat[f[1]] == sel_row )) && fill_bg=$selected
+      moved+=("$rowat[f[1]] $(( f[2] + indent + 1 )) $(( f[3] + indent + 1 ))${f[4]:+ ${fill_bg:+$fill_bg,}$f[4]}")
     done
     rows=("${framed[@]}") hl=("${moved[@]}")
   fi
@@ -805,13 +940,13 @@ _goh_parse_menu() {
   (( ++_goh_menu_id ))
   _goh_navigated=0
   local line; local -a f
-  _goh_start=() _goh_end=() _goh_cursor=() _goh_kind=() _goh_label=() _goh_insert=() _goh_desc=() _goh_ranges=() _goh_value=() _goh_used=()
+  _goh_start=() _goh_end=() _goh_cursor=() _goh_kind=() _goh_label=() _goh_insert=() _goh_desc=() _goh_ranges=() _goh_value=() _goh_brand=()
   for line in "${(@f)1}"; do
     f=("${(@ps:\x1f:)line}")
     [[ $f[1] == <-> && $f[2] == <-> && $f[3] == <-> ]] || continue
     _goh_start+=($f[1]) _goh_end+=($f[2]) _goh_cursor+=($f[3])
     _goh_kind+=("$f[4]") _goh_label+=("$f[5]") _goh_insert+=("$f[6]") _goh_desc+=("$f[7]") _goh_ranges+=("$f[8]")
-    _goh_value+=("${f[9]-}") _goh_used+=("${f[10]-}")   # absent from an older goh
+    _goh_value+=("${f[9]-}") _goh_brand+=("${f[11]-}")   # absent from an older goh
   done
   REPLY=$#_goh_label
 }

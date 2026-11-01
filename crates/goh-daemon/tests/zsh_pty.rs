@@ -827,7 +827,7 @@ fn a_secret_in_the_zsh_history_is_shown_masked_and_taken_whole() {
 }
 
 #[test]
-fn rows_show_kind_glyphs_learned_badges_and_every_rows_warning() {
+fn rows_show_kind_glyphs_and_every_rows_warning() {
     let fx = Fixture::new(require_env!(), false);
     let push = serde_json::json!({"schemaVersion":1,"name":"git","subcommands":[{"name":"push","options":[
         {"name":"--force","description":"Force"},
@@ -842,7 +842,7 @@ fn rows_show_kind_glyphs_learned_badges_and_every_rows_warning() {
     menu_dump(&fx, &mut sh);
     sh.send("git push --", 600);
     let (rows, _) = menu(&fx, &mut sh);
-    assert_eq!(rows[1], "❯ ① --tags", "a learned pick ranks first and takes a badge: {rows:?}");
+    assert_eq!(rows[1], "❯ ⚑ --tags", "a learned pick ranks first and keeps its kind glyph: {rows:?}");
     let row = |label: &str| rows.iter().find(|r| r.contains(label)).cloned().unwrap_or_default();
     assert!(row("--repo").starts_with("  ◇ --repo"), "an option that takes a value: {rows:?}");
     assert!(row("--force").starts_with("  ⚑ --force") && row("--force").ends_with("⚠ overwrites the remote branch"), "an unselected row shows its warning: {rows:?}");
@@ -1396,8 +1396,9 @@ fn the_box_frames_the_rows_under_the_word_being_completed() {
     assert_eq!(indent, 11.min(59 - inner - 2), "{rows:?}");
     let body: Vec<&String> = rows[2..].iter().take_while(|r| !r.trim_start().starts_with('╰')).collect();
     assert!(body.iter().all(|r| r.chars().count() == indent + inner + 2 && r[..indent].trim().is_empty()), "every row has the box's width: {rows:?}");
-    assert_eq!(body[0].trim_start(), format!("│{:inner$}│", "❯ ↳ checkout"));
-    assert!(rows.iter().any(|r| r.trim_start().starts_with('╰')), "closed at the bottom: {rows:?}");
+    assert!(top.trim_start().starts_with("╭─ git · subcommands ─"), "the title names the command and the kind: {rows:?}");
+    assert!(body[0].trim_start().starts_with("│❯ ↳ checkout ") && body[0].contains("Switch branches"), "a description beside the label: {rows:?}");
+    assert!(rows.iter().any(|r| r.trim_start().starts_with("╰─ 1/")), "position and keys in the bottom border: {rows:?}");
     assert!(h.contains("bold"), "the selected row stays bold: {h}");
     // Highlights are `P<start> <end> <style>` counted from the start of the line; they must land on the box.
     let row = row_offset(&rows, 2, 5);
@@ -1526,6 +1527,37 @@ fn the_box_moves_left_to_stay_inside_a_narrow_terminal() {
 }
 
 #[test]
+fn a_narrow_box_keeps_the_warning_and_fits_wide_labels() {
+    let fx = Fixture::new(require_env!(), false);
+    let git = serde_json::json!({"schemaVersion":1,"name":"git","subcommands":[{"name":"push","options":[
+        {"name":"--force-with-lease","description":"Force safely"},
+        {"name":"--force","description":"Force"},
+        {"name":"--日本語日本語日本語日本語","description":"Wide"}]}]});
+    fs::write(fx.path("specs/git.json"), git.to_string()).unwrap();
+    let mut sh = fx.shell(BOX, true);
+    menu_dump(&fx, &mut sh);
+    sh.send("COLUMNS=30\n", 300);
+    sh.send("git push --", 600);
+    let (rows, _) = menu(&fx, &mut sh);
+    let cells = |r: &str| r.chars().map(|c| if ('\u{2e80}'..='\u{a4cf}').contains(&c) { 2 } else { 1 }).sum::<usize>();
+    assert!(rows[1..].iter().all(|r| cells(r) <= 29), "every row fits the 30 columns, wide labels too: {rows:?}");
+    let row = |label: &str| rows.iter().find(|r| r.contains(label)).cloned().unwrap_or_default();
+    assert!(row("--force ").trim_end_matches('│').trim_end().ends_with('⚠'), "no room for the warning's text, its ⚠ stays: {rows:?}");
+    assert!(rows.iter().any(|r| r.contains("│  ⚠ overwrites")), "the selected row's warning moves to the detail line: {rows:?}");
+}
+
+#[test]
+fn nerd_icons_put_the_commands_logo_in_the_title() {
+    let fx = Fixture::new(require_env!(), true);
+    let mut sh = fx.shell(&[("GOH_LIVE", "on"), ("GOH_INLINE_STYLE", "box"), ("GOH_ICONS", "nerd")], true);
+    menu_dump(&fx, &mut sh);
+    sh.send("git c", 400);
+    let (rows, _) = menu(&fx, &mut sh);
+    assert!(rows[1].trim_start().starts_with("╭─ \u{e702} git · subcommands ─"), "{rows:?}");
+    assert!(rows[2].trim_start().starts_with("│❯ \u{f060d} checkout"), "a subcommand's Nerd Font icon: {rows:?}");
+}
+
+#[test]
 fn the_selection_highlight_follows_the_selected_row_when_the_window_scrolls() {
     let fx = Fixture::new(require_env!(), false);
     let subcommands: Vec<_> = (0..12).map(|i| serde_json::json!({"name": format!("item-{i:02}")})).collect();
@@ -1552,8 +1584,8 @@ fn the_box_stays_under_the_word_when_the_selection_moves_onto_a_history_line() {
     fs::write(fx.path(".zsh_history"), format!(": {}:0;git commit -m wip\n: {}:0;git checkout -b done-once\n", now - 300, now - 200)).unwrap();
     let mut sh = fx.shell(&[("GOH_LIVE", "on"), ("GOH_RECORD", "on"), ("GOH_INLINE_STYLE", "box")], true);
     menu_dump(&fx, &mut sh);
-    // 50 columns keep the box narrow enough that it is never pushed left: only the anchor decides its column.
-    sh.send("COLUMNS=50\n", 300);
+    // 60 columns keep the box narrow enough that it is never pushed left: only the anchor decides its column.
+    sh.send("COLUMNS=60\n", 300);
     sh.send("git c", 1500);
     let mut on_history = false;
     for step in 0..4 {

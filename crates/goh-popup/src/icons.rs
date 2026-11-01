@@ -14,27 +14,9 @@ pub const ASSETS: &[(&str, &[u8])] = &[
     ("github", include_bytes!("../assets/github.png")),
 ];
 
-fn command(name: &str) -> Option<&'static str> {
-    match name {
-        "docker" | "docker-compose" => Some("docker"),
-        "node" | "nodejs" => Some("nodejs"),
-        "go" => Some("go"),
-        "git" => Some("git"),
-        "npm" | "npx" => Some("npm"),
-        "python" | "python3" | "pip" | "pip3" | "uv" => Some("python"),
-        "cargo" | "rustc" | "rustup" => Some("rust"),
-        "kubectl" | "helm" => Some("kubernetes"),
-        "pnpm" => Some("pnpm"),
-        "yarn" => Some("yarn"),
-        "terraform" => Some("terraform"),
-        "gh" => Some("github"),
-        _ => None,
-    }
-}
-
 pub fn key(context: &str, label: &str) -> Option<&'static str> {
-    command(context)
-        .or_else(|| command(label))
+    goh_theme::brand(context)
+        .or_else(|| goh_theme::brand(label))
         .or_else(|| (!context.is_empty() || !label.is_empty()).then_some("terminal"))
 }
 

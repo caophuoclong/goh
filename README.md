@@ -45,7 +45,8 @@ It reproduces what Fig was useful for, not its branding, and has no dependency o
 | Nushell | a bordered menu that opens at each new word | the `goh-ui` line in `config.nu` after `source goh.nu` |
 | bash without ble.sh, fish, elvish, xonsh | the shell's own completion list on Tab, filled by goh | nothing |
 
-`display.inlineStyle: "flat"` replaces the box with plain rows, which screen readers read more easily.
+`display.inlineStyle: "flat"` replaces the box with plain rows, which screen readers read more easily. `display.icons: "nerd"` draws command logos and file-type icons in it, for a terminal set to a
+Nerd Font Mono.
 
 ## Privacy
 

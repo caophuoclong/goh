@@ -22,7 +22,7 @@ Terminal Companion is autocomplete that looks like part of the terminal it sits 
 
 ## Iconography
 
-No icon font, image or emoji. Kind is shown by one single-cell text glyph before the label, so it survives any font and `NO_COLOR`:
+No image or emoji. Kind is shown by one single-cell text glyph before the label, so it survives any font and `NO_COLOR`:
 
 | Kind | Glyph | Inline colour (ANSI, follows the terminal palette) |
 |---|---|---|
@@ -35,7 +35,17 @@ No icon font, image or emoji. Kind is shown by one single-cell text glyph before
 | file | `◦` | none |
 | history line | `↺` | `text-muted` |
 
-With learned choices on, the first three suggestions picked before replace their glyph with `①` `②` `③`, in the kind's colour. None are shown while learning is off. The popup does not draw glyphs yet.
+Learned choices only change the order: a suggestion picked before ranks higher and keeps its kind's glyph. The popup does not draw glyphs yet.
+
+`display.icons: "nerd"` swaps these for Nerd Font glyphs in the inline menu, for a terminal set to a Nerd Font Mono
+(each glyph one cell). It is off by default, as a missing font draws empty boxes:
+
+- Kinds: subcommand `nf-md-subdirectory_arrow_right`, option with a value `nf-fa-sliders`, flag `nf-fa-flag`,
+  argument `nf-cod-symbol_variable`, directory `nf-fa-folder`, file `nf-fa-file_o`, history `nf-fa-history`.
+- A file's icon follows its extension (`.rs`, `.md`, `.toml`, ...).
+- A command shows its brand's logo in the brand's colour (`git`, `docker`, `kubectl` and `helm`, `npm`, ...), else
+  `nf-fa-terminal`. Which brand a command has is shared with the popup's logos (`goh_theme::brand`); `pnpm` has no
+  Nerd Font logo and shows `nf-fa-terminal`.
 
 ## Inline menu
 
@@ -44,12 +54,17 @@ The inline menu is the main surface outside iTerm2, Terminal.app, VS Code and Cl
 terminal's width needs. `display.inlineStyle: "flat"` keeps the frameless rows for screen readers. The frame is shape,
 not colour: it stays under `NO_COLOR`.
 
-- **Rows.** `❯`, glyph, label. Labels share one column as wide as the longest label in the list (at most 32 cells), so the menu does not shift while scrolling.
+- **Title.** In the top border: the command words before the word being completed (at most two, options and their
+  values left out) in bold, then the kind of suggestions in `text-muted` (`git push · options`; `commands` alone at
+  the start of a line). With Nerd Font icons the command's logo comes first.
+- **Rows.** `❯`, glyph, label, description. Labels share one column as wide as the longest label in the list (at most 32 cells), so the menu does not shift while scrolling. Labels and descriptions are cut by screen cells, so wide (CJK) text never pushes the box past the terminal.
 - **Selection.** `❯` and the label in `accent`, bold. Never colour alone: the marker and weight carry it under `NO_COLOR`.
 - **Matches.** Bold and underlined, in `text-match` when the theme gives one.
-- **Risk.** A warning (`⚠ overwrites the remote branch · context: prod`) follows the label column on every row, bold yellow, so it is seen before it is selected.
-- **Detail line.** Below the rows: the selected suggestion's description (without the warning, already on its row), or its kind when it has none. In `text-muted`.
-- **Footer.** Position (`3/24`, `50/50+` when more were cut) and key hints, in `text-muted`. The hints shorten, then go, as the terminal narrows.
+- **Description column.** Each row's description, in `text-muted`, after the labels. A risky row starts it with its warning (`⚠ overwrites the remote branch · context: prod`), bold red, so it is seen before it is selected.
+- **Narrow.** Under 12 cells for descriptions the column goes. A risky row keeps a bold red `⚠` in a cell kept after the labels: the warning never disappears.
+- **Detail line.** Under a divider: the selected suggestion's description, after its warning when its row could not show all of it. Shown when a description is cut or the column is gone, decided for the whole list so the box keeps its height while moving.
+- **Bottom border.** Position (`3/24`, `50/50+` when more were cut) and key hints, in `text-muted`. The hints shorten, then go, as the box narrows.
+- **Flat rows** keep the earlier layout: the warning after the label column, the detail line (with the warning when it did not fit), and a footer.
 - **No motion.** Moving the selection redraws at once; nothing waits or animates.
 
 ## Components
