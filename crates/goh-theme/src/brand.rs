@@ -1,5 +1,5 @@
-//! Which brand a command belongs to, so every surface shows the same logo for it: the popup draws its own pinned
-//! image, the inline menu a Nerd Font glyph. Aliases share their brand (`npx` is npm, `helm` is Kubernetes).
+//! Which brand a command belongs to, so every surface shows the same logo for it (`icons::brand_glyph`). Aliases
+//! share their brand (`npx` is npm, `helm` is Kubernetes).
 
 pub fn brand(command: &str) -> Option<&'static str> {
     match command {

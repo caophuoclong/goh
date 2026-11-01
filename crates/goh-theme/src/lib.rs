@@ -5,6 +5,7 @@
 
 mod brand;
 pub mod color;
+pub mod icons;
 pub mod osc;
 
 use std::path::PathBuf;

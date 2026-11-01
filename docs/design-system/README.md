@@ -35,17 +35,20 @@ No image or emoji. Kind is shown by one single-cell text glyph before the label,
 | file | `◦` | none |
 | history line | `↺` | `text-muted` |
 
-Learned choices only change the order: a suggestion picked before ranks higher and keeps its kind's glyph. The popup does not draw glyphs yet.
+Learned choices only change the order: a suggestion picked before ranks higher and keeps its kind's glyph.
 
-`display.icons: "nerd"` swaps these for Nerd Font glyphs in the inline menu, for a terminal set to a Nerd Font Mono
-(each glyph one cell). It is off by default, as a missing font draws empty boxes:
+Nerd Font glyphs are the one icon set of every menu (`goh_theme::icons`). The popup always draws them, with a
+subset of Nerd Fonts' symbols font it bundles (`third_party/nerd-fonts`), whatever its own font: logos in their
+brand's colour, the other icons in `text-muted`, the command's logo in the footer. The inline menu draws them under
+`display.icons: "nerd"`, for a terminal set to a Nerd Font Mono (each glyph one cell); it is off by default there,
+as a terminal without the font draws empty boxes:
 
 - Kinds: subcommand `nf-md-subdirectory_arrow_right`, option with a value `nf-fa-sliders`, flag `nf-fa-flag`,
   argument `nf-cod-symbol_variable`, directory `nf-fa-folder`, file `nf-fa-file_o`, history `nf-fa-history`.
 - A file's icon follows its extension (`.rs`, `.md`, `.toml`, ...).
 - A command shows its brand's logo in the brand's colour (`git`, `docker`, `kubectl` and `helm`, `npm`, ...), else
-  `nf-fa-terminal`. Which brand a command has is shared with the popup's logos (`goh_theme::brand`); `pnpm` has no
-  Nerd Font logo and shows `nf-fa-terminal`.
+  `nf-fa-terminal`. Which brand a command has is `goh_theme::brand`; `pnpm` has no Nerd Font logo and shows
+  `nf-fa-terminal`.
 
 ## Inline menu
 

@@ -1,52 +1,59 @@
-//! Pinned local command logos. No font glyphs, remote URLs or spec-provided asset paths.
-pub const ASSETS: &[(&str, &[u8])] = &[
-    ("docker", include_bytes!("../assets/docker.png")),
-    ("nodejs", include_bytes!("../assets/nodejs.png")),
-    ("go", include_bytes!("../assets/go.png")),
-    ("git", include_bytes!("../assets/git.png")),
-    ("npm", include_bytes!("../assets/npm.png")),
-    ("python", include_bytes!("../assets/python.png")),
-    ("rust", include_bytes!("../assets/rust.png")),
-    ("kubernetes", include_bytes!("../assets/kubernetes.png")),
-    ("pnpm", include_bytes!("../assets/pnpm.png")),
-    ("yarn", include_bytes!("../assets/yarn.png")),
-    ("terraform", include_bytes!("../assets/terraform.png")),
-    ("github", include_bytes!("../assets/github.png")),
-];
+//! The popup's icons: the Nerd Font set of `goh_theme::icons`, drawn with a bundled subset of Nerd Fonts' symbols
+//! font (`scripts/subset-nerd-font.sh`), so they show whatever font the popup uses. No remote or spec-provided assets.
 
-pub fn key(context: &str, label: &str) -> Option<&'static str> {
-    goh_theme::brand(context)
-        .or_else(|| goh_theme::brand(label))
-        .or_else(|| (!context.is_empty() || !label.is_empty()).then_some("terminal"))
+use goh_theme::icons;
+
+/// The bundled symbols font; where it comes from and its licences: `third_party/nerd-fonts`.
+pub const FONT: &[u8] = include_bytes!("../assets/nerd-symbols.ttf");
+
+/// One icon: its glyph, and the brand whose colour it takes (`goh_theme::icons::brand_color`) if it is a logo.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Icon {
+    pub glyph: &'static str,
+    pub brand: Option<&'static str>,
+}
+
+/// The icon of a suggestion; `None` for a frame without kinds (an adapter from before them).
+pub fn row(kind: &str, label: &str) -> Option<Icon> {
+    if kind.is_empty() {
+        return None;
+    }
+    let brand = (kind == "command").then(|| goh_theme::brand(label)).flatten().filter(|b| icons::brand_glyph(b).is_some());
+    Some(Icon { glyph: icons::glyph(kind, label), brand })
+}
+
+/// The logo of the command being completed, for the footer.
+pub fn context(context: &str) -> Option<Icon> {
+    if context.is_empty() {
+        return None;
+    }
+    let brand = goh_theme::brand(context).filter(|b| icons::brand_glyph(b).is_some());
+    Some(Icon { glyph: brand.and_then(icons::brand_glyph).unwrap_or(icons::TERMINAL), brand })
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
     #[test]
-    fn aliases_share_logos_and_subcommands_keep_their_parent_brand() {
-        assert_eq!(key("docker", "go"), Some("docker"));
-        assert_eq!(key("node", "--inspect"), Some("nodejs"));
-        assert_eq!(key("", "go"), Some("go"));
-        assert_eq!(key("python3", "script.py"), Some("python"));
-        assert_eq!(key("custom", "unknown"), Some("terminal"));
-        assert_eq!(key("", "custom-command"), Some("terminal"));
-        assert_eq!(key("custom", ""), Some("terminal"));
-        assert_eq!(key("", ""), None);
+    fn rows_show_their_kind_and_the_footer_its_command() {
+        assert_eq!(row("command", "kubectl"), Some(Icon { glyph: icons::brand_glyph("kubernetes").unwrap(), brand: Some("kubernetes") }));
+        assert_eq!(row("command", "pnpm"), Some(Icon { glyph: icons::TERMINAL, brand: None }), "no Nerd Font logo");
+        assert_eq!(row("flag", "--force"), Some(Icon { glyph: icons::glyph("flag", ""), brand: None }));
+        assert_eq!(row("", "x"), None);
+        assert_eq!(context("python3"), Some(Icon { glyph: icons::brand_glyph("python").unwrap(), brand: Some("python") }));
+        assert_eq!(context("custom"), Some(Icon { glyph: icons::TERMINAL, brand: None }));
+        assert_eq!(context(""), None);
     }
+
     #[test]
-    fn every_logo_is_a_decodable_rgba_image() {
-        for (name, bytes) in ASSETS {
-            let mut r = png::Decoder::new(std::io::Cursor::new(bytes))
-                .read_info()
-                .unwrap();
-            let mut buf = vec![0; r.output_buffer_size().unwrap()];
-            let info = r.next_frame(&mut buf).unwrap();
-            assert_eq!(
-                (info.width, info.height, info.color_type),
-                (64, 64, png::ColorType::Rgba),
-                "{name}"
-            );
+    fn the_bundled_font_has_every_icon_in_one_cell() {
+        let face = ttf_parser::Face::parse(FONT, 0).unwrap();
+        let cell = face.glyph_index(icons::TERMINAL.chars().next().unwrap()).and_then(|id| face.glyph_hor_advance(id));
+        for g in icons::all() {
+            let c = g.chars().next().unwrap();
+            let id = face.glyph_index(c).unwrap_or_else(|| panic!("U+{:X} is not in the font: run scripts/subset-nerd-font.sh", c as u32));
+            assert_eq!(face.glyph_hor_advance(id), cell, "U+{:X} is one cell wide", c as u32);
         }
     }
 }

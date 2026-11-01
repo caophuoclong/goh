@@ -3,7 +3,7 @@ id: popup
 title: Popup at the cursor
 status: stable
 since: 1.0.0
-updated: 2026-10-31
+updated: 2026-11-01
 area: display
 platforms: [macos, linux]
 settings: [popup.font, popup.fontSize, display.mode]
@@ -23,6 +23,9 @@ Where the caret cannot be verified, the menu is drawn inline instead; nothing pr
 - Linux: X11 and XWayland terminals that export `WINDOWID` and expose AT-SPI, with one visible terminal widget.
 - The popup never takes focus or keys; the shell keeps selection. The wheel moves the highlight (macOS).
 - Font and size follow iTerm2 and VS Code settings, or `popup.font` / `popup.fontSize`.
+- Each row shows its kind's Nerd Font icon (a command's logo in its brand's colour, a file's type), the footer the
+  command's logo: the same icons as the inline menu's `display.icons: "nerd"`, drawn with a bundled font, so any
+  `popup.font` shows them.
 - Over ssh it is drawn by the machine you connected from with [ssh-popup](ssh-popup.md); otherwise inline.
 
 ## Limits
@@ -33,6 +36,7 @@ Where the caret cannot be verified, the menu is drawn inline instead; nothing pr
 
 ## Changes
 
+- unreleased: Nerd Font icons per kind, the same set as the inline menu, replace the command logo on every row.
 - unreleased: where the popup cannot draw, zsh draws a floating framed box instead.
 - unreleased: warnings on risky suggestions drawn in red.
 - 1.8.0: Linux X11/AT-SPI caret and X11 surfaces.

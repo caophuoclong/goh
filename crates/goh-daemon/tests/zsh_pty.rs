@@ -472,6 +472,7 @@ fn overlay_frames_follow_the_menu() {
     let labels: Vec<_> = items.iter().map(|i| i["label"].as_str().unwrap()).collect();
     assert_eq!(labels, ["checkout", "cherry-pick", "commit"]);
     assert_eq!(items[0]["match_ranges"], serde_json::json!([[0, 1]]), "per-item match ranges reach the popup");
+    assert_eq!(items[0]["kind"], "subcommand", "the kind picks the popup's icon");
     assert_eq!((selected(show), show["state"]["context"].as_str()), (0, Some("git")));
     assert_eq!(show["enter_accepts"], false, "untouched menus must not advertise Enter acceptance");
     assert!(show["theme"]["surface-base"].is_string(), "resolved theme tokens are sent");
