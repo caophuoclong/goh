@@ -122,6 +122,7 @@ pub enum Reason {
     CellHeightUnknown,
     EmptyRect,
     NoDisplay,
+    CaretOutOfView,
 }
 
 impl fmt::Display for Reason {
@@ -148,8 +149,16 @@ impl fmt::Display for Reason {
             Reason::CellHeightUnknown => f.write_str("the terminal did not report its cell height"),
             Reason::EmptyRect => f.write_str("the caret rectangle is empty or invalid"),
             Reason::NoDisplay => f.write_str("the caret is not on any known display"),
+            Reason::CaretOutOfView => f.write_str("the caret's line is scrolled out of view"),
         }
     }
+}
+
+/// Is the caret's line on screen in `view`, the area that shows the terminal's lines? Scrolled back,
+/// iTerm2 still reports the caret where its line now is, below the visible lines; a popup placed there
+/// would flip above it and cover the scrollback being read.
+pub fn caret_in_view(caret: Caret, view: Rect) -> bool {
+    view.contains(caret.x, caret.y + caret.height / 2.0)
 }
 
 /// Turn the raw rectangle from `AXBoundsForRange` into the caret cell.
@@ -273,5 +282,18 @@ mod tests {
     fn rect_contains_is_half_open() {
         let r = Rect { x: 0.0, y: 0.0, w: 10.0, h: 10.0 };
         assert!(r.contains(0.0, 0.0) && !r.contains(10.0, 5.0) && !r.contains(5.0, 10.0));
+    }
+
+    #[test]
+    fn a_caret_scrolled_below_the_visible_lines_is_out_of_view() {
+        // iTerm2, measured: the scroll area showing the lines, and the caret on the last row, then
+        // with the terminal scrolled back 24 rows (its line moved below the visible ones).
+        let view = Rect { x: 703.0, y: 309.0, w: 730.0, h: 479.0 };
+        let at_bottom = caret_from_rect(App::ITerm2, Rect { x: 708.0, y: 748.0, w: 99.0, h: 38.0 }, Some(19.0)).unwrap();
+        assert!(caret_in_view(at_bottom, view));
+        let scrolled = caret_from_rect(App::ITerm2, Rect { x: 708.0, y: 1204.0, w: 99.0, h: 38.0 }, Some(19.0)).unwrap();
+        assert!(!caret_in_view(scrolled, view));
+        // Above the lines (the window's title bar) is not in view either.
+        assert!(!caret_in_view(Caret { x: 708.0, y: 280.0, height: 19.0 }, view));
     }
 }

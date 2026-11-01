@@ -9,7 +9,7 @@ use std::time::{Duration, Instant};
 
 use crate::gate::check_env;
 use crate::retry::{retry, settle_from};
-use crate::rules::{caret_from_rect, App, Rect, Reason};
+use crate::rules::{caret_from_rect, caret_in_view, App, Rect, Reason};
 use crate::{Anchor, Options, Outcome};
 
 type CFTypeRef = *const c_void;
@@ -371,6 +371,11 @@ fn read(trace: &mut Vec<String>, opts: &Options, startup: bool) -> Result<Anchor
     // taken then puts the popup a row off. Trust the caret only once two reads agree.
     let (caret, settled) = settle_from(first, SETTLE_READS, SETTLE_DELAY, || caret_now().ok());
     trace.push(if settled { "caret: stable".to_string() } else { "caret: still moving after re-reads, using the last".to_string() });
+    let view = viewport(&el, &window).ok_or(Reason::NoBounds)?;
+    trace.push(format!("view: x={} y={} w={} h={}", view.x, view.y, view.w, view.h));
+    if !caret_in_view(caret, view) {
+        return Err(Reason::CaretOutOfView);
+    }
     let display = displays().into_iter().find(|d| d.contains(caret.x, caret.y + caret.height / 2.0)).ok_or(Reason::NoDisplay)?;
     let focus = crate::Focus { inner: Focus { pid, window, element: el } };
     Ok(Anchor { app, caret, display, focus })
@@ -411,6 +416,17 @@ fn frame(el: &Cf) -> Option<Rect> {
     // SAFETY: `v` is an AXValue; `r` has the layout of CGRect.
     unsafe { AXValueGetValue(v.0, K_AX_VALUE_CGRECT, (&mut r as *mut CGRect).cast()) }
         .then_some(Rect { x: r.origin.x, y: r.origin.y, w: r.size.width, h: r.size.height })
+}
+
+/// Where the terminal's lines are shown: the scroll area around the text when there is one (iTerm2),
+/// else the window. A caret outside it is on a line scrolled out of view.
+fn viewport(el: &Cf, window: &Cf) -> Option<Rect> {
+    let parent = attr(el, "AXParent").ok();
+    let role = parent.as_ref().and_then(|p| attr(p, "AXRole").ok()).and_then(|v| cf_string(v.0));
+    match (parent, role.as_deref()) {
+        (Some(p), Some("AXScrollArea")) => frame(&p),
+        _ => frame(window),
+    }
 }
 
 fn frame_of(el: &Cf) -> String {

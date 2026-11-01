@@ -3,7 +3,7 @@ id: popup
 title: Popup at the cursor
 status: stable
 since: 1.0.0
-updated: 2026-11-01
+updated: 2026-11-02
 area: display
 platforms: [macos, linux]
 settings: [popup.font, popup.fontSize, display.mode]
@@ -22,6 +22,7 @@ Where the caret cannot be verified, the menu is drawn inline instead; nothing pr
   terminal needs the Accessibility permission (or goh-popup its own, see [popup-permission](popup-permission.md)).
 - Linux: X11 and XWayland terminals that export `WINDOWID` and expose AT-SPI, with one visible terminal widget.
 - The popup never takes focus or keys; the shell keeps selection. The wheel moves the highlight (macOS).
+- Scrolled back so the line you are typing is out of view, the popup hides; it comes back when you scroll down.
 - Font and size follow iTerm2 and VS Code settings, or `popup.font` / `popup.fontSize`.
 - Each row shows its kind's Nerd Font icon (a command's logo in its brand's colour, a file's type), the footer the
   command's logo: the same icons as the inline menu's `display.icons: "nerd"`, drawn with a bundled font, so any
@@ -36,6 +37,7 @@ Where the caret cannot be verified, the menu is drawn inline instead; nothing pr
 
 ## Changes
 
+- unreleased: the popup hides while the terminal is scrolled back, instead of moving up over the lines being read.
 - unreleased: the popup follows iTerm2's profile font again when iTerm2's preferences hold dates or data.
 - unreleased: Nerd Font icons per kind, the same set as the inline menu, replace the command logo on every row.
 - unreleased: where the popup cannot draw, zsh draws a floating framed box instead.
