@@ -141,7 +141,7 @@ jobs:
     permissions:
       contents: read
     env:
-      TAP_REPO: ${{ vars.HOMEBREW_TAP_REPO || 'caophuoclong/homebrew-goh' }}
+      TAP_REPO: ${{ vars.HOMEBREW_TAP_REPO || 'caophuoclong/homebrew-tap' }}
       TAP_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
     steps:
       - name: Skip when no tap token is configured

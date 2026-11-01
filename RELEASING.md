@@ -28,11 +28,11 @@ Linux popup runtime libraries include libX11, libxkbcommon-x11, EGL/OpenGL and t
    ```
 
    The tag starts `release.yml`, which builds the packages and creates the GitHub release.
-3. **Homebrew tap.** Create an empty public repository `caophuoclong/homebrew-goh` (the `homebrew-` prefix is
+3. **Homebrew tap.** Create (or reuse) the public repository `caophuoclong/homebrew-tap` (the `homebrew-` prefix is
    required), then a fine-grained token with *Contents: read and write* on that repository only, and save it in this
    repository as the secret `HOMEBREW_TAP_TOKEN`. Without it the release still works and only the tap is skipped (the
    run summary says so). To use another tap, set the repository variable `HOMEBREW_TAP_REPO`.
-   Users then run `brew install caophuoclong/goh/goh`.
+   Users then run `brew install caophuoclong/tap/goh`.
 4. **macOS signing certificate.** Run `scripts/macos-signing-cert.sh <safe folder>` once and store the two files it
    writes as the secrets `MACOS_SIGN_P12` and `MACOS_SIGN_P12_PASSWORD` (it prints the `gh secret set` commands). The
    macOS packages sign `Goh.app` (the bundle around goh-popup) with it, so macOS keeps its own Accessibility permission

@@ -3,7 +3,7 @@ id: install
 title: Install and setup
 status: stable
 since: 1.0.0
-updated: 2026-10-31
+updated: 2026-11-01
 area: tooling
 platforms: [macos, linux]
 commands: [goh setup, goh init]
@@ -18,7 +18,7 @@ One command installs goh and its shell integration; `goh setup` adds or removes 
 
 - `install.sh` picks the package for the system, checks its SHA-256, installs to `~/.local/bin` (`GOH_BIN`) and
   adds one block to `~/.zshrc`, `~/.bashrc` or fish's `config.fish`; `--uninstall` removes exactly that.
-- Homebrew: `brew install caophuoclong/goh/goh && goh setup`.
+- Homebrew: `brew install caophuoclong/tap/goh && goh setup`.
 - `--from-source` builds with cargo; on macOS it installs the signed `Goh.app` like a release.
 
 ## Limits
@@ -27,6 +27,7 @@ One command installs goh and its shell integration; `goh setup` adds or removes 
 
 ## Changes
 
+- unreleased: the Homebrew tap is now `caophuoclong/tap` (`brew install caophuoclong/tap/goh`).
 - unreleased: `--from-source` installs a signed `Goh.app` on macOS; `goh-popup.app` from earlier versions is removed.
 - 1.8.0: popup in Linux source installs.
 - 1.1.0: `goh setup`.

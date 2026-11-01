@@ -46,7 +46,7 @@ curl -fsSL https://raw.githubusercontent.com/caophuoclong/goh/main/install.sh | 
 or with Homebrew:
 
 ```bash
-brew install caophuoclong/goh/goh && goh setup
+brew install caophuoclong/tap/goh && goh setup
 ```
 
 Open a new terminal and type `git ch`. On macOS the popup needs the Accessibility permission: `goh doctor --fix` opens
@@ -131,7 +131,7 @@ Pick one. None needs the source.
 | How | Command |
 |---|---|
 | Install script (macOS, Linux) | `curl -fsSL https://raw.githubusercontent.com/caophuoclong/goh/main/install.sh \| sh` |
-| Homebrew | `brew install caophuoclong/goh/goh && goh setup` |
+| Homebrew | `brew install caophuoclong/tap/goh && goh setup` |
 | By hand | download `goh-<version>-<target>.tar.gz` from the [releases](https://github.com/caophuoclong/goh/releases), check it against `SHA256SUMS`, put `bin/*` on your `PATH` |
 | From source | `cargo install --git https://github.com/caophuoclong/goh goh-daemon goh-popup`, or `./install.sh --from-source` |
 
@@ -157,7 +157,7 @@ Then open a new terminal. Pass options after `sh -s --`, for example a fixed rel
 curl -fsSL https://raw.githubusercontent.com/caophuoclong/goh/main/install.sh | sh -s -- --version 1.8.0
 ```
 
-Homebrew on Linux works too (`brew install caophuoclong/goh/goh && goh setup`). Suggestions work in any terminal;
+Homebrew on Linux works too (`brew install caophuoclong/tap/goh && goh setup`). Suggestions work in any terminal;
 the floating popup at the cursor needs X11 or XWayland, a terminal that exports `WINDOWID` and exposes AT-SPI
 accessibility over D-Bus, and the `libxkbcommon-x11` and EGL/OpenGL libraries. Native Wayland, SSH, tmux and screen
 use the inline menu. `goh-popup --probe` explains the choice; see [Linux popup support](docs/linux-popup.md).
