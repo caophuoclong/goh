@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.3.0](https://github.com/caophuoclong/goh/compare/v2.2.0...v2.3.0) (2026-11-01)
+
+
+### Features
+
+* **audit:** add detailed audit report for inline box rendering and command icons ([c46303b](https://github.com/caophuoclong/goh/commit/c46303ba0c2124ce7e193a23fffbd069668aba83))
+* **zsh:** title, description column and Nerd Font icons in the inline box ([e28817f](https://github.com/caophuoclong/goh/commit/e28817fc091c4f42267d5e5bb7474f7a3a0ff5f6))
+* **zsh:** title, description column and Nerd Font icons in the inline box ([5ff2841](https://github.com/caophuoclong/goh/commit/5ff284139a2ef01c877a1e4136622a71ebfc157d))
+
+
+### Bug fixes
+
+* **zsh:** run ssh through goh ssh with display.mode inline ([42d7209](https://github.com/caophuoclong/goh/commit/42d7209e755e0d05f716881a6efb6561d0e97532))
+
 ## [2.2.0](https://github.com/caophuoclong/goh/compare/v2.1.1...v2.2.0) (2026-10-31)
 
 
