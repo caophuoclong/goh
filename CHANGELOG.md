@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.4.0](https://github.com/caophuoclong/goh/compare/v2.3.0...v2.4.0) (2026-11-01)
+
+
+### Features
+
+* **popup:** draw the inline menu's Nerd Font icons with a bundled font ([db18083](https://github.com/caophuoclong/goh/commit/db18083a46a8985982ca3d18a089d0b6f31b2817))
+
+
+### Bug fixes
+
+* **popup:** read iTerm2's profile font when its preferences hold dates ([3aaae4c](https://github.com/caophuoclong/goh/commit/3aaae4c61aa1a7469e319ce374364ecfb5b6ae60))
+
 ## [2.3.0](https://github.com/caophuoclong/goh/compare/v2.2.0...v2.3.0) (2026-11-01)
 
 
