@@ -3,7 +3,7 @@ id: zsh-adapter
 title: zsh: menus as you type
 status: stable
 since: 1.0.0
-updated: 2026-11-01
+updated: 2026-11-02
 area: shells
 shells: [zsh]
 settings: [display.live, display.maxSuggestions, display.mode, display.enterRuns, display.inlineStyle, display.icons]
@@ -38,6 +38,7 @@ in an IDE. Load it with `goh setup` or `eval "$(goh init zsh)"`.
   label, and the bottom border shows the position and keys. In a narrow terminal the descriptions go and a risky row
   keeps its `⚠`; the selected row's warning and description move to a line under the rows.
 - `display.icons: "nerd"` draws Nerd Font icons: the command's logo in the title, an icon per kind and per file type.
+  File icons cover common source code, configuration, document, media, archive and font extensions; JSX and TSX use the React logo.
   It needs a Nerd Font Mono as the terminal's font; `"unicode"`, the default, works with any font.
 - A program still answering (a slow Docker, a cluster) shows `…` in the footer; its values appear when they arrive. The
   wait stops when you close the menu (Esc, Left) or move in it, and gives up after about 5 s; each new prompt starts
@@ -55,6 +56,8 @@ in an IDE. Load it with `goh setup` or `eval "$(goh init zsh)"`.
 
 ## Changes
 
+- unreleased: JSX and TSX suggestions use the React logo.
+- unreleased: File icons cover more programming languages, configuration files, documents, images, audio, video, archives and fonts, including JSX, TSX and JavaScript/TypeScript module variants.
 - unreleased: the box shows the command and kind in its top border, a description beside every label and the keys in its bottom border; a warning keeps its `⚠` in a narrow terminal, and wide labels no longer push the box past the edge. The ①②③ marks on suggestions picked before are gone; those suggestions still rank first.
 - unreleased: `display.icons: "nerd"` draws Nerd Font icons and command logos in the inline menu.
 - unreleased: Ctrl+C with the inline menu open no longer leaves the menu on the screen above the next prompt.

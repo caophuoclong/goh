@@ -50,8 +50,9 @@ pub fn file_glyph(name: &str) -> &'static str {
         "rs" => "\u{e7a8}",
         "go" => "\u{e627}",
         "py" => "\u{e73c}",
-        "js" => "\u{e60c}",
-        "ts" => "\u{e628}",
+        "js" | "mjs" | "cjs" => "\u{e60c}",
+        "ts" | "mts" | "cts" => "\u{e628}",
+        "jsx" | "tsx" => "\u{e7ba}",
         "json" => "\u{e60b}",
         "md" => "\u{e73e}",
         "toml" => "\u{e615}",
@@ -66,6 +67,41 @@ pub fn file_glyph(name: &str) -> &'static str {
         "rb" => "\u{e605}",
         "lua" => "\u{e620}",
         "txt" => "\u{e64e}",
+        "php" => "\u{e73d}",
+        "dart" => "\u{e798}",
+        "swift" => "\u{f179}",
+        "kt" | "kotlin" => "\u{e634}",
+        "scala" => "\u{e737}",
+        "clj" | "cljs" | "cljc" => "\u{e768}",
+        "hs" | "lhs" => "\u{e777}",
+        "erl" | "hrl" => "\u{e7b1}",
+        "ex" | "exs" => "\u{e62d}",
+        "r" => "\u{f25d}",
+        "pl" | "pm" => "\u{e769}",
+        "vim" => "\u{e62b}",
+        "vue" => "\u{e6a0}",
+        "sass" | "scss" => "\u{e603}",
+        "less" => "\u{e758}",
+        "xml" | "xsl" | "xslt" => "\u{e619}",
+        "sql" | "sqlite" | "sqlite3" | "db" => "\u{f1c0}",
+        "diff" | "patch" => "\u{f440}",
+        "pdf" => "\u{f1c1}",
+        "doc" | "docx" => "\u{f1c2}",
+        "xls" | "xlsx" => "\u{f1c3}",
+        "ppt" | "pptx" => "\u{f1c4}",
+        "png" | "jpg" | "jpeg" | "gif" | "webp" | "bmp" | "ico" | "svg" => "\u{f1c5}",
+        "mp3" | "wav" | "flac" | "ogg" | "m4a" => "\u{f001}",
+        "mp4" | "mov" | "avi" | "mkv" | "webm" => "\u{f03d}",
+        "zip" | "tar" | "gz" | "bz2" | "xz" | "7z" | "rar" => "\u{f410}",
+        "ttf" | "otf" | "woff" | "woff2" => "\u{f031}",
+        "log" => "\u{f18d}",
+        "conf" | "ini" | "cfg" => "\u{e615}",
+        "fish" | "bash" => "\u{e691}",
+        "h" => "\u{e649}",
+        "hpp" | "cc" | "cxx" => "\u{e646}",
+        "markdown" => "\u{e73e}",
+        "htm" => "\u{e60e}",
+        "csv" | "tsv" => "\u{e64e}",
         _ => "\u{f016}",
     }
 }
@@ -89,9 +125,11 @@ pub fn glyph(kind: &str, label: &str) -> &'static str {
 pub fn all() -> Vec<&'static str> {
     let brands = ["docker", "nodejs", "go", "git", "npm", "python", "rust", "kubernetes", "yarn", "terraform", "github"];
     let files = ["a.rs", "a.go", "a.py", "a.js", "a.ts", "a.json", "a.md", "a.toml", "a.yml", "a.sh", "a.lock", "a.html", "a.css", "a.c", "a.cpp", "a.java", "a.rb", "a.lua", "a.txt", "a"];
+    let extra_files = ["a.jsx", "a.php", "a.dart", "a.swift", "a.kt", "a.scala", "a.clj", "a.hs", "a.erl", "a.ex", "a.r", "a.pl", "a.vim", "a.vue", "a.sass", "a.less", "a.xml", "a.db", "a.diff", "a.pdf", "a.doc", "a.xls", "a.ppt", "a.png", "a.mp3", "a.mp4", "a.zip", "a.ttf", "a.log", "a.conf", "a.fish", "a.h", "a.hpp", "a.markdown", "a.htm", "a.csv"];
     let kinds = ["subcommand", "option", "flag", "argument", "directory", "history"];
     let mut all: Vec<_> = brands.iter().filter_map(|b| brand_glyph(b)).collect();
     all.extend(files.iter().map(|f| file_glyph(f)));
+    all.extend(extra_files.iter().map(|f| file_glyph(f)));
     all.extend(kinds.iter().map(|k| glyph(k, "")));
     all.push(TERMINAL);
     all.sort_unstable();
@@ -110,6 +148,18 @@ mod tests {
         assert_eq!(glyph("command", "pnpm"), TERMINAL, "pnpm has no Nerd Font logo");
         assert_eq!(glyph("command", "grep"), TERMINAL);
         assert_eq!(glyph("file", "src/Main.RS"), glyph("file", "lib.rs"));
+        for ext in ["mjs", "cjs"] {
+            assert_eq!(file_glyph(&format!("src/component.{ext}")), file_glyph("a.js"));
+        }
+        for ext in ["mts", "cts"] {
+            assert_eq!(file_glyph(&format!("src/component.{ext}")), file_glyph("a.ts"));
+        }
+        for ext in ["jsx", "tsx", "JSX", "TSX"] {
+            assert_eq!(file_glyph(&format!("src/component.{ext}")), "\u{e7ba}");
+        }
+        for (name, expected) in [("photo.PNG", "\u{f1c5}"), ("report.pdf", "\u{f1c1}"), ("archive.tar", "\u{f410}"), ("src/main.php", "\u{e73d}"), ("schema.sql", "\u{f1c0}")] {
+            assert_eq!(file_glyph(name), expected, "{name}");
+        }
         assert_eq!(glyph("file", "Makefile"), "\u{f016}");
         assert_eq!(glyph("mixed", "x"), "·");
     }
@@ -136,7 +186,7 @@ mod tests {
     #[test]
     fn the_zsh_adapter_draws_the_same_icons() {
         let src = include_str!("../../../adapters/zsh/goh.zsh");
-        for (name, n) in [("_goh_nerd_brand", 11), ("_goh_brand_color", 10), ("_goh_nerd_ext", 21)] {
+        for (name, n) in [("_goh_nerd_brand", 11), ("_goh_brand_color", 10), ("_goh_nerd_ext", 109)] {
             assert_eq!(zsh_table(src, name).len(), n, "{name} read whole");
         }
         for (brand, g) in zsh_table(src, "_goh_nerd_brand") {

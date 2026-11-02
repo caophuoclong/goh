@@ -26,7 +26,7 @@ Where the caret cannot be verified, the menu is drawn inline instead; nothing pr
 - Font and size follow iTerm2 and VS Code settings, or `popup.font` / `popup.fontSize`.
 - Each row shows its kind's Nerd Font icon (a command's logo in its brand's colour, a file's type), the footer the
   command's logo: the same icons as the inline menu's `display.icons: "nerd"`, drawn with a bundled font, so any
-  `popup.font` shows them.
+  `popup.font` shows them. File icons cover common source code, configuration, document, media, archive and font extensions; JSX and TSX use the React logo.
 - Over ssh it is drawn by the machine you connected from with [ssh-popup](ssh-popup.md); otherwise inline.
 
 ## Limits
@@ -37,6 +37,8 @@ Where the caret cannot be verified, the menu is drawn inline instead; nothing pr
 
 ## Changes
 
+- unreleased: JSX and TSX suggestions use the React logo.
+- unreleased: File icons cover more programming languages, configuration files, documents, images, audio, video, archives and fonts, including JSX, TSX and JavaScript/TypeScript module variants.
 - unreleased: the popup hides while the terminal is scrolled back, instead of moving up over the lines being read.
 - unreleased: the popup follows iTerm2's profile font again when iTerm2's preferences hold dates or data.
 - unreleased: Nerd Font icons per kind, the same set as the inline menu, replace the command logo on every row.

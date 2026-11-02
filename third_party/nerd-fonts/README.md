@@ -1,4 +1,4 @@
-Icons from [Nerd Fonts v3.4.0](https://github.com/ryanoasis/nerd-fonts/releases/tag/v3.4.0), the font under the
+Icons from [Nerd Fonts v3.5.1](https://github.com/ryanoasis/nerd-fonts/releases/tag/v3.5.1), the font under the
 [MIT license](LICENSE). The popup embeds `crates/goh-popup/assets/nerd-symbols.ttf`: the glyphs of
 `crates/goh-theme/src/icons.rs`, cut out of `SymbolsNerdFontMono-Regular.ttf` from `NerdFontsSymbolsOnly.zip`
 (SHA-256 `f0f624d9b474bea1662cf7e862d44aebe1ae1f6c7f9cb7a0ca5d0e5ac9561c60`).
