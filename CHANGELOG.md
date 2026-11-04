@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.6.1](https://github.com/caophuoclong/goh/compare/v2.6.0...v2.6.1) (2026-11-04)
+
+
+### Bug fixes
+
+* **release:** bring Cargo.lock up to 2.6.0 ([bec35a4](https://github.com/caophuoclong/goh/commit/bec35a43c5d396235386ec4e229667d95e865d57))
+* **release:** bring Cargo.lock up to 2.6.0 ([d2625f5](https://github.com/caophuoclong/goh/commit/d2625f5b13261eab95f46323b44ed1371a225157))
+
 ## [2.6.0](https://github.com/caophuoclong/goh/compare/v2.5.0...v2.6.0) (2026-11-04)
 
 
