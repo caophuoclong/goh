@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.6.0](https://github.com/caophuoclong/goh/compare/v2.5.0...v2.6.0) (2026-11-04)
+
+
+### Features
+
+* **zsh:** open folders as a tree with → and ← ([82482ea](https://github.com/caophuoclong/goh/commit/82482ea120f7a312e6f71ecefeefc32f7073a133))
+* **zsh:** open folders as a tree with → and ← ([66f5d4c](https://github.com/caophuoclong/goh/commit/66f5d4cca49d1025a3d56cc8e24bc6b79d927bc0))
+
 ## [2.5.0](https://github.com/caophuoclong/goh/compare/v2.4.1...v2.5.0) (2026-11-02)
 
 
