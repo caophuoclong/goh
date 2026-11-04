@@ -75,6 +75,10 @@ typeset -gi _goh_on=0 _goh_sel=1 _goh_buf_cur=0 _goh_navigated=0
 typeset -gi _goh_ghost_line=0
 typeset -g _goh_buf
 typeset -ga _goh_start _goh_end _goh_cursor _goh_kind _goh_label _goh_insert _goh_desc _goh_value _goh_brand
+# A folder opened with → shows its contents as rows under it, one level deeper (_goh_depth); _goh_tree holds each
+# row's branch lines (`├─ `, `└─ `, `│  `). Every per-row array is listed here, so a row is added or removed in all.
+typeset -ga _goh_depth _goh_tree
+typeset -ga _goh_row_arrays=(_goh_start _goh_end _goh_cursor _goh_kind _goh_label _goh_insert _goh_desc _goh_ranges _goh_value _goh_brand _goh_depth)
 typeset -gA _goh_theme   # resolved design tokens (see goh-theme-refresh)
 typeset -g _goh_ghost_style='fg=8'
 typeset -gA _goh_saved   # key -> widget it was bound to before the menu opened ("" = unbound)
@@ -235,7 +239,7 @@ _goh_build_items() {
   local i l d r p k
   local -a parts rp pairs
   for (( i = 1; i <= $#_goh_label; i++ )); do
-    _goh_json "${_goh_label[i]}"; l=$REPLY
+    _goh_json "${_goh_tree[i]-}${_goh_label[i]}"; l=$REPLY
     _goh_json "${_goh_desc[i]:-${_goh_kind[i]}}"; d=$REPLY
     # The popup's icon, as _goh_glyph picks it: an option without a value is a flag.
     k=${_goh_kind[i]}; [[ $k == option && -z ${_goh_value[i]} ]] && k=flag
@@ -605,7 +609,7 @@ _goh_title() {
 # Inline menu layout, box or flat rows (docs/design-system/README.md, Inline menu). Shapes, not colour, carry every
 # cue, so NO_COLOR keeps all of it but the colours.
 _goh_render() {
-  local i k n p s e h row label shown risk desc text room mid
+  local i k n p s e h b row label branch shown risk desc text room mid
   local -a rows hl
   local width=$(( ${COLUMNS:-80} - 1 )) box=0
   # The box needs room for its two sides and a menu worth reading.
@@ -623,7 +627,8 @@ _goh_render() {
   local col=1 risky=0 need=0
   local -a risks descs
   for (( i = 1; i <= $#_goh_label; i++ )); do
-    (( ${(m)#_goh_label[i]} > col )) && col=${(m)#_goh_label[i]}
+    n=$(( ${(m)#${_goh_tree[i]-}} + ${(m)#_goh_label[i]} ))
+    (( n > col )) && col=$n
     desc=${_goh_desc[i]} risk=
     if [[ $desc == '⚠'* ]]; then
       risky=1 risk=${desc%% — *}
@@ -655,21 +660,23 @@ _goh_render() {
   for (( i = _goh_win; i <= end; i++ )); do
     k=$(( $#rows + 1 ))
     _goh_glyph $i
-    label=${_goh_label[i]}
-    _goh_cut "$label" $col; shown=$REPLY
+    label=${_goh_label[i]} branch=${_goh_tree[i]-}
+    _goh_cut "$label" $(( col - ${(m)#branch} )); shown=$REPLY
+    b=${#branch}
     if (( i == _goh_sel )); then
-      row="❯ $_goh_g $shown"
-      hl+=("$k 0 1 bold${accent:+,$accent}" "$k 4 $(( 4 + ${#shown} )) bold${accent:+,$accent}")
+      row="❯ $branch$_goh_g $shown"
+      hl+=("$k 0 1 bold${accent:+,$accent}" "$k $(( 4 + b )) $(( 4 + b + ${#shown} )) bold${accent:+,$accent}")
     else
-      row="  $_goh_g $shown"
+      row="  $branch$_goh_g $shown"
     fi
-    (( color )) && [[ -n $_goh_gs ]] && hl+=("$k 2 3 $_goh_gs")
+    (( b )) && [[ -n $muted ]] && hl+=("$k 2 $(( 2 + b )) $muted")
+    (( color )) && [[ -n $_goh_gs ]] && hl+=("$k $(( 2 + b )) $(( 3 + b )) $_goh_gs")
     for p in ${(s:,:)_goh_ranges[i]}; do
       [[ $p == <->-<-> ]] || continue
       _goh_byte_prefix "$label" ${p%-*}; s=${#REPLY}
       _goh_byte_prefix "$label" ${p#*-}; e=${#REPLY}
       (( ${#shown} < ${#label} && e > ${#shown} - 1 )) && e=$(( ${#shown} - 1 ))
-      (( s < e )) && hl+=("$k $(( 4 + s )) $(( 4 + e )) $match")
+      (( s < e )) && hl+=("$k $(( 4 + b + s )) $(( 4 + b + e )) $match")
     done
     risk=${risks[i]} desc=${descs[i]}
     # A warning shows on every row, not only the selected one: it should be seen before it is picked.
@@ -728,16 +735,21 @@ _goh_render() {
       fi
     done
   fi
-  local pos="$_goh_sel/$#_goh_label" accept_hint="Tab/→"
+  local pos="$_goh_sel/$#_goh_label" accept_hint="Tab/→" open_hint= close_hint="Esc/← close" nav="↑↓"
+  # → opens a folder (unless it takes the history line shown as ghost text); ← goes back out of one.
+  if (( ! _goh_ghost_line )) && _goh_is_folder $_goh_sel; then accept_hint=Tab open_hint=" · → open" nav="↑↓→"; fi
+  if (( _goh_depth[_goh_sel] > 0 )) || _goh_is_open $_goh_sel; then close_hint="← back · Esc close" nav="↑↓←${nav#↑↓}"; fi
   (( _goh_ghost_line && _goh_ghost_line != _goh_sel )) && accept_hint="→ line · Tab"
   (( $#_goh_label >= 50 )) && pos+='+'   # menus ask for 50: there may be more
   (( _goh_late )) && pos+=' …'   # a program has not answered yet: more may come
   local run_hint=
   if _goh_enter_takes; then
-    if _goh_enter_runs; then run_hint=" · Enter run"; else accept_hint="Tab/Enter/→"; fi
+    if _goh_enter_runs; then run_hint=" · Enter run"; else accept_hint=${accept_hint/Tab/Tab/Enter}; fi
   fi
   # The box shows the keys in its bottom border, the flat rows in a footer.
-  local -a keys=("$pos · $accept_hint insert$run_hint · ↑↓ move · Esc/← close" "$pos · ↑↓ $accept_hint Esc" "$pos")
+  local -a keys=("$pos · $accept_hint insert$run_hint$open_hint · ↑↓ move · $close_hint" "$pos · $nav $accept_hint Esc" "$pos")
+  # A box of short labels still widens to name its keys, where the terminal has the room.
+  (( box && ${(m)#keys[2]} + 4 > inner_w )) && inner_w=$(( ${(m)#keys[2]} + 4 < width ? ${(m)#keys[2]} + 4 : width ))
   local room_keys=$(( box ? inner_w - 4 : width - 2 )) foot=$pos
   for p in "${keys[@]}"; do (( ${(m)#p} <= room_keys )) && { foot=$p; break }; done
   if (( ! box )); then
@@ -881,13 +893,17 @@ _goh_move() {  # _goh_move DELTA ORIG_WIDGET
   if _goh_valid; then
     _goh_navigated=1
     _goh_sel=$(( (_goh_sel - 1 + $1 + $#_goh_label) % $#_goh_label + 1 ))
-    _goh_render
-    zle -R            # finish the redraw first: the popup reads the terminal cursor when it gets the frame
-    _goh_pop_show
+    _goh_redraw
   else
     _goh_close
     zle ${2:-undefined-key}
   fi
+}
+_goh_redraw() {
+  _goh_render
+  zle -R            # finish the redraw first: the popup reads the terminal cursor when it gets the frame
+  _goh_pop_show     # fails where no popup draws, which is no failure of the menu
+  return 0
 }
 _goh_down() { _goh_move 1 down-line-or-history }
 _goh_up()   { _goh_move -1 up-line-or-history }
@@ -908,6 +924,7 @@ _goh_esc() {
   case ${_goh_menu_keys[$seq]-} in
     (_goh_up|_goh_down) zle ${_goh_menu_keys[$seq]} ;;
     (_goh_take) _goh_take || { _goh_close; zle -U -- $raw } ;;
+    (_goh_left) _goh_back || { _goh_close; zle -U -- $raw } ;;
     (*) _goh_close; if [[ $seq == '^[' ]]; then _goh_late_giveup; zle -R; else zle -U -- $raw; fi ;;
   esac
 }
@@ -960,13 +977,17 @@ _goh_enter() {
   zle $original
 }
 
-# → takes what the ghost text shows: the history line, while one is shown.
+# → takes what the ghost text shows: the history line, while one is shown. Otherwise it opens a folder, and takes
+# anything else.
 _goh_take() {
-  (( _goh_ghost_line && ! _goh_navigated )) && _goh_valid && _goh_sel=$_goh_ghost_line
+  _goh_valid || return 1
+  if (( _goh_ghost_line && ! _goh_navigated )); then _goh_sel=$_goh_ghost_line
+  elif _goh_is_folder $_goh_sel; then _goh_open; return 0; fi
   _goh_accept
 }
 
 _goh_left() {
+  _goh_back && return 0
   local key=${(V)KEYS}
   local original=${_goh_saved[$key]:-backward-char}
   _goh_close
@@ -974,20 +995,103 @@ _goh_left() {
   zle $original
 }
 
+# ---- folders as a tree ------------------------------------------------------------------------
+
+# Is row $1 a folder whose contents can be listed (inserted as `name/`, no space after it)?
+_goh_is_folder() { [[ ${_goh_kind[$1]} == directory && ${_goh_insert[$1]} == */ ]] }
+# Are row $1's contents shown under it?
+_goh_is_open() { (( $1 < $#_goh_label && _goh_depth[$1 + 1] > _goh_depth[$1] )) }
+
+# The rows' branch lines -> _goh_tree. Level l of a row draws a line down when the row above it at that level (or the
+# row itself, at its own level) has another row at that level after it.
+_goh_tree_build() {
+  local i j l d n=$#_goh_label more pre
+  _goh_tree=()
+  for (( i = 1; i <= n; i++ )); do
+    d=${_goh_depth[i]} pre=
+    for (( l = 1; l <= d; l++ )); do
+      more=0
+      for (( j = i + 1; j <= n && _goh_depth[j] >= l; j++ )); do (( _goh_depth[j] == l )) && { more=1; break }; done
+      if (( l == d )); then
+        if (( more )); then pre+='├─ '; else pre+='└─ '; fi
+      elif (( more )); then pre+='│  '
+      else pre+='   '; fi
+    done
+    _goh_tree[i]=$pre
+  done
+}
+
+# → on a folder: its contents go under it, one level deeper, and the highlight moves onto the first of them; on an
+# open folder it moves there at once. The contents are what goh offers for the line with the folder taken, so they
+# are filtered as that command's files are (`cd` lists folders only). Taking one of them replaces the word typed.
+_goh_open() {
+  local i=$_goh_sel n=$#_goh_label j a out cb
+  if ! _goh_is_open $i; then
+    local _goh_new _goh_pre
+    _goh_splice "$BUFFER" ${_goh_start[i]} ${_goh_end[i]} "${_goh_insert[i]}" ${_goh_cursor[i]}
+    _goh_bytes "$_goh_pre"; cb=$REPLY
+    out=$(command $_GOH_CTL menu --session $_GOH_SESSION --cwd $PWD --limit 50 \
+          --cursor-byte $cb --buffer "$_goh_new" 2>/dev/null) || out=
+    _goh_parse_rows "$out" $(( _goh_depth[i] + 1 ))
+    # Only the folder's own entries: they replace the same word. Their spans are the line with the folder taken in it;
+    # in the line as it is, the word ends where the folder's row ends.
+    for (( j = $#_goh_label; j > n; j-- )); do
+      if [[ ${_goh_kind[j]} == history || ${_goh_start[j]} != ${_goh_start[i]} ]]; then
+        for a in $_goh_row_arrays; do eval "${a}[$j]=()"; done
+      else
+        _goh_end[j]=${_goh_end[i]}
+      fi
+    done
+    (( $#_goh_label > n )) || return 0   # an empty folder: nothing to show
+    for a in $_goh_row_arrays; do
+      eval "$a=(\"\${(@)${a}[1,$i]}\" \"\${(@)${a}[$(( n + 1 )),-1]}\" \"\${(@)${a}[$(( i + 1 )),$n]}\")"
+    done
+    _goh_tree_build
+    _goh_build_items
+  fi
+  _goh_navigated=1 _goh_sel=$(( i + 1 ))
+  _goh_redraw
+}
+
+# ← in the tree: on a row inside a folder, closes that folder and moves back onto it; on an open folder, closes it.
+# Fails anywhere else, where ← closes the menu.
+_goh_back() {
+  _goh_valid || return 1
+  local i=$_goh_sel p q a
+  if (( _goh_depth[i] > 0 )); then
+    for (( p = i - 1; p > 1 && _goh_depth[p] >= _goh_depth[i]; p-- )); do :; done
+  elif _goh_is_open $i; then p=$i
+  else return 1; fi
+  for (( q = p; q < $#_goh_label && _goh_depth[q + 1] > _goh_depth[p]; q++ )); do :; done
+  for a in $_goh_row_arrays; do eval "${a}[$(( p + 1 )),$q]=()"; done
+  _goh_navigated=1 _goh_sel=$p
+  _goh_tree_build
+  _goh_build_items
+  _goh_redraw
+}
+
 # Parse `goh menu` output ($1) into the _goh_* arrays; REPLY = number of candidates.
 _goh_parse_menu() {
   (( ++_goh_menu_id ))
   _goh_navigated=0
+  local a
+  for a in $_goh_row_arrays; do eval "$a=()"; done
+  _goh_tree=()
+  _goh_parse_rows "$1" 0
+  REPLY=$#_goh_label
+}
+
+# Append the rows of `goh menu` output $1 to the _goh_* arrays, at depth $2 in the tree.
+_goh_parse_rows() {
   local line; local -a f
-  _goh_start=() _goh_end=() _goh_cursor=() _goh_kind=() _goh_label=() _goh_insert=() _goh_desc=() _goh_ranges=() _goh_value=() _goh_brand=()
   for line in "${(@f)1}"; do
     f=("${(@ps:\x1f:)line}")
     [[ $f[1] == <-> && $f[2] == <-> && $f[3] == <-> ]] || continue
     _goh_start+=($f[1]) _goh_end+=($f[2]) _goh_cursor+=($f[3])
     _goh_kind+=("$f[4]") _goh_label+=("$f[5]") _goh_insert+=("$f[6]") _goh_desc+=("$f[7]") _goh_ranges+=("$f[8]")
     _goh_value+=("${f[9]-}") _goh_brand+=("${f[11]-}")   # absent from an older goh
+    _goh_depth+=($2)
   done
-  REPLY=$#_goh_label
 }
 
 _goh_tab() {

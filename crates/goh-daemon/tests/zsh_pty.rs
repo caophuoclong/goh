@@ -1749,3 +1749,72 @@ fn a_late_answer_leaves_the_users_selection_alone() {
     assert!(rows.iter().any(|r| r.starts_with("❯ ") && r.contains("-d")), "{rows:?}");
     assert!(!rows.iter().any(|r| r.contains("web-1") || r.contains('…')), "nothing reshuffled after the user moved: {rows:?}");
 }
+
+#[test]
+fn right_opens_a_folder_under_its_row_and_left_goes_back_out() {
+    let fx = Fixture::new(require_env!(), false);
+    fs::create_dir_all(fx.path("project/src/deep")).unwrap();
+    fs::write(fx.path("project/README.md"), "").unwrap();
+    fs::write(fx.path("project/src/main.rs"), "").unwrap();
+    let mut sh = fx.shell(LIVE, true);
+    sh.send(
+        &format!(
+            "dumptree() {{ local i r=; for (( i = 1; i <= $#_goh_label; i++ )); do r+=\"${{_goh_tree[i]-}}$_goh_label[i]|\"; done; print -r -- \"sel=$_goh_sel $r\" >> {}; }}; zle -N dumptree; bindkey '^Xt' dumptree\n",
+            fx.path("tree.txt").display()
+        ),
+        200,
+    );
+    let tree = |sh: &mut Pty| {
+        let line = fx.state_file(sh, "\x18t", "tree.txt");
+        let (sel, rows) = line.split_once(' ').unwrap();
+        let sel: usize = sel.trim_start_matches("sel=").parse().unwrap();
+        (sel, rows.trim_end_matches('|').split('|').map(str::to_string).collect::<Vec<_>>())
+    };
+
+    sh.send("ls pro", 500);
+    assert!(fx.state(&mut sh).contains("on=1"), "the menu offers project/");
+    let drawn = sh.send("\x1b[C", 600);
+    let (sel, rows) = tree(&mut sh);
+    assert_eq!(rows[0], "project/", "{rows:?}");
+    let mut names: Vec<_> = rows[1..].iter().map(|r| r[r.find(' ').unwrap() + 1..].to_string()).collect();
+    names.sort();
+    assert_eq!(names, ["README.md", "src/"], "the folder's entries go under it: {rows:?}");
+    assert!(rows[1].starts_with("├─ ") && rows[2].starts_with("└─ "), "branch lines: {rows:?}");
+    assert_eq!(sel, 2, "the highlight moves onto the folder's first entry");
+    assert!(screen(&drawn).contains("❯ ├─ "), "the entries are drawn with their branch lines: {drawn:?}");
+    assert!(fx.state(&mut sh).starts_with("BUF[ls pro] CUR=6 on=1"), "opening a folder leaves the line alone");
+
+    // Into src/, one level deeper.
+    let src = rows.iter().position(|r| r.ends_with("src/")).unwrap() + 1;
+    sh.send(&"\x1b[B".repeat((src + rows.len() - sel) % rows.len()), 300);
+    sh.send("\x1b[C", 600);
+    let (sel, rows) = tree(&mut sh);
+    assert_eq!(rows.len(), 5, "{rows:?}");
+    assert_eq!(sel, src + 1);
+    assert!(rows[src..src + 2].iter().all(|r| r.starts_with("│  ") || r.starts_with("   ")), "two levels deep: {rows:?}");
+    let main = rows.iter().position(|r| r.ends_with("main.rs")).unwrap() + 1;
+
+    // ← goes back out of src/, and again out of project/; one more ← closes the menu as before.
+    sh.send("\x1b[D", 400);
+    let (sel, rows) = tree(&mut sh);
+    assert_eq!((sel, rows.len()), (src, 3), "{rows:?}");
+    sh.send("\x1b[D", 400);
+    let (sel, rows) = tree(&mut sh);
+    assert_eq!((sel, rows), (1, vec!["project/".to_string()]));
+    sh.send("\x1b[D", 400);
+    assert!(fx.state(&mut sh).starts_with("BUF[ls pro] CUR=5 on=0"), "Left closes and moves");
+    sh.send(CLEAR, 100);
+
+    // A file two levels down is taken with Tab, replacing the word typed.
+    sh.send("ls pro", 500);
+    sh.send("\x1b[C", 500);
+    let (sel, _) = tree(&mut sh);
+    sh.send(&"\x1b[B".repeat((src + 3 - sel) % 3), 300);
+    sh.send("\x1b[C", 500);
+    let (sel, _) = tree(&mut sh);
+    sh.send(&"\x1b[B".repeat(main - sel), 300);
+    sh.send("\t", 400);
+    let state = fx.state(&mut sh);
+    assert!(state.starts_with("BUF[ls project/src/main.rs ] CUR=23 on=0"), "{state}");
+    kill_socket_holder(&fx.socket);
+}
