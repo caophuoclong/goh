@@ -3,7 +3,7 @@ id: zsh-adapter
 title: zsh: menus as you type
 status: stable
 since: 1.0.0
-updated: 2026-11-02
+updated: 2026-11-04
 area: shells
 shells: [zsh]
 settings: [display.live, display.maxSuggestions, display.mode, display.enterRuns, display.inlineStyle, display.icons]
@@ -21,6 +21,13 @@ in an IDE. Load it with `goh setup` or `eval "$(goh init zsh)"`.
   when nothing matches. Esc hides it until the line changes.
 - Tab/→ insert the highlighted candidate; ↑↓ and Shift+Tab move, wrapping; Esc closes; Left closes and moves.
   Navigation keys are bound only while the menu is open.
+- Folders open as a tree, for any command that takes paths (`ls`, `cd`, `cat`, `cp`, ...): → on a folder shows its
+  entries under it with branch lines (`├─`, `└─`), one level deeper, and moves the highlight onto them; → on a
+  folder inside goes another level down. ← goes back: it closes the folder you are in and puts the highlight on it.
+  On a top-level row ← closes the menu as before. Tab or Enter on an entry puts its whole path in place of the word
+  you typed (`ls pro` → `ls project/src/main.rs `). The line does not change while you browse. A folder holds up to
+  50 entries, the same as the menu. Rows above the window scroll out of view as you move down; the footer shows
+  where you are (`7/23`). The popup draws the same tree.
 - Esc closes at once, without zsh's `KEYTIMEOUT` wait: while the menu is open goh reads what follows Esc itself, and
   Alt+key, a paste or any other key starting with Esc closes the menu and does what it did before, including one bound
   to type text (`bindkey -s`, as oh-my-zsh's Alt+L).
@@ -55,6 +62,9 @@ in an IDE. Load it with `goh setup` or `eval "$(goh init zsh)"`.
 - With the menu open, Esc pressed by hand and then a key more than 20 ms later counts as Esc, then that key.
 
 ## Changes
+
+- unreleased: → opens a folder as a tree under its row, and ← goes back out of it; Tab or Enter takes an entry's whole path.
+- unreleased: a box of short labels widens enough to show its keys in the bottom border, which names ←→ inside a folder.
 
 - unreleased: JSX and TSX suggestions use the React logo.
 - unreleased: File icons cover more programming languages, configuration files, documents, images, audio, video, archives and fonts, including JSX, TSX and JavaScript/TypeScript module variants.
