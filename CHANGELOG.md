@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.5.0](https://github.com/caophuoclong/goh/compare/v2.4.1...v2.5.0) (2026-11-02)
+
+
+### Features
+
+* enhance file icon support and update Nerd Fonts version ([ccfab10](https://github.com/caophuoclong/goh/commit/ccfab10a472aa9b627930776241dea9684f8cd2f))
+
 ## [2.4.1](https://github.com/caophuoclong/goh/compare/v2.4.0...v2.4.1) (2026-11-01)
 
 
