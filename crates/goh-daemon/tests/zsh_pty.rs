@@ -1442,12 +1442,34 @@ fn the_box_measures_a_prompt_subst_prompt_after_expanding_its_parameters() {
 }
 
 #[test]
-fn a_command_in_a_prompt_is_not_run_again_and_counts_as_no_width() {
+fn a_command_in_a_prompt_is_measured_by_the_terminal_not_run_again() {
     let fx = Fixture::new(require_env!(), true);
     let mut sh = fx.shell(BOX, true);
     menu_dump(&fx, &mut sh);
     let counter = fx.path("prompt-runs");
-    sh.send(&format!("COLUMNS=100; setopt prompt_subst; PS1='$(echo . >> {})READY> '\n", counter.display()), 500);
+    // The terminal puts the cursor after `READY> ` (column 8); `git c`, typed before its answer arrived, comes first
+    // and must still reach the line.
+    sh.cursor_reply = Some(b"git c\x1b[3;8R".to_vec());
+    sh.send(&format!("COLUMNS=100; setopt prompt_subst; PS1='$(echo . >> {})READY> '\n", counter.display()), 600);
+    sh.cursor_reply = None;
+    let (rows, _) = menu(&fx, &mut sh);
+    let line = fx.state_file(&mut sh, "\x18d", "dump.txt");
+    assert!(line.contains("BUF[git c]"), "keys typed before the answer are kept: {line}");
+    let indent = rows[1].chars().take_while(|c| *c == ' ').count();
+    assert_eq!(indent, 11, "`READY> ` is 7 columns on screen and `git ` 4 more: {rows:?}");
+    sh.send("\x1b[B", 300);
+    assert_eq!(menu(&fx, &mut sh).0[1].chars().take_while(|c| *c == ' ').count(), 11, "the box stays put while moving");
+    assert_eq!(fs::read_to_string(&counter).map(|s| s.lines().count()).unwrap_or(0), 1, "the prompt ran once when it was drawn");
+}
+
+#[test]
+fn a_command_in_a_prompt_is_not_run_again_and_counts_as_no_width_without_an_answer() {
+    let fx = Fixture::new(require_env!(), true);
+    let mut sh = fx.shell(BOX, true);
+    menu_dump(&fx, &mut sh);
+    let counter = fx.path("prompt-runs");
+    // The pty never answers `ESC[6n`: the adapter gives up after half a second.
+    sh.send(&format!("COLUMNS=100; setopt prompt_subst; PS1='$(echo . >> {})READY> '\n", counter.display()), 900);
     let runs = |n: &str| fs::read_to_string(&counter).map(|s| s.lines().count().to_string()).unwrap_or_else(|_| n.into());
     let before = runs("0");
     sh.send("git c", 400);

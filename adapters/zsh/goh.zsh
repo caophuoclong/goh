@@ -449,20 +449,51 @@ _goh_window() {
 # The first $2 bytes of $1 in REPLY; the caller counts them in characters.
 _goh_byte_prefix() { local LC_ALL=C; REPLY=${1[1,$2]} }
 
+# A prompt that runs a command (`$(...)`, a backtick under prompt_subst: starship, many oh-my-zsh themes) cannot be
+# expanded again to measure it: the command may be slow or have side effects. Its width is read from the terminal
+# instead, once per prompt when the line starts: `ESC[6n` asks where the cursor is, right after the prompt.
+_goh_runs_prompt() { [[ ${options[prompt_subst]} == on && ( $PS1 == *'$('* || $PS1 == *'`'* ) ]] }
+typeset -gi _goh_prompt_cols=-1 _goh_cpr=1   # the measured width (-1: none on this line); 0 once a terminal did not answer
+_goh_measure_prompt() {
+  _goh_prompt_cols=-1
+  (( _goh_cpr && _goh_overlay != 1 )) && [[ $_GOH_INLINE_STYLE == box ]] && _goh_runs_prompt || return 0
+  [[ ${BUFFER[1,CURSOR]} == *$'\n'* ]] && return 0
+  emulate -L zsh
+  setopt extended_glob
+  zle -R
+  local c reply= t0=$EPOCHREALTIME
+  print -n $'\e[6n' >/dev/tty 2>/dev/null || return 0
+  # Keys typed before the answer arrive first; they go back into the input. A terminal that does not answer within
+  # half a second is not asked again in this shell.
+  while (( EPOCHREALTIME - t0 < 0.5 )) && read -s -k 1 -t 0.5 c; do
+    reply+=$c
+    [[ $c == R && $reply == *$'\e['[0-9]##';'[0-9]##R ]] && break
+  done
+  if [[ $reply == (#b)(*)$'\e['[0-9]##';'([0-9]##)R ]]; then
+    reply=$match[1]
+    local cols=${COLUMNS:-80}
+    _goh_prompt_cols=$(( ((match[2] - 1 - ${(m)#${BUFFER[1,CURSOR]}}) % cols + cols) % cols ))
+  else
+    _goh_cpr=0
+  fi
+  [[ -n $reply ]] && zle -U -- "$reply"
+  return 0
+}
+
 # The screen column (from 0) where the word being completed starts: the width of the prompt's last line plus the
 # line typed before the word. A prompt this cannot measure only moves the box; nothing else depends on it.
 # With prompt_subst the prompt is measured as zsh draws it: parameters first, then `%` escapes. One that runs a
-# command (`$(...)`, a backtick) is never run again here (it may be slow or have side effects) and counts as no
-# width, so the box anchors at the word's offset in the typed line.
+# command is never run again here; it has the width the terminal reported (_goh_measure_prompt), or none when the
+# terminal did not answer, so the box anchors at the word's offset in the typed line.
 _goh_word_column() {
-  local subst=${options[prompt_subst]}
+  local subst=${options[prompt_subst]} runs=0
+  _goh_runs_prompt && runs=1
   emulate -L zsh
   setopt extended_glob
-  local p before i start=0
-  if [[ $subst == on ]]; then
-    if [[ $PS1 == *'$('* || $PS1 == *'`'* ]]; then p=; else p=${(%)${(e)PS1}}; fi
-  else
-    p=${(%)PS1}
+  local p before i start=0 w
+  if (( runs )); then p=
+  elif [[ $subst == on ]]; then p=${(%)${(e)PS1}}
+  else p=${(%)PS1}
   fi
   # The word being completed starts where the first non-history candidate starts: a history line starts at 0,
   # and the box must not jump when the selection moves onto one.
@@ -471,10 +502,11 @@ _goh_word_column() {
   done
   p=${p//$'\e'\[[0-9;?]#[@-~]/}            # colours and other CSI sequences take no room
   p=${p//$'\e'\][^$'\a']#$'\a'/}           # nor do OSC sequences (titles, marks)
-  p=${p##*$'\n'}
+  p=${p##*$'\n'} w=${(m)#p}
+  (( runs && _goh_prompt_cols > 0 )) && w=$_goh_prompt_cols
   _goh_byte_prefix "$BUFFER" $start; before=$REPLY
-  if [[ $before == *$'\n'* ]]; then p= before=${before##*$'\n'}; fi
-  REPLY=$(( (${(m)#p} + ${(m)#before}) % ${COLUMNS:-80} ))
+  if [[ $before == *$'\n'* ]]; then w=0 before=${before##*$'\n'}; fi
+  REPLY=$(( (w + ${(m)#before}) % ${COLUMNS:-80} ))
 }
 
 # Kind glyph and colour of candidate $1 -> _goh_g, _goh_gs (docs/design-system/README.md, Iconography).
@@ -1257,6 +1289,7 @@ _goh_hook_redraw() {
   return 0
 }
 _goh_hook_finish() { _goh_late_stop; _goh_late_tries=0 _goh_late_line=; _goh_close no-redisplay; _goh_drop_pred; _goh_seen_cur=-1; return 0 }
+_goh_hook_init() { _goh_hook_finish; _goh_measure_prompt }
 
 # Ctrl+C ends the line without zle-line-finish, so the zle-line-init hook is what closes the menu at the next
 # prompt. A plugin that defines its own zle-line-init (or -finish, -pre-redraw) after this adapter loaded replaces
@@ -1264,7 +1297,7 @@ _goh_hook_finish() { _goh_late_stop; _goh_late_tries=0 _goh_late_line=; _goh_clo
 # is drawn, put the hooks back (add-zle-hook-widget keeps the plugin's widget as the first hook) and hide the popup
 # of a menu that was left open.
 typeset -gi _goh_update_told=0
-typeset -ga _goh_zle_hooks=(zle-line-init:_goh_hook_finish zle-line-pre-redraw:_goh_hook_redraw zle-line-finish:_goh_hook_finish)
+typeset -ga _goh_zle_hooks=(zle-line-init:_goh_hook_init zle-line-pre-redraw:_goh_hook_redraw zle-line-finish:_goh_hook_finish)
 _goh_hook_precmd() {
   local h
   for h in $_goh_zle_hooks; do
@@ -1399,7 +1432,7 @@ goh-load() {
     bindkey '^[OC' _goh_right
   fi
   # Ctrl+C aborts ZLE without line-finish. The next line-init must dismiss the old menu as well.
-  add-zle-hook-widget zle-line-init _goh_hook_finish
+  add-zle-hook-widget zle-line-init _goh_hook_init
   [[ ${GOH_RECORD-} == on ]] && add-zle-hook-widget zle-line-init _goh_hook_predict
   add-zle-hook-widget zle-line-pre-redraw _goh_hook_redraw
   add-zle-hook-widget zle-line-finish _goh_hook_finish
@@ -1433,7 +1466,7 @@ goh-unload() {
   _goh_close 2>/dev/null
   _goh_pop_stop 2>/dev/null
   [[ -n $_GOH_ORIG_TAB ]] && bindkey '^I' $_GOH_ORIG_TAB
-  add-zle-hook-widget -d zle-line-init _goh_hook_finish
+  add-zle-hook-widget -d zle-line-init _goh_hook_init
   add-zle-hook-widget -d zle-line-init _goh_hook_predict 2>/dev/null
   [[ -n $_goh_orig_right_csi ]] && { bindkey '^[[C' $_goh_orig_right_csi; bindkey '^[OC' ${_goh_orig_right_ss3:-forward-char} }
   add-zsh-hook -d preexec _goh_run_start 2>/dev/null

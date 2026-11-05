@@ -3,7 +3,7 @@ id: zsh-adapter
 title: zsh: menus as you type
 status: stable
 since: 1.0.0
-updated: 2026-11-04
+updated: 2026-11-05
 area: shells
 shells: [zsh]
 settings: [display.live, display.maxSuggestions, display.mode, display.enterRuns, display.inlineStyle, display.icons]
@@ -39,7 +39,9 @@ in an IDE. Load it with `goh setup` or `eval "$(goh init zsh)"`.
 - Where the popup cannot draw (Ghostty, Kitty, WezTerm, tmux, ssh, ...), the menu is a floating framed box under the word you
   are completing, in the terminal's own colours; no permission is needed. `display.inlineStyle: "flat"` draws plain
   rows instead, which a screen reader reads more easily. The box finds the word's column by measuring your prompt,
-  including one built from `prompt_subst` parameters (powerlevel10k); row borders stay straight with wide characters
+  including one built from `prompt_subst` parameters (powerlevel10k). A prompt that runs a command (starship, many
+  oh-my-zsh themes) is not run again: at each prompt goh asks the terminal where the cursor is (`ESC[6n`) and takes
+  the prompt's width from its answer. Row borders stay straight with wide characters
   (CJK, emoji), and the selected row and the border keep the box's background.
 - The box's top border names what you are completing (`git push · options`), each row has its description beside the
   label, and the bottom border shows the position and keys. In a narrow terminal the descriptions go and a risky row
@@ -56,13 +58,14 @@ in an IDE. Load it with `goh setup` or `eval "$(goh init zsh)"`.
 ## Limits
 
 - Needs zsh; the menu is drawn by [popup](popup.md) where the caret is verified, else inline.
-- A prompt that runs a command (`$(...)` or a backtick under `prompt_subst`) is not run again to measure it: the box
-  anchors as if the prompt had no width, so it sits left of the word by the prompt's width (2 columns for starship's
-  `❯ `, more for an oh-my-zsh theme that keeps the folder on the same line).
+- A prompt that runs a command (`$(...)` or a backtick under `prompt_subst`), in a terminal that does not answer
+  `ESC[6n` within half a second: the box anchors as if the prompt had no width, left of the word by the prompt's
+  width, and goh stops asking for the rest of that shell.
 - With the menu open, Esc pressed by hand and then a key more than 20 ms later counts as Esc, then that key.
 
 ## Changes
 
+- unreleased: the box lands under the word with a prompt that runs a command (starship, oh-my-zsh themes): its width is read from the terminal instead of counting as none (#58).
 - unreleased: → opens a folder as a tree under its row, and ← goes back out of it; Tab or Enter takes an entry's whole path.
 - unreleased: a box of short labels widens enough to show its keys in the bottom border, which names ←→ inside a folder.
 

@@ -35,6 +35,8 @@ pub struct Pty {
     child: Child,
     pub responder: Option<Responder>,
     pub queried: bool,
+    /// Written back each time the shell asks where the cursor is (`ESC[6n`); `None` leaves the question unanswered.
+    pub cursor_reply: Option<Vec<u8>>,
 }
 
 impl Pty {
@@ -59,7 +61,7 @@ impl Pty {
         let child = cmd.spawn().expect("spawn");
         // SAFETY: plain fcntl on our own fd.
         unsafe { libc::fcntl(m, libc::F_SETFL, libc::O_NONBLOCK) };
-        Pty { master, child, responder: None, queried: false }
+        Pty { master, child, responder: None, queried: false, cursor_reply: None }
     }
 
     /// Collect output until nothing has arrived for `quiet` (or `max` has passed).
@@ -67,11 +69,19 @@ impl Pty {
         let (start, mut last) = (Instant::now(), Instant::now());
         let mut out = Vec::new();
         let mut buf = [0u8; 4096];
+        let mut cursor_asked = 0;
         while start.elapsed() < max && last.elapsed() < quiet {
             match self.master.read(&mut buf) {
                 Ok(n) if n > 0 => {
                     out.extend_from_slice(&buf[..n]);
                     last = Instant::now();
+                    if let Some(reply) = &self.cursor_reply {
+                        let asked = out.windows(4).filter(|w| *w == b"\x1b[6n").count();
+                        for _ in cursor_asked..asked {
+                            self.master.write_all(reply).unwrap();
+                        }
+                        cursor_asked = asked;
+                    }
                     if !self.queried && out.windows(6).any(|w| w == b"\x1b]10;?") {
                         self.queried = true;
                         if let Some(reply) = self.responder.as_mut().and_then(|r| r(&out)) {
