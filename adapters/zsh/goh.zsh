@@ -239,14 +239,14 @@ _goh_build_items() {
   local i l d r p k
   local -a parts rp pairs
   for (( i = 1; i <= $#_goh_label; i++ )); do
-    _goh_json "${_goh_tree[i]-}${_goh_label[i]}"; l=$REPLY
+    _goh_json "${_goh_label[i]}"; l=$REPLY
     _goh_json "${_goh_desc[i]:-${_goh_kind[i]}}"; d=$REPLY
     # The popup's icon, as _goh_glyph picks it: an option without a value is a flag.
     k=${_goh_kind[i]}; [[ $k == option && -z ${_goh_value[i]} ]] && k=flag
     pairs=()
     rp=("${(@s:,:)_goh_ranges[i]}")
     for p in $rp; do [[ $p == <->-<-> ]] && pairs+=("[${p/-/,}]"); done
-    parts+=("{\"label\":\"$l\",\"description\":\"$d\",\"kind\":\"$k\",\"match_ranges\":[${(j:,:)pairs}]}")
+    parts+=("{\"label\":\"$l\",\"description\":\"$d\",\"kind\":\"$k\",\"tree\":\"${_goh_tree[i]-}\",\"match_ranges\":[${(j:,:)pairs}]}")
   done
   _goh_items_json="[${(j:,:)parts}]"
 }
@@ -1065,10 +1065,11 @@ _goh_open() {
     out=$(command $_GOH_CTL menu --session $_GOH_SESSION --cwd $PWD --limit 50 \
           --cursor-byte $cb --buffer "$_goh_new" 2>/dev/null) || out=
     _goh_parse_rows "$out" $(( _goh_depth[i] + 1 ))
-    # Only the folder's own entries: they replace the same word. Their spans are the line with the folder taken in it;
-    # in the line as it is, the word ends where the folder's row ends.
+    # Only the folder's own entries: they replace the same word with a path inside the folder (`cd` also offers the
+    # folders you visit often, wherever they are). Their spans are the line with the folder taken in it; in the line as
+    # it is, the word ends where the folder's row ends.
     for (( j = $#_goh_label; j > n; j-- )); do
-      if [[ ${_goh_kind[j]} == history || ${_goh_start[j]} != ${_goh_start[i]} ]]; then
+      if [[ ${_goh_kind[j]} == history || ${_goh_start[j]} != ${_goh_start[i]} || ${_goh_insert[j]} != "${_goh_insert[i]}"?* ]]; then
         for a in $_goh_row_arrays; do eval "${a}[$j]=()"; done
       else
         _goh_end[j]=${_goh_end[i]}

@@ -31,7 +31,7 @@ use std::time::{Duration, Instant};
 use eframe::egui::{self, Align2, Color32, FontId, Pos2, Rect, Stroke, StrokeKind, vec2};
 use goh_anchor::{Caret, Outcome, Rect as Screen};
 use goh_popup::display::{self, Anchor as AnchorState, Capabilities, Display, Mode as DisplayMode};
-use goh_popup::model::{self, View, CELL_WIDTH, FOOTER_HEIGHT, PAD, ROW_HEIGHT};
+use goh_popup::model::{self, Guide, View, CELL_WIDTH, FOOTER_HEIGHT, GUIDE_COLS, PAD, ROW_HEIGHT};
 use goh_popup::font::{self, TermFont};
 use goh_popup::icons::Icon;
 use goh_popup::placement::{self, Placement};
@@ -406,6 +406,28 @@ fn draw(ui: &mut egui::Ui, v: &View, c: &Colors, enter_accepts: bool) {
         let mut x = full.left() + PAD; // the model's width assumes PAD on both sides
         painter.text(Pos2::new(x, mid), Align2::LEFT_CENTER, if row.selected { "❯" } else { " " }, font.clone(), c.accent);
         x += 2.0 * cell_width();
+        // The folder tree: each level's line runs the row's full height, so the lines join from row to row, under the
+        // middle of the parent's icon; a branch goes from it to this row's icon.
+        let stroke = Stroke::new(1.0, c.muted.gamma_multiply(0.6));
+        for g in &row.guides {
+            let lx = (x + 0.5 * cell_width()).round() + 0.5;
+            let branch = lx..=x + 1.6 * cell_width();
+            match g {
+                Guide::Line => {
+                    painter.vline(lx, top..=top + ROW_HEIGHT, stroke);
+                }
+                Guide::Tee => {
+                    painter.vline(lx, top..=top + ROW_HEIGHT, stroke);
+                    painter.hline(branch, mid.round() + 0.5, stroke);
+                }
+                Guide::Last => {
+                    painter.vline(lx, top..=mid.round() + 0.5, stroke);
+                    painter.hline(branch, mid.round() + 0.5, stroke);
+                }
+                Guide::Blank => {}
+            }
+            x += GUIDE_COLS as f32 * cell_width();
+        }
         if let Some(i) = row.icon {
             icon(&painter, i, x, mid, &font, c);
             x += 2.0 * cell_width();
@@ -459,10 +481,17 @@ fn draw(ui: &mut egui::Ui, v: &View, c: &Colors, enter_accepts: bool) {
         context_x += 2.0 * cell_width();
     }
     painter.text(Pos2::new(context_x, mid), Align2::LEFT_CENTER, &v.context, small.clone(), c.muted);
-    let accept = if enter_accepts { "Tab/↵/→" } else { "Tab/→" };
+    // On a folder → opens it rather than taking it; inside one ← goes back.
+    let accept = match (enter_accepts, v.opens) {
+        (true, false) => "Tab/↵/→",
+        (false, false) => "Tab/→",
+        (true, true) => "Tab/↵",
+        (false, true) => "Tab",
+    };
+    let nav = format!("↑↓{}{}", if v.back { "←" } else { "" }, if v.opens { "→" } else { "" });
     let right = match &v.position {
-        Some(p) => format!("{p}   ↑↓  {accept}  Esc"),
-        None => format!("↑↓  {accept}  Esc"),
+        Some(p) => format!("{p}   {nav}  {accept}  Esc"),
+        None => format!("{nav}  {accept}  Esc"),
     };
     painter.text(Pos2::new(full.right() - PAD - 4.0, mid), Align2::RIGHT_CENTER, right, small, c.muted);
 }

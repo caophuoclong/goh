@@ -14,6 +14,8 @@ pub const PAD: f32 = 8.0; // space-2
 pub const CELL_WIDTH: f32 = 7.8;
 
 const ICON_COLS: usize = 2; // a one-cell glyph and a space
+/// Each level of the folder tree in front of a row's icon.
+pub const GUIDE_COLS: usize = 2;
 const MARKER_COLS: usize = 2; // "❯ "
 const GAP_COLS: usize = 2;
 /// A description narrower than this is dropped entirely rather than shown as a stub.
@@ -31,6 +33,42 @@ pub struct Item {
     /// The engine's kind (`flag` for an option without a value); picks the icon.
     #[serde(default)]
     pub kind: String,
+    /// The row's place in a folder opened with →, as the shell draws it: three cells per level, `│  `, `   `, `├─ `
+    /// or `└─ `. Empty for a top-level row.
+    #[serde(default)]
+    pub tree: String,
+}
+
+/// One level of a row's place in the folder tree, drawn as a line in front of its icon.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Guide {
+    /// A folder above has more entries below this row: a line through the row.
+    Line,
+    /// Nothing at this level.
+    Blank,
+    /// An entry with more after it: a line through the row and a branch to it.
+    Tee,
+    /// The folder's last entry: a line down to the row's middle and a branch to it.
+    Last,
+}
+
+/// The levels of a shell's tree prefix (`│  ├─ `).
+pub fn guides(tree: &str) -> Vec<Guide> {
+    let chars: Vec<char> = tree.chars().collect();
+    chars
+        .chunks(3)
+        .map(|level| match level[0] {
+            '│' => Guide::Line,
+            '├' => Guide::Tee,
+            '└' => Guide::Last,
+            _ => Guide::Blank,
+        })
+        .collect()
+}
+
+/// A folder whose contents → shows under it.
+fn is_folder(it: &Item) -> bool {
+    it.kind == "directory" && it.label.ends_with('/')
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -47,6 +85,8 @@ pub struct State {
 #[derive(Debug, Clone, PartialEq)]
 pub struct Row {
     pub icon: Option<crate::icons::Icon>,
+    /// Its levels in the folder tree, drawn before the icon.
+    pub guides: Vec<Guide>,
     /// `<id>-opt-<index>`, with the absolute index.
     pub dom_id: String,
     pub selected: bool,
@@ -74,6 +114,10 @@ pub struct View {
     /// Polite status text: changes only when the selection changes.
     pub status: String,
     pub window_start: usize,
+    /// → opens the selected row (a folder).
+    pub opens: bool,
+    /// ← goes back out of the folder the selected row is in, or closes it when it is open.
+    pub back: bool,
 }
 
 /// Move the selection by `delta`, wrapping at both ends.
@@ -158,7 +202,13 @@ pub fn view_with(state: &State, max_rows: usize, available_width: f32, cell_widt
     // Width follows content between the min and max, never beyond the space available.
     let widest = state.items[start..start + rows_visible]
         .iter()
-        .map(|it| MARKER_COLS + if crate::icons::row(&it.kind, &it.label).is_some() { ICON_COLS } else { 0 } + cols(&it.label) + it.description.as_deref().map_or(0, |d| GAP_COLS + cols(d)))
+        .map(|it| {
+            MARKER_COLS
+                + guides(&it.tree).len() * GUIDE_COLS
+                + if crate::icons::row(&it.kind, &it.label).is_some() { ICON_COLS } else { 0 }
+                + cols(&it.label)
+                + it.description.as_deref().map_or(0, |d| GAP_COLS + cols(d))
+        })
         .max()
         .unwrap_or(0);
     let wanted = 2.0 * PAD + widest as f32 * cell_width;
@@ -170,7 +220,8 @@ pub fn view_with(state: &State, max_rows: usize, available_width: f32, cell_widt
         .map(|i| {
             let it = &state.items[i];
             let icon = crate::icons::row(&it.kind, &it.label);
-            let room = room.saturating_sub(if icon.is_some() { ICON_COLS } else { 0 });
+            let guides = guides(&it.tree);
+            let room = room.saturating_sub(guides.len() * GUIDE_COLS + if icon.is_some() { ICON_COLS } else { 0 });
             let full = snap_ranges(&it.label, &it.match_ranges);
             let (label, description, tooltip) = if cols(&it.label) > room {
                 // The label itself must be shortened; the description is already gone.
@@ -202,12 +253,15 @@ pub fn view_with(state: &State, max_rows: usize, available_width: f32, cell_widt
                 None => it.label.clone(),
             };
             Row {
-                icon, dom_id: format!("{}-opt-{i}", state.id), selected: i == selected, label, matches, description, tooltip, accessible_name }
+                icon, guides, dom_id: format!("{}-opt-{i}", state.id), selected: i == selected, label, matches, description, tooltip, accessible_name }
         })
         .collect::<Vec<_>>();
 
     let current = &state.items[selected];
+    let depth = |i: usize| state.items.get(i).map_or(0, |it| guides(&it.tree).len());
     Some(View {
+        opens: is_folder(current),
+        back: depth(selected) > 0 || depth(selected + 1) > depth(selected),
         width,
         height: rows.len() as f32 * ROW_HEIGHT + FOOTER_HEIGHT,
         position: (n > rows_visible).then(|| format!("{}/{n}", selected + 1)),
@@ -225,7 +279,7 @@ mod tests {
     use super::*;
 
     fn item(label: &str, desc: &str) -> Item {
-        Item { label: label.into(), description: (!desc.is_empty()).then(|| desc.into()), match_ranges: vec![], kind: "subcommand".into() }
+        Item { label: label.into(), description: (!desc.is_empty()).then(|| desc.into()), match_ranges: vec![], kind: "subcommand".into(), tree: String::new() }
     }
 
     fn state(n: usize, selected: usize, window_start: usize) -> State {
@@ -392,6 +446,29 @@ mod tests {
     fn accessible_name_includes_description() {
         let s = State { items: vec![item("checkout", "Switch branches")], ..state(1, 0, 0) };
         assert_eq!(view(&s, 8, 600.0).unwrap().rows[0].accessible_name, "checkout, Switch branches");
+    }
+
+    #[test]
+    fn a_folder_tree_draws_its_levels_and_names_the_arrow_keys() {
+        let dir = |label: &str, tree: &str| Item { kind: "directory".into(), tree: tree.into(), ..item(label, "") };
+        let items = vec![dir("go/", ""), dir("pkg/", "├─ "), dir("mod/", "│  └─ "), dir("main.go", "└─ ")];
+        let at = |selected| view(&State { items: items.clone(), selected, ..state(1, 0, 0) }, 8, 600.0).unwrap();
+        let v = at(0);
+        assert_eq!(v.rows.iter().map(|r| r.guides.clone()).collect::<Vec<_>>(), vec![
+            vec![],
+            vec![Guide::Tee],
+            vec![Guide::Line, Guide::Last],
+            vec![Guide::Last],
+        ]);
+        assert_eq!(v.rows[2].label, "mod/", "the tree is not part of the label");
+        assert!(v.opens && v.back, "an open top-level folder: → moves in, ← closes it");
+        let v = at(2);
+        assert!(v.opens && v.back);
+        let mut file = items.clone();
+        file[3].kind = "file".into();
+        let v = view(&State { items: file, selected: 3, ..state(1, 0, 0) }, 8, 600.0).unwrap();
+        assert!(!v.opens && v.back, "a file inside a folder: ← goes back, → takes it");
+        assert!(!view(&state(3, 0, 0), 8, 600.0).unwrap().back, "no tree, no ←");
     }
 
     #[test]
