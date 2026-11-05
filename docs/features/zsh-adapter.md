@@ -3,7 +3,7 @@ id: zsh-adapter
 title: zsh: menus as you type
 status: stable
 since: 1.0.0
-updated: 2026-11-05
+updated: 2026-11-06
 area: shells
 shells: [zsh]
 settings: [display.live, display.maxSuggestions, display.mode, display.enterRuns, display.inlineStyle, display.icons]
@@ -26,7 +26,7 @@ in an IDE. Load it with `goh setup` or `eval "$(goh init zsh)"`.
   folder inside goes another level down. ← goes back: it closes the folder you are in and puts the highlight on it.
   On a top-level row ← closes the menu as before. Tab or Enter on an entry puts its whole path in place of the word
   you typed (`ls pro` → `ls project/src/main.rs `). The line does not change while you browse. A folder holds up to
-  50 entries, the same as the menu. Rows above the window scroll out of view as you move down; the footer shows
+  50 entries, the same as the menu; only what is inside it goes under it (`cd`'s folders you visit often stay at the top). Rows above the window scroll out of view as you move down; the footer shows
   where you are (`7/23`). The popup draws the same tree.
 - Esc closes at once, without zsh's `KEYTIMEOUT` wait: while the menu is open goh reads what follows Esc itself, and
   Alt+key, a paste or any other key starting with Esc closes the menu and does what it did before, including one bound
@@ -65,6 +65,7 @@ in an IDE. Load it with `goh setup` or `eval "$(goh init zsh)"`.
 
 ## Changes
 
+- unreleased: an opened folder lists only its own entries; `cd` no longer puts folders you visit often elsewhere under it.
 - unreleased: the box lands under the word with a prompt that runs a command (starship, oh-my-zsh themes): its width is read from the terminal instead of counting as none (#58).
 - unreleased: → opens a folder as a tree under its row, and ← goes back out of it; Tab or Enter takes an entry's whole path.
 - unreleased: a box of short labels widens enough to show its keys in the bottom border, which names ←→ inside a folder.

@@ -1838,5 +1838,39 @@ fn right_opens_a_folder_under_its_row_and_left_goes_back_out() {
     sh.send("\t", 400);
     let state = fx.state(&mut sh);
     assert!(state.starts_with("BUF[ls project/src/main.rs ] CUR=23 on=0"), "{state}");
+
+    kill_socket_holder(&fx.socket);
+}
+
+#[test]
+fn a_folder_visited_elsewhere_is_not_listed_inside_an_opened_folder() {
+    let fx = Fixture::new(require_env!(), false);
+    fs::create_dir_all(fx.path("project/src")).unwrap();
+    fs::create_dir_all(fx.path("elsewhere/project/src")).unwrap();
+    // Visited folders outside project/ (goh's own history; there is no zoxide here): one that `cd pro` matches, one
+    // that `cd project/` does.
+    for dir in ["elsewhere/project", "elsewhere/project/src"] {
+        let out = fx.command(env!("CARGO_BIN_EXE_goh"), &["visit", fx.path(dir).to_str().unwrap()], &[]).output().unwrap();
+        assert!(out.status.success(), "{out:?}");
+    }
+    let mut sh = fx.shell(LIVE, true);
+    sh.send(
+        &format!(
+            "dumptree() {{ local i r=; for (( i = 1; i <= $#_goh_label; i++ )); do r+=\"${{_goh_tree[i]-}}$_goh_label[i]|\"; done; print -r -- \"$r\" >> {}; }}; zle -N dumptree; bindkey '^Xt' dumptree\n",
+            fx.path("tree.txt").display()
+        ),
+        200,
+    );
+    let tree = |sh: &mut Pty| fx.state_file(sh, "\x18t", "tree.txt").trim_end_matches('|').split('|').map(str::to_string).collect::<Vec<_>>();
+
+    sh.send("cd pro", 600);
+    let rows = tree(&mut sh);
+    assert!(rows.iter().any(|r| r.contains("elsewhere")), "the visited folder is offered: {rows:?}");
+    let project = rows.iter().position(|r| r == "project/").unwrap();
+    sh.send(&"\x1b[B".repeat(project), 300);
+    sh.send("\x1b[C", 600);
+    let rows = tree(&mut sh);
+    let inside: Vec<_> = rows.iter().filter(|r| r.contains('─')).collect();
+    assert_eq!(inside, ["└─ src/"], "only project/'s own folders go under it: {rows:?}");
     kill_socket_holder(&fx.socket);
 }

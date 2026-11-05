@@ -3,7 +3,7 @@ id: popup
 title: Popup at the cursor
 status: stable
 since: 1.0.0
-updated: 2026-11-02
+updated: 2026-11-06
 area: display
 platforms: [macos, linux]
 settings: [popup.font, popup.fontSize, display.mode]
@@ -27,6 +27,9 @@ Where the caret cannot be verified, the menu is drawn inline instead; nothing pr
 - Each row shows its kind's Nerd Font icon (a command's logo in its brand's colour, a file's type), the footer the
   command's logo: the same icons as the inline menu's `display.icons: "nerd"`, drawn with a bundled font, so any
   `popup.font` shows them. File icons cover common source code, configuration, document, media, archive and font extensions; JSX and TSX use the React logo.
+- A folder opened with → in zsh (see [zsh-adapter](zsh-adapter.md)) shows its entries under it with tree lines that
+  run the full height of each row and join from row to row, the icon after them, as in the inline box; the footer
+  then names ← and →.
 - Over ssh it is drawn by the machine you connected from with [ssh-popup](ssh-popup.md); otherwise inline.
 
 ## Limits
@@ -37,6 +40,7 @@ Where the caret cannot be verified, the menu is drawn inline instead; nothing pr
 
 ## Changes
 
+- unreleased: the folder tree's lines are drawn as joined lines in front of each icon, and the footer names ←→ in a folder.
 - unreleased: JSX and TSX suggestions use the React logo.
 - unreleased: File icons cover more programming languages, configuration files, documents, images, audio, video, archives and fonts, including JSX, TSX and JavaScript/TypeScript module variants.
 - unreleased: the popup hides while the terminal is scrolled back, instead of moving up over the lines being read.
