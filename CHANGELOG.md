@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.6.2](https://github.com/caophuoclong/goh/compare/v2.6.1...v2.6.2) (2026-11-05)
+
+
+### Bug fixes
+
+* **zsh:** anchor the box under the word with prompts that run a command ([a9424f0](https://github.com/caophuoclong/goh/commit/a9424f06d3a7b342828ba6b0498056e3d1a7d8a6))
+* **zsh:** anchor the box under the word with prompts that run a command ([0c16ea2](https://github.com/caophuoclong/goh/commit/0c16ea2271f9c6b08ed12b8ff9a933630cc97ab4)), closes [#58](https://github.com/caophuoclong/goh/issues/58)
+
 ## [2.6.1](https://github.com/caophuoclong/goh/compare/v2.6.0...v2.6.1) (2026-11-04)
 
 
