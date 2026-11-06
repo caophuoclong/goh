@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.6.3](https://github.com/caophuoclong/goh/compare/v2.6.2...v2.6.3) (2026-11-05)
+
+
+### Bug fixes
+
+* **popup:** draw the folder tree as joined lines and keep foreign folders out of it ([1e6b18c](https://github.com/caophuoclong/goh/commit/1e6b18ca1c436f7da8d9cb060e4710def981f766))
+* **popup:** draw the folder tree as joined lines and keep foreign folders out of it ([f6b6691](https://github.com/caophuoclong/goh/commit/f6b66912202b43efbb66366919c898168e036392))
+
 ## [2.6.2](https://github.com/caophuoclong/goh/compare/v2.6.1...v2.6.2) (2026-11-05)
 
 
