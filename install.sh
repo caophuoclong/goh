@@ -129,7 +129,9 @@ install_package() {
   else
     say "no $file.sha256 next to $file: its checksum is not checked"
   fi
-  tar -xzf "$dir/$file" -C "$work" && [ -d "$work/$name/bin" ] || die "$file is not a goh package (no $name/bin inside)"
+  if ! tar -xzf "$dir/$file" -C "$work" || [ ! -d "$work/$name/bin" ]; then
+    die "$file is not a goh package (no $name/bin inside)"
+  fi
   install_unpacked "$work/$name" || die "could not install $file"
   say "installed $name in $BIN"
 }
