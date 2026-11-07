@@ -41,6 +41,16 @@ jobs:
           test -f "$RUNNER_TEMP/ble-0.4.0-devel3/ble.sh"
           echo "GOH_TEST_BLESH=$RUNNER_TEMP/ble-0.4.0-devel3/ble.sh" >> "$GITHUB_ENV"
       - run: cargo test --workspace --locked
+      - name: DIAG repeat the zsh pty tests
+        if: always()
+        run: |
+          fails=0
+          for threads in 3 3 6 6 12; do
+            echo "::group::zsh_pty --test-threads=$threads"
+            cargo test --locked -p goh-daemon --test zsh_pty -- --test-threads=$threads 2>&1 | tail -n 400 || true
+            echo "::endgroup::"
+          done
+          sysctl -n hw.ncpu hw.memsize machdep.cpu.brand_string || true
 
   budgets:
     name: Speed and size budgets (release, macOS)
