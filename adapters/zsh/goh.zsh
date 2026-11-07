@@ -1237,8 +1237,7 @@ _goh_live_refresh() {
     if [[ $CONTEXT != start || -z ${BUFFER//[[:space:]]/} ]]; then _goh_close; return 0; fi
     _goh_bytes "${BUFFER[1,CURSOR]}"; cb=$REPLY
     out=$(command $_GOH_CTL menu --labels --live --late --session $_GOH_SESSION --cwd $PWD --limit 50 \
-          --cursor-byte $cb --buffer "$BUFFER" 2>/dev/null) || { _goh_trace "menu failed rc=$? out=${#out}"; out= }
-    _goh_trace "menu buf=[$BUFFER] lines=${#${(f)out}} last=[${out##*$'\n'}]"
+          --cursor-byte $cb --buffer "$BUFFER" 2>/dev/null) || out=
     _goh_late=0
     [[ ${out##*$'\n'} == pending ]] && _goh_late=1
     [[ -n $out ]] && _goh_parse_menu "$out" || REPLY=0
