@@ -120,7 +120,16 @@ impl Pty {
 impl Drop for Pty {
     fn drop(&mut self) {
         let _ = self.child.kill();
-        let _ = self.child.wait();
+        // macOS makes an exiting process wait until its terminal output is read, so keep reading the master while
+        // waiting: a bare `wait()` here deadlocks when the shell left output behind. After 5 s give up; dropping the
+        // master then hangs up the terminal and the process finishes on its own.
+        let start = Instant::now();
+        let mut buf = [0u8; 4096];
+        while matches!(self.child.try_wait(), Ok(None)) && start.elapsed() < Duration::from_secs(5) {
+            if !matches!(self.master.read(&mut buf), Ok(n) if n > 0) {
+                std::thread::sleep(Duration::from_millis(2));
+            }
+        }
     }
 }
 

@@ -19,6 +19,8 @@ jobs:
   test-macos:
     name: Test (macOS, whole workspace)
     runs-on: macos-15
+    # It takes about 5 minutes; a hung pty test should fail the job, not hold a runner for 6 hours.
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
