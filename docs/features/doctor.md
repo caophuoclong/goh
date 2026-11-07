@@ -3,7 +3,7 @@ id: doctor
 title: goh doctor and logs
 status: stable
 since: 1.0.0
-updated: 2026-10-31
+updated: 2026-11-07
 area: tooling
 commands: [goh doctor, goh logs, goh status]
 env: [GOH_LOG]
@@ -21,6 +21,7 @@ env: [GOH_LOG]
   `--report` prints a summary for an issue (home shown as `~`, no command text).
 - A daemon nobody can reach any more (its socket removed or replaced) exits by itself.
 - Over ssh it says whether menus reach the popup through [ssh-popup](ssh-popup.md).
+- In WSL under Windows Terminal it looks for `goh-popup.exe`, the Windows popup, instead of `goh-popup`.
 
 ## Limits
 
@@ -28,6 +29,7 @@ env: [GOH_LOG]
 
 ## Changes
 
+- unreleased: in WSL under Windows Terminal, checks for `goh-popup.exe` and reports the popup as drawn on Windows.
 - unreleased: a daemon whose socket was removed or taken over exits by itself within 2 s.
 - unreleased: reports the `goh ssh` relay.
 - 1.3.0: version check, `--test`, `--report`, `goh logs`.

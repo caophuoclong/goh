@@ -459,6 +459,40 @@ fn bare_command_frames_keep_the_whole_name_for_the_logo() {
 }
 
 #[test]
+fn wsl_in_windows_terminal_uses_the_windows_popup_with_its_variables() {
+    let fx = Fixture::new(require_env!(), true);
+    // `goh-popup.exe` on the (Windows) PATH: records what WSL would pass to it, then acts as the popup.
+    let win = fx.path("win");
+    fs::create_dir_all(&win).unwrap();
+    let exe = win.join("goh-popup.exe");
+    fs::write(&exe, format!("#!/usr/bin/env bash\nprintf '%s\\n' \"$WSLENV\" > \"$WSLENV_LOG\"\nexec {}\n", fake_popup().display())).unwrap();
+    fs::set_permissions(&exe, std::os::unix::fs::PermissionsExt::from_mode(0o755)).unwrap();
+    let bin_dir = Path::new(env!("CARGO_BIN_EXE_goh")).parent().unwrap().display().to_string();
+    let path = format!("{}:{bin_dir}:/usr/bin:/bin", win.display());
+    let (log, wslenv) = (fx.path("popup.log"), fx.path("wslenv.txt"));
+    let envs = [
+        ("PATH", path.as_str()),
+        ("WSL_DISTRO_NAME", "Ubuntu"),
+        ("WT_SESSION", "2f1b3c1e-0000-4000-8000-000000000000"),
+        ("WSLENV", "WT_SESSION:WT_PROFILE_ID:"),
+        ("GOH_DISPLAY", "auto"),
+        ("FAKE_LOG", log.to_str().unwrap()),
+        ("FAKE_DISPLAY", "overlay"),
+        ("WSLENV_LOG", wslenv.to_str().unwrap()),
+    ];
+    let mut sh = fx.shell(&envs, true);
+    sh.send("git c", 150);
+    sh.send("\t", 800);
+    let f = wait_frames(&mut sh, &log, |f| f.iter().any(|v| v["type"] == "show"));
+    assert!(f.iter().any(|v| v["type"] == "show"), "the menu went to goh-popup.exe");
+    assert_eq!(
+        fs::read_to_string(&wslenv).unwrap().trim(),
+        "WT_SESSION:WT_PROFILE_ID:TMUX:STY:SSH_CONNECTION:SSH_TTY:GOH_POPUP_FONT",
+        "Windows Terminal's variables are kept and the popup's checks get theirs"
+    );
+}
+
+#[test]
 fn overlay_frames_follow_the_menu() {
     let fx = Fixture::new(require_env!(), true);
     let (mut sh, log) = overlay_shell(&fx, fake_popup().to_str().unwrap(), "overlay", "auto");

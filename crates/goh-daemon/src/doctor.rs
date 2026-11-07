@@ -56,7 +56,7 @@ const SLOW_MILLIS: u128 = 100;
 pub struct Inputs {
     /// Version of this `goh`.
     pub version: String,
-    /// `goh`, `gohd`, `goh-popup`: where each was found.
+    /// `goh`, `gohd`, `goh-popup` (`goh-popup.exe` in WSL under Windows Terminal): where each was found.
     pub binaries: Vec<(&'static str, Option<PathBuf>)>,
     pub daemon_running: bool,
     /// What the running daemon says it is; `None` when it did not answer (one from before `Hello`).
@@ -72,6 +72,8 @@ pub struct Inputs {
     /// Connected with `goh ssh`: the popup is drawn on the machine the terminal runs on.
     pub relay: bool,
     pub multiplexer: Option<&'static str>,
+    /// WSL in a Windows Terminal pane: the popup is the Windows program, `goh-popup.exe`.
+    pub wsl_terminal: bool,
     /// `None`: no such permission on this platform.
     pub accessibility: Option<bool>,
     pub zoxide: bool,
@@ -115,6 +117,12 @@ pub fn evaluate(i: &Inputs) -> Vec<Check> {
         out.push(match (found, *name) {
             (Some(p), _) => check(Level::Ok, "binary", format!("{name}: {}", p.display()), None),
             (None, "goh-popup") => check(Level::Warn, "binary", "goh-popup not found: menus are drawn inline only", None),
+            (None, "goh-popup.exe") => check(
+                Level::Warn,
+                "binary",
+                "goh-popup.exe not found on PATH: install goh on Windows too for the popup; menus are drawn inline only",
+                None,
+            ),
             (None, _) => check(Level::Fail, "binary", format!("{name} not found on PATH or next to goh: completion cannot work"), None),
         });
     }
@@ -144,6 +152,8 @@ pub fn evaluate(i: &Inputs) -> Vec<Check> {
         out.push(check(Level::Info, "terminal", "over ssh: the menu is drawn inline; connect with `goh ssh` for the popup", None));
     } else if let Some(m) = i.multiplexer {
         out.push(check(Level::Info, "terminal", format!("inside {m}: the menu is drawn inline"), None));
+    } else if i.wsl_terminal {
+        out.push(check(Level::Ok, "terminal", "Windows Terminal (WSL): the popup is drawn by goh-popup.exe on Windows", None));
     } else if OVERLAY_TERMINALS.contains(&term) {
         out.push(check(Level::Ok, "terminal", format!("{term}: popup supported"), None));
     } else {
@@ -284,6 +294,7 @@ pub fn gather() -> Inputs {
     let exe_dir = std::env::current_exe().ok().and_then(|e| e.parent().map(Path::to_path_buf));
     let (loaded, spec_warnings) = crate::specs::load(&crate::specs::default_dir());
     let env_set = |k| std::env::var_os(k).is_some();
+    let wsl_terminal = env_set("WSL_DISTRO_NAME") && env_set("WT_SESSION");
     let sock = crate::paths::socket_path();
     let daemon_running = std::os::unix::net::UnixStream::connect(&sock).is_ok();
     // SAFETY: getppid has no preconditions and cannot fail.
@@ -297,7 +308,11 @@ pub fn gather() -> Inputs {
         update: crate::update::message(env!("CARGO_PKG_VERSION"), &crate::update::load().latest),
         round_trip: None,
         recent_panics: crate::log::tail(&crate::log::path(), 200).map_or(0, |t| t.lines().filter(|l| l.contains(" panic at ")).count()),
-        binaries: ["goh", "gohd", "goh-popup"].into_iter().map(|n| (n, find_binary(n, exe_dir.as_deref()))).collect(),
+        binaries: ["goh", "gohd", if wsl_terminal { "goh-popup.exe" } else { "goh-popup" }]
+            .into_iter()
+            .map(|n| (n, find_binary(n, exe_dir.as_deref())))
+            .collect(),
+        wsl_terminal,
         version: env!("CARGO_PKG_VERSION").to_string(),
         daemon_running,
         daemon_version: if daemon_running { crate::client::hello(&sock).ok().map(|(v, _)| v) } else { None },
@@ -395,6 +410,21 @@ mod tests {
     fn a_terminal_without_a_popup_is_not_nagged_about_the_permission() {
         let c = evaluate(&Inputs { accessibility: Some(false), term_program: Some("WezTerm".into()), ..base() });
         assert_eq!(c.iter().find(|x| x.name == "accessibility").unwrap().level, Level::Info);
+        assert_eq!(c.iter().find(|x| x.name == "terminal").unwrap().level, Level::Info);
+    }
+
+    #[test]
+    fn wsl_in_windows_terminal_uses_the_windows_popup() {
+        let mut i = Inputs { wsl_terminal: true, term_program: None, accessibility: None, ..base() };
+        i.binaries[2] = ("goh-popup.exe", Some("/mnt/c/Users/u/AppData/Local/Programs/goh/goh-popup.exe".into()));
+        let c = evaluate(&i);
+        assert_eq!(worst(&c), Level::Info);
+        assert!(c.iter().any(|x| x.name == "terminal" && x.level == Level::Ok && x.detail.contains("goh-popup.exe")));
+        i.binaries[2].1 = None;
+        let c = evaluate(&i);
+        assert!(c.iter().any(|x| x.name == "binary" && x.level == Level::Warn && x.detail.contains("install goh on Windows")));
+        // tmux in WSL: inline, as anywhere.
+        let c = evaluate(&Inputs { multiplexer: Some("tmux"), ..i });
         assert_eq!(c.iter().find(|x| x.name == "terminal").unwrap().level, Level::Info);
     }
 

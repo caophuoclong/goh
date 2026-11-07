@@ -3,9 +3,9 @@ id: popup
 title: Popup at the cursor
 status: stable
 since: 1.0.0
-updated: 2026-11-06
+updated: 2026-11-07
 area: display
-platforms: [macos, linux]
+platforms: [macos, linux, windows]
 settings: [popup.font, popup.fontSize, display.mode]
 commands: [goh-popup --probe, goh-popup --resolve]
 env: [GOH_POPUP_FONT]
@@ -21,9 +21,14 @@ Where the caret cannot be verified, the menu is drawn inline instead; nothing pr
 - macOS: the caret is read with the Accessibility API in iTerm2, Terminal.app, VS Code and the Claude app. The
   terminal needs the Accessibility permission (or goh-popup its own, see [popup-permission](popup-permission.md)).
 - Linux: X11 and XWayland terminals that export `WINDOWID` and expose AT-SPI, with one visible terminal widget.
+- Windows: Windows Terminal, whose cursor is read with UI Automation; the popup is `goh-popup.exe`, a window that is
+  never activated, has no taskbar button and lets clicks through. It is placed at the scale of the monitor that holds
+  the cursor, and draws in the profile's font from Windows Terminal's settings. zsh in WSL uses it (see
+  [zsh-adapter](zsh-adapter.md)) when `goh-popup.exe` is on the Windows PATH. A mouse selection in the pane, or the
+  pane scrolled back, keeps the menu inline.
 - The popup never takes focus or keys; the shell keeps selection. The wheel moves the highlight (macOS).
 - Scrolled back so the line you are typing is out of view, the popup hides; it comes back when you scroll down.
-- Font and size follow iTerm2 and VS Code settings, or `popup.font` / `popup.fontSize`.
+- Font and size follow iTerm2, VS Code and Windows Terminal settings, or `popup.font` / `popup.fontSize`.
 - Each row shows its kind's Nerd Font icon (a command's logo in its brand's colour, a file's type), the footer the
   command's logo: the same icons as the inline menu's `display.icons: "nerd"`, drawn with a bundled font, so any
   `popup.font` shows them. File icons cover common source code, configuration, document, media, archive and font extensions; JSX and TSX use the React logo.
@@ -37,9 +42,13 @@ Where the caret cannot be verified, the menu is drawn inline instead; nothing pr
 - Inline in tmux, screen, native Wayland, unverified terminals: there the menu is a floating framed box drawn by the shell
   (see [zsh-adapter](zsh-adapter.md)).
 - `goh-popup --probe` and `--resolve` explain the decision.
+- Windows: no package yet (built with cargo), and only zsh in WSL sends it menus; PowerShell keeps its own list. Over
+  `goh ssh` from WSL the menu stays inline. [docs/windows-checklist.md](../windows-checklist.md) lists what has been
+  checked on a real machine.
 
 ## Changes
 
+- unreleased: Windows: the popup draws at the cursor in Windows Terminal, for zsh in WSL.
 - unreleased: the folder tree's lines are drawn as joined lines in front of each icon, and the footer names ←→ in a folder.
 - unreleased: JSX and TSX suggestions use the React logo.
 - unreleased: File icons cover more programming languages, configuration files, documents, images, audio, video, archives and fonts, including JSX, TSX and JavaScript/TypeScript module variants.

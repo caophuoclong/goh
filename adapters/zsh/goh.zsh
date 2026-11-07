@@ -64,6 +64,11 @@ typeset -gi _goh_seen_cur=-1 _goh_busy=0 _goh_told_permission=0 _goh_ssh_wrapped
 # Widgets after which an edit counts as the user typing (not history recall, autosuggest accept, ...).
 typeset -ga _goh_typing_widgets=(self-insert magic-space backward-delete-char delete-char vi-backward-delete-char vi-delete-char backward-kill-word kill-word bracketed-paste quoted-insert)
 typeset -g _GOH_POPUP=${GOH_POPUP:-goh-popup}
+# WSL in a Windows Terminal pane: the popup is the Windows program, which reads Windows Terminal's caret. It is found on
+# the Windows PATH that WSL appends to its own.
+if [[ -z ${GOH_POPUP-} && -n ${WSL_DISTRO_NAME-} && -n ${WT_SESSION-} ]] && (( $+commands[goh-popup.exe] )); then
+  _GOH_POPUP=goh-popup.exe
+fi
 typeset -g _GOH_ORIG_TAB
 typeset -g _goh_pop_dir _goh_pop_pid _goh_items_json _goh_last_decision _goh_last_frame
 typeset -gi _goh_pin=-1 _goh_pout=-1 _goh_overlay=0 _goh_win=1 _goh_menu_id=0
@@ -216,8 +221,12 @@ _goh_pop_start() {
   dir=$(mktemp -d "${TMPDIR:-/tmp}/goh-popup.XXXXXX" 2>/dev/null) || return 1
   mkfifo $dir/in $dir/out 2>/dev/null || { rm -rf -- $dir; return 1 }
   local errf=/dev/null; [[ -n ${GOH_DEBUG-} ]] && errf=$dir/err   # GOH_DEBUG=1 keeps the popup's stderr
+  # A Windows popup started from WSL sees only the variables WSLENV names (Windows Terminal adds WT_SESSION and
+  # WT_PROFILE_ID): pass what its checks and font need, so tmux or ssh here keep the menu inline as they do elsewhere.
+  local wslenv=${${WSLENV-}%:}
+  [[ $pop[1] == *.exe ]] && wslenv+="${wslenv:+:}TMUX:STY:SSH_CONNECTION:SSH_TTY:GOH_POPUP_FONT"
   # The config sets this as a shell variable, not exported: hand it to the popup, which reads it at start.
-  GOH_POPUP_OWN_PERMISSION=${GOH_POPUP_OWN_PERMISSION-} command $pop <$dir/in >$dir/out 2>$errf &!
+  GOH_POPUP_OWN_PERMISSION=${GOH_POPUP_OWN_PERMISSION-} WSLENV=$wslenv command $pop <$dir/in >$dir/out 2>$errf &!
   _goh_pop_pid=$!
   _goh_pop_dir=$dir
   # Read-write opens never block, and keep a reader on `in` so a dead popup cannot raise SIGPIPE.

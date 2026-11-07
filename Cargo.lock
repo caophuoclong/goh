@@ -1467,6 +1467,7 @@ dependencies = [
  "futures-lite",
  "libc",
  "serde_json",
+ "windows",
  "x11rb",
 ]
 
@@ -1504,11 +1505,13 @@ dependencies = [
  "goh-theme",
  "libc",
  "png",
+ "raw-window-handle",
  "serde",
  "serde_json",
  "ttf-parser",
  "unicode-segmentation",
  "unicode-width",
+ "windows",
  "winit",
 ]
 

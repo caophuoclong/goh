@@ -53,6 +53,84 @@ jobs:
       - run: scripts/check-binary-size.sh
       - run: cargo run --release --locked -p goh-core --example bench
 
+  windows:
+    name: Windows popup (test, release build)
+    runs-on: windows-2025
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+      - name: Parse the PowerShell scripts
+        shell: pwsh
+        run: |
+          $failed = $false
+          foreach ($f in 'packaging/windows/install-test-kit.ps1', 'crates/goh-popup/tools/overlay-demo.ps1') {
+            $errors = $null
+            [void][System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path $f).Path, [ref]$null, [ref]$errors)
+            if ($errors) { $errors | ForEach-Object { "${f}: $_" }; $failed = $true }
+          }
+          if ($failed) { exit 1 }
+      # Only these crates build on Windows so far; the daemon and goh are Unix-only.
+      - run: cargo test --locked -p goh-anchor -p goh-popup -p goh-theme
+      - run: cargo build --release --locked -p goh-popup
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: goh-popup-x86_64-pc-windows-msvc
+          path: target/release/goh-popup.exe
+          if-no-files-found: error
+
+  wsl-package:
+    name: Linux package for WSL (release build)
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+      - run: sudo apt-get update && sudo apt-get install -y libxkbcommon-dev libxkbcommon-x11-0 libwayland-dev libgl1-mesa-dev libegl1-mesa-dev
+      - name: Package
+        run: scripts/package.sh x86_64-unknown-linux-gnu "dev-${GITHUB_SHA::7}"
+      - name: Check the packaged binary runs
+        run: |
+          tar -xzf dist/goh-*.tar.gz -C "$RUNNER_TEMP"
+          dir=$(ls -d "$RUNNER_TEMP"/goh-*-x86_64-unknown-linux-gnu)
+          test -x "$dir/bin/goh-popup"
+          "$dir/bin/goh" version
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: wsl-package-x86_64-unknown-linux-gnu
+          path: dist/*
+          if-no-files-found: error
+
+  # Everything a Windows tester needs, built: unpack it and run install-test-kit.ps1 (docs/windows-checklist.md).
+  windows-kit:
+    name: Windows test kit
+    needs: [windows, wsl-package]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          path: parts
+      - name: Assemble the kit
+        run: |
+          mkdir kit
+          cp parts/goh-popup-x86_64-pc-windows-msvc/goh-popup.exe parts/wsl-package-x86_64-unknown-linux-gnu/* kit/
+          cp install.sh packaging/windows/install-test-kit.ps1 docs/windows-checklist.md kit/
+          cp crates/goh-popup/tools/overlay-demo.ps1 crates/goh-popup/tools/sample-frame-auto.json kit/
+          echo "$GITHUB_SHA" > kit/COMMIT
+          ls -l kit
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: goh-windows-test-kit
+          path: kit/
+          if-no-files-found: error
+
   scripts:
     name: Lint scripts and workflows
     runs-on: ubuntu-24.04

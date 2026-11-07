@@ -33,6 +33,8 @@ pub enum App {
     VsCode,
     /// The Claude desktop app's terminal, also xterm.js.
     Claude,
+    /// Windows Terminal, read through UI Automation (see win.rs).
+    WindowsTerminal,
 }
 
 impl App {
@@ -43,6 +45,7 @@ impl App {
             App::Terminal => "Terminal",
             App::VsCode => "VS Code",
             App::Claude => "Claude",
+            App::WindowsTerminal => "Windows Terminal",
         }
     }
 
@@ -54,6 +57,7 @@ impl App {
             App::Terminal => "Apple_Terminal",
             App::VsCode => "vscode",
             App::Claude => "claude-desktop",
+            App::WindowsTerminal => "", // it sets WT_SESSION instead (gate::check_windows_env)
         }
     }
 
@@ -63,7 +67,7 @@ impl App {
     pub fn caret_range_len(self) -> usize {
         match self {
             App::ITerm2 => 0,
-            App::Terminal | App::LinuxTerminal => 1,
+            App::Terminal | App::LinuxTerminal | App::WindowsTerminal => 1,
             App::VsCode | App::Claude => 0, // unused: xterm.js apps are read from the element's frame
         }
     }
@@ -88,6 +92,9 @@ impl App {
             Some(App::VsCode)
         } else if path.ends_with("/Claude.app/Contents/MacOS/Claude") {
             Some(App::Claude)
+        } else if path.to_ascii_lowercase().ends_with("\\windowsterminal.exe") {
+            // The Store package (and Preview, Canary) and the unpackaged builds all run WindowsTerminal.exe.
+            Some(App::WindowsTerminal)
         } else {
             None
         }
@@ -107,6 +114,7 @@ pub struct Caret {
 pub enum Reason {
     UnsupportedPlatform,
     Linux(String),
+    Windows(String),
     NotTrusted,
     NoFocusedApp { code: Option<i32> },
     UnknownApp(String),
@@ -129,7 +137,7 @@ impl fmt::Display for Reason {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Reason::UnsupportedPlatform => f.write_str("caret lookup is unsupported on this platform"),
-            Reason::Linux(reason) => f.write_str(reason),
+            Reason::Linux(reason) | Reason::Windows(reason) => f.write_str(reason),
             Reason::NotTrusted => f.write_str("this terminal is not allowed to use the Accessibility API (System Settings > Privacy & Security > Accessibility)"),
             Reason::NoFocusedApp { code: Some(c) } => write!(f, "no focused application (Accessibility error {c})"),
             Reason::NoFocusedApp { code: None } => f.write_str("no focused application"),
@@ -177,7 +185,7 @@ pub fn caret_from_rect(app: App, rect: Rect, cell_height: Option<f64>) -> Result
         return Err(Reason::EmptyRect);
     }
     match app {
-        App::Terminal | App::LinuxTerminal => Ok(Caret { x: rect.x, y: rect.y, height: rect.h }),
+        App::Terminal | App::LinuxTerminal | App::WindowsTerminal => Ok(Caret { x: rect.x, y: rect.y, height: rect.h }),
         App::VsCode | App::Claude if rect.w > 64.0 || rect.h > 64.0 => Err(Reason::NotTerminalInput),
         App::VsCode | App::Claude => Ok(Caret { x: rect.x, y: rect.y, height: rect.h }),
         App::ITerm2 => {
@@ -261,6 +269,13 @@ mod tests {
     }
 
     #[test]
+    fn windows_terminal_caret_is_the_cursor_cell() {
+        // The cursor's character cell, in physical pixels, as Windows Terminal's text pattern returns it.
+        let cell = Rect { x: 412.0, y: 630.0, w: 10.0, h: 21.0 };
+        assert_eq!(caret_from_rect(App::WindowsTerminal, cell, None).unwrap(), Caret { x: 412.0, y: 630.0, height: 21.0 });
+    }
+
+    #[test]
     fn nonsense_rectangles_are_rejected() {
         for r in [Rect::default(), Rect { x: f64::NAN, y: 0.0, w: 1.0, h: 10.0 }, Rect { x: 0.0, y: 0.0, w: 1.0, h: 5000.0 }] {
             assert_eq!(caret_from_rect(App::Terminal, r, Some(15.0)), Err(Reason::EmptyRect));
@@ -276,6 +291,11 @@ mod tests {
         assert_eq!(App::from_exe_path("/Applications/Claude.app/Contents/Frameworks/Claude Helper.app/Contents/MacOS/Claude Helper"), None);
         assert_eq!(App::from_exe_path("/Applications/Ghostty.app/Contents/MacOS/ghostty"), None);
         assert_eq!(App::from_exe_path("/tmp/evil/iTerm2"), None);
+        let store = r"C:\Program Files\WindowsApps\Microsoft.WindowsTerminal_1.21.3231.0_x64__8wekyb3d8bbwe\WindowsTerminal.exe";
+        assert_eq!(App::from_exe_path(store), Some(App::WindowsTerminal));
+        assert_eq!(App::from_exe_path(r"C:\Users\me\scoop\apps\windows-terminal\current\windowsterminal.exe"), Some(App::WindowsTerminal));
+        assert_eq!(App::from_exe_path(r"C:\Windows\System32\conhost.exe"), None);
+        assert_eq!(App::from_exe_path(r"C:\tools\NotWindowsTerminal.exe"), None);
     }
 
     #[test]

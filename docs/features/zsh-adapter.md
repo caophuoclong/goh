@@ -3,7 +3,7 @@ id: zsh-adapter
 title: zsh: menus as you type
 status: stable
 since: 1.0.0
-updated: 2026-11-06
+updated: 2026-11-07
 area: shells
 shells: [zsh]
 settings: [display.live, display.maxSuggestions, display.mode, display.enterRuns, display.inlineStyle, display.icons]
@@ -52,6 +52,8 @@ in an IDE. Load it with `goh setup` or `eval "$(goh init zsh)"`.
 - A program still answering (a slow Docker, a cluster) shows `…` in the footer; its values appear when they arrive. The
   wait stops when you close the menu (Esc, Left) or move in it, and gives up after about 5 s; each new prompt starts
   the count again, so the same line typed later is asked again.
+- WSL in a Windows Terminal pane: menus go to the Windows popup, `goh-popup.exe`, found on the Windows PATH that WSL
+  adds to its own (`GOH_POPUP` names another). tmux, screen and ssh keep them inline, as elsewhere.
 - Fail-open: any problem falls through to the widget Tab had before; `goh-unload` restores it.
 - Works next to zsh-autosuggestions and plugins that replace `zle-line-init`.
 
@@ -65,6 +67,7 @@ in an IDE. Load it with `goh setup` or `eval "$(goh init zsh)"`.
 
 ## Changes
 
+- unreleased: in WSL under Windows Terminal, menus are drawn by the Windows popup (`goh-popup.exe`).
 - unreleased: an opened folder lists only its own entries; `cd` no longer puts folders you visit often elsewhere under it.
 - unreleased: the box lands under the word with a prompt that runs a command (starship, oh-my-zsh themes): its width is read from the terminal instead of counting as none (#58).
 - unreleased: → opens a folder as a tree under its row, and ← goes back out of it; Tab or Enter takes an entry's whole path.

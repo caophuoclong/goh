@@ -97,7 +97,7 @@ pub(crate) fn locate() -> (crate::Outcome, Vec<String>) {
         let focus = Focus { window, bus, path };
         session.known = Some((focus.clone(), x.pid));
         trace.push(format!("verified AT-SPI terminal caret on X11 window {window:#x}"));
-        Ok(crate::Anchor { app: crate::App::LinuxTerminal, caret, display, focus: crate::Focus { inner: focus } })
+        Ok(crate::Anchor { app: crate::App::LinuxTerminal, caret, display, focus: crate::Focus { inner: focus }, scale: 1.0 })
     })();
     (match result { Ok(a) => Outcome::Verified(a), Err(r) => Outcome::Unverified(r) }, trace)
 }
