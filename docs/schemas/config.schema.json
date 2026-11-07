@@ -6,15 +6,15 @@
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "configVersion",
     "display",
-    "theme",
-    "privacy"
+    "theme"
   ],
   "properties": {
     "configVersion": {
       "type": "integer",
-      "const": 1
+      "const": 1,
+      "deprecated": true,
+      "description": "No longer written or read; accepted so older files stay valid."
     },
     "display": {
       "type": "object",
@@ -137,28 +137,22 @@
     "privacy": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "telemetry",
-        "networkSpecs",
-        "dynamicGenerators",
-        "retainCommandHistory"
-      ],
       "properties": {
         "telemetry": {
           "type": "boolean",
-          "default": false
+          "deprecated": true
         },
         "networkSpecs": {
           "type": "boolean",
-          "default": false
+          "deprecated": true
         },
         "dynamicGenerators": {
           "type": "boolean",
-          "default": false
+          "deprecated": true
         },
         "retainCommandHistory": {
           "type": "boolean",
-          "const": false
+          "deprecated": true
         },
         "learnChoices": {
           "type": "boolean",
