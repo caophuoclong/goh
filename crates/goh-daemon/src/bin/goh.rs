@@ -393,10 +393,10 @@ fn config(sub: Option<&str>) -> bool {
                 Ok(p) => p,
                 Err(e) => return fail(format!("{e}")),
             };
-            match config::add_comments(&path) {
-                Ok(Some(copy)) => println!("added a comment on every setting to {} (your settings are unchanged; the old file is {})", path.display(), copy.display()),
+            match config::upgrade(&path) {
+                Ok(Some(copy)) => println!("rewrote {} in the current, shorter layout (your settings are unchanged; the old file is {})", path.display(), copy.display()),
                 Ok(None) => {}
-                Err(e) => eprintln!("goh: could not add comments to {}: {e}", path.display()),
+                Err(e) => eprintln!("goh: could not rewrite {} in the current layout: {e}", path.display()),
             }
             if let Err(e) = config::open_in_editor(&path) {
                 return fail(format!("{e}"));

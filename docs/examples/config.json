@@ -1,5 +1,4 @@
 {
-  "configVersion": 1,
   "display": {
     "mode": "auto",
     "inlineStyle": "box",
@@ -19,10 +18,6 @@
     "mode": "auto"
   },
   "privacy": {
-    "telemetry": false,
-    "networkSpecs": false,
-    "dynamicGenerators": false,
-    "retainCommandHistory": false,
     "learnChoices": true,
     "recordCommands": false
   },
