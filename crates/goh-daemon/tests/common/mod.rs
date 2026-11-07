@@ -3,7 +3,7 @@
 
 use std::fs::{self, File};
 use std::io::{Read, Write};
-use std::os::fd::{FromRawFd, OwnedFd};
+use std::os::fd::{AsRawFd, FromRawFd, OwnedFd};
 use std::os::unix::process::CommandExt;
 use std::path::{Path, PathBuf};
 use std::process::{Child, Command, Stdio};
@@ -65,12 +65,21 @@ impl Pty {
     }
 
     /// Collect output until nothing has arrived for `quiet` (or `max` has passed).
+    ///
+    /// Read as soon as output arrives, as a terminal does, rather than looking every few milliseconds: zsh's
+    /// `read -s` (the menu's Esc handler reads the rest of an arrow key with it) waits until the terminal has read
+    /// everything written so far, so a polling reader makes every arrow key cost one polling interval, and a slow
+    /// machine's coarse timers make that far longer than the tests allow.
     pub fn drain(&mut self, quiet: Duration, max: Duration) -> Vec<u8> {
         let (start, mut last) = (Instant::now(), Instant::now());
         let mut out = Vec::new();
         let mut buf = [0u8; 4096];
         let mut cursor_asked = 0;
         while start.elapsed() < max && last.elapsed() < quiet {
+            let left = quiet.saturating_sub(last.elapsed()).min(max.saturating_sub(start.elapsed()));
+            let mut ready = libc::pollfd { fd: self.master.as_raw_fd(), events: libc::POLLIN, revents: 0 };
+            // SAFETY: one valid pollfd for our own open fd.
+            unsafe { libc::poll(&mut ready, 1, left.as_micros().div_ceil(1000).min(i32::MAX as u128) as i32) };
             match self.master.read(&mut buf) {
                 Ok(n) if n > 0 => {
                     out.extend_from_slice(&buf[..n]);
@@ -89,7 +98,8 @@ impl Pty {
                         }
                     }
                 }
-                _ => std::thread::sleep(Duration::from_millis(10)),
+                Err(e) if e.kind() == std::io::ErrorKind::WouldBlock => {} // poll waited: nothing arrived
+                _ => std::thread::sleep(Duration::from_millis(10)),          // the shell is gone: do not spin
             }
         }
         out
