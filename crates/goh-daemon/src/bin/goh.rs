@@ -710,6 +710,12 @@ fn run() -> Option<()> {
     }
     match result {
         Ok(Some(())) => Some(()),
+        // The daemon did not answer in time (a busy or slow machine, the first request to a daemon just started):
+        // with `--late`, say the answer is still coming so the adapter asks again, rather than leave the menu shut.
+        Err(e) if late && sub == "menu" && matches!(e.kind(), ErrorKind::WouldBlock | ErrorKind::TimedOut) => {
+            println!("pending");
+            Some(())
+        }
         Ok(None) | Err(_) => None,
     }
 }
