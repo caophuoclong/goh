@@ -135,7 +135,10 @@ impl Providers {
         let Ok(mut asked) = lock.lock() else { return (vec![], false) };
         let key = (provider, key);
         let answer = asked.entry(key.clone()).or_default();
-        let wait = if answer.slow { Duration::ZERO } else { wait };
+        // Only the request that starts asking waits for the answer. One that comes while the program is still being
+        // asked (the adapter asking again for a late answer) returns at once: the program had its chance, and waiting
+        // again would hold the shell on every re-ask until it answers.
+        let wait = if answer.slow || answer.asking { Duration::ZERO } else { wait };
         if !answer.asking && answer.at.is_none_or(|at| at.elapsed() >= ttl) {
             answer.asking = true;
             let (bin, dir, store, key) = (bin.to_path_buf(), dir.to_path_buf(), Arc::clone(&self.asked), key.clone());
@@ -586,6 +589,19 @@ mod tests {
         let at = Instant::now();
         assert_eq!(providers.values(Provider::DockerContainers, Path::new("/"))[0].name, "web-1", "the last answer while it is asked again");
         assert!(at.elapsed() < Duration::from_millis(50), "a Docker known to be slow is not waited for again");
+    }
+
+    #[test]
+    fn asking_again_while_a_program_is_still_answering_does_not_wait_again() {
+        let dir = tempfile::tempdir().unwrap();
+        let docker = script(dir.path(), "sleep 2\necho '{\"Names\":\"web-1\",\"Image\":\"nginx\"}'");
+        let providers = Providers { docker, home: dir.path().to_path_buf(), ..Providers::default() };
+        let (values, pending) = providers.values_or_pending(Provider::DockerContainers, Path::new("/"));
+        assert!(values.is_empty() && pending, "the first request waits, then gives up");
+        let at = Instant::now();
+        let (values, pending) = providers.values_or_pending(Provider::DockerContainers, Path::new("/"));
+        assert!(values.is_empty() && pending, "still being asked");
+        assert!(at.elapsed() < DEADLINE / 2, "the adapter's re-ask is not held for the deadline again: {:?}", at.elapsed());
     }
 
     #[test]
