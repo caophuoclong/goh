@@ -3,7 +3,7 @@ id: zsh-adapter
 title: zsh: menus as you type
 status: stable
 since: 1.0.0
-updated: 2026-11-06
+updated: 2026-11-08
 area: shells
 shells: [zsh]
 settings: [display.live, display.maxSuggestions, display.mode, display.enterRuns, display.inlineStyle, display.icons]
@@ -51,7 +51,9 @@ in an IDE. Load it with `goh setup` or `eval "$(goh init zsh)"`.
   It needs a Nerd Font Mono as the terminal's font; `"unicode"`, the default, works with any font.
 - A program still answering (a slow Docker, a cluster) shows `…` in the footer; its values appear when they arrive. The
   wait stops when you close the menu (Esc, Left) or move in it, and gives up after about 5 s; each new prompt starts
-  the count again, so the same line typed later is asked again.
+  the count again, so the same line typed later is asked again. Asking again never waits for the slow program: the
+  menu opens at once with what is already known. A daemon too busy to answer in time (a loaded machine, the first
+  request after it starts) is asked again the same way, instead of leaving the menu shut until the next key.
 - Fail-open: any problem falls through to the widget Tab had before; `goh-unload` restores it.
 - Works next to zsh-autosuggestions and plugins that replace `zle-line-init`.
 
@@ -65,6 +67,7 @@ in an IDE. Load it with `goh setup` or `eval "$(goh init zsh)"`.
 
 ## Changes
 
+- unreleased: on a busy or slow machine the menu opens as you type even when the daemon or a slow program (Docker) answers late, instead of staying shut until the next key; asking again for a late answer no longer holds the shell.
 - unreleased: an opened folder lists only its own entries; `cd` no longer puts folders you visit often elsewhere under it.
 - unreleased: the box lands under the word with a prompt that runs a command (starship, oh-my-zsh themes): its width is read from the terminal instead of counting as none (#58).
 - unreleased: → opens a folder as a tree under its row, and ← goes back out of it; Tab or Enter takes an entry's whole path.
