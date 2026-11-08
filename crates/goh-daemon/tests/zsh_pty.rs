@@ -93,6 +93,13 @@ impl Fixture {
 
 const CLEAR: &str = "\x15";
 
+/// ZLE waits KEYTIMEOUT after Esc while a longer key starting with Esc is bound; the menu unbinds them so that Esc
+/// closes it at once. The Esc tests make that wait 2 s (KEYTIMEOUT is in hundredths), so it cannot be mistaken for
+/// the adapter's own short wait for the rest of a key, even where timers run late: on the macOS CI runner its 20 ms
+/// wait takes about 150 ms.
+const LONG_KEYTIMEOUT: &str = "KEYTIMEOUT=200\n";
+const ESC_CLOSES_MS: u64 = 1000;
+
 /// The selected first row of the `git c` menu, as it reads on screen.
 const SELECTED: &str = "❯ ↳ checkout";
 
@@ -124,6 +131,7 @@ fn screen(out: &str) -> String {
 fn keyboard_flow() {
     let fx = Fixture::new(require_env!(), true);
     let mut sh = fx.shell(&[], true);
+    sh.send(LONG_KEYTIMEOUT, 300);
     let keymap_before = fx.keymap(&mut sh, 0);
 
     sh.send("git c", 150);
@@ -143,9 +151,9 @@ fn keyboard_flow() {
     sh.send("\x1b[Z", 200);
     assert!(fx.state(&mut sh).contains("sel=2"), "Shift+Tab moves back");
 
-    // At once, not after KEYTIMEOUT (0.4 s): nothing that starts with Esc is bound while the menu is open.
-    let closed = sh.send("\x1b", 150);
-    assert!(!closed.is_empty(), "Esc closes the menu within 150 ms");
+    // At once, not after KEYTIMEOUT: nothing that starts with Esc is bound while the menu is open.
+    let closed = sh.send("\x1b", ESC_CLOSES_MS);
+    assert!(!closed.is_empty(), "Esc closes the menu well before KEYTIMEOUT");
     let s = fx.state(&mut sh);
     assert!(s.starts_with("BUF[git c] CUR=5 on=0") && s.ends_with("post[]"), "Esc closes without editing: {s}");
     assert_eq!(fx.keymap(&mut sh, 1), keymap_before, "keymap is restored after the menu closes");
@@ -1650,8 +1658,9 @@ fn esc_closes_at_once_next_to_a_bindkey_s_esc_key() {
     let fx = Fixture::new(require_env!(), true);
     let mut sh = fx.shell(&[], true);
     // oh-my-zsh binds Alt+L to type `ls` (`bindkey -s`). Left bound while the menu is open, it makes ZLE wait
-    // KEYTIMEOUT (0.4 s) after Esc.
+    // KEYTIMEOUT (0.4 s by default) after Esc.
     sh.send("bindkey -s '^[l' 'ls^J'\n", 300);
+    sh.send(LONG_KEYTIMEOUT, 300);
     let keymap_before = fx.keymap(&mut sh, 0);
     assert!(keymap_before.contains(r#"bindkey -s "^[l" "ls^J""#), "{keymap_before}");
     sh.send("git c", 150);
@@ -1659,8 +1668,8 @@ fn esc_closes_at_once_next_to_a_bindkey_s_esc_key() {
     let open = fx.keymap(&mut sh, 1);
     assert!(!open.contains(r#""^[l""#), "Alt+L is reached through _goh_esc while the menu is open: {open}");
     assert!(fx.state(&mut sh).contains("on=1"), "the menu is still open");
-    let closed = sh.send("\x1b", 150);
-    assert!(!closed.is_empty(), "Esc closes the menu within 150 ms");
+    let closed = sh.send("\x1b", ESC_CLOSES_MS);
+    assert!(!closed.is_empty(), "Esc closes the menu well before KEYTIMEOUT");
     assert!(fx.state(&mut sh).contains("on=0"));
     assert_eq!(fx.keymap(&mut sh, 1), keymap_before, "the `bindkey -s` key types its text again after the menu closes");
 }
