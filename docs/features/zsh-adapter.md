@@ -1,4 +1,4 @@
-﻿---
+---
 id: zsh-adapter
 title: zsh: menus as you type
 status: stable
