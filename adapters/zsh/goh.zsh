@@ -946,18 +946,21 @@ _goh_up()   { _goh_move -1 up-line-or-history }
 # again into the keys as they were, so Left, Alt+key, a paste or an unknown key does what it did without the menu.
 _goh_esc() {
   local seq='^[' raw=$'\e' c k more
+  _goh_trace "esc-in"
   while :; do
     more=0
     for k in $_goh_esc_keys; do [[ $k == "$seq"?* ]] && { more=1; break }; done
     (( more )) || break
-    read -s -k 1 -t 0.02 c || break
+    _goh_trace "esc-read seq=$seq"
+    read -s -k 1 -t 0.02 c || { _goh_trace "esc-read-timeout"; break }
+    _goh_trace "esc-read-got" 
     seq+=${(V)c} raw+=$c
   done
   case ${_goh_menu_keys[$seq]-} in
     (_goh_up|_goh_down) zle ${_goh_menu_keys[$seq]} ;;
     (_goh_take) _goh_take || { _goh_close; zle -U -- $raw } ;;
     (_goh_left) _goh_back || { _goh_close; zle -U -- $raw } ;;
-    (*) _goh_close; if [[ $seq == '^[' ]]; then _goh_late_giveup; zle -R; else zle -U -- $raw; fi ;;
+    (*) _goh_trace "esc-read-done"; _goh_close; _goh_trace "esc-closed"; if [[ $seq == '^[' ]]; then _goh_late_giveup; zle -R; _goh_trace "esc-redrawn"; else zle -U -- $raw; fi ;;
   esac
 }
 
@@ -1237,7 +1240,8 @@ _goh_live_refresh() {
     if [[ $CONTEXT != start || -z ${BUFFER//[[:space:]]/} ]]; then _goh_close; return 0; fi
     _goh_bytes "${BUFFER[1,CURSOR]}"; cb=$REPLY
     out=$(command $_GOH_CTL menu --labels --live --late --session $_GOH_SESSION --cwd $PWD --limit 50 \
-          --cursor-byte $cb --buffer "$BUFFER" 2>/dev/null) || out=
+          --cursor-byte $cb --buffer "$BUFFER" 2>/dev/null) || { _goh_trace "menu failed rc=$? out=${#out}"; out= }
+    _goh_trace "menu buf=[$BUFFER] lines=${#${(f)out}} last=[${out##*$'\n'}]"
     _goh_late=0
     [[ ${out##*$'\n'} == pending ]] && _goh_late=1
     [[ -n $out ]] && _goh_parse_menu "$out" || REPLY=0

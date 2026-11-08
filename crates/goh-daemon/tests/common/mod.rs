@@ -37,6 +37,9 @@ pub struct Pty {
     pub queried: bool,
     /// Written back each time the shell asks where the cursor is (`ESC[6n`); `None` leaves the question unanswered.
     pub cursor_reply: Option<Vec<u8>>,
+    /// DIAG: everything read from the terminal.
+    pub seen: Vec<u8>,
+    pub born: Instant,
 }
 
 impl Pty {
@@ -61,7 +64,7 @@ impl Pty {
         let child = cmd.spawn().expect("spawn");
         // SAFETY: plain fcntl on our own fd.
         unsafe { libc::fcntl(m, libc::F_SETFL, libc::O_NONBLOCK) };
-        Pty { master, child, responder: None, queried: false, cursor_reply: None }
+        Pty { master, child, responder: None, queried: false, cursor_reply: None, seen: Vec::new(), born: Instant::now() }
     }
 
     /// Collect output until nothing has arrived for `quiet` (or `max` has passed).
@@ -83,6 +86,8 @@ impl Pty {
             match self.master.read(&mut buf) {
                 Ok(n) if n > 0 => {
                     out.extend_from_slice(&buf[..n]);
+                    self.seen.extend_from_slice(format!("\n<<{:.3}s>>", self.born.elapsed().as_secs_f64()).as_bytes());
+                    self.seen.extend_from_slice(&buf[..n]);
                     last = Instant::now();
                     if let Some(reply) = &self.cursor_reply {
                         let asked = out.windows(4).filter(|w| *w == b"\x1b[6n").count();
@@ -107,6 +112,7 @@ impl Pty {
 
     /// Write all of `bytes`; the master is non-blocking, so wait and retry while the pty is full.
     pub fn write_all_keys(&mut self, bytes: &[u8]) {
+        self.seen.extend_from_slice(format!("\n<<WRITE {:.3}s {} bytes>>", self.born.elapsed().as_secs_f64(), bytes.len()).as_bytes());
         let mut rest = bytes;
         let start = Instant::now();
         while !rest.is_empty() {
@@ -137,6 +143,40 @@ impl Drop for Pty {
             drop(std::mem::replace(&mut self.master, null));
         }
         let _ = self.child.wait();
+        if std::thread::panicking() {
+            let tail = &self.seen[self.seen.len().saturating_sub(6000)..];
+            eprintln!("DIAG pty at {:.3}s, last output:\n{}", self.born.elapsed().as_secs_f64(), String::from_utf8_lossy(tail).escape_debug());
+        }
+    }
+}
+
+/// DIAG: the signal mask and ignored signals this process passes on to its children, and the processes around.
+pub fn diag_report(dir: &Path) {
+    // SAFETY: querying only.
+    unsafe {
+        let mut set: libc::sigset_t = std::mem::zeroed();
+        libc::sigprocmask(libc::SIG_BLOCK, std::ptr::null(), &mut set);
+        let blocked: Vec<i32> = (1..32).filter(|&s| libc::sigismember(&set, s) == 1).collect();
+        let ignored: Vec<i32> = (1..32)
+            .filter(|&s| {
+                let mut act: libc::sigaction = std::mem::zeroed();
+                libc::sigaction(s, std::ptr::null(), &mut act) == 0 && act.sa_sigaction == libc::SIG_IGN
+            })
+            .collect();
+        eprintln!("DIAG blocked signals {blocked:?} ignored signals {ignored:?}");
+    }
+    for f in ["trace.txt", ".local/state/goh/gohd.log", "dump.txt", "menu.txt"] {
+        if let Ok(s) = fs::read_to_string(dir.join(f)) {
+            let tail = &s[s.len().saturating_sub(8000)..];
+            eprintln!("DIAG {f}:\n{tail}");
+        }
+    }
+    if let Ok(o) = Command::new("ps").args(["-axo", "pid,ppid,pgid,stat,etime,command"]).output() {
+        let s = String::from_utf8_lossy(&o.stdout);
+        let me = std::process::id().to_string();
+        for l in s.lines().filter(|l| l.contains("zsh") || l.contains("goh") || l.contains("sleep") || l.contains("false") || l.contains("docker") || l.contains(&me) || l.contains("PID")) {
+            eprintln!("DIAG ps {l}");
+        }
     }
 }
 
@@ -151,6 +191,18 @@ pub struct Fixture {
     pub dir: tempfile::TempDir,
     pub socket: PathBuf,
     pub locale: String,
+}
+
+impl Drop for Fixture {
+    fn drop(&mut self) {
+        if std::thread::panicking() {
+            diag_report(self.dir.path());
+        }
+        if let Some(keep) = std::env::var_os("GOH_DIAG_KEEP") {
+            let name = self.dir.path().file_name().unwrap().to_owned();
+            let _ = fs::copy(self.dir.path().join("trace.txt"), Path::new(&keep).join(name));
+        }
+    }
 }
 
 impl Fixture {
@@ -196,7 +248,8 @@ impl Fixture {
             .env("GOH_DISPLAY", "inline") // tests must not open the real popup unless they say so
             .env("GOH_LIVE", "off") // existing tests are Tab-triggered; live tests switch it on
             .env("GOH_INLINE_STYLE", "flat") // existing tests read the flat rows; box tests switch it on
-            .env("GOH_CTL", ctl);
+            .env("GOH_CTL", ctl)
+            .env("GOH_TRACE", self.path("trace.txt"));
         for (k, v) in extra_env {
             cmd.env(k, v);
         }
