@@ -11,6 +11,13 @@ use serde_json::{Map, Value};
 /// on every setting.
 pub const TEMPLATE: &str = include_str!("../../../docs/examples/config.jsonc");
 
+/// The first line of the longer template goh wrote up to 2.6: a file that starts with it was written by goh, and is
+/// rewritten in the current one.
+const OLD_HEADER: &str = "// goh settings. `goh config` opens this file in $EDITOR; `goh config show` prints it and checks it.";
+
+/// Settings goh wrote once but never read; they are left out when a file is rewritten.
+const UNUSED: [(&str, &str); 5] = [("", "configVersion"), ("privacy", "telemetry"), ("privacy", "networkSpecs"), ("privacy", "dynamicGenerators"), ("privacy", "retainCommandHistory")];
+
 pub fn path() -> io::Result<PathBuf> {
     goh_theme::config_path().ok_or_else(|| io::Error::other("no HOME and no GOH_CONFIG: cannot place the config file"))
 }
@@ -27,10 +34,10 @@ pub fn ensure() -> io::Result<PathBuf> {
     Ok(path)
 }
 
-/// A file written before the template had comments gets them: rewritten from the template with its own settings,
-/// after a copy is kept next to it. `Ok(Some(copy))` when that happened. A file that already has comments, or one
-/// that cannot be read or checked, is left alone.
-pub fn add_comments(path: &Path) -> io::Result<Option<PathBuf>> {
+/// A file written before the current template (one without comments, or one goh wrote with its older, longer
+/// comments) is rewritten from the template with its own settings, after a copy is kept next to it. `Ok(Some(copy))`
+/// when that happened. A file with comments of your own, or one that cannot be read or checked, is left alone.
+pub fn upgrade(path: &Path) -> io::Result<Option<PathBuf>> {
     let text = std::fs::read_to_string(path)?;
     let Some(commented) = commented(&text) else { return Ok(None) };
     let name = path.file_name().map_or_else(|| "config.json".into(), |n| n.to_string_lossy().into_owned());
@@ -40,14 +47,19 @@ pub fn add_comments(path: &Path) -> io::Result<Option<PathBuf>> {
     Ok(Some(copy))
 }
 
-/// `text` (a file without comments) as the commented template filled with its settings; `None` unless that keeps
-/// every setting it has.
+/// `text` (a file without comments, or one in the old template) as the current template filled with its settings;
+/// `None` unless that keeps every setting it has (bar [`UNUSED`]).
 fn commented(text: &str) -> Option<String> {
-    if goh_theme::strip_comments(text) != text || validate(text).is_err() {
+    let old_template = text.lines().next() == Some(OLD_HEADER);
+    if (goh_theme::strip_comments(text) != text && !old_template) || validate(text).is_err() {
         return None;
     }
-    let old = goh_theme::parse_config(text).ok()?;
+    let mut old = goh_theme::parse_config(text).ok()?;
     old.as_object()?;
+    for (section, key) in UNUSED {
+        let map = if section.is_empty() { old.as_object_mut() } else { old.get_mut(section).and_then(Value::as_object_mut) };
+        map.map(|m| m.remove(key));
+    }
     let new = with_comments(&old);
     let back = goh_theme::parse_config(&new).ok()?;
     keeps(&back, &old).then_some(new)
@@ -255,14 +267,26 @@ mod tests {
             "theme":{"mode":"custom","foreground":"#eeeeee","background":"#111111"},"privacy":{"telemetry":false,
             "networkSpecs":true,"dynamicGenerators":false,"retainCommandHistory":false},"$schema":"x"}"##;
         let new = commented(old).unwrap();
-        assert!(new.contains("// Where the suggestion menu is drawn.") && new.contains(r#""mode": "inline","#));
+        assert!(new.starts_with(TEMPLATE.lines().next().unwrap()) && new.contains(r#""mode": "inline","#));
         let v = goh_theme::parse_config(&new).unwrap();
         assert_eq!(v.pointer("/theme/background"), Some(&Value::from("#111111")), "settings the template does not name stay");
         assert_eq!((v.pointer("/$schema"), v.pointer("/display/live")), (Some(&Value::from("x")), Some(&Value::Bool(true))));
+        assert!(v.get("configVersion").is_none() && v.pointer("/privacy/telemetry").is_none(), "settings goh never read go");
         assert_eq!(env_lines(&v)[..4], ["GOH_DISPLAY=inline", "GOH_INLINE_STYLE=box", "GOH_ICONS=unicode", "GOH_LIMIT=5"], "a missing setting gets its default");
 
         assert!(commented(&new).is_none(), "a file with comments is left alone");
         assert!(commented("{ nope").is_none() && commented(r#"{"display":{"mode":"popup"}}"#).is_none(), "nor one that does not check out");
+    }
+
+    #[test]
+    fn a_file_in_the_old_longer_template_is_rewritten_in_the_short_one() {
+        let old = format!("{OLD_HEADER}\n// more of it\n{{\n  \"configVersion\": 1,\n  \"display\": {{\n    // Where the menu is drawn.\n    \"mode\": \"inline\"\n  }},\n  \"privacy\": {{ \"telemetry\": false, \"recordCommands\": true }}\n}}\n");
+        let new = commented(&old).unwrap();
+        let v = goh_theme::parse_config(&new).unwrap();
+        assert_eq!((v.pointer("/display/mode"), v.pointer("/privacy/recordCommands")), (Some(&Value::from("inline")), Some(&Value::Bool(true))));
+        assert!(v.get("configVersion").is_none() && v.pointer("/privacy/telemetry").is_none());
+        assert!(!new.contains("more of it") && !new.contains("Where the menu"), "no comment of the old template is carried over");
+        assert!(commented("// my own note\n{}").is_none(), "a file with comments of your own is left alone");
     }
 
     #[test]
@@ -271,10 +295,10 @@ mod tests {
         let file = dir.path().join("config.json");
         std::fs::write(&file, r#"{"display":{"maxSuggestions":5}}"#).unwrap();
         std::fs::write(dir.path().join("config.json.bak"), "older").unwrap();
-        assert_eq!(add_comments(&file).unwrap(), Some(dir.path().join("config.json.bak.2")), "an earlier copy is not overwritten");
+        assert_eq!(upgrade(&file).unwrap(), Some(dir.path().join("config.json.bak.2")), "an earlier copy is not overwritten");
         assert_eq!(std::fs::read_to_string(dir.path().join("config.json.bak.2")).unwrap(), r#"{"display":{"maxSuggestions":5}}"#);
         assert!(std::fs::read_to_string(&file).unwrap().contains(r#""maxSuggestions": 5,"#));
-        assert_eq!(add_comments(&file).unwrap(), None, "only once");
+        assert_eq!(upgrade(&file).unwrap(), None, "only once");
     }
 
     #[test]

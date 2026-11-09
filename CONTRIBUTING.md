@@ -16,8 +16,8 @@ the last release; nobody edits a version number by hand.
 
 A scope is optional: `fix(zsh): ...`, `feat(spec): ...`.
 
-**What is a breaking change** (the public surface): `goh` commands and flags; the settings file keys and
-`configVersion`; the completion spec JSON (`schemaVersion`) and the format of `snippets.json`; the environment
+**What is a breaking change** (the public surface): `goh` commands and flags; the settings file keys; the completion
+spec JSON (`schemaVersion`) and the format of `snippets.json`; the environment
 variables the adapters read (`GOH_*`); behaviour of the keys the adapters bind. Internals (the socket protocol between
 a `goh` and a `gohd` of the same version, the crates' Rust APIs) are not.
 
