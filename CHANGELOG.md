@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.6.4](https://github.com/caophuoclong/goh/compare/v2.6.3...v2.6.4) (2026-11-08)
+
+
+### Bug fixes
+
+* **zsh:** open the live menu when the daemon or a slow program answers late ([3c6c1a5](https://github.com/caophuoclong/goh/commit/3c6c1a57f12bfde5cf3b110fabb7f5aa31071ae8))
+* **zsh:** open the live menu when the daemon or a slow program answers late ([864de42](https://github.com/caophuoclong/goh/commit/864de4233f73c4bf1a5b09e711313926100dbdba))
+
 ## [2.6.3](https://github.com/caophuoclong/goh/compare/v2.6.2...v2.6.3) (2026-11-05)
 
 
