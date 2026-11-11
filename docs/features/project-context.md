@@ -3,7 +3,7 @@ id: project-context
 title: Project-aware suggestions
 status: stable
 since: 1.2.0
-updated: 2026-10-31
+updated: 2026-11-11
 area: core
 ---
 
@@ -13,7 +13,8 @@ Arguments come from the project you are in and the tools you use: branches, scri
 
 ## Behaviour
 
-- git: branches, tags, stashes, recent commits, changed files, your `[alias]`es.
+- git: branches, tags, stashes, recent commits, changed files, your `[alias]`es. Branches list the one you checked
+  out before first (`previous branch`, where `git checkout -` goes), then the current one, then the rest.
 - `package.json` scripts and `node_modules/.bin`; `pyproject.toml`/`Pipfile` scripts; `deno.json` tasks.
 - Makefile, justfile and Taskfile targets; compose services; Cargo bins, examples, features and workspace packages.
 - `$CDPATH` folders; kubectl pods and namespaces; Docker containers, images, networks and volumes; tmux sessions
@@ -32,6 +33,7 @@ Arguments come from the project you are in and the tools you use: branches, scri
 
 ## Changes
 
+- unreleased: git branches list the branch you checked out before first, marked `previous branch` (#67).
 - unreleased: `pkill` and `killall` on Linux suggest kernel threads by their whole name (`kworker/0:1`, not `0:1`).
 - unreleased: in zsh, values from a slow program join the open menu by themselves.
 - unreleased: Docker networks and volumes, tmux sessions and windows, systemd units and running processes are suggested.

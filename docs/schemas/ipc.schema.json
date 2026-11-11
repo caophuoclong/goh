@@ -31,7 +31,7 @@
         "cwd": { "type": "string", "maxLength": 4096 },
         "buffer": { "type": "string", "maxLength": 16384 },
         "cursor_byte": { "$ref": "#/$defs/byteOffset" },
-        "editor_state": { "enum": ["editing", "suspended"] },
+        "editor_state": { "enum": ["editing", "history", "suspended"], "description": "`history`: the shell's history as whole lines, newest first (Up at an empty prompt), instead of completions." },
         "live": { "type": "boolean", "description": "As-you-type request: results only when the line is a recognised command in progress." }
       }
     },

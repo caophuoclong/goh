@@ -3,7 +3,7 @@ id: zsh-adapter
 title: zsh: menus as you type
 status: stable
 since: 1.0.0
-updated: 2026-11-08
+updated: 2026-11-11
 area: shells
 shells: [zsh]
 settings: [display.live, display.maxSuggestions, display.mode, display.enterRuns, display.inlineStyle, display.icons]
@@ -36,6 +36,8 @@ in an IDE. Load it with `goh setup` or `eval "$(goh init zsh)"`.
   only insert (a second Enter runs). With several untouched candidates Enter runs the line as typed. Ctrl+C ends
   the line and takes the inline menu off the screen before the next prompt; the line itself, with any ghost text, stays.
 - Ghost text: the best line is shown after the cursor; → takes it.
+- ↑ at an empty prompt opens your history as a menu, newest first, when the command record is on (see
+  [history-suggestions](history-suggestions.md)); there ↑ goes further back and ↓ forward.
 - Where the popup cannot draw (Ghostty, Kitty, WezTerm, tmux, ssh, ...), the menu is a floating framed box under the word you
   are completing, in the terminal's own colours; no permission is needed. `display.inlineStyle: "flat"` draws plain
   rows instead, which a screen reader reads more easily. The box finds the word's column by measuring your prompt,
@@ -69,6 +71,7 @@ in an IDE. Load it with `goh setup` or `eval "$(goh init zsh)"`.
 
 ## Changes
 
+- unreleased: ↑ at an empty prompt opens the history as a menu when the command record is on (#68).
 - unreleased: in WSL under Windows Terminal, menus are drawn by the Windows popup (`goh-popup.exe`).
 - unreleased: on a busy or slow machine the menu opens as you type even when the daemon or a slow program (Docker) answers late, instead of staying shut until the next key; asking again for a late answer no longer holds the shell.
 - unreleased: an opened folder lists only its own entries; `cd` no longer puts folders you visit often elsewhere under it.

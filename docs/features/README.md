@@ -63,5 +63,7 @@ Write for a user: what happens, what to type, what it needs. Implementation note
 | [ssh-popup](ssh-popup.md) | ssh | experimental | unreleased |
 | [ssh-host-copy](ssh-host-copy.md) | ssh | experimental | unreleased |
 | [doctor](doctor.md) | tooling | stable | 1.0.0 |
+| [settings-file](settings-file.md) | tooling | stable | 1.0.0 |
+| [readme-demo](readme-demo.md) | tooling | stable | unreleased |
 | [install](install.md) | tooling | stable | 1.0.0 |
 | [update-check](update-check.md) | tooling | stable | 1.5.0 |

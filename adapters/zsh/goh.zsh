@@ -75,7 +75,7 @@ typeset -gi _goh_pin=-1 _goh_pout=-1 _goh_overlay=0 _goh_win=1 _goh_menu_id=0
 # _goh_overlay: -1 = awaiting the first popup answer, 0 = inline, 1 = overlay.
 typeset -ga _goh_ranges
 typeset -g _goh_new _goh_pre _goh_tail_out
-typeset -gi _goh_on=0 _goh_sel=1 _goh_buf_cur=0 _goh_navigated=0
+typeset -gi _goh_on=0 _goh_sel=1 _goh_buf_cur=0 _goh_navigated=0 _goh_hist=0
 # The history line shown as ghost text (its index in the menu), which → takes; 0 = none.
 typeset -gi _goh_ghost_line=0
 typeset -g _goh_buf
@@ -435,7 +435,7 @@ _goh_clear_msg() { (( _goh_msg )) || return 0; _goh_msg=0; zle -M '' }
 _goh_close() {
   [[ -n $_goh_pop_pid ]] && ! _goh_pop_alive && _goh_pop_stop
   (( _goh_on )) || return 0
-  _goh_on=0 _goh_navigated=0 _goh_ghost_line=0
+  _goh_on=0 _goh_navigated=0 _goh_ghost_line=0 _goh_hist=0
   (( _goh_notice_shown )) && _goh_notice= _goh_notice_shown=0
   _goh_clear_ghost
   # ZLE owns message removal at line-init/line-finish. A -M refresh there leaves its
@@ -946,8 +946,9 @@ _goh_redraw() {
   _goh_pop_show     # fails where no popup draws, which is no failure of the menu
   return 0
 }
-_goh_down() { _goh_move 1 down-line-or-history }
-_goh_up()   { _goh_move -1 up-line-or-history }
+# In the history menu ↑ opened (newest line first) ↑ goes back in time, down the rows, as ↑ walks the history.
+_goh_down() { _goh_move $(( _goh_hist ? -1 : 1 )) down-line-or-history }
+_goh_up()   { _goh_move $(( _goh_hist ? 1 : -1 )) up-line-or-history }
 
 # Esc, alone or starting a sequence. The terminal writes a key's sequence at once, so what follows Esc is read while
 # it can still become a known key, waiting at most 20 ms for each byte. Up/Down/Right act on the menu; a lone Esc
@@ -1115,7 +1116,7 @@ _goh_back() {
 # Parse `goh menu` output ($1) into the _goh_* arrays; REPLY = number of candidates.
 _goh_parse_menu() {
   (( ++_goh_menu_id ))
-  _goh_navigated=0
+  _goh_navigated=0 _goh_hist=0
   local a
   for a in $_goh_row_arrays; do eval "$a=()"; done
   _goh_tree=()
@@ -1412,6 +1413,31 @@ _goh_right() {
   if [[ $key == *'[C'* ]]; then zle ${_goh_orig_right_csi:-forward-char}; else zle ${_goh_orig_right_ss3:-forward-char}; fi
 }
 
+# ↑ at an empty prompt: the history as a menu, newest line first and highlighted, so Enter runs it as after ↑ alone;
+# ↑ goes further back, Tab or → puts the line in to edit, Esc leaves the prompt empty. Anywhere else, or with no
+# history, ↑ is the user's own widget. Needs the command record (GOH_RECORD=on), which is where gohd reads history.
+typeset -g _goh_orig_up_csi _goh_orig_up_ss3
+_goh_hist_up() {
+  emulate -L zsh
+  setopt no_unset
+  local key=${(V)KEYS} out
+  if [[ -z $BUFFER && $CONTEXT == start ]] && (( ! _goh_on )); then
+    out=$(command $_GOH_CTL menu --labels --history --session $_GOH_SESSION --cwd $PWD --limit 50 --cursor-byte 0 --buffer '' 2>/dev/null) || out=
+    if [[ -n $out ]] && _goh_parse_menu "$out" && (( REPLY )); then
+      _goh_drop_pred
+      _goh_on=1 _goh_hist=1 _goh_navigated=1 _goh_sel=1 _goh_win=1 _goh_buf=$BUFFER _goh_buf_cur=$CURSOR
+      _goh_keys_on
+      _goh_build_items
+      [[ $_GOH_DISPLAY == inline ]] || _goh_pop_start
+      _goh_render
+      zle -R
+      _goh_pop_show
+      return 0
+    fi
+  fi
+  if [[ $key == *'[A'* ]]; then zle ${_goh_orig_up_csi:-up-line-or-history}; else zle ${_goh_orig_up_ss3:-up-line-or-history}; fi
+}
+
 # `goh reload` restarts gohd; in this shell it also loads the adapter again, from the goh now installed and with the
 # config read again, so no `exec $SHELL` is needed here. Other open shells keep theirs until they do the same.
 goh() {
@@ -1440,6 +1466,12 @@ goh-load() {
     zle -N _goh_right
     bindkey '^[[C' _goh_right
     bindkey '^[OC' _goh_right
+    # ↑ at an empty prompt opens the history menu, and is the user's own ↑ otherwise.
+    _goh_orig_up_csi=${${(z)$(bindkey '^[[A' 2>/dev/null)}[2]}; [[ $_goh_orig_up_csi == (undefined-key|_goh_hist_up) ]] && _goh_orig_up_csi=up-line-or-history
+    _goh_orig_up_ss3=${${(z)$(bindkey '^[OA' 2>/dev/null)}[2]}; [[ $_goh_orig_up_ss3 == (undefined-key|_goh_hist_up) ]] && _goh_orig_up_ss3=up-line-or-history
+    zle -N _goh_hist_up
+    bindkey '^[[A' _goh_hist_up
+    bindkey '^[OA' _goh_hist_up
   fi
   # Ctrl+C aborts ZLE without line-finish. The next line-init must dismiss the old menu as well.
   add-zle-hook-widget zle-line-init _goh_hook_init
@@ -1479,6 +1511,7 @@ goh-unload() {
   add-zle-hook-widget -d zle-line-init _goh_hook_init
   add-zle-hook-widget -d zle-line-init _goh_hook_predict 2>/dev/null
   [[ -n $_goh_orig_right_csi ]] && { bindkey '^[[C' $_goh_orig_right_csi; bindkey '^[OC' ${_goh_orig_right_ss3:-forward-char} }
+  [[ -n $_goh_orig_up_csi ]] && { bindkey '^[[A' $_goh_orig_up_csi; bindkey '^[OA' ${_goh_orig_up_ss3:-up-line-or-history} }
   add-zsh-hook -d preexec _goh_run_start 2>/dev/null
   add-zsh-hook -d precmd _goh_run_done 2>/dev/null
   add-zle-hook-widget -d zle-line-pre-redraw _goh_hook_redraw
@@ -1489,7 +1522,7 @@ goh-unload() {
   add-zsh-hook -d precmd _goh_hook_precmd 2>/dev/null
   add-zsh-hook -d precmd _goh_erase_left 2>/dev/null
   (( _goh_ssh_wrapped )) && { unfunction ssh 2>/dev/null; _goh_ssh_wrapped=0 }
-  zle -D _goh_tab _goh_up _goh_down _goh_esc _goh_enter _goh_left _goh_right _goh_on_decision _goh_on_late 2>/dev/null
+  zle -D _goh_tab _goh_up _goh_down _goh_esc _goh_enter _goh_left _goh_right _goh_hist_up _goh_on_decision _goh_on_late 2>/dev/null
   unset _GOH_ORIG_TAB
 }
 

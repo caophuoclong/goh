@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/media/features.gif" width="860" alt="goh suggesting git subcommands and branches, Enter running the picked branch, and a red warning on git push --force">
+  <img src="docs/media/features.gif" width="1100" alt="Real zsh session: live git suggestions, arrow keys and Tab selecting a branch, Docker flags, a red force-push warning, and checkout typo correction">
 </p>
 
 ## Why goh
@@ -55,10 +55,18 @@ More ways to install are in [Install](#install).
 
 ## See it in a real terminal
 
-A recording of goh in zsh, drawing its menu inline (made with [VHS](https://github.com/charmbracelet/vhs) from
-[docs/media/demo.tape](docs/media/demo.tape)):
+The demo above runs goh's zsh adapter and daemon, drawing the menu inline. It shows live filtering, ↑↓ and Tab
+selection, branches read from a real Git repo, Docker flags, the `git push --force` warning, `git chekcout`
+correction and expandable folders. The force-push line is cleared without running it.
 
-![goh completing git and docker commands in zsh](docs/media/demo.gif)
+Project scripts, Makefile targets, snippet expansion and opt-in history suggestions (with secrets masked):
+
+![goh reading project scripts, expanding a snippet and suggesting private demo history](docs/media/demo.gif)
+
+Regenerate both with `scripts/record-demo.sh`. The [main tape](docs/media/demo.tape),
+[project and history tape](docs/media/tour.tape) and
+[setup and verification details](docs/media/README.md) are checked in; the script creates and removes its own
+private demo environment.
 
 ## Where the menu appears
 

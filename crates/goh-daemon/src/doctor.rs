@@ -214,7 +214,7 @@ pub fn evaluate(i: &Inputs) -> Vec<Check> {
 pub fn round_trip(sock: &Path) -> RoundTrip {
     let start = std::time::Instant::now();
     let session = format!("doctor-{}", std::process::id());
-    let reply = crate::client::menu(sock, &session, "/", TEST_LINE, TEST_LINE.len(), 20, false);
+    let reply = crate::client::menu(sock, &session, "/", TEST_LINE, TEST_LINE.len(), 20, crate::client::Ask::All);
     let millis = start.elapsed().as_millis();
     match reply {
         Ok((items, _)) if items.iter().any(|i| i.label == TEST_EXPECT) => RoundTrip::Offered { millis },
