@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.7.0](https://github.com/caophuoclong/goh/compare/v2.6.4...v2.7.0) (2026-11-11)
+
+
+### Features
+
+* **git:** list the previously checked-out branch first ([f3efad5](https://github.com/caophuoclong/goh/commit/f3efad5230bd50a55006618fdb1e8051924236a4))
+* **git:** list the previously checked-out branch first ([f8d1309](https://github.com/caophuoclong/goh/commit/f8d1309687dd127f4f1322aae15f523a2a81162b)), closes [#67](https://github.com/caophuoclong/goh/issues/67)
+* **zsh:** open the history as a menu with Up at an empty prompt ([3428bfd](https://github.com/caophuoclong/goh/commit/3428bfd51d778e7734287ee7f97c1d43d8d2c0ed))
+* **zsh:** open the history as a menu with Up at an empty prompt ([0b467cf](https://github.com/caophuoclong/goh/commit/0b467cfe62a0fd37c0b1550551295af8b084266f)), closes [#68](https://github.com/caophuoclong/goh/issues/68)
+
 ## [2.6.4](https://github.com/caophuoclong/goh/compare/v2.6.3...v2.6.4) (2026-11-08)
 
 
