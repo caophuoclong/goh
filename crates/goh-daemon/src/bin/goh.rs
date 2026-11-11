@@ -3,7 +3,7 @@
 //! The rest is what the shell adapters call.
 //!
 //! Adapter helper.
-//!   goh menu     --session S --cwd D --cursor-byte N --buffer B [--limit N] [--live] [--late]
+//!   goh menu     --session S --cwd D --cursor-byte N --buffer B [--limit N] [--live] [--late] [--history]
 //!       --live: as-you-type; no output unless the line is a recognised command in progress
 //!       -> one line per candidate: start US end US cursor US kind US label US insert US description US ranges US value US used US brand
 //!          (ranges = `s-e,s-e` byte ranges of the label that matched; may be empty)
@@ -643,7 +643,7 @@ fn run() -> Option<()> {
         return list_specs(&rest);
     }
     let (mut session, mut cwd, mut cursor, mut buffer, mut limit) = (None, None, None, None, 8usize);
-    let (mut live, mut labels, mut late) = (false, false, false);
+    let (mut live, mut labels, mut late, mut history) = (false, false, false, false);
     while let Some(flag) = args.next() {
         match flag.as_str() {
             // Flags with no value. `--labels`: the adapter shows labels, so a history line with its secret masked in
@@ -653,6 +653,8 @@ fn run() -> Option<()> {
             // `--late`: print a last line `pending` while a program asked for values has not answered, so the
             // adapter can ask again; other adapters never see it.
             "--late" => late = true,
+            // `--history`: the history itself, newest first, for the menu ↑ opens at an empty prompt.
+            "--history" => history = true,
             _ => {
                 let v = args.next()?;
                 match flag.as_str() {
@@ -668,9 +670,10 @@ fn run() -> Option<()> {
     }
     let (session, cwd, cursor, buffer) = (session?, cwd?, cursor?, buffer?);
     let sock = paths::socket_path();
+    let ask = if history { client::Ask::History } else if live { client::Ask::Live } else { client::Ask::All };
 
     let attempt = || match sub.as_str() {
-        "menu" => client::menu(&sock, &session, &cwd, &buffer, cursor, limit, live).map(|(mut items, pending)| {
+        "menu" => client::menu(&sock, &session, &cwd, &buffer, cursor, limit, ask).map(|(mut items, pending)| {
             items.retain(|i| labels || i.kind != "history" || i.label == i.edit.insert);
             let pending = pending && late;
             let command = buffer.split_whitespace().find(|w| !w.contains('=')).unwrap_or_default();
@@ -689,7 +692,7 @@ fn run() -> Option<()> {
             }
             (!items.is_empty() || pending).then_some(())
         }),
-        "complete" => client::complete(&sock, &session, &cwd, &buffer, cursor, live).map(|(_, _, r)| {
+        "complete" => client::complete(&sock, &session, &cwd, &buffer, cursor, ask).map(|(_, _, r)| {
             matches!(r, Reply::Results { .. }).then(|| println!("{}", serde_json::to_string_pretty(&r).unwrap_or_default()))
         }),
         _ => Ok(None),

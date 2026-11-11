@@ -91,6 +91,28 @@ fn the_record_is_kept_the_next_command_is_predicted_and_variables_complete() {
     assert!(state.starts_with("BUF[l]") && !state.contains("git commit"), "{state}");
     sh.send("\x15", 100);
 
+    // Up at the empty prompt opens the history, newest line first and highlighted; Up again goes further back,
+    // Tab puts the highlighted line in, Esc leaves the line empty.
+    sh.send("\x1b[A", 500);
+    let state = fx.dumped(&mut sh);
+    assert!(state.starts_with("BUF[] CUR=0 on=1"), "{state}");
+    sh.send("\t", 300);
+    assert!(fx.dumped(&mut sh).starts_with("BUF[git add .] CUR=9 on=0"));
+    sh.send("\x15", 100);
+    sh.send("\x1b[A", 500);
+    sh.send("\x1b[A", 300);
+    sh.send("\t", 300);
+    assert!(fx.dumped(&mut sh).starts_with("BUF[git commit -m ship] "));
+    sh.send("\x15", 100);
+    sh.send("\x1b[A", 500);
+    sh.send("\x1b", 300);
+    assert!(fx.dumped(&mut sh).starts_with("BUF[] CUR=0 on=0"));
+    // With something typed, Up is zsh's own: no menu opens.
+    sh.send("zz", 400);
+    sh.send("\x1b[A", 300);
+    assert!(!fx.dumped(&mut sh).contains("on=1"));
+    sh.send("\x15", 100);
+
     // A successful command is recorded with its folder; a failed one, and one starting with a space, are not.
     sh.send("print -r -- hello-record\n", 600);
     sh.send("false\n", 600);

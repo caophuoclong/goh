@@ -37,7 +37,18 @@ fn next_generation() -> u64 {
 }
 
 /// Ask for candidates; returns the stream (for a follow-up accept), the generation and the reply.
-pub fn complete(sock: &Path, session: &str, cwd: &str, buffer: &str, cursor_byte: usize, live: bool) -> io::Result<(UnixStream, u64, Reply)> {
+/// What a request asks the daemon for.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Ask {
+    /// Everything that completes the line (Tab).
+    All,
+    /// As you type: only for a recognised command in progress.
+    Live,
+    /// The shell's history as whole lines, newest first (↑ at an empty prompt).
+    History,
+}
+
+pub fn complete(sock: &Path, session: &str, cwd: &str, buffer: &str, cursor_byte: usize, ask: Ask) -> io::Result<(UnixStream, u64, Reply)> {
     let mut s = connect(sock)?;
     let generation = next_generation();
     let reply = round_trip(
@@ -50,8 +61,8 @@ pub fn complete(sock: &Path, session: &str, cwd: &str, buffer: &str, cursor_byte
             cwd: cwd.into(),
             buffer: buffer.into(),
             cursor_byte,
-            editor_state: "editing".into(),
-            live,
+            editor_state: if ask == Ask::History { "history" } else { "editing" }.into(),
+            live: ask == Ask::Live,
         },
     )?;
     Ok((s, generation, reply))
@@ -124,8 +135,8 @@ fn valid_edit(buffer: &str, e: &Edit) -> bool {
 /// Candidates for the menu, best first, with invalid insertions dropped, and whether a program has yet to answer. The adapter applies them
 /// locally while the buffer is unchanged, so no `accept` round trip is needed. Whole lines from history come last
 /// but are kept past `limit` (there are at most three): the adapter shows the best one as ghost text.
-pub fn menu(sock: &Path, session: &str, cwd: &str, buffer: &str, cursor_byte: usize, limit: usize, live: bool) -> io::Result<(Vec<Item>, bool)> {
-    let (_, _, reply) = complete(sock, session, cwd, buffer, cursor_byte, live)?;
+pub fn menu(sock: &Path, session: &str, cwd: &str, buffer: &str, cursor_byte: usize, limit: usize, ask: Ask) -> io::Result<(Vec<Item>, bool)> {
+    let (_, _, reply) = complete(sock, session, cwd, buffer, cursor_byte, ask)?;
     let Reply::Results { suggestions, pending, .. } = reply else { return Ok((vec![], false)) };
     Ok((keep_history(items(suggestions, buffer), limit), pending))
 }
