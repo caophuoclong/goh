@@ -19,6 +19,25 @@ pub fn check_env(env: &dyn Fn(&str) -> Option<String>, app: App) -> Result<(), R
     }
 }
 
+/// Windows: the shell must run in Windows Terminal (it sets `WT_SESSION` in every pane, and passes it into WSL), on
+/// this machine, with no multiplexer. A popup started from WSL gets these variables through `WSLENV`.
+pub fn check_windows_env(env: &dyn Fn(&str) -> Option<String>) -> Result<(), Reason> {
+    let set = |k: &str| env(k).is_some_and(|v| !v.is_empty());
+    if set("TMUX") {
+        return Err(Reason::Multiplexer("tmux"));
+    }
+    if set("STY") {
+        return Err(Reason::Multiplexer("screen"));
+    }
+    if set("SSH_CONNECTION") || set("SSH_TTY") {
+        return Err(Reason::Remote);
+    }
+    if !set("WT_SESSION") {
+        return Err(Reason::Windows("the shell is not running in Windows Terminal (WT_SESSION is not set)".into()));
+    }
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -47,5 +66,15 @@ mod tests {
         assert_eq!(check_env(&env(&[base, ("TMUX", "/tmp/x")]), App::ITerm2), Err(Reason::Multiplexer("tmux")));
         assert_eq!(check_env(&env(&[base, ("STY", "1")]), App::ITerm2), Err(Reason::Multiplexer("screen")));
         assert_eq!(check_env(&env(&[base, ("SSH_CONNECTION", "a b c d")]), App::ITerm2), Err(Reason::Remote));
+    }
+
+    #[test]
+    fn windows_needs_a_local_windows_terminal_pane() {
+        let wt = ("WT_SESSION", "2f1b3c1e-0000-4000-8000-000000000000");
+        assert_eq!(check_windows_env(&env(&[wt])), Ok(()));
+        assert!(matches!(check_windows_env(&env(&[])), Err(Reason::Windows(_))));
+        assert!(matches!(check_windows_env(&env(&[("WT_SESSION", "")])), Err(Reason::Windows(_))));
+        assert_eq!(check_windows_env(&env(&[wt, ("TMUX", "/tmp/tmux-1000/default,1,0")])), Err(Reason::Multiplexer("tmux")));
+        assert_eq!(check_windows_env(&env(&[wt, ("SSH_TTY", "/dev/pts/1")])), Err(Reason::Remote));
     }
 }

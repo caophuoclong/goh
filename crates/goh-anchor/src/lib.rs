@@ -1,9 +1,10 @@
 //! Where is the caret on screen? (docs/docs/18, S-04)
 //!
-//! Sources are macOS Accessibility and, on Linux, AT-SPI terminal text plus X11 window identity.
-//! Everything else is `Unverified`; overlays must never be drawn for an unverified anchor.
+//! Sources are macOS Accessibility, on Linux AT-SPI terminal text plus X11 window identity, and on Windows UI
+//! Automation in Windows Terminal. Everything else is `Unverified`; overlays must never be drawn for an unverified anchor.
 //! macOS coordinates are global screen points. Linux coordinates are X11 physical pixels;
-//! popup surfaces must use the same scale and top-left origin.
+//! popup surfaces must use the same scale and top-left origin. Windows coordinates are physical pixels divided by
+//! [`Anchor::scale`], the scale of the display that holds the caret.
 
 pub mod linux;
 mod gate;
@@ -11,8 +12,10 @@ mod retry;
 mod rules;
 #[cfg(target_os = "macos")]
 mod ax;
+#[cfg(windows)]
+mod win;
 
-pub use gate::check_env;
+pub use gate::{check_env, check_windows_env};
 pub use retry::{retry, settle_from};
 pub use rules::{caret_from_rect, App, Caret, Rect, Reason};
 
@@ -23,6 +26,8 @@ pub struct Focus {
     pub(crate) inner: ax::Focus,
     #[cfg(target_os = "linux")]
     pub(crate) inner: linux::Focus,
+    #[cfg(windows)]
+    pub(crate) inner: win::Focus,
 }
 
 /// A caret position tied to the particular terminal window and text element that owns it.
@@ -32,6 +37,9 @@ pub struct Anchor {
     pub caret: Caret,
     pub display: Rect,
     pub focus: Focus,
+    /// Physical pixels per unit of `caret` and `display`, for a surface placed in physical pixels (Windows). 1 where
+    /// the coordinates already are the surface's own.
+    pub scale: f64,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -71,7 +79,12 @@ pub fn locate_with(opts: &Options) -> (Outcome, Vec<String>) {
         let _ = opts;
         linux::locate()
     }
-    #[cfg(not(any(target_os = "macos", target_os = "linux")))]
+    #[cfg(windows)]
+    {
+        let _ = opts;
+        win::locate()
+    }
+    #[cfg(not(any(target_os = "macos", target_os = "linux", windows)))]
     {
         let _ = opts;
         (Outcome::Unverified(Reason::UnsupportedPlatform), Vec::new())
@@ -105,13 +118,13 @@ pub fn probe() -> Vec<String> {
     {
         ax::probe()
     }
-    #[cfg(target_os = "linux")]
+    #[cfg(any(target_os = "linux", windows))]
     {
-        let (outcome, mut trace) = linux::locate();
+        let (outcome, mut trace) = locate_with(&Options::default());
         trace.push(format!("{outcome:?}"));
         trace
     }
-    #[cfg(not(any(target_os = "macos", target_os = "linux")))]
+    #[cfg(not(any(target_os = "macos", target_os = "linux", windows)))]
     {
         vec!["unsupported platform".to_string()]
     }

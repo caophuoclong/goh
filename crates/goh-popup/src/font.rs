@@ -104,6 +104,40 @@ pub fn iterm(profiles: &str, default_guid: Option<&str>, profile_name: Option<&s
     Some(TermFont { families: vec![name.to_string()], size: size.parse().ok() })
 }
 
+/// Windows Terminal's font when its `settings.json` (JSON with comments) is missing or says nothing: Cascadia Mono 12.
+pub const WINDOWS_TERMINAL_DEFAULT: (&str, f32) = ("Cascadia Mono", 12.0);
+
+/// The font of a Windows Terminal profile: the one whose `guid` is `profile_id` (`WT_PROFILE_ID`), else the default
+/// profile; its `font.face`/`font.size` (or the older `fontFace`/`fontSize`), else `profiles.defaults`, else
+/// Windows Terminal's default. Sizes there are typographic points, converted to the popup's 96-per-inch points.
+pub fn windows_terminal(settings: Option<&str>, profile_id: Option<&str>) -> TermFont {
+    let v: Value = settings.and_then(|s| serde_json::from_str(&strip_jsonc(s)).ok()).unwrap_or(Value::Null);
+    let profiles = v.get("profiles");
+    // `profiles` is an object with `defaults` and `list`, or (in old files) the list itself.
+    let list = profiles.and_then(|p| p.get("list").or(Some(p))).and_then(Value::as_array);
+    let by_guid = |id: &str| list?.iter().find(|p| p.get("guid").and_then(Value::as_str).is_some_and(|g| g.eq_ignore_ascii_case(id)));
+    let profile = profile_id.and_then(by_guid).or_else(|| v.get("defaultProfile").and_then(Value::as_str).and_then(by_guid));
+    let defaults = profiles.and_then(|p| p.get("defaults"));
+    let pick = |font_key: &str, old_key: &str| {
+        [profile, defaults].into_iter().flatten().find_map(|p| p.get("font").and_then(|f| f.get(font_key)).or_else(|| p.get(old_key)).cloned())
+    };
+    let families = pick("face", "fontFace").and_then(|f| f.as_str().map(css_families)).filter(|f| !f.is_empty());
+    let size = pick("size", "fontSize").and_then(|s| s.as_f64()).map(|s| s as f32).unwrap_or(WINDOWS_TERMINAL_DEFAULT.1);
+    TermFont {
+        families: families.unwrap_or_else(|| vec![WINDOWS_TERMINAL_DEFAULT.0.to_string()]),
+        size: Some(size * 96.0 / 72.0),
+    }
+}
+
+/// The file of `family` among the fonts Windows lists in its registry (value name, file): names such as
+/// `Cascadia Mono Regular (TrueType)` or `JetBrainsMono Nerd Font Mono Regular (TrueType)`. The regular face wins.
+pub fn windows_font_file<'a>(entries: &'a [(String, String)], family: &str) -> Option<&'a str> {
+    let want = normalize(family);
+    let face = |name: &str| normalize(name.rsplit_once(" (").map_or(name, |(n, _)| n));
+    let regular = format!("{want}regular");
+    entries.iter().find(|(n, _)| face(n) == regular).or_else(|| entries.iter().find(|(n, _)| face(n) == want)).map(|(_, f)| f.as_str())
+}
+
 /// Lowercase letters and digits only, so "JetBrains Mono" matches "JetBrainsMono-Regular".
 pub fn normalize(name: &str) -> String {
     name.chars().filter(|c| c.is_alphanumeric()).flat_map(char::to_lowercase).collect()
@@ -156,6 +190,42 @@ mod tests {
         assert_eq!(iterm(profiles, Some("B"), None).unwrap().families, ["JetBrainsMonoNF-Regular"]);
         assert_eq!(iterm(profiles, Some("B"), Some("Missing")).unwrap().size, Some(14.0));
         assert_eq!(iterm(profiles, None, None).unwrap().size, Some(12.0), "no default: the first profile");
+    }
+
+    #[test]
+    fn windows_terminal_profile_font_else_defaults_else_cascadia() {
+        let text = r#"{
+            // Windows Terminal writes comments into new files
+            "defaultProfile": "{61c54bbd-c2c6-5271-96e7-009a87ff44bf}",
+            "profiles": {
+                "defaults": { "font": { "face": "Cascadia Code", "size": 11 } },
+                "list": [
+                    { "guid": "{61c54bbd-c2c6-5271-96e7-009a87ff44bf}", "name": "Windows PowerShell" },
+                    { "guid": "{2c4de342-38b7-51cf-b940-2309a097f518}", "name": "Ubuntu", "font": { "face": "JetBrainsMono Nerd Font, Consolas", "size": 13.5 } },
+                    { "guid": "{574e775e-4f2a-5b96-ac1e-a2962a402336}", "name": "Old", "fontFace": "Consolas", "fontSize": 10 },
+                ]
+            }
+        }"#;
+        let ubuntu = windows_terminal(Some(text), Some("{2C4DE342-38B7-51CF-B940-2309A097F518}"));
+        assert_eq!(ubuntu, TermFont { families: vec!["JetBrainsMono Nerd Font".into(), "Consolas".into()], size: Some(18.0) });
+        let shell = windows_terminal(Some(text), Some("{61c54bbd-c2c6-5271-96e7-009a87ff44bf}"));
+        assert_eq!(shell.families, ["Cascadia Code"], "a profile without a font takes the defaults");
+        assert_eq!(windows_terminal(Some(text), Some("{574e775e-4f2a-5b96-ac1e-a2962a402336}")).families, ["Consolas"]);
+        assert_eq!(windows_terminal(Some(text), None).families, ["Cascadia Code"], "no profile id: the default profile");
+        assert_eq!(windows_terminal(None, None), TermFont { families: vec!["Cascadia Mono".into()], size: Some(16.0) });
+        assert_eq!(windows_terminal(Some("not json"), Some("{x}")).families, ["Cascadia Mono"]);
+    }
+
+    #[test]
+    fn windows_font_files_come_from_registry_names() {
+        let entries = [
+            ("Cascadia Mono Bold (TrueType)".to_string(), r"C:\Windows\Fonts\CascadiaMono-Bold.ttf".to_string()),
+            ("Cascadia Mono Regular (TrueType)".to_string(), r"C:\Windows\Fonts\CascadiaMono.ttf".to_string()),
+            ("Consolas (TrueType)".to_string(), r"C:\Windows\Fonts\consola.ttf".to_string()),
+        ];
+        assert_eq!(windows_font_file(&entries, "Cascadia Mono"), Some(r"C:\Windows\Fonts\CascadiaMono.ttf"));
+        assert_eq!(windows_font_file(&entries, "consolas"), Some(r"C:\Windows\Fonts\consola.ttf"));
+        assert_eq!(windows_font_file(&entries, "Fira Code"), None);
     }
 
     #[test]

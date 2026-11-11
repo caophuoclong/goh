@@ -6,6 +6,7 @@
 #
 #   ./install.sh --version 1.2.3       a given release instead of the latest
 #   ./install.sh --from-source         build with cargo instead of downloading (this is also the fallback)
+#   ./install.sh --package FILE        install a package already on disk (goh-VERSION-TARGET.tar.gz, e.g. from CI)
 #   ./install.sh --no-rc               install (or uninstall) the binaries only; do not touch any shell startup file
 #   ./install.sh --uninstall           remove the binaries and the block this script added to your shell file
 #
@@ -31,6 +32,7 @@ die() { printf 'goh: %s\n' "$*" >&2; exit 1; }
 action=install
 touch_rc=1
 from_source=0
+package=
 version=${GOH_VERSION:-}
 while [ $# -gt 0 ]; do
   case $1 in
@@ -38,7 +40,8 @@ while [ $# -gt 0 ]; do
     --no-rc) touch_rc=0 ;;
     --from-source) from_source=1 ;;
     --version) [ $# -ge 2 ] || die "--version needs a number, e.g. --version 1.2.3"; version=$2; shift ;;
-    -h|--help) sed -n '2,15p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    --package) [ $# -ge 2 ] || die "--package needs a file, e.g. --package goh-2.6.3-x86_64-unknown-linux-gnu.tar.gz"; package=$2; shift ;;
+    -h|--help) sed -n '2,16p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     *) die "unknown option $1 (see --help)" ;;
   esac
   shift
@@ -111,7 +114,31 @@ install_release() {
     grep " $name.tar.gz\$" SHA256SUMS > "$name.tar.gz.sha256" &&
     sha256_check "$name.tar.gz.sha256" &&
     tar -xzf "$name.tar.gz" ) || { say "download or checksum failed for $name"; return 1; }
-  for f in "$work/$name"/bin/*; do
+  install_unpacked "$work/$name" || return 1
+  say "installed goh $ver in $BIN"
+}
+
+# A package file on disk, checked against FILE.sha256 when that sits next to it (package.sh writes both).
+install_package() {
+  [ -f "$package" ] || die "$package: no such file"
+  dir=$(cd "$(dirname "$package")" && pwd)
+  file=$(basename "$package")
+  name=${file%.tar.gz}
+  if [ -f "$dir/$file.sha256" ]; then
+    (cd "$dir" && sha256_check "$file.sha256") || die "$file does not match $file.sha256"
+  else
+    say "no $file.sha256 next to $file: its checksum is not checked"
+  fi
+  if ! tar -xzf "$dir/$file" -C "$work" || [ ! -d "$work/$name/bin" ]; then
+    die "$file is not a goh package (no $name/bin inside)"
+  fi
+  install_unpacked "$work/$name" || die "could not install $file"
+  say "installed $name in $BIN"
+}
+
+# Copy an unpacked package's binaries (and on macOS its app bundle) into place.
+install_unpacked() {
+  for f in "$1"/bin/*; do
     b=$(basename "$f")
     [ -L "$f" ] && continue  # macOS goh-popup: a link into its app bundle, installed below
     # Replace through a rename: a running copy keeps working until it exits.
@@ -120,7 +147,7 @@ install_release() {
   # The app bundle keeps macOS's Accessibility permission for the popup itself across updates. Before 1.12 it was
   # named goh-popup.app: that one goes.
   app=
-  for a in "$work/$name"/libexec/*.app; do [ -d "$a" ] && { app=$a; break; }; done
+  for a in "$1"/libexec/*.app; do [ -d "$a" ] && { app=$a; break; }; done
   if [ -n "$app" ]; then
     mkdir -p "$LIB"
     rm -rf "$LIB/.Goh.app.new"
@@ -133,8 +160,7 @@ install_release() {
     fi
   fi
   # A popup left from an earlier version (older/minimal packages may have none) would be stale.
-  [ -x "$work/$name/bin/goh-popup" ] || rm -f "$BIN/goh-popup"
-  say "installed goh $ver in $BIN"
+  [ -x "$1/bin/goh-popup" ] || rm -f "$BIN/goh-popup"
 }
 
 # ---- from source -----------------------------------------------------------------------------------------------------
@@ -180,7 +206,9 @@ install_source() {
   say "built and installed in $BIN"
 }
 
-if [ "$from_source" = 1 ]; then
+if [ -n "$package" ]; then
+  install_package
+elif [ "$from_source" = 1 ]; then
   install_source
 elif ! install_release; then
   [ -z "$version" ] || die "could not install goh $version from a release package"

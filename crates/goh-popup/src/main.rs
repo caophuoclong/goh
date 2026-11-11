@@ -153,6 +153,8 @@ struct Shown {
 struct Resolved {
     view: View,
     at: Placement,
+    /// Physical pixels per point where `at` is (see `goh_anchor::Anchor::scale`).
+    scale: f64,
     reason: &'static str,
     focus: Option<goh_anchor::Focus>,
 }
@@ -160,6 +162,9 @@ struct Resolved {
 struct App {
     #[cfg(target_os = "macos")]
     scroll: Option<scroll::Monitor>,
+    /// Shown, moved and hidden by hand on Windows (see platform/windows.rs).
+    #[cfg(windows)]
+    window: Option<goh_popup::platform::windows::Window>,
     frames: Receiver<Frame>,
     shown: Option<Shown>,
     /// The menu currently open (until `hide`), re-checked every TICK.
@@ -200,7 +205,7 @@ impl App {
                             if self.owner.is_none() { self.owner = r.focus; }
                             emit(serde_json::json!({"type": "decision", "display": "overlay", "reason": r.reason,
                                 "x": r.at.x, "y": r.at.y, "above": r.at.above, "mouse_scroll": self.mouse_scroll()}));
-                            self.show_window(ctx, r.view, r.at, &req.theme, &req.state.id, req.enter_accepts);
+                            self.show_window(ctx, r.view, r.at, r.scale, &req.theme, &req.state.id, req.enter_accepts);
                         } else {
                             self.hide_window(ctx);
                         }
@@ -223,18 +228,31 @@ impl App {
         { false }
     }
 
-    fn show_window(&mut self, ctx: &egui::Context, view: View, at: Placement, theme: &HashMap<String, String>, _id: &str, enter_accepts: bool) {
+    #[allow(clippy::too_many_arguments)]
+    fn show_window(&mut self, ctx: &egui::Context, view: View, at: Placement, scale: f64, theme: &HashMap<String, String>, _id: &str, enter_accepts: bool) {
         #[cfg(target_os = "macos")]
         if let Some(scroll) = &self.scroll {
             scroll.target(_id, Screen { x: at.x, y: at.y, w: view.width.into(), h: view.height.into() });
         }
         ctx.send_viewport_cmd(egui::ViewportCommand::InnerSize(vec2(view.width, view.height)));
-        ctx.send_viewport_cmd(egui::ViewportCommand::OuterPosition(Pos2::new(at.x as f32, at.y as f32)));
-        ctx.send_viewport_cmd(egui::ViewportCommand::Visible(true));
+        self.place_window(ctx, at, scale, true);
         self.shown = Some(Shown { enter_accepts, view, colors: Colors::from(theme) });
         self.drawn = 0;
         self.visible = true;
         self.at = Some(at);
+    }
+
+    /// Move the window to `at` (and show it). On Windows by hand, so that showing it never activates it.
+    fn place_window(&self, ctx: &egui::Context, at: Placement, _scale: f64, show: bool) {
+        #[cfg(windows)]
+        if let Some(window) = self.window {
+            window.show_at(at.x, at.y, _scale);
+            return;
+        }
+        ctx.send_viewport_cmd(egui::ViewportCommand::OuterPosition(Pos2::new(at.x as f32, at.y as f32)));
+        if show {
+            ctx.send_viewport_cmd(egui::ViewportCommand::Visible(true));
+        }
     }
 
     fn hide_window(&mut self, ctx: &egui::Context) {
@@ -243,6 +261,11 @@ impl App {
         self.shown = None;
         self.visible = false;
         self.at = None;
+        #[cfg(windows)]
+        if let Some(window) = self.window {
+            window.hide();
+            return;
+        }
         ctx.send_viewport_cmd(egui::ViewportCommand::Visible(false));
     }
 
@@ -255,9 +278,9 @@ impl App {
         let now = result.as_ref().ok().filter(|r| self.owns_focus(&r.focus)).map(|r| r.at);
         match (plan_tick(self.visible, self.at, now), result) {
             (TickAction::Hide, _) => self.hide_window(ctx),
-            (TickAction::Show, Ok(r)) => self.show_window(ctx, r.view, r.at, &req.theme, &req.state.id, req.enter_accepts),
+            (TickAction::Show, Ok(r)) => self.show_window(ctx, r.view, r.at, r.scale, &req.theme, &req.state.id, req.enter_accepts),
             (TickAction::Move, Ok(r)) => {
-                ctx.send_viewport_cmd(egui::ViewportCommand::OuterPosition(Pos2::new(r.at.x as f32, r.at.y as f32)));
+                self.place_window(ctx, r.at, r.scale, false);
                 #[cfg(target_os = "macos")]
                 if let Some(scroll) = &self.scroll {
                     scroll.target(&req.state.id, Screen { x: r.at.x, y: r.at.y, w: r.view.width.into(), h: r.view.height.into() });
@@ -291,6 +314,7 @@ fn resolve_show(
     opts: &goh_anchor::Options,
 ) -> Result<Resolved, String> {
     let mut focus = None;
+    let mut scale = 1.0;
     // Manual positions are vouched for by the caller; "auto" must come from a verified source.
     let (caret, screen, verified, width): (Caret, Screen, bool, f64) = match anchor {
         Some(AnchorSpec::Manual(m)) => {
@@ -301,6 +325,7 @@ fn resolve_show(
         Some(AnchorSpec::Keyword(k)) if k == "auto" => match goh_anchor::locate_with(opts).0 {
             Outcome::Verified(a) => {
                 focus = Some(a.focus);
+                scale = a.scale;
                 (a.caret, a.display, true, placement::available_width(a.display))
             }
             Outcome::Unverified(reason) => return Err(resolve_reason(mode, reason.to_string())),
@@ -328,7 +353,7 @@ fn resolve_show(
     }
     let view = model::view_with(state, max_rows, width as f32, cell_width()).ok_or_else(|| "nothing to show".to_string())?;
     let at = placement::place(caret, (view.width as f64, view.height as f64), screen);
-    Ok(Resolved { view, at, reason: decision.reason, focus })
+    Ok(Resolved { view, at, scale, reason: decision.reason, focus })
 }
 
 fn resolve_reason(mode: DisplayMode, reason: String) -> String {
@@ -351,6 +376,7 @@ fn resolve_only() -> i32 {
                 "app": a.app.name(),
                 "caret": {"x": a.caret.x, "y": a.caret.y, "height": a.caret.height},
                 "display": {"x": a.display.x, "y": a.display.y, "w": a.display.w, "h": a.display.h},
+                "scale": a.scale,
             }), code)
         }
         Outcome::Unverified(r) => (r.to_string(), serde_json::Value::Null, 1),
@@ -591,7 +617,8 @@ fn cell_width() -> f32 {
 }
 
 /// What font the popup uses, first match wins: `GOH_POPUP_FONT` (`Name` or `Name:size`), then `popup.font` and
-/// `popup.fontSize` in the config file (`goh config`), then the terminal's own settings (VS Code, iTerm2).
+/// `popup.fontSize` in the config file (`goh config`), then the terminal's own settings (VS Code, iTerm2, Windows
+/// Terminal).
 /// Terminals that keep it somewhere unreadable (the Claude app, Terminal.app) get the built-in monospace.
 fn configured_font() -> Option<TermFont> {
     if let Some(spec) = std::env::var("GOH_POPUP_FONT").ok().filter(|s| !s.is_empty()) {
@@ -602,6 +629,11 @@ fn configured_font() -> Option<TermFont> {
     let size = popup.and_then(|p| p.get("fontSize")).and_then(|v| v.as_f64()).map(|s| s as f32);
     if let Some(name) = popup.and_then(|p| p.get("font")).and_then(|v| v.as_str()).filter(|s| !s.trim().is_empty()) {
         return Some(TermFont { families: vec![name.trim().to_string()], size });
+    }
+    #[cfg(windows)]
+    if std::env::var_os("WT_SESSION").is_some() {
+        let settings = goh_popup::platform::windows::terminal_settings();
+        return Some(font::windows_terminal(settings.as_deref(), std::env::var("WT_PROFILE_ID").ok().as_deref()));
     }
     let home = PathBuf::from(std::env::var_os("HOME")?);
     match std::env::var("TERM_PROGRAM").ok()?.as_str() {
@@ -658,7 +690,24 @@ fn load_terminal_font() -> Option<TerminalFont> {
     None
 }
 
-#[cfg(not(any(target_os = "macos", target_os = "linux")))]
+#[cfg(windows)]
+fn load_terminal_font() -> Option<TerminalFont> {
+    let wanted = configured_font()?;
+    let installed = goh_popup::platform::windows::installed_fonts();
+    for family in &wanted.families {
+        let Some(path) = font::windows_font_file(&installed, family) else { continue };
+        let Ok(metadata) = std::fs::metadata(path) else { continue };
+        if metadata.len() > 32 << 20 { continue; }
+        let Ok(bytes) = std::fs::read(path) else { continue };
+        let size = wanted.size.unwrap_or(FONT).clamp(FONT_MIN, FONT_MAX);
+        if let Some(cell_width) = font::cell_width(&bytes, size) {
+            return Some(TerminalFont { bytes, size, cell_width });
+        }
+    }
+    None
+}
+
+#[cfg(not(any(target_os = "macos", target_os = "linux", windows)))]
 fn load_terminal_font() -> Option<TerminalFont> {
     None
 }
@@ -850,6 +899,8 @@ fn main() -> eframe::Result {
             Ok(Box::new(App {
                 #[cfg(target_os = "macos")]
                 scroll: scroll::Monitor::new(cc.egui_ctx.clone()),
+                #[cfg(windows)]
+                window: goh_popup::platform::windows::Window::new(cc),
                 frames, shown: None, last: None, owner: None, visible: false, at: None, last_tick: Instant::now(), drawn: 0, screenshot, shot_rx, shot_tx, shot_requested: false }))
         }),
     )

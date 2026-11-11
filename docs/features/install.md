@@ -3,7 +3,7 @@ id: install
 title: Install and setup
 status: stable
 since: 1.0.0
-updated: 2026-11-01
+updated: 2026-11-07
 area: tooling
 platforms: [macos, linux]
 commands: [goh setup, goh init]
@@ -20,6 +20,10 @@ One command installs goh and its shell integration; `goh setup` adds or removes 
   adds one block to `~/.zshrc`, `~/.bashrc` or fish's `config.fish`; `--uninstall` removes exactly that.
 - Homebrew: `brew install caophuoclong/tap/goh && goh setup`.
 - `--from-source` builds with cargo; on macOS it installs the signed `Goh.app` like a release.
+- `--package FILE` installs a package already on disk (`goh-VERSION-TARGET.tar.gz`, as CI builds them), checked
+  against `FILE.sha256` when that is next to it.
+- Windows testing: CI's `goh-windows-test-kit` holds `goh-popup.exe` and the WSL package; its `install-test-kit.ps1`
+  installs both without building (see [docs/windows-checklist.md](../windows-checklist.md)).
 
 ## Limits
 
@@ -27,6 +31,7 @@ One command installs goh and its shell integration; `goh setup` adds or removes 
 
 ## Changes
 
+- unreleased: `install.sh --package FILE` installs a package already on disk; CI builds a Windows test kit.
 - unreleased: the Homebrew tap is now `caophuoclong/tap` (`brew install caophuoclong/tap/goh`).
 - unreleased: `--from-source` installs a signed `Goh.app` on macOS; `goh-popup.app` from earlier versions is removed.
 - 1.8.0: popup in Linux source installs.

@@ -56,6 +56,8 @@ in an IDE. Load it with `goh setup` or `eval "$(goh init zsh)"`.
   the count again, so the same line typed later is asked again. Asking again never waits for the slow program: the
   menu opens at once with what is already known. A daemon too busy to answer in time (a loaded machine, the first
   request after it starts) is asked again the same way, instead of leaving the menu shut until the next key.
+- WSL in a Windows Terminal pane: menus go to the Windows popup, `goh-popup.exe`, found on the Windows PATH that WSL
+  adds to its own (`GOH_POPUP` names another). tmux, screen and ssh keep them inline, as elsewhere.
 - Fail-open: any problem falls through to the widget Tab had before; `goh-unload` restores it.
 - Works next to zsh-autosuggestions and plugins that replace `zle-line-init`.
 
@@ -70,6 +72,7 @@ in an IDE. Load it with `goh setup` or `eval "$(goh init zsh)"`.
 ## Changes
 
 - unreleased: ↑ at an empty prompt opens the history as a menu when the command record is on (#68).
+- unreleased: in WSL under Windows Terminal, menus are drawn by the Windows popup (`goh-popup.exe`).
 - unreleased: on a busy or slow machine the menu opens as you type even when the daemon or a slow program (Docker) answers late, instead of staying shut until the next key; asking again for a late answer no longer holds the shell.
 - unreleased: an opened folder lists only its own entries; `cd` no longer puts folders you visit often elsewhere under it.
 - unreleased: the box lands under the word with a prompt that runs a command (starship, oh-my-zsh themes): its width is read from the terminal instead of counting as none (#58).
