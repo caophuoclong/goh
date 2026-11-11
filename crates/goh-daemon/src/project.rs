@@ -128,12 +128,15 @@ fn git_branches(cwd: &Path) -> Vec<Suggestion> {
     local.extend(packed_refs(&packed, "refs/heads/"));
     let mut seen = HashSet::new();
     local.retain(|n| seen.insert(n.clone()));
-    // Current branch first, then the rest alphabetically: stable, and what you most likely want to leave or compare.
-    local.sort_by(|a, b| (current.as_deref() != Some(a)).cmp(&(current.as_deref() != Some(b))).then_with(|| a.cmp(b)));
+    // The branch you came from first (where `git checkout -` goes), then the current one, then the rest
+    // alphabetically: stable, and what you most likely want to go back to, leave or compare.
+    let previous = previous_branch(&git.dir).filter(|p| current.as_deref() != Some(p.as_str()) && local.contains(p));
+    let rank = |n: &str| if previous.as_deref() == Some(n) { 0 } else if current.as_deref() == Some(n) { 1 } else { 2 };
+    local.sort_by(|a, b| rank(a).cmp(&rank(b)).then_with(|| a.cmp(b)));
     let mut out: Vec<Suggestion> = local
         .into_iter()
         .map(|n| {
-            let d = if current.as_deref() == Some(n.as_str()) { "current branch" } else { "branch" };
+            let d = ["previous branch", "current branch", "branch"][rank(&n)];
             suggestion(n, Some(d.into()))
         })
         .collect();
@@ -150,6 +153,23 @@ fn git_branches(cwd: &Path) -> Vec<Suggestion> {
     out.retain(|s| !s.name.starts_with('-') && !s.name.chars().any(|c| c.is_control() || c.is_whitespace()));
     out.truncate(MAX_NAMES);
     out
+}
+
+/// The branch checked out before the current one, as `git checkout -` finds it: the last `checkout: moving from A
+/// to B` in this checkout's HEAD reflog. Only its tail is read; a reflog grows for as long as the repository lives.
+fn previous_branch(git_dir: &Path) -> Option<String> {
+    use std::io::{Read, Seek, SeekFrom};
+    const TAIL: u64 = 64 * 1024;
+    let mut f = std::fs::File::open(git_dir.join("logs/HEAD")).ok()?;
+    let len = f.metadata().ok()?.len();
+    f.seek(SeekFrom::Start(len.saturating_sub(TAIL))).ok()?;
+    let mut bytes = Vec::new();
+    f.take(TAIL).read_to_end(&mut bytes).ok()?;
+    let text = String::from_utf8_lossy(&bytes);
+    text.lines().rev().find_map(|l| {
+        let (from, _to) = l.split_once("\tcheckout: moving from ")?.1.split_once(" to ")?;
+        Some(from.to_string())
+    })
 }
 
 /// `[remote "name"]` sections of a git config, with their `url`.
@@ -695,6 +715,32 @@ mod tests {
         assert_eq!(names, ["main", "feature/login", "release", "hotfix", "staging"]);
         assert_eq!(b[0].description.as_deref(), Some("current branch"));
         assert_eq!(b[3].description.as_deref(), Some("remote branch (origin)"));
+    }
+
+    #[test]
+    fn the_branch_checked_out_before_leads_as_git_checkout_dash_finds_it() {
+        let d = repo();
+        let logs = d.path().join(".git/logs");
+        std::fs::create_dir_all(&logs).unwrap();
+        let z = "0000000000000000000000000000000000000000";
+        std::fs::write(
+            logs.join("HEAD"),
+            format!(
+                "{z} {z} Me <m@x> 1 +0000\tcheckout: moving from main to release\n\
+                 {z} {z} Me <m@x> 2 +0000\tcommit: work\n\
+                 {z} {z} Me <m@x> 3 +0000\tcheckout: moving from release to main\n"
+            ),
+        )
+        .unwrap();
+        let b = git_branches(d.path());
+        let names: Vec<_> = b.iter().map(|s| s.name.as_str()).collect();
+        assert_eq!(names, ["release", "main", "feature/login", "hotfix", "staging"]);
+        assert_eq!(b[0].description.as_deref(), Some("previous branch"));
+        assert_eq!(b[1].description.as_deref(), Some("current branch"));
+
+        // Coming from a detached HEAD or a branch since deleted, there is no previous branch to offer.
+        std::fs::write(logs.join("HEAD"), format!("{z} {z} Me <m@x> 1 +0000\tcheckout: moving from 1a2b3c4 to main\n")).unwrap();
+        assert_eq!(git_branches(d.path())[0].name, "main");
     }
 
     #[test]
