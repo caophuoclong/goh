@@ -12,7 +12,7 @@ import argparse, os, pty, select, shutil, signal, statistics, subprocess, sys, t
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-BIN = ROOT / "target" / "debug"
+BIN = Path(os.environ["GOH_SIM_BIN"]) if os.environ.get("GOH_SIM_BIN") else ROOT / "target" / "debug"
 ADAPTER = ROOT / "adapters" / "zsh" / "goh.zsh"
 FAKE_POPUP = ROOT / "crates" / "goh-daemon" / "tests" / "fixtures" / "fake-popup.sh"
 

@@ -8,6 +8,9 @@ cargo build -p goh-daemon
 python3 tools/typing-sim/typing_sim.py [--delay-ms 90] [--only SUBSTR] [--raw] [--save-frames FILE]
 ```
 
+It runs the binaries in `target/debug`; `GOH_SIM_BIN=target/release` measures a release build instead (the numbers in
+the README's Speed section).
+
 For each command line of a small corpus (git, docker, npm, unknown commands, typos) it prints the command and a strip,
 one symbol per character: `·` menu closed, a digit = menu open with that many candidates (`+` = ten or more). Below it:
 keys, how many times the menu opened, frames sent to the popup, hides, and the slowest key. At the end: adapter time per

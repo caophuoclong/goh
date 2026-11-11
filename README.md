@@ -109,6 +109,28 @@ Nerd Font Mono.
 - Never executes anything for you: it only inserts the candidate you pick.
 - Runs fully local. Command text is not sent over the network (the one optional request is the update check, see [Privacy](#privacy)).
 
+## Speed
+
+Measured on an Apple M4 Pro (macOS 27, zsh 5.9), release build, 2026-11-11:
+
+| What | Median | p95 | Max |
+|---|---|---|---|
+| zsh adapter, per keystroke, typing at 90 ms/key (1,140 keys) | 12.8 ms | 19.3 ms | 76 ms |
+| same, fast typing at 25 ms/key (456 keys) | 7.5 ms | 13.6 ms | 30 ms |
+| completion engine alone, per request | 0.01 ms | 0.04 ms | 0.08 ms |
+| loading the 191 bundled specs, once at start | 33 ms | | |
+
+The adapter row is the time from a key reaching zsh to the frame being handed to the popup, from
+[tools/typing-sim](tools/typing-sim/README.md) over 13 everyday command lines (`git`, `docker`, `npm`, typos); it
+does not include the popup drawing on screen. The 76 ms is `docker run `, where goh fetches the list of Docker images.
+Reproduce:
+
+```bash
+cargo build --release -p goh-daemon
+GOH_SIM_BIN=target/release python3 tools/typing-sim/typing_sim.py
+cargo run --release -p goh-core --example bench
+```
+
 ## Privacy
 
 Everything runs locally. Three things are **off unless you turn them on** in `goh config`:
