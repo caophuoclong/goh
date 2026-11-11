@@ -3,7 +3,7 @@ id: history-suggestions
 title: History lines and the next command
 status: experimental
 since: 1.6.0
-updated: 2026-10-31
+updated: 2026-11-11
 area: core
 shells: [zsh, bash]
 settings: [privacy.recordCommands, display.predict]
@@ -23,6 +23,9 @@ usually comes next at an empty prompt, and remembers the values you gave an opti
   wherever you set it and exported or not; `~/.zsh_history` when it is unset. `GOH_SHELL_HISTORY` names another file.
 - Offers the three lines you ran most, most recently and in this folder; not a line that did its job once.
 - The best line is ghost text after the cursor; → takes it. `display.predict` shows the next command.
+- ↑ at an empty prompt opens your history as a menu, newest line first and highlighted, each line once: Enter runs
+  it, as ↑ then Enter would; ↑ goes further back, ↓ forward; Tab or → puts the line in to edit; Esc closes. With
+  something typed, or no history, ↑ is zsh's own (or your plugin's).
 - Lines that look secret, and lines starting with a space, are never written. `goh forget` deletes the file.
 - A line from your zsh history that looks secret is still offered while you type, with the secret shown as `****`
   in the menu, the popup and the ghost text (`export GITHUB_TOKEN=****`, `--password=****`, `Bearer ****`,
@@ -30,12 +33,13 @@ usually comes next at an empty prompt, and remembers the values you gave an opti
 
 ## Limits
 
-- Off by default. zsh only for ghost text and prediction.
+- Off by default. zsh only for ghost text, prediction and the ↑ menu.
 - Masked lines are zsh only (the other shells show what they insert), never predicted, and never give option values.
   A line that looks secret with nothing goh can mask (`kubectl get secret web`) is not offered.
 
 ## Changes
 
+- unreleased: ↑ at an empty prompt opens the history as a menu, newest first (#68).
 - unreleased: the zsh history is read from the shell's `$HISTFILE` even when it is not exported (`HISTFILE=~/.histfile`).
 - unreleased: lines with a secret from the zsh history are offered with the secret shown as `****`.
 - 1.9.0: better prediction and history lines.

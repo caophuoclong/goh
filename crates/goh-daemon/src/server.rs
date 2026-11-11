@@ -17,6 +17,8 @@ const MAX_SESSIONS: usize = 256;
 const MAX_CONNECTIONS: usize = 32;
 const IDLE_TIMEOUT: Duration = Duration::from_secs(2);
 const USAGE_TTL: Duration = Duration::from_secs(2);
+/// Lines in the menu ↑ opens at an empty prompt: as many as the menu holds.
+const HISTORY_MENU: usize = 50;
 
 struct Session {
     generation: u64,
@@ -131,6 +133,8 @@ impl Server {
                     all.extend(found);
                     all.extend(crate::runs::candidates(&self.runs.get(), &buffer, cursor_byte, &cwd, crate::visits::now()));
                     all
+                } else if editor_state == "history" && cursor_byte == buffer.len() {
+                    crate::runs::history(&self.runs.get(), &buffer, &cwd, HISTORY_MENU)
                 } else {
                     vec![]
                 };

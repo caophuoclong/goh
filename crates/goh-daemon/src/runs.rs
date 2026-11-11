@@ -440,6 +440,23 @@ impl Runs {
         out
     }
 
+    /// Every line that begins with `typed`, newest first and each once, as the shell's ↑ walks them: for the menu ↑
+    /// opens at an empty prompt. Lines that did their job once are kept; this is the history itself.
+    pub fn recent(&self, typed: &str, cwd: &str, limit: usize) -> Vec<Seen> {
+        let mut index: HashMap<&str, usize> = HashMap::new();
+        let mut out: Vec<Seen> = Vec::new();
+        for r in self.runs.iter().rev().filter(|r| r.line.len() > typed.len() && r.line.starts_with(typed)) {
+            let i = *index.entry(&r.line).or_insert_with(|| {
+                out.push(Seen { line: r.line.clone(), count: 0, here: false, score: 0.0 });
+                out.len() - 1
+            });
+            out[i].count += 1;
+            out[i].here |= r.cwd == cwd;
+        }
+        out.truncate(limit);
+        out
+    }
+
     /// What has usually followed the last command run in this folder, if that was moments ago. Only what was
     /// repeated (`MIN_REPEATS` times) counts: a full line when the same one followed, else just the command
     /// (`git commit `) when only that was repeated.
@@ -553,6 +570,20 @@ pub fn candidates(runs: &Runs, buffer: &str, cursor: usize, cwd: &str, now: u64)
         .iter()
         .enumerate()
         .filter_map(|(n, s)| candidate(s, n, 0, buffer.len(), buffer.len(), format!("history · {}{}", times(s.count), if s.here { " · this folder" } else { "" })))
+        .collect()
+}
+
+/// The history as a menu, newest first, for ↑ at an empty prompt (or with `buffer` typed before it).
+pub fn history(runs: &Runs, buffer: &str, cwd: &str, limit: usize) -> Vec<Candidate> {
+    let times = |n: usize| if n > 1 { format!(" · {n}×") } else { String::new() };
+    runs.recent(buffer, cwd, limit)
+        .iter()
+        .enumerate()
+        .filter_map(|(n, s)| {
+            let mut c = candidate(s, n, 0, buffer.len(), buffer.len(), format!("history{}{}", times(s.count), if s.here { " · this folder" } else { "" }))?;
+            c.score = (limit - n) as f64; // kept in this order
+            Some(c)
+        })
         .collect()
 }
 
@@ -712,6 +743,28 @@ mod tests {
         let base = NOW - 5000;
         let again = [(base, "/q", "make"), (base + 10, "/q", "make test"), (base + 100, "/q", "make"), (base + 110, "/q", "make test"), (NOW - 10, "/q", "make")];
         assert_eq!(runs(&again).next_after("/q", NOW, 3)[0].line, "make test");
+    }
+
+    #[test]
+    fn up_at_an_empty_prompt_lists_the_history_newest_first_each_line_once() {
+        let r = runs(&[
+            (NOW - 400, "/a", "cargo test"),
+            (NOW - 300, "/b", "git branch new-thing"),
+            (NOW - 200, "/a", "ls"),
+            (NOW - 100, "/b", "cargo test"),
+            (NOW - 50, "/a", "export GITHUB_TOKEN=ghp_abcdefghijklmnopqrstuvwxyz0123456789"),
+        ]);
+        let h = history(&r, "", "/a", 50);
+        let labels: Vec<_> = h.iter().map(|c| c.label.as_str()).collect();
+        // A line that did its job once is history too; a secret is masked in the label.
+        assert_eq!(labels, ["export GITHUB_TOKEN=****", "cargo test", "ls", "git branch new-thing"]);
+        assert_eq!(h[1].description.as_deref(), Some("history · 2× · this folder"));
+        assert_eq!(h[3].description.as_deref(), Some("history"));
+        assert!(h.windows(2).all(|w| w[0].score > w[1].score), "the menu keeps this order");
+        assert_eq!((h[1].replace_start_byte, h[1].replace_end_byte, h[1].insert_text.as_str()), (0, 0, "cargo test"));
+        assert_eq!(history(&r, "", "/a", 2).len(), 2);
+        assert_eq!(history(&r, "cargo", "/a", 50).iter().map(|c| c.label.as_str()).collect::<Vec<_>>(), ["cargo test"]);
+        assert!(history(&Runs::default(), "", "/a", 50).is_empty());
     }
 
     #[test]
